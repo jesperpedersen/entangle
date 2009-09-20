@@ -39,7 +39,7 @@ const char *capa_camera_port(CapaCamera *cam)
 }
 
 
-int capa_camera_connect(CapaCamera *cap, CapaParams *params)
+int capa_camera_connect(CapaCamera *cap G_GNUC_UNUSED, CapaParams *params G_GNUC_UNUSED)
 {
   return 0;
 }

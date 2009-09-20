@@ -119,7 +119,9 @@ CapaCameraManager *capa_camera_manager_new(void)
   return CAPA_CAMERA_MANAGER(g_object_new(CAPA_TYPE_CAMERA_MANAGER, NULL));
 }
 
-static gboolean do_manager_close(GtkButton *src, GdkEvent *ev, CapaCameraManager *manager)
+static gboolean do_manager_close(GtkButton *src G_GNUC_UNUSED,
+				 GdkEvent *ev G_GNUC_UNUSED,
+				 CapaCameraManager *manager)
 {
   fprintf(stderr, "manager close\n");
   g_signal_emit_by_name(manager, "manager-close", NULL);
@@ -143,9 +145,14 @@ void capa_camera_manager_show(CapaCameraManager *manager)
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
 
   gtk_widget_show(win);
+  gtk_window_present(GTK_WINDOW(win));
 }
 
 void capa_camera_manager_hide(CapaCameraManager *manager)
 {
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
+
+  gtk_widget_hide(win);
 }
 

@@ -23,11 +23,11 @@ enum {
 };
 
 
-void capa_camera_cell_data_model_func(GtkTreeViewColumn *col,
-				      GtkCellRenderer *cell,
-				      GtkTreeModel *model,
-				      GtkTreeIter *iter,
-				      gpointer data)
+static void capa_camera_cell_data_model_func(GtkTreeViewColumn *col G_GNUC_UNUSED,
+					     GtkCellRenderer *cell,
+					     GtkTreeModel *model,
+					     GtkTreeIter *iter,
+					     gpointer data G_GNUC_UNUSED)
 {
   GValue val;
   CapaCamera *cam;
@@ -41,11 +41,11 @@ void capa_camera_cell_data_model_func(GtkTreeViewColumn *col,
   g_object_set(cell, "text", capa_camera_model(cam), NULL);
 }
 
-void capa_camera_cell_data_port_func(GtkTreeViewColumn *col,
-				     GtkCellRenderer *cell,
-				     GtkTreeModel *model,
-				     GtkTreeIter *iter,
-				     gpointer data)
+static void capa_camera_cell_data_port_func(GtkTreeViewColumn *col G_GNUC_UNUSED,
+					    GtkCellRenderer *cell,
+					    GtkTreeModel *model,
+					    GtkTreeIter *iter,
+					    gpointer data G_GNUC_UNUSED)
 {
   GValue val;
   CapaCamera *cam;
@@ -64,13 +64,23 @@ void capa_camera_cell_data_port_func(GtkTreeViewColumn *col,
 static void capa_camera_picker_update_model(CapaCameraPicker *picker, CapaCameraList *cameras)
 {
   CapaCameraPickerPrivate *priv = picker->priv;
-
+  GtkWidget *warning;
+  GtkWidget *list;
+  GtkWidget *win;
+  fprintf(stderr, "Refresh model\n");
   gtk_list_store_clear(priv->model);
   capa_camera_list_free(priv->cameras);
 
+  warning = glade_xml_get_widget(priv->glade, "warning-no-cameras");
+  list = glade_xml_get_widget(priv->glade, "camera-list");
+  win = glade_xml_get_widget(priv->glade, "camera-picker");
+
   priv->cameras = cameras;
-  if (!cameras)
+  if (!cameras) {
+    gtk_widget_set_sensitive(list, FALSE);
+    gtk_widget_show(warning);
     return;
+  }
 
   for (int i = 0 ; i < capa_camera_list_count(priv->cameras) ; i++) {
     CapaCamera *cam = capa_camera_list_get(priv->cameras, i);
@@ -79,6 +89,16 @@ static void capa_camera_picker_update_model(CapaCameraPicker *picker, CapaCamera
     gtk_list_store_append(priv->model, &iter);
 
     gtk_list_store_set(priv->model, &iter, 0, cam, -1);
+  }
+  if (capa_camera_list_count(priv->cameras)) {
+    int w, h;
+    gtk_window_get_default_size(GTK_WINDOW(win), &w, &h);
+    gtk_window_resize(GTK_WINDOW(win), w, h);
+    gtk_widget_set_sensitive(list, TRUE);
+    gtk_widget_hide(warning);
+  } else {
+    gtk_widget_set_sensitive(list, FALSE);
+    gtk_widget_show(warning);
   }
 }
 
@@ -185,13 +205,13 @@ CapaCameraPicker *capa_camera_picker_new(void)
   return CAPA_CAMERA_PICKER(g_object_new(CAPA_TYPE_CAMERA_PICKER, NULL));
 }
 
-static void do_picker_close(GtkButton *src, CapaCameraPicker *picker)
+static void do_picker_close(GtkButton *src G_GNUC_UNUSED, CapaCameraPicker *picker)
 {
   fprintf(stderr, "picker close\n");
   g_signal_emit_by_name(picker, "picker-close", NULL);
 }
 
-static void do_picker_refresh(GtkButton *src, CapaCameraPicker *picker)
+static void do_picker_refresh(GtkButton *src G_GNUC_UNUSED, CapaCameraPicker *picker)
 {
   fprintf(stderr, "picker refresh %p\n", picker);
   g_signal_emit_by_name(picker, "picker-refresh", NULL);
@@ -222,7 +242,10 @@ static CapaCamera *capa_picker_get_selected_camera(CapaCameraPicker *picker)
   return g_value_get_pointer(&val);
 }
 
-static void do_picker_activate(GtkTreeView *src, GtkTreePath *path, GtkTreeViewColumn *col, CapaCameraPicker *picker)
+static void do_picker_activate(GtkTreeView *src G_GNUC_UNUSED,
+			       GtkTreePath *path G_GNUC_UNUSED,
+			       GtkTreeViewColumn *col G_GNUC_UNUSED,
+			       CapaCameraPicker *picker)
 {
   CapaCamera *cam;
   cam = capa_picker_get_selected_camera(picker);
@@ -238,7 +261,8 @@ static void do_picker_activate(GtkTreeView *src, GtkTreePath *path, GtkTreeViewC
 }
 
 
-static void do_picker_connect(GtkButton *src, CapaCameraPicker *picker)
+static void do_picker_connect(GtkButton *src G_GNUC_UNUSED,
+			      CapaCameraPicker *picker)
 {
   CapaCamera *cam;
   cam = capa_picker_get_selected_camera(picker);
@@ -259,7 +283,7 @@ static void do_camera_select(GtkTreeSelection *sel, CapaCameraPicker *picker)
   GtkTreeIter iter;
   gboolean selected;
 
-  fprintf(stderr, "select camera\n");
+  fprintf(stderr, "selection changed\n");
 
   connect = glade_xml_get_widget(priv->glade, "picker-connect");
 
@@ -323,12 +347,18 @@ void capa_camera_picker_show(CapaCameraPicker *picker)
   list = glade_xml_get_widget(priv->glade, "camera-list");
   sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
 
-  gtk_tree_selection_unselect_all(sel);
+  //gtk_tree_selection_unselect_all(sel);
 
+  fprintf(stderr, "Show\n");
   gtk_widget_show(win);
+  gtk_window_present(GTK_WINDOW(win));
 }
 
 void capa_camera_picker_hide(CapaCameraPicker *picker)
 {
+  CapaCameraPickerPrivate *priv = picker->priv;
+  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-picker");
+
+  gtk_widget_hide(win);
 }
 
