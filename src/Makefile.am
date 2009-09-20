@@ -6,6 +6,7 @@ capa_SOURCES = \
 	app.h app.c \
 	app-display.h app-display.c \
 	camera.h camera.c \
+	camera-info.h camera-info.c \
 	camera-list.h camera-list.c \
 	camera-manager.h camera-manager.c \
 	camera-picker.h camera-picker.c \

@@ -4,12 +4,18 @@
 
 #include "camera-manager.h"
 #include "camera-list.h"
+#include "camera-info.h"
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_MANAGER, CapaCameraManagerPrivate))
 
 struct _CapaCameraManagerPrivate {
   CapaCamera *camera;
+
+  CapaCameraInfo *summary;
+  CapaCameraInfo *manual;
+  CapaCameraInfo *driver;
+  CapaCameraInfo *supported;
 
   GladeXML *glade;
 };
@@ -128,6 +134,51 @@ static gboolean do_manager_close(GtkButton *src G_GNUC_UNUSED,
   return TRUE;
 }
 
+static void do_manager_help_summary(GtkMenuItem *src G_GNUC_UNUSED,
+				    CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  if (!priv->summary) {
+    priv->summary = capa_camera_info_new();
+    g_object_set(G_OBJECT(priv->summary),
+		 "data", CAPA_CAMERA_INFO_DATA_SUMMARY,
+		 "camera", priv->camera,
+		 NULL);
+  }
+  capa_camera_info_show(priv->summary);
+}
+
+static void do_manager_help_manual(GtkMenuItem *src G_GNUC_UNUSED,
+				    CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  if (!priv->manual) {
+    priv->manual = capa_camera_info_new();
+    g_object_set(G_OBJECT(priv->manual),
+		 "data", CAPA_CAMERA_INFO_DATA_MANUAL,
+		 "camera", priv->camera,
+		 NULL);
+  }
+  capa_camera_info_show(priv->manual);
+}
+
+static void do_manager_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
+				    CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  if (!priv->driver) {
+    priv->driver = capa_camera_info_new();
+    g_object_set(G_OBJECT(priv->driver),
+		 "data", CAPA_CAMERA_INFO_DATA_DRIVER,
+		 "camera", priv->camera,
+		 NULL);
+  }
+  capa_camera_info_show(priv->driver);
+}
+
 static void capa_camera_manager_init(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv;
@@ -137,6 +188,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   priv->glade = glade_xml_new("capa.glade", "camera-manager", "capa");
 
   glade_xml_signal_connect_data(priv->glade, "camera_manager_close", G_CALLBACK(do_manager_close), manager);
+  glade_xml_signal_connect_data(priv->glade, "camera_menu_help_summary", G_CALLBACK(do_manager_help_summary), manager);
+  glade_xml_signal_connect_data(priv->glade, "camera_menu_help_manual", G_CALLBACK(do_manager_help_manual), manager);
+  glade_xml_signal_connect_data(priv->glade, "camera_menu_help_driver", G_CALLBACK(do_manager_help_driver), manager);
 }
 
 void capa_camera_manager_show(CapaCameraManager *manager)
