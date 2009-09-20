@@ -22,6 +22,8 @@
 #define __CAPA_CAMERA__
 
 #include "params.h"
+#include "control-group.h"
+
 
 typedef struct _CapaCamera CapaCamera;
 
@@ -41,5 +43,9 @@ char *capa_camera_manual(CapaCamera *cam);
 char *capa_camera_driver(CapaCamera *cam);
 
 int capa_camera_capture(CapaCamera *cam, const char *localpath);
+
+
+CapaControlGroup *capa_camera_controls(CapaCamera *cam);
+
 
 #endif /* __CAPA_CAMERA__ */

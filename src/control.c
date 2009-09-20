@@ -26,14 +26,18 @@
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL, CapaControlPrivate))
 
 struct _CapaControlPrivate {
-  char *name;
+  char *path;
+  int id;
+  char *label;
 };
 
 G_DEFINE_TYPE(CapaControl, capa_control, G_TYPE_OBJECT);
 
 enum {
   PROP_0,
-  PROP_NAME,
+  PROP_PATH,
+  PROP_ID,
+  PROP_LABEL,
 };
 
 static void capa_control_get_property(GObject *object,
@@ -46,8 +50,16 @@ static void capa_control_get_property(GObject *object,
 
   switch (prop_id)
     {
-    case PROP_NAME:
-      g_value_set_string(value, priv->name);
+    case PROP_PATH:
+      g_value_set_string(value, priv->path);
+      break;
+
+    case PROP_ID:
+      g_value_set_int(value, priv->id);
+      break;
+
+    case PROP_LABEL:
+      g_value_set_string(value, priv->label);
       break;
 
     default:
@@ -63,13 +75,20 @@ static void capa_control_set_property(GObject *object,
   CapaControl *picker = CAPA_CONTROL(object);
   CapaControlPrivate *priv = picker->priv;
 
-  fprintf(stderr, "Set prop %d\n", prop_id);
-
   switch (prop_id)
     {
-    case PROP_NAME:
-      g_free(priv->name);
-      priv->name = g_value_dup_string(value);
+    case PROP_PATH:
+      g_free(priv->path);
+      priv->path = g_value_dup_string(value);
+      break;
+
+    case PROP_ID:
+      priv->id = g_value_get_int(value);
+      break;
+
+    case PROP_LABEL:
+      g_free(priv->label);
+      priv->label = g_value_dup_string(value);
       break;
 
     default:
@@ -82,7 +101,8 @@ static void capa_control_finalize (GObject *object)
   CapaControl *picker = CAPA_CONTROL(object);
   CapaControlPrivate *priv = picker->priv;
 
-  g_free(priv->name);
+  g_free(priv->path);
+  g_free(priv->label);
 
   G_OBJECT_CLASS (capa_control_parent_class)->finalize (object);
 }
@@ -96,10 +116,34 @@ static void capa_control_class_init(CapaControlClass *klass)
   object_class->set_property = capa_control_set_property;
 
   g_object_class_install_property(object_class,
-				  PROP_NAME,
-				  g_param_spec_string("name",
-						      "Control name",
-						      "Name of the control",
+				  PROP_PATH,
+				  g_param_spec_string("path",
+						      "Control path",
+						      "Path of the control",
+						      NULL,
+						      G_PARAM_READWRITE |
+						      G_PARAM_CONSTRUCT_ONLY |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property(object_class,
+				  PROP_ID,
+				  g_param_spec_string("id",
+						      "Control id",
+						      "Id of the control",
+						      NULL,
+						      G_PARAM_READWRITE |
+						      G_PARAM_CONSTRUCT_ONLY |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property(object_class,
+				  PROP_LABEL,
+				  g_param_spec_string("label",
+						      "Control label",
+						      "Label of the control",
 						      NULL,
 						      G_PARAM_READWRITE |
 						      G_PARAM_CONSTRUCT_ONLY |
@@ -111,9 +155,13 @@ static void capa_control_class_init(CapaControlClass *klass)
 }
 
 
-CapaControl *capa_control_new(const char *name)
+CapaControl *capa_control_new(const char *path, int id, const char *label)
 {
-  return CAPA_CONTROL(g_object_new(CAPA_TYPE_CONTROL, name, NULL));
+  return CAPA_CONTROL(g_object_new(CAPA_TYPE_CONTROL,
+				   "path", path,
+				   "id", id,
+				   "label", label,
+				   NULL));
 }
 
 

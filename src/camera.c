@@ -175,3 +175,78 @@ int capa_camera_capture(CapaCamera *cam, const char *localpath)
   gp_file_unref(file);
   return -1;
 }
+
+
+static int do_process_control(CapaControlGroup *grp,
+			      const char *path,
+			      CameraWidget *widget)
+{
+  CameraWidgetType type;
+  CapaControl *control;
+  const char *name;
+  char *fullpath;
+
+  if (gp_widget_get_type(widget, &type) != GP_OK)
+    return -1;
+
+  if (gp_widget_get_name(widget, &name) != GP_OK)
+    return -1;
+
+  fullpath = g_strdup_printf("%s/%s", path, name);
+
+  switch (type) {
+  case GP_WIDGET_WINDOW:
+  case GP_WIDGET_SECTION:
+    {
+      fprintf(stderr, "Recurse %s\n", fullpath);
+      for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+	CameraWidget *child;
+	if (gp_widget_get_child(widget, i, &child) != GP_OK)
+	  goto error;
+	if (do_process_control(grp, fullpath, child) < 0)
+	  goto error;
+      }
+    } break;
+
+  default:
+    {
+      int id;
+      const char *label;
+      gp_widget_get_id(widget, &id);
+      gp_widget_get_label(widget, &label);
+
+      fprintf(stderr, "Add %s %d %s\n", fullpath, id, label);
+      control = capa_control_new(fullpath, id, label);
+      capa_control_group_add(grp, control);
+    } break;
+  }
+
+  return 0;
+
+  error:
+  g_free(fullpath);
+  return -1;
+}
+
+CapaControlGroup *capa_camera_controls(CapaCamera *cam)
+{
+  CameraWidget *win = NULL;
+  CapaControlGroup *grp;
+
+  if (cam->cam == NULL)
+    return NULL;
+
+  if (gp_camera_get_config(cam->cam, &win, cam->params->ctx) != GP_OK)
+    return NULL;
+
+  grp = capa_control_group_new();
+
+  if (do_process_control(grp, "", win) < 0) {
+    g_object_unref(grp);
+    grp = NULL;
+  }
+
+  gp_widget_unref(win);
+
+  return grp;
+}
