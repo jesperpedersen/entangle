@@ -21,4 +21,6 @@ char *capa_camera_summary(CapaCamera *cam);
 char *capa_camera_manual(CapaCamera *cam);
 char *capa_camera_driver(CapaCamera *cam);
 
+int capa_camera_capture(CapaCamera *cam, const char *localpath);
+
 #endif /* __CAPA_CAMERA__ */

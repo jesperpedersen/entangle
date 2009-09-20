@@ -111,3 +111,48 @@ char *capa_camera_driver(CapaCamera *cam)
   return g_strdup(txt.text);
 }
 
+
+int capa_camera_capture(CapaCamera *cam, const char *localpath)
+{
+  CameraFilePath path;
+  CameraFile *file;
+
+  if (cam->cam == NULL)
+    return -1;
+
+  fprintf(stderr, "Starting capture\n");
+  if (gp_camera_capture(cam->cam, GP_CAPTURE_IMAGE, &path, cam->params->ctx) != GP_OK) {
+    fprintf(stderr, "Failed capture\n");
+    return -1;
+  }
+
+  fprintf(stderr, "captured '%s' '%s'\n", path.folder, path.name);
+
+  gp_file_new(&file);
+
+  fprintf(stderr, "Getting file\n");
+  if (gp_camera_file_get(cam->cam, path.folder, path.name, GP_FILE_TYPE_NORMAL, file, cam->params->ctx) != GP_OK)
+    goto error;
+
+  fprintf(stderr, "Saveing file\n");
+  if (gp_file_save(file, localpath) != GP_OK)
+    goto error_delete;
+
+  fprintf(stderr, "Deleting file\n");
+  if (gp_camera_file_delete(cam->cam, path.folder, path.name, cam->params->ctx) != GP_OK)
+    goto error;
+
+  gp_file_unref(file);
+
+  fprintf(stderr, "Done\n");
+  return 0;
+
+ error_delete:
+  fprintf(stderr, "Error, try delete\n");
+  gp_camera_file_delete(cam->cam, path.folder, path.name, cam->params->ctx);
+
+ error:
+  fprintf(stderr, "Error\n");
+  gp_file_unref(file);
+  return -1;
+}

@@ -1,12 +1,27 @@
 
 #include <glib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "params.h"
 
+static void do_capa_log(GPLogLevel level G_GNUC_UNUSED,
+			const char *domain,
+			const char *format,
+			va_list args,
+			void *data G_GNUC_UNUSED)
+{
+  fprintf(stderr, "%s: ", domain);
+  vfprintf(stderr, format, args);
+  fprintf(stderr, "\n");
+}
 
 CapaParams *capa_params_new(void)
 {
   CapaParams *params = g_new0(CapaParams, 1);
+
+  if (getenv("CAPA_DEBUG"))
+    gp_log_add_func(GP_LOG_DEBUG, do_capa_log, NULL);
 
   params->ctx = gp_context_new();
 

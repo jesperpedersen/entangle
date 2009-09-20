@@ -29,9 +29,9 @@ enum {
 
 
 static void capa_camera_manager_get_property(GObject *object,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *pspec)
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *pspec)
 {
   CapaCameraManager *manager = CAPA_CAMERA_MANAGER(object);
   CapaCameraManagerPrivate *priv = manager->priv;
@@ -179,6 +179,20 @@ static void do_manager_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
   capa_camera_info_show(priv->driver);
 }
 
+static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
+			       CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *img;
+  fprintf(stderr, "Capture\n");
+
+  img = glade_xml_get_widget(priv->glade, "photo-display");
+
+  capa_camera_capture(priv->camera, "capture.tiff");
+
+  gtk_image_set_from_file(GTK_IMAGE(img), "capture.tiff");
+}
+
 static void capa_camera_manager_init(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv;
@@ -191,6 +205,8 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_summary", G_CALLBACK(do_manager_help_summary), manager);
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_manual", G_CALLBACK(do_manager_help_manual), manager);
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_driver", G_CALLBACK(do_manager_help_driver), manager);
+
+  glade_xml_signal_connect_data(priv->glade, "toolbar_capture_click", G_CALLBACK(do_toolbar_capture), manager);
 }
 
 void capa_camera_manager_show(CapaCameraManager *manager)
