@@ -1,0 +1,57 @@
+
+Capa Assists Photographic Capture
+
+   CameraList
+      |
+      +- n * Camera
+               |
+               +- Model
+               +- Port Path
+               +- HAL UDI
+               +- Serial Number
+               |
+               +- n * CameraControl
+               +- n * CameraControlLayout
+               +- n * CameraSession
+
+   CameraControlLayout
+      |
+      +- Label
+      +- Description
+      |
+      +- n * CameraControlGroup
+               |
+               +- n * CameraControl
+
+   CameraSession
+      |
+      +- Foldername
+      |
+      +- 1 * CameraControlLayout
+      +- n * Image
+
+   CameraControl
+      |
+      +- Name
+      +- Value
+      +- Type
+      |
+      +- 1 * EXIF field
+
+   Image
+      |
+      +- Filename
+      |
+      +- n * EXIF field
+
+
+
+  CameraView
+
+  CameraControlLayoutView
+
+  CameraControlGroupView
+
+  CameraListView
+
+  CameraControlView

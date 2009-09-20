@@ -1,0 +1,220 @@
+/main/actions/focuslock
+
+Label: Focus Lock
+Type: TOGGLE
+Current: 2
+
+
+/main/actions/bulb
+
+Label: Bulb Mode
+Type: TOGGLE
+Current: 2
+
+
+/main/actions/syncdatetime
+
+Label: Synchronize camera date and time with PC
+Type: TOGGLE
+Current: 0
+
+
+/main/settings/datetime
+
+Label: Camera Date and Time
+Type: DATE
+Current: 1253380695
+Printable: Sat 19 Sep 2009 06:18:15 PM BST
+
+
+/main/settings/ownername
+
+Label: Owner Name
+Type: TEXT
+Current: 
+
+
+/main/settings/capturetarget
+
+Label: Capture Target
+Type: RADIO
+Current: Internal RAM
+Choice: 0 Internal RAM
+Choice: 1 Memory card
+
+
+/main/settings/capture
+
+Label: Capture
+Type: TOGGLE
+Current: 2
+
+
+/main/status/model
+
+Label: Camera Model
+Type: TEXT
+Current: Canon PowerShot SD1000
+
+
+/main/status/firmwareversion
+
+Label: Firmware Version
+Type: TEXT
+Current: 1.0.1.0
+
+
+/main/other/d045
+
+Label: Event Emulate Mode
+Type: MENU
+Current: 2
+Choice: 0 1
+Choice: 1 2
+Choice: 2 3
+Choice: 3 4
+Choice: 4 5
+Choice: 5 6
+Choice: 6 7
+
+
+/main/other/d04a
+
+Label: PTP Property 0xd04a
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+
+
+/main/other/d02e
+
+Label: Size of Output Data from Camera
+Type: TEXT
+Current: 524288
+
+
+/main/other/d02f
+
+Label: Size of Input Data to Camera
+Type: TEXT
+Current: 262144
+
+
+/main/other/d002
+
+Label: Battery Type
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+Choice: 4 4
+Choice: 5 5
+
+
+/main/other/d003
+
+Label: Battery Mode
+Type: MENU
+Current: 1
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+
+
+/main/other/d034
+
+Label: UNIX Time
+Type: TEXT
+Current: 1253380698
+
+
+/main/other/d047
+
+Label: Type of Slideshow
+Type: TEXT
+Current: 2
+
+
+/main/other/d046
+
+Label: DPOF Version
+Type: TEXT
+Current: 257
+
+
+/main/other/d02d
+
+Label: Supported Thumb Size
+Type: TEXT
+Current: (null)
+
+
+/main/other/d02c
+
+Label: Size Quality Mode
+Type: MENU
+Current: (null)
+
+
+/main/other/d030
+
+Label: Remote API Version
+Type: TEXT
+Current: 256
+
+
+/main/other/d049
+
+Label: Model ID
+Type: TEXT
+Current: 34996224
+
+
+/main/other/d032
+
+Label: Camera Model
+Type: TEXT
+Current: Canon PowerShot SD1000
+
+
+/main/other/d033
+
+Label: Camera Owner
+Type: TEXT
+Current: (null)
+
+
+/main/other/d031
+
+Label: Firmware Version
+Type: TEXT
+Current: 16777472
+
+
+/main/other/d402
+
+Label: PTP Property 0xd402
+Type: TEXT
+Current: Canon PowerShot SD1000
+
+
+/main/other/d406
+
+Label: PTP Property 0xd406
+Type: TEXT
+Current: Windows
+
+
+/main/other/d407
+
+Label: PTP Property 0xd407
+Type: TEXT
+Current: 1
+
+
