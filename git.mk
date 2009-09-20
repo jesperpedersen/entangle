@@ -135,6 +135,7 @@ $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
 			$(GITIGNOREFILES) \
 			$(CLEANFILES) \
 			$(PROGRAMS) \
+			$(check_PROGRAMS) \
 			$(EXTRA_PROGRAMS) \
 			$(LTLIBRARIES) \
 			so_locations \
@@ -161,7 +162,7 @@ $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
 	} | \
 	sed "s@^/`echo "$(srcdir)" | sed 's/\(.\)/[\1]/g'`/@/@" | \
 	sed 's@/[.]/@/@g' | \
-	LANG=C sort | uniq > $@.tmp && \
+	LC_ALL=C sort | uniq > $@.tmp && \
 	mv $@.tmp $@;
 
 all: $(srcdir)/.gitignore gitignore-recurse-maybe
