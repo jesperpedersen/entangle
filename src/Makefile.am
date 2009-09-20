@@ -10,6 +10,9 @@ capa_SOURCES = \
 	camera-list.h camera-list.c \
 	camera-manager.h camera-manager.c \
 	camera-picker.h camera-picker.c \
+	control.h control.c \
+	control-group.h control-group.c \
+	control-layout.h control-layout.c \
 	main.c \
 	params.h params.c
 
