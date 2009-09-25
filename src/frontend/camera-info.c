@@ -211,7 +211,6 @@ CapaCameraInfo *capa_camera_info_new(void)
 }
 
 static gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
-			      GdkEvent *ev G_GNUC_UNUSED,
 			      CapaCameraInfo *info)
 {
   CapaCameraInfoPrivate *priv = info->priv;
@@ -231,7 +230,7 @@ static gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
 
   gtk_widget_hide(win);
-  return TRUE;
+  return FALSE;
 }
 
 static void capa_camera_info_init(CapaCameraInfo *info)
