@@ -83,7 +83,7 @@ static void capa_camera_info_get_property(GObject *object,
   switch (prop_id)
     {
     case PROP_CAMERA:
-      g_value_set_pointer(value, priv->camera);
+      g_value_set_object(value, priv->camera);
       break;
 
     case PROP_DATA:
@@ -110,8 +110,10 @@ static void capa_camera_info_set_property(GObject *object,
     case PROP_CAMERA: {
       char *title;
       GtkWidget *win;
-      capa_camera_free(priv->camera);
-      priv->camera = g_value_get_pointer(value);
+      if (priv->camera)
+	g_object_unref(G_OBJECT(priv->camera));
+      priv->camera = g_value_get_object(value);
+      g_object_ref(G_OBJECT(priv->camera));
 
       title = g_strdup_printf("%s Camera Info - Capa",
 			      capa_camera_model(priv->camera));
@@ -137,8 +139,8 @@ static void capa_camera_info_finalize (GObject *object)
   CapaCameraInfo *info = CAPA_CAMERA_INFO(object);
   CapaCameraInfoPrivate *priv = info->priv;
 
-  /* XXX not right - unref */
-  capa_camera_free(priv->camera);
+  if (priv->camera)
+    g_object_unref(G_OBJECT(priv->camera));
 
   G_OBJECT_CLASS (capa_camera_info_parent_class)->finalize (object);
 }
@@ -162,13 +164,14 @@ static void capa_camera_info_class_init(CapaCameraInfoClass *klass)
 
   g_object_class_install_property(object_class,
 				  PROP_CAMERA,
-				  g_param_spec_pointer("camera",
-						       "Camera",
-						       "Camera to be managed",
-						       G_PARAM_READWRITE |
-						       G_PARAM_STATIC_NAME |
-						       G_PARAM_STATIC_NICK |
-						       G_PARAM_STATIC_BLURB));
+				  g_param_spec_object("camera",
+						      "Camera",
+						      "Camera to be managed",
+						      CAPA_TYPE_CAMERA,
+						      G_PARAM_READWRITE |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
   g_object_class_install_property(object_class,
 				  PROP_DATA,
 				  g_param_spec_enum("data",

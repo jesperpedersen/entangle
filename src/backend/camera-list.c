@@ -19,6 +19,7 @@
  */
 
 #include <glib.h>
+#include <stdio.h>
 
 #include "camera-list.h"
 
@@ -40,7 +41,8 @@ void capa_camera_list_free(CapaCameraList *list)
     return;
 
   for (int i = 0 ; i < list->ncamera ; i++) {
-    capa_camera_free(list->cameras[i]);
+    fprintf(stderr, "Unref camera %p\n", list->cameras[i]);
+    g_object_unref(G_OBJECT(list->cameras[i]));
   }
   g_free(list->cameras);
   g_free(list);
@@ -56,6 +58,7 @@ void capa_camera_list_add(CapaCameraList *list,
 {
   list->cameras = g_renew(CapaCamera *, list->cameras, list->ncamera+1);
   list->cameras[list->ncamera++] = cam;
+  g_object_ref(G_OBJECT(cam));
 }
 
 CapaCamera *capa_camera_list_get(CapaCameraList *list,

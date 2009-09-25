@@ -21,16 +21,41 @@
 #ifndef __CAPA_CAMERA__
 #define __CAPA_CAMERA__
 
+#include <glib-object.h>
+
 #include "control-group.h"
+
+G_BEGIN_DECLS
+
+#define CAPA_TYPE_CAMERA            (capa_camera_get_type ())
+#define CAPA_CAMERA(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_TYPE_CAMERA, CapaCamera))
+#define CAPA_CAMERA_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), CAPA_TYPE_CAMERA, CapaCameraClass))
+#define CAPA_IS_CAMERA(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_TYPE_CAMERA))
+#define CAPA_IS_CAMERA_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CAPA_TYPE_CAMERA))
+#define CAPA_CAMERA_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), CAPA_TYPE_CAMERA, CapaCameraClass))
 
 
 typedef struct _CapaCamera CapaCamera;
+typedef struct _CapaCameraPrivate CapaCameraPrivate;
+typedef struct _CapaCameraClass CapaCameraClass;
 
+struct _CapaCamera
+{
+  GObject parent;
+
+  CapaCameraPrivate *priv;
+};
+
+struct _CapaCameraClass
+{
+  GObjectClass parent_class;
+};
+
+
+GType capa_camera_get_type(void) G_GNUC_CONST;
 
 CapaCamera *capa_camera_new(const char *model,
 			    const char *port);
-
-void capa_camera_free(CapaCamera *cam);
 
 const char *capa_camera_model(CapaCamera *cam);
 const char *capa_camera_port(CapaCamera *cam);
@@ -46,5 +71,6 @@ int capa_camera_capture(CapaCamera *cam, const char *localpath);
 
 CapaControlGroup *capa_camera_controls(CapaCamera *cam);
 
+G_END_DECLS
 
 #endif /* __CAPA_CAMERA__ */

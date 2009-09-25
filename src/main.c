@@ -28,6 +28,8 @@ int main(int argc, char **argv)
   CapaApp *app;
   CapaAppDisplay *display;
 
+  gtk_init(&argc, &argv);
+
   app = capa_app_new();
 
   CapaCameraList *cams = capa_app_detect_cameras(app);
@@ -38,9 +40,6 @@ int main(int argc, char **argv)
 	    capa_camera_model(cam),
 	    capa_camera_port(cam));
   }
-
-
-  gtk_init(&argc, &argv);
 
   display = capa_app_display_new();
 

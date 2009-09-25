@@ -55,7 +55,7 @@ static void capa_camera_cell_data_model_func(GtkTreeViewColumn *col G_GNUC_UNUSE
 
   gtk_tree_model_get_value(model, iter, 0, &val);
 
-  cam = g_value_get_pointer(&val);
+  cam = g_value_get_object(&val);
 
   g_object_set(cell, "text", capa_camera_model(cam), NULL);
 }
@@ -73,7 +73,7 @@ static void capa_camera_cell_data_port_func(GtkTreeViewColumn *col G_GNUC_UNUSED
 
   gtk_tree_model_get_value(model, iter, 0, &val);
 
-  cam = g_value_get_pointer(&val);
+  cam = g_value_get_object(&val);
 
   g_object_set(cell, "text", capa_camera_port(cam), NULL);
 }
@@ -184,10 +184,10 @@ static void capa_camera_picker_class_init(CapaCameraPickerClass *klass)
 	       G_SIGNAL_RUN_FIRST,
 	       G_STRUCT_OFFSET(CapaCameraPickerClass, picker_connect),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__POINTER,
+	       g_cclosure_marshal_VOID__OBJECT,
 	       G_TYPE_NONE,
 	       1,
-	       G_TYPE_POINTER);
+	       G_TYPE_OBJECT);
   g_signal_new("picker-refresh",
 	       G_TYPE_FROM_CLASS(klass),
 	       G_SIGNAL_RUN_FIRST,
@@ -258,7 +258,7 @@ static CapaCamera *capa_picker_get_selected_camera(CapaCameraPicker *picker)
   memset(&val, 0, sizeof val);
   gtk_tree_model_get_value(GTK_TREE_MODEL(priv->model), &iter, 0, &val);
 
-  return g_value_get_pointer(&val);
+  return g_value_get_object(&val);
 }
 
 static void do_picker_activate(GtkTreeView *src G_GNUC_UNUSED,
@@ -273,9 +273,10 @@ static void do_picker_activate(GtkTreeView *src G_GNUC_UNUSED,
   if (cam) {
     GValue val;
     memset(&val, 0, sizeof val);
-    g_value_init(&val, G_TYPE_POINTER);
-    g_value_set_pointer(&val, cam);
-    g_signal_emit_by_name(picker, "picker-connect", &val);
+    g_value_init(&val, G_TYPE_OBJECT);
+    g_value_set_object(&val, cam);
+    //g_signal_emit_by_name(picker, "picker-connect", &val);
+    g_signal_emit_by_name(picker, "picker-connect", cam);
   }
 }
 
@@ -289,9 +290,10 @@ static void do_picker_connect(GtkButton *src G_GNUC_UNUSED,
   if (cam) {
     GValue val;
     memset(&val, 0, sizeof val);
-    g_value_init(&val, G_TYPE_POINTER);
-    g_value_set_pointer(&val, cam);
-    g_signal_emit_by_name(picker, "picker-connect", &val);
+    g_value_init(&val, G_TYPE_OBJECT);
+    g_value_set_object(&val, cam);
+    //g_signal_emit_by_name(picker, "picker-connect", &val);
+    g_signal_emit_by_name(picker, "picker-connect", cam);
   }
 }
 
@@ -323,7 +325,7 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
 
   priv = picker->priv = CAPA_CAMERA_PICKER_GET_PRIVATE(picker);
 
-  priv->model = gtk_list_store_new(1, G_TYPE_POINTER);
+  priv->model = gtk_list_store_new(1, G_TYPE_OBJECT);
   priv->glade = glade_xml_new("capa.glade", "camera-picker", "capa");
 
   list = glade_xml_get_widget(priv->glade, "camera-list");

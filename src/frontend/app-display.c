@@ -78,10 +78,9 @@ static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDis
   g_object_set_property(G_OBJECT(priv->picker), "cameras", &val);
 }
 
-static void do_picker_connect(CapaCameraPicker *picker, GValue *camval, CapaAppDisplay *display)
+static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaAppDisplay *display)
 {
   CapaAppDisplayPrivate *priv = display->priv;
-  CapaCamera *cam = g_value_get_pointer(camval);
   fprintf(stderr, "emit connect %p %s\n", cam, capa_camera_model(cam));
   CapaCameraManager *man;
 
@@ -89,8 +88,12 @@ static void do_picker_connect(CapaCameraPicker *picker, GValue *camval, CapaAppD
 
   man = g_hash_table_lookup(priv->managers, capa_camera_model(cam));
   if (!man) {
+    GValue camval;
+    memset(&camval, 0, sizeof camval);
+    g_value_init(&camval, G_TYPE_OBJECT);
+    g_value_set_object(&camval, cam);
     man = capa_camera_manager_new();
-    g_object_set_property(G_OBJECT(man), "camera", camval);
+    g_object_set_property(G_OBJECT(man), "camera", &camval);
     g_hash_table_insert(priv->managers, g_strdup(capa_camera_model(cam)), man);
   }
   capa_camera_manager_show(man);

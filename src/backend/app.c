@@ -65,6 +65,7 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
   ret = capa_camera_list_new();
   for (int i = 0 ; i < gp_list_count(cams) ; i++) {
     const char *model, *path;
+    CapaCamera *cam;
 
     gp_list_get_name(cams, i, &model);
     gp_list_get_value(cams, i, &path);
@@ -75,8 +76,11 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
      */
     if (strcmp(path, "usb:") == 0)
       continue;
-    capa_camera_list_add(ret,
-			 capa_camera_new(model, path));
+
+    cam = capa_camera_new(model, path);
+    capa_camera_list_add(ret, cam);
+    fprintf(stderr, "unref list objet");
+    g_object_unref(G_OBJECT(cam));
   }
   gp_list_unref(cams);
 
