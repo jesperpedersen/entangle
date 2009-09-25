@@ -54,7 +54,7 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
   CameraList *cams = NULL;
   CapaCameraList *ret = NULL;
 
-  fprintf(stderr, "Detecting\n");
+  fprintf(stderr, "Detecting1\n");
   capa_params_refresh(app->params);
 
   if (gp_list_new(&cams) != GP_OK)
@@ -77,6 +77,7 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
     if (strcmp(path, "usb:") == 0)
       continue;
 
+    fprintf(stderr, "New camera '%s' '%s'\n", model, path);
     cam = capa_camera_new(model, path);
     capa_camera_list_add(ret, cam);
     fprintf(stderr, "unref list objet");

@@ -24,6 +24,7 @@
 #include "camera-manager.h"
 #include "camera-list.h"
 #include "camera-info.h"
+#include "camera-progress.h"
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_MANAGER, CapaCameraManagerPrivate))
@@ -35,6 +36,9 @@ struct _CapaCameraManagerPrivate {
   CapaCameraInfo *manual;
   CapaCameraInfo *driver;
   CapaCameraInfo *supported;
+
+  CapaCameraProgress *progress;
+  GThread *captureThread;
 
   GladeXML *glade;
 };
@@ -81,8 +85,11 @@ static void capa_camera_manager_set_property(GObject *object,
     case PROP_CAMERA: {
       char *title;
       GtkWidget *win;
-      if (priv->camera)
+      GValue prog;
+      if (priv->camera) {
+	g_object_set_property(G_OBJECT(priv->camera), "progress", NULL);
 	g_object_unref(G_OBJECT(priv->camera));
+      }
       priv->camera = g_value_get_object(value);
       g_object_ref(G_OBJECT(priv->camera));
 
@@ -92,6 +99,13 @@ static void capa_camera_manager_set_property(GObject *object,
       win = glade_xml_get_widget(priv->glade, "camera-manager");
       gtk_window_set_title(GTK_WINDOW(win), title);
       g_free(title);
+
+      memset(&prog, 0, sizeof prog);
+      g_value_init(&prog, CAPA_TYPE_CAMERA_PROGRESS);
+      g_value_set_object(&prog, priv->progress);
+      fprintf(stderr, "setting\n");
+      g_object_set_property(G_OBJECT(priv->camera), "progress", &prog);
+      fprintf(stderr, "done\n");
     } break;
 
     default:
@@ -106,6 +120,8 @@ static void capa_camera_manager_finalize (GObject *object)
 
   if (priv->camera)
     g_object_unref(G_OBJECT(priv->camera));
+
+  g_object_unref(G_OBJECT(priv->progress));
 
   G_OBJECT_CLASS (capa_camera_manager_parent_class)->finalize (object);
 }
@@ -201,18 +217,40 @@ static void do_manager_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
   capa_camera_info_show(priv->driver);
 }
 
+static gpointer capture_thread(void *data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *img;
+
+  fprintf(stderr, "starting Capture\n");
+  gdk_threads_enter();
+  capa_camera_progress_show(priv->progress, "Capturing image");
+  gdk_threads_leave();
+  capa_camera_capture(priv->camera, "capture.tiff");
+
+  gdk_threads_enter();
+  capa_camera_progress_hide(priv->progress);
+
+  img = glade_xml_get_widget(priv->glade, "photo-display");
+  gtk_image_set_from_file(GTK_IMAGE(img), "capture.tiff");
+  fprintf(stderr, "all done\n");
+  gdk_threads_leave();
+
+  return NULL;
+}
+
 static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 			       CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv = manager->priv;
-  GtkWidget *img;
-  fprintf(stderr, "Capture\n");
 
-  img = glade_xml_get_widget(priv->glade, "photo-display");
 
-  capa_camera_capture(priv->camera, "capture.tiff");
+  fprintf(stderr, "starting Capture thread\n");
 
-  gtk_image_set_from_file(GTK_IMAGE(img), "capture.tiff");
+  priv->captureThread = g_thread_create(capture_thread, manager, FALSE, NULL);
+
+
 }
 
 static void capa_camera_manager_init(CapaCameraManager *manager)
@@ -229,6 +267,8 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_driver", G_CALLBACK(do_manager_help_driver), manager);
 
   glade_xml_signal_connect_data(priv->glade, "toolbar_capture_click", G_CALLBACK(do_toolbar_capture), manager);
+
+  priv->progress = capa_camera_progress_new();
 }
 
 void capa_camera_manager_show(CapaCameraManager *manager)

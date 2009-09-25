@@ -23,6 +23,7 @@
 
 #include "camera.h"
 #include "params.h"
+#include "progress.h"
 
 #define CAPA_CAMERA_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA, CapaCameraPrivate))
@@ -30,6 +31,8 @@
 struct _CapaCameraPrivate {
   CapaParams *params;
   Camera *cam;
+
+  CapaProgress *progress;
 
   char *model;
   char *port;
@@ -41,6 +44,7 @@ enum {
   PROP_0,
   PROP_MODEL,
   PROP_PORT,
+  PROP_PROGRESS,
 };
 
 static void capa_camera_get_property(GObject *object,
@@ -59,6 +63,10 @@ static void capa_camera_get_property(GObject *object,
 
     case PROP_PORT:
       g_value_set_string(value, priv->port);
+      break;
+
+    case PROP_PROGRESS:
+      g_value_set_object(value, priv->progress);
       break;
 
     default:
@@ -84,6 +92,13 @@ static void capa_camera_set_property(GObject *object,
     case PROP_PORT:
       g_free(priv->port);
       priv->port = g_value_dup_string(value);
+      break;
+
+    case PROP_PROGRESS:
+      if (priv->progress)
+	g_object_unref(G_OBJECT(priv->progress));
+      priv->progress = g_value_get_object(value);
+      g_object_ref(priv->progress);
       break;
 
     default:
@@ -139,6 +154,19 @@ static void capa_camera_class_init(CapaCameraClass *klass)
                                                       G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
 
+  fprintf(stderr, "install prog\n");
+  g_object_class_install_property(object_class,
+				  PROP_PROGRESS,
+				  g_param_spec_object("progress",
+						      "Progress updater",
+						      "Operation progress updater",
+						      CAPA_PROGRESS_TYPE,
+						      G_PARAM_READWRITE |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+  fprintf(stderr, "install prog done\n");
+
   g_type_class_add_private(klass, sizeof(CapaCameraPrivate));
 }
 
@@ -174,6 +202,45 @@ const char *capa_camera_port(CapaCamera *cam)
 }
 
 
+static unsigned int do_capa_camera_progress_start(GPContext *ctx G_GNUC_UNUSED,
+						  float target,
+						  const char *format,
+						  va_list args,
+						  void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+
+  if (priv->progress)
+    capa_progress_start(priv->progress, target, format, args);
+
+  return 0; /* XXX what is this actually useful for ? */
+}
+
+static void do_capa_camera_progress_update(GPContext *ctx G_GNUC_UNUSED,
+					   unsigned int id G_GNUC_UNUSED,
+					   float current,
+					   void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+
+  if (priv->progress)
+    capa_progress_update(priv->progress, current);
+}
+
+static void do_capa_camera_progress_stop(GPContext *ctx G_GNUC_UNUSED,
+					 unsigned int id G_GNUC_UNUSED,
+					 void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+
+  if (priv->progress)
+    capa_progress_stop(priv->progress);
+}
+
+
 int capa_camera_connect(CapaCamera *cam)
 {
   CapaCameraPrivate *priv = cam->priv;
@@ -187,6 +254,12 @@ int capa_camera_connect(CapaCamera *cam)
     return 0;
 
   priv->params = capa_params_new();
+
+  gp_context_set_progress_funcs(priv->params->ctx,
+				do_capa_camera_progress_start,
+				do_capa_camera_progress_update,
+				do_capa_camera_progress_stop,
+				cam);
 
   i = gp_port_info_list_lookup_path(priv->params->ports, priv->port);
   gp_port_info_list_get_info(priv->params->ports, i, &port);
