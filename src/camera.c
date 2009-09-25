@@ -22,6 +22,7 @@
 #include <stdio.h>
 
 #include "camera.h"
+#include "params.h"
 
 struct _CapaCamera {
   CapaParams *params;
@@ -46,6 +47,9 @@ void capa_camera_free(CapaCamera *cam)
 {
   if (!cam)
     return;
+  if (cam->cam)
+    gp_camera_free(cam->cam);
+  capa_params_free(cam->params);
   g_free(cam->model);
   g_free(cam->port);
   g_free(cam);
@@ -62,7 +66,7 @@ const char *capa_camera_port(CapaCamera *cam)
 }
 
 
-int capa_camera_connect(CapaCamera *cam, CapaParams *params)
+int capa_camera_connect(CapaCamera *cam)
 {
   int i;
   GPPortInfo port;
@@ -73,25 +77,24 @@ int capa_camera_connect(CapaCamera *cam, CapaParams *params)
   if (cam->cam != NULL)
     return 0;
 
+  cam->params = capa_params_new();
 
-  i = gp_port_info_list_lookup_path(params->ports, cam->port);
-  gp_port_info_list_get_info(params->ports, i, &port);
+  i = gp_port_info_list_lookup_path(cam->params->ports, cam->port);
+  gp_port_info_list_get_info(cam->params->ports, i, &port);
 
-  i = gp_abilities_list_lookup_model(params->caps, cam->model);
-  gp_abilities_list_get_abilities(params->caps, i, &cap);
+  i = gp_abilities_list_lookup_model(cam->params->caps, cam->model);
+  gp_abilities_list_get_abilities(cam->params->caps, i, &cap);
 
   gp_camera_new(&cam->cam);
   gp_camera_set_abilities(cam->cam, cap);
   gp_camera_set_port_info(cam->cam, port);
 
-  if (gp_camera_init(cam->cam, params->ctx) != GP_OK) {
+  if (gp_camera_init(cam->cam, cam->params->ctx) != GP_OK) {
     gp_camera_unref(cam->cam);
     cam->cam = NULL;
     fprintf(stderr, "failed\n");
     return -1;
   }
-
-  cam->params = params;
 
   fprintf(stderr, "ok\n");
   return 0;

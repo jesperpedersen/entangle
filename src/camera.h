@@ -21,7 +21,6 @@
 #ifndef __CAPA_CAMERA__
 #define __CAPA_CAMERA__
 
-#include "params.h"
 #include "control-group.h"
 
 
@@ -36,7 +35,7 @@ void capa_camera_free(CapaCamera *cam);
 const char *capa_camera_model(CapaCamera *cam);
 const char *capa_camera_port(CapaCamera *cam);
 
-int capa_camera_connect(CapaCamera *cap, CapaParams *params);
+int capa_camera_connect(CapaCamera *cap);
 
 char *capa_camera_summary(CapaCamera *cam);
 char *capa_camera_manual(CapaCamera *cam);

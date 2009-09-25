@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include "app.h"
+#include "params.h"
 
 struct _CapaApp {
   CapaParams *params;
@@ -46,11 +47,6 @@ void capa_app_free(CapaApp *app)
   capa_params_free(app->params);
 
   g_free(app);
-}
-
-CapaParams *capa_app_params(CapaApp *app)
-{
-  return app->params;
 }
 
 CapaCameraList *capa_app_detect_cameras(CapaApp *app)

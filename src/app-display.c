@@ -85,7 +85,7 @@ static void do_picker_connect(CapaCameraPicker *picker, GValue *camval, CapaAppD
   fprintf(stderr, "emit connect %p %s\n", cam, capa_camera_model(cam));
   CapaCameraManager *man;
 
-  capa_camera_connect(cam, capa_app_params(priv->app));
+  capa_camera_connect(cam);
 
   man = g_hash_table_lookup(priv->managers, capa_camera_model(cam));
   if (!man) {
