@@ -6,6 +6,8 @@ AM_CONFIG_HEADER([config.h])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([-Wno-portability])
 
+AC_CONFIG_MACRO_DIR([m4])
+
 # Use the silent-rules feature when possible.
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes])
@@ -16,6 +18,8 @@ dnl ****************************************************************************
 dnl Declare required library versions
 dnl *******************************************************************************
 
+GLIB_REQUIRED=2.10.0
+AC_SUBST(GLIB_REQUIRED)
 GTK_REQUIRED=2.12.0
 AC_SUBST(GTK_REQUIRED)
 GPHOTO2_REQUIRED=2.4.7
@@ -29,6 +33,13 @@ dnl ****************************************************************************
 
 AC_PROG_CC_STDC
 AM_PROG_CC_C_O
+
+AM_PROG_LIBTOOL
+
+
+PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED)
+AC_SUBST(GLIB_CFLAGS)
+AC_SUBST(GLIB_LIBS)
 
 PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
 AC_SUBST(GTK_CFLAGS)

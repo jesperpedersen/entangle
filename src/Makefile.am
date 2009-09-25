@@ -1,22 +1,61 @@
 
 
+noinst_LTLIBRARIES = libcapa_backend.la libcapa_frontend.la
+
 bin_PROGRAMS = capa
 
-capa_SOURCES = \
-	app.h app.c \
-	app-display.h app-display.c \
-	camera.h camera.c \
-	camera-info.h camera-info.c \
-	camera-list.h camera-list.c \
-	camera-manager.h camera-manager.c \
-	camera-picker.h camera-picker.c \
-	control.h control.c \
-	control-group.h control-group.c \
-	control-layout.h control-layout.c \
-	main.c \
-	params.h params.c
+libcapa_backend_la_SOURCES = \
+	backend/app.h backend/app.c \
+	backend/camera.h backend/camera.c \
+	backend/camera-list.h backend/camera-list.c \
+	backend/control.h backend/control.c \
+	backend/control-group.h backend/control-group.c \
+	backend/control-layout.h backend/control-layout.c \
+	backend/params.h backend/params.c
 
-capa_LDFLAGS = $(GTK_LIBS) $(GPHOTO2_LIBS) $(GLADE2_LIBS) $(WARNING_CFLAGS)
-capa_CFLAGS = $(GTK_CFLAGS) $(GPHOTO2_CFLAGS) $(GLADE2_CFLAGS) $(WARNING_CFLAGS)
+libcapa_backend_la_LDFLAGS = \
+	$(GLIB_LIBS) \
+	$(GPHOTO2_LIBS) \
+	$(WARNING_CFLAGS)
+
+libcapa_backend_la_CFLAGS = \
+	$(GLIB_CFLAGS) \
+	$(GPHOTO2_CFLAGS) \
+	$(WARNING_CFLAGS)
+
+
+
+libcapa_frontend_la_SOURCES = \
+	frontend/app-display.h frontend/app-display.c \
+	frontend/camera-info.h frontend/camera-info.c \
+	frontend/camera-manager.h frontend/camera-manager.c \
+	frontend/camera-picker.h frontend/camera-picker.c
+
+libcapa_frontend_la_LIBADD = libcapa_backend.la
+
+libcapa_frontend_la_LDFLAGS = \
+	$(GTK_LIBS) \
+	$(GLADE2_LIBS) \
+	$(WARNING_CFLAGS)
+
+libcapa_frontend_la_CFLAGS = \
+	-I$(srcdir)/backend \
+	$(GTK_CFLAGS) \
+	$(GLADE2_CFLAGS) \
+	$(WARNING_CFLAGS)
+
+
+
+capa_SOURCES = main.c
+capa_LDADD = libcapa_frontend.la
+capa_LDFLAGS = $(GTK_LIBS) $(WARNING_CFLAGS)
+capa_CFLAGS = \
+	-I$(srcdir)/backend \
+	-I$(srcdir)/frontend \
+	$(GTK_CFLAGS) \
+	$(WARNING_CFLAGS)
+
+
+CLEANFILES = *~ \\\#*
 
 -include $(top_srcdir)/git.mk
