@@ -73,9 +73,14 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
     gp_list_get_name(cams, i, &model);
     gp_list_get_value(cams, i, &path);
 
-    if (strcmp(path, "usb:") != 0)
-      capa_camera_list_add(ret,
-			   capa_camera_new(model, path));
+    /* For back compat, libgphoto2 always adds a default
+     * USB camera called 'usb:'. We ignore that, since we
+     * can go for the exact camera entries
+     */
+    if (strcmp(path, "usb:") == 0)
+      continue;
+    capa_camera_list_add(ret,
+			 capa_camera_new(model, path));
   }
   gp_list_unref(cams);
 
