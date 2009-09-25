@@ -38,6 +38,10 @@ void capa_progress_stop(CapaProgress *prog)
   CAPA_PROGRESS_GET_INTERFACE(prog)->stop(prog);
 }
 
+gboolean capa_progress_cancelled(CapaProgress *prog)
+{
+  return CAPA_PROGRESS_GET_INTERFACE(prog)->cancelled(prog);
+}
 
 GType
 capa_progress_get_type (void)

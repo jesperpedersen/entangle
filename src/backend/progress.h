@@ -41,6 +41,8 @@ struct _CapaProgressInterface {
   void (*start) (CapaProgress *prog, float target, const char *format, va_list args);
   void (*update) (CapaProgress *prog, float current);
   void (*stop) (CapaProgress *prog);
+
+  gboolean (*cancelled) (CapaProgress *prog);
 };
 
 GType capa_progress_get_type(void);
@@ -48,6 +50,7 @@ GType capa_progress_get_type(void);
 void capa_progress_start(CapaProgress *prog, float target, const char *format, va_list args);
 void capa_progress_update(CapaProgress *prog, float current);
 void capa_progress_stop(CapaProgress *prog);
+gboolean capa_progress_cancelled(CapaProgress *prog);
 
 G_END_DECLS
 

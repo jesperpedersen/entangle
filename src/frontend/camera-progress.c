@@ -31,6 +31,8 @@
 struct _CapaCameraProgressPrivate {
   GladeXML *glade;
 
+  gboolean cancelled;
+
   float target;
 };
 
@@ -62,15 +64,19 @@ CapaCameraProgress *capa_camera_progress_new(void)
   return CAPA_CAMERA_PROGRESS(g_object_new(CAPA_TYPE_CAMERA_PROGRESS, NULL));
 }
 
-static gboolean do_progress_cancel(GtkButton *src G_GNUC_UNUSED,
-				   GdkEvent *ev G_GNUC_UNUSED,
+static gboolean do_progress_cancel(GtkButton *src,
 				   CapaCameraProgress *progress)
 {
   CapaCameraProgressPrivate *priv = progress->priv;
+  GtkWidget *win;
   fprintf(stderr, "progress cancel\n");
-  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-progress");
 
-  gtk_widget_hide(win);
+  priv->cancelled = TRUE;
+
+  gtk_widget_set_sensitive(GTK_WIDGET(src), FALSE);
+  win = glade_xml_get_widget(priv->glade, "camera-progress");
+  gtk_window_set_title(GTK_WINDOW(win), "Cancelling operation");
+
   return TRUE;
 }
 
@@ -79,10 +85,17 @@ static gboolean do_progress_delete(GtkWidget *src G_GNUC_UNUSED,
 				   CapaCameraProgress *progress)
 {
   CapaCameraProgressPrivate *priv = progress->priv;
+  GtkWidget *cancel;
+  GtkWidget *win;
   fprintf(stderr, "progress delete\n");
-  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-progress");
 
-  gtk_widget_hide(win);
+  priv->cancelled = TRUE;
+
+  cancel = glade_xml_get_widget(priv->glade, "progress-cancel");
+  gtk_widget_set_sensitive(GTK_WIDGET(cancel), FALSE);
+  win = glade_xml_get_widget(priv->glade, "camera-progress");
+  gtk_window_set_title(GTK_WINDOW(win), "Cancelling operation");
+
   return TRUE;
 }
 
@@ -105,6 +118,7 @@ void capa_camera_progress_show(CapaCameraProgress *progress,
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-progress");
   GtkWidget *lbl;
   GtkWidget *mtr;
+  GtkWidget *cancel;
 
   lbl = glade_xml_get_widget(priv->glade, "progress-label");
   mtr = glade_xml_get_widget(priv->glade, "progress-meter");
@@ -112,6 +126,10 @@ void capa_camera_progress_show(CapaCameraProgress *progress,
   gtk_window_set_title(GTK_WINDOW(win), title);
   gtk_label_set_text(GTK_LABEL(lbl), title);
   gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
+
+  priv->cancelled = FALSE;
+  cancel = glade_xml_get_widget(priv->glade, "progress-cancel");
+  gtk_widget_set_sensitive(GTK_WIDGET(cancel), TRUE);
 
   gtk_widget_show(win);
   gtk_window_present(GTK_WINDOW(win));
@@ -122,6 +140,7 @@ void capa_camera_progress_hide(CapaCameraProgress *progress)
   CapaCameraProgressPrivate *priv = progress->priv;
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-progress");
 
+  priv->cancelled = FALSE;
   gtk_widget_hide(win);
 }
 
@@ -179,6 +198,16 @@ static void do_capa_camera_progress_stop(CapaProgress *iface)
   gdk_threads_leave();
 }
 
+static gboolean do_capa_camera_progress_cancelled(CapaProgress *iface)
+{
+  CapaCameraProgress *prog = CAPA_CAMERA_PROGRESS(iface);
+  CapaCameraProgressPrivate *priv = prog->priv;
+
+  fprintf(stderr, "Cancel called\n");
+
+  return priv->cancelled;
+}
+
 static void capa_camera_progress_interface_init (gpointer g_iface,
 						 gpointer iface_data G_GNUC_UNUSED)
 {
@@ -186,5 +215,6 @@ static void capa_camera_progress_interface_init (gpointer g_iface,
   iface->start = do_capa_camera_progress_start;
   iface->update = do_capa_camera_progress_update;
   iface->stop = do_capa_camera_progress_stop;
+  iface->cancelled = do_capa_camera_progress_cancelled;
 }
 

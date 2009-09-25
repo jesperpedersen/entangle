@@ -240,6 +240,23 @@ static void do_capa_camera_progress_stop(GPContext *ctx G_GNUC_UNUSED,
     capa_progress_stop(priv->progress);
 }
 
+static GPContextFeedback do_capa_camera_progress_cancelled(GPContext *ctx G_GNUC_UNUSED,
+							   void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+
+  fprintf(stderr, "Cancel check\n");
+
+  if (priv->progress &&
+      capa_progress_cancelled(priv->progress)) {
+    fprintf(stderr, "yes\n");
+    return GP_CONTEXT_FEEDBACK_CANCEL;
+  }
+
+  fprintf(stderr, "no\n");
+  return GP_CONTEXT_FEEDBACK_OK;
+}
 
 int capa_camera_connect(CapaCamera *cam)
 {
@@ -260,6 +277,10 @@ int capa_camera_connect(CapaCamera *cam)
 				do_capa_camera_progress_update,
 				do_capa_camera_progress_stop,
 				cam);
+
+  gp_context_set_cancel_func(priv->params->ctx,
+			     do_capa_camera_progress_cancelled,
+			     cam);
 
   i = gp_port_info_list_lookup_path(priv->params->ports, priv->port);
   gp_port_info_list_get_info(priv->params->ports, i, &port);
