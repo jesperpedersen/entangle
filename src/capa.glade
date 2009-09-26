@@ -422,12 +422,12 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="toolbar-fullscreen">
+              <widget class="GtkToggleToolButton" id="toolbar-fullscreen">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Full Screen</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-fullscreen</property>
-                <signal name="clicked" handler="toolbar_fullscreen_click"/>
+                <signal name="toggled" handler="toolbar_fullscreen_toggle"/>
               </widget>
               <packing>
                 <property name="expand">False</property>

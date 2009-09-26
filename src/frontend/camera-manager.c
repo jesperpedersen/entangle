@@ -356,7 +356,17 @@ static void do_toolbar_zoom_best(GtkToolButton *src G_GNUC_UNUSED,
 }
 
 
+static void do_toolbar_fullscreen(GtkToggleToolButton *src,
+				  CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
 
+  if (gtk_toggle_tool_button_get_active(src))
+    gtk_window_fullscreen(GTK_WINDOW(win));
+  else
+    gtk_window_unfullscreen(GTK_WINDOW(win));
+}
 
 static void capa_camera_manager_init(CapaCameraManager *manager)
 {
@@ -381,6 +391,8 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_out_click", G_CALLBACK(do_toolbar_zoom_out), manager);
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_best_click", G_CALLBACK(do_toolbar_zoom_best), manager);
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_normal_click", G_CALLBACK(do_toolbar_zoom_normal), manager);
+
+  glade_xml_signal_connect_data(priv->glade, "toolbar_fullscreen_toggle", G_CALLBACK(do_toolbar_fullscreen), manager);
 
   priv->progress = capa_camera_progress_new();
 
