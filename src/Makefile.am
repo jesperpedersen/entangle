@@ -31,7 +31,8 @@ libcapa_frontend_la_SOURCES = \
 	frontend/camera-info.h frontend/camera-info.c \
 	frontend/camera-manager.h frontend/camera-manager.c \
 	frontend/camera-progress.h frontend/camera-progress.c \
-	frontend/camera-picker.h frontend/camera-picker.c
+	frontend/camera-picker.h frontend/camera-picker.c \
+	frontend/image-display.h frontend/image-display.c
 
 libcapa_frontend_la_LIBADD = libcapa_backend.la
 
