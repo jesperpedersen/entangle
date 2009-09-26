@@ -67,6 +67,7 @@ char *capa_camera_manual(CapaCamera *cam);
 char *capa_camera_driver(CapaCamera *cam);
 
 int capa_camera_capture(CapaCamera *cam, const char *localpath);
+int capa_camera_preview(CapaCamera *cam, const char *localpath);
 
 
 CapaControlGroup *capa_camera_controls(CapaCamera *cam);

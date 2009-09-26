@@ -38,8 +38,28 @@ struct _CapaAppDisplayPrivate {
 G_DEFINE_TYPE(CapaAppDisplay, capa_app_display, G_TYPE_OBJECT);
 
 
+static void capa_app_display_finalize (GObject *object)
+{
+  CapaAppDisplay *display = CAPA_APP_DISPLAY(object);
+  CapaAppDisplayPrivate *priv = display->priv;
+
+  fprintf(stderr, "Finalize display\n");
+
+  capa_app_free(priv->app);
+
+  g_object_unref(G_OBJECT(priv->picker));
+
+  g_hash_table_unref(priv->managers);
+
+  G_OBJECT_CLASS (capa_app_display_parent_class)->finalize (object);
+}
+
 static void capa_app_display_class_init(CapaAppDisplayClass *klass)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->finalize = capa_app_display_finalize;
+
   g_signal_new("app-closed",
 	       G_TYPE_FROM_CLASS(klass),
 	       G_SIGNAL_RUN_FIRST,
@@ -76,6 +96,8 @@ static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDis
 
   fprintf(stderr, "emit refresh\n");
   g_object_set_property(G_OBJECT(priv->picker), "cameras", &val);
+
+  g_value_unset(&val);
 }
 
 static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaAppDisplay *display)
@@ -95,6 +117,7 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
     man = capa_camera_manager_new();
     g_object_set_property(G_OBJECT(man), "camera", &camval);
     g_hash_table_insert(priv->managers, g_strdup(capa_camera_model(cam)), man);
+    g_value_unset(&camval);
   }
   capa_camera_manager_show(man);
   capa_camera_picker_hide(picker);
@@ -108,7 +131,8 @@ static void capa_app_display_init(CapaAppDisplay *display)
 
   priv->app = capa_app_new();
   priv->picker = capa_camera_picker_new();
-  priv->managers = g_hash_table_new(g_str_hash, g_str_equal);
+  priv->managers = g_hash_table_new_full(g_str_hash, g_str_equal,
+					 g_free, g_object_unref);
 
   g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
   g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);

@@ -113,6 +113,7 @@ static void capa_camera_manager_set_property(GObject *object,
       g_value_set_object(&prog, priv->progress);
       fprintf(stderr, "setting\n");
       g_object_set_property(G_OBJECT(priv->camera), "progress", &prog);
+      g_value_unset(&prog);
       fprintf(stderr, "done\n");
     } break;
 
@@ -125,6 +126,8 @@ static void capa_camera_manager_finalize (GObject *object)
 {
   CapaCameraManager *manager = CAPA_CAMERA_MANAGER(object);
   CapaCameraManagerPrivate *priv = manager->priv;
+
+  fprintf(stderr, "Finalize manager\n");
 
   if (priv->camera)
     g_object_unref(G_OBJECT(priv->camera));
@@ -255,6 +258,28 @@ static gpointer capture_thread(void *data)
   return NULL;
 }
 
+static gpointer preview_thread(void *data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  fprintf(stderr, "starting Preview\n");
+  gdk_threads_enter();
+  capa_camera_progress_show(priv->progress, "Capturing image");
+  gdk_threads_leave();
+  capa_camera_preview(priv->camera, "capture.tiff");
+
+  gdk_threads_enter();
+  capa_camera_progress_hide(priv->progress);
+
+  capture_load_image(manager);
+
+  fprintf(stderr, "all done\n");
+  gdk_threads_leave();
+
+  return NULL;
+}
+
 static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 			       CapaCameraManager *manager)
 {
@@ -263,6 +288,16 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
   fprintf(stderr, "starting Capture thread\n");
 
   priv->captureThread = g_thread_create(capture_thread, manager, FALSE, NULL);
+}
+
+static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
+			       CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  fprintf(stderr, "starting Preview thread\n");
+
+  priv->captureThread = g_thread_create(preview_thread, manager, FALSE, NULL);
 }
 
 
@@ -487,6 +522,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_driver", G_CALLBACK(do_manager_help_driver), manager);
 
   glade_xml_signal_connect_data(priv->glade, "toolbar_capture_click", G_CALLBACK(do_toolbar_capture), manager);
+  glade_xml_signal_connect_data(priv->glade, "toolbar_preview_click", G_CALLBACK(do_toolbar_preview), manager);
 
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_in_click", G_CALLBACK(do_toolbar_zoom_in), manager);
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_out_click", G_CALLBACK(do_toolbar_zoom_out), manager);

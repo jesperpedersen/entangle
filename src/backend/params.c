@@ -56,6 +56,8 @@ CapaParams *capa_params_new(void)
   if (gp_port_info_list_load(params->ports) != GP_OK)
     goto error;
 
+  fprintf(stderr, "New params %p\n", params);
+
   return params;
 
  error:
@@ -77,6 +79,8 @@ void capa_params_free(CapaParams *params)
 {
   if (!params)
     return;
+
+  fprintf(stderr, "Free params %p\n", params);
 
   if (params->ports)
     gp_port_info_list_free(params->ports);

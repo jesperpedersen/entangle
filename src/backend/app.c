@@ -46,6 +46,7 @@ void capa_app_free(CapaApp *app)
 
   capa_params_free(app->params);
 
+  fprintf(stderr, "Free app\n");
   g_free(app);
 }
 
@@ -80,7 +81,7 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
     fprintf(stderr, "New camera '%s' '%s'\n", model, path);
     cam = capa_camera_new(model, path);
     capa_camera_list_add(ret, cam);
-    fprintf(stderr, "unref list objet");
+    fprintf(stderr, "unref list object\n");
     g_object_unref(G_OBJECT(cam));
   }
   gp_list_unref(cams);

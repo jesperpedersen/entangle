@@ -111,7 +111,10 @@ static void capa_camera_picker_update_model(CapaCameraPicker *picker, CapaCamera
     gtk_list_store_append(priv->model, &iter);
 
     gtk_list_store_set(priv->model, &iter, 0, cam, -1);
+
+    //g_object_unref(cam);
   }
+
   if (capa_camera_list_count(priv->cameras)) {
     int w, h;
     gtk_window_get_default_size(GTK_WINDOW(win), &w, &h);
@@ -170,6 +173,7 @@ static void capa_camera_picker_finalize (GObject *object)
 
   fprintf(stderr, "Finalize camera picker\n");
 
+  gtk_list_store_clear(priv->model);
   capa_camera_list_free(priv->cameras);
   g_object_unref(priv->model);
 
@@ -282,6 +286,8 @@ static void do_picker_activate(GtkTreeView *src G_GNUC_UNUSED,
     g_value_set_object(&val, cam);
     //g_signal_emit_by_name(picker, "picker-connect", &val);
     g_signal_emit_by_name(picker, "picker-connect", cam);
+    g_value_unset(&val);
+    g_object_unref(cam);
   }
 }
 
@@ -299,6 +305,8 @@ static void do_picker_connect(GtkButton *src G_GNUC_UNUSED,
     g_value_set_object(&val, cam);
     //g_signal_emit_by_name(picker, "picker-connect", &val);
     g_signal_emit_by_name(picker, "picker-connect", cam);
+    g_value_unset(&val);
+    g_object_unref(cam);
   }
 }
 

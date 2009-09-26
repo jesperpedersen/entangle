@@ -112,8 +112,12 @@ static void capa_camera_finalize(GObject *object)
   CapaCamera *camera = CAPA_CAMERA(object);
   CapaCameraPrivate *priv = camera->priv;
 
-  if (priv->cam)
+  fprintf(stderr, "Finalize camera %p\n", object);
+
+  if (priv->cam) {
+    gp_camera_exit(priv->cam, priv->params->ctx);
     gp_camera_free(priv->cam);
+  }
   capa_params_free(priv->params);
   g_free(priv->model);
   g_free(priv->port);
@@ -379,6 +383,38 @@ int capa_camera_capture(CapaCamera *cam, const char *localpath)
  error_delete:
   fprintf(stderr, "Error, try delete\n");
   gp_camera_file_delete(priv->cam, path.folder, path.name, priv->params->ctx);
+
+ error:
+  fprintf(stderr, "Error\n");
+  gp_file_unref(file);
+  return -1;
+}
+
+
+int capa_camera_preview(CapaCamera *cam, const char *localpath)
+{
+  CapaCameraPrivate *priv = cam->priv;
+  CameraFile *file;
+
+  if (priv->cam == NULL)
+    return -1;
+
+  gp_file_new(&file);
+
+  fprintf(stderr, "Starting preview\n");
+  if (gp_camera_capture_preview(priv->cam, file, priv->params->ctx) != GP_OK) {
+    fprintf(stderr, "Failed capture\n");
+    return -1;
+  }
+
+  fprintf(stderr, "Saving file\n");
+  if (gp_file_save(file, localpath) != GP_OK)
+    goto error;
+
+  gp_file_unref(file);
+
+  fprintf(stderr, "Done\n");
+  return 0;
 
  error:
   fprintf(stderr, "Error\n");
