@@ -171,15 +171,6 @@ CapaCameraManager *capa_camera_manager_new(void)
   return CAPA_CAMERA_MANAGER(g_object_new(CAPA_TYPE_CAMERA_MANAGER, NULL));
 }
 
-static gboolean do_manager_close(GtkButton *src G_GNUC_UNUSED,
-				 GdkEvent *ev G_GNUC_UNUSED,
-				 CapaCameraManager *manager)
-{
-  fprintf(stderr, "manager close\n");
-  g_signal_emit_by_name(manager, "manager-close", NULL);
-  return TRUE;
-}
-
 static void do_manager_help_summary(GtkMenuItem *src G_GNUC_UNUSED,
 				    CapaCameraManager *manager)
 {
@@ -452,6 +443,33 @@ static void do_menu_fullscreen(GtkCheckMenuItem *src,
 				      gtk_check_menu_item_get_active(src));
 }
 
+
+static void do_app_quit(GtkMenuItem *src G_GNUC_UNUSED,
+			CapaCameraManager *manager G_GNUC_UNUSED)
+{
+  gtk_main_quit();
+}
+
+
+
+static void do_manager_close(GtkMenuItem *src G_GNUC_UNUSED,
+			     CapaCameraManager *manager)
+{
+  capa_camera_manager_hide(manager);
+  g_signal_emit_by_name(manager, "manager-close", NULL);
+}
+
+
+static gboolean do_manager_delete(GtkMenuItem *src G_GNUC_UNUSED,
+				  CapaCameraManager *manager)
+{
+  capa_camera_manager_hide(manager);
+  g_signal_emit_by_name(manager, "manager-close", NULL);
+  return TRUE;
+}
+
+
+
 static void capa_camera_manager_init(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv;
@@ -464,7 +482,6 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
   priv->glade = glade_xml_new("capa.glade", "camera-manager", "capa");
 
-  glade_xml_signal_connect_data(priv->glade, "camera_manager_close", G_CALLBACK(do_manager_close), manager);
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_summary", G_CALLBACK(do_manager_help_summary), manager);
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_manual", G_CALLBACK(do_manager_help_manual), manager);
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_driver", G_CALLBACK(do_manager_help_driver), manager);
@@ -484,6 +501,10 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "menu_zoom_normal_activate", G_CALLBACK(do_menu_zoom_normal), manager);
 
   glade_xml_signal_connect_data(priv->glade, "menu_fullscreen_toggle", G_CALLBACK(do_menu_fullscreen), manager);
+
+  glade_xml_signal_connect_data(priv->glade, "menu_disconnect_activate", G_CALLBACK(do_manager_close), manager);
+  glade_xml_signal_connect_data(priv->glade, "menu_quit_activate", G_CALLBACK(do_app_quit), manager);
+  glade_xml_signal_connect_data(priv->glade, "camera_manager_delete", G_CALLBACK(do_manager_delete), manager);
 
   priv->progress = capa_camera_progress_new();
 

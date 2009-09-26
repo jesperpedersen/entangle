@@ -101,6 +101,7 @@
                         <property name="label">Disconnect camera</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
+                        <signal name="activate" handler="menu_disconnect_activate"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="image6">
                             <property name="visible">True</property>
@@ -121,6 +122,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="menu_quit_activate"/>
                       </widget>
                     </child>
                   </widget>
