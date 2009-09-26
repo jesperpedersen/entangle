@@ -58,6 +58,8 @@ static void capa_camera_cell_data_model_func(GtkTreeViewColumn *col G_GNUC_UNUSE
   cam = g_value_get_object(&val);
 
   g_object_set(cell, "text", capa_camera_model(cam), NULL);
+
+  g_object_unref(cam);
 }
 
 static void capa_camera_cell_data_port_func(GtkTreeViewColumn *col G_GNUC_UNUSED,
@@ -76,8 +78,9 @@ static void capa_camera_cell_data_port_func(GtkTreeViewColumn *col G_GNUC_UNUSED
   cam = g_value_get_object(&val);
 
   g_object_set(cell, "text", capa_camera_port(cam), NULL);
-}
 
+  g_object_unref(cam);
+}
 
 
 static void capa_camera_picker_update_model(CapaCameraPicker *picker, CapaCameraList *cameras)
@@ -164,6 +167,8 @@ static void capa_camera_picker_finalize (GObject *object)
 {
   CapaCameraPicker *picker = CAPA_CAMERA_PICKER(object);
   CapaCameraPickerPrivate *priv = picker->priv;
+
+  fprintf(stderr, "Finalize camera picker\n");
 
   capa_camera_list_free(priv->cameras);
   g_object_unref(priv->model);
