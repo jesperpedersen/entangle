@@ -275,14 +275,19 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 }
 
 
-static void do_toolbar_zoom_sensitivity(CapaCameraManager *manager)
+static void do_zoom_widget_sensitivity(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv = manager->priv;
   GValue autoscale;
-  GtkWidget *zoomnormal = glade_xml_get_widget(priv->glade, "toolbar-zoom-normal");
-  GtkWidget *zoombest = glade_xml_get_widget(priv->glade, "toolbar-zoom-best");
-  GtkWidget *zoomin = glade_xml_get_widget(priv->glade, "toolbar-zoom-in");
-  GtkWidget *zoomout = glade_xml_get_widget(priv->glade, "toolbar-zoom-out");
+  GtkWidget *toolzoomnormal = glade_xml_get_widget(priv->glade, "toolbar-zoom-normal");
+  GtkWidget *toolzoombest = glade_xml_get_widget(priv->glade, "toolbar-zoom-best");
+  GtkWidget *toolzoomin = glade_xml_get_widget(priv->glade, "toolbar-zoom-in");
+  GtkWidget *toolzoomout = glade_xml_get_widget(priv->glade, "toolbar-zoom-out");
+
+  GtkWidget *menuzoomnormal = glade_xml_get_widget(priv->glade, "menu-zoom-normal");
+  GtkWidget *menuzoombest = glade_xml_get_widget(priv->glade, "menu-zoom-best");
+  GtkWidget *menuzoomin = glade_xml_get_widget(priv->glade, "menu-zoom-in");
+  GtkWidget *menuzoomout = glade_xml_get_widget(priv->glade, "menu-zoom-out");
 
 
   memset(&autoscale, 0, sizeof autoscale);
@@ -290,20 +295,29 @@ static void do_toolbar_zoom_sensitivity(CapaCameraManager *manager)
   g_object_get_property(G_OBJECT(priv->imageDisplay), "autoscale", &autoscale);
 
   if (g_value_get_boolean(&autoscale)) {
-    gtk_widget_set_sensitive(zoombest, FALSE);
-    gtk_widget_set_sensitive(zoomnormal, TRUE);
-    gtk_widget_set_sensitive(zoomin, FALSE);
-    gtk_widget_set_sensitive(zoomout, FALSE);
+    gtk_widget_set_sensitive(toolzoombest, FALSE);
+    gtk_widget_set_sensitive(toolzoomnormal, TRUE);
+    gtk_widget_set_sensitive(toolzoomin, FALSE);
+    gtk_widget_set_sensitive(toolzoomout, FALSE);
+
+    gtk_widget_set_sensitive(menuzoombest, FALSE);
+    gtk_widget_set_sensitive(menuzoomnormal, TRUE);
+    gtk_widget_set_sensitive(menuzoomin, FALSE);
+    gtk_widget_set_sensitive(menuzoomout, FALSE);
   } else {
-    gtk_widget_set_sensitive(zoombest, TRUE);
-    gtk_widget_set_sensitive(zoomnormal, priv->zoomLevel == 0 ? FALSE : TRUE);
-    gtk_widget_set_sensitive(zoomin, priv->zoomLevel == 10 ? FALSE : TRUE);
-    gtk_widget_set_sensitive(zoomout, priv->zoomLevel == -10 ? FALSE : TRUE);
+    gtk_widget_set_sensitive(toolzoombest, TRUE);
+    gtk_widget_set_sensitive(toolzoomnormal, priv->zoomLevel == 0 ? FALSE : TRUE);
+    gtk_widget_set_sensitive(toolzoomin, priv->zoomLevel == 10 ? FALSE : TRUE);
+    gtk_widget_set_sensitive(toolzoomout, priv->zoomLevel == -10 ? FALSE : TRUE);
+
+    gtk_widget_set_sensitive(menuzoombest, TRUE);
+    gtk_widget_set_sensitive(menuzoomnormal, priv->zoomLevel == 0 ? FALSE : TRUE);
+    gtk_widget_set_sensitive(menuzoomin, priv->zoomLevel == 10 ? FALSE : TRUE);
+    gtk_widget_set_sensitive(menuzoomout, priv->zoomLevel == -10 ? FALSE : TRUE);
   }
 }
 
-static void do_toolbar_zoom_in(GtkToolButton *src G_GNUC_UNUSED,
-			       CapaCameraManager *manager)
+static void capa_camera_manager_zoom_in(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv = manager->priv;
 
@@ -315,11 +329,10 @@ static void do_toolbar_zoom_in(GtkToolButton *src G_GNUC_UNUSED,
     g_object_set(G_OBJECT(priv->imageDisplay), "scale", 1.0/pow(1.5, -priv->zoomLevel), NULL);
   else
     g_object_set(G_OBJECT(priv->imageDisplay), "scale", 0.0, NULL);
-  do_toolbar_zoom_sensitivity(manager);
+  do_zoom_widget_sensitivity(manager);
 }
 
-static void do_toolbar_zoom_out(GtkToolButton *src G_GNUC_UNUSED,
-				CapaCameraManager *manager)
+static void capa_camera_manager_zoom_out(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv = manager->priv;
 
@@ -331,28 +344,75 @@ static void do_toolbar_zoom_out(GtkToolButton *src G_GNUC_UNUSED,
     g_object_set(G_OBJECT(priv->imageDisplay), "scale", 1.0/pow(1.5, -priv->zoomLevel), NULL);
   else
     g_object_set(G_OBJECT(priv->imageDisplay), "scale", 0.0, NULL);
-  do_toolbar_zoom_sensitivity(manager);
+  do_zoom_widget_sensitivity(manager);
 }
 
-static void do_toolbar_zoom_normal(GtkToolButton *src G_GNUC_UNUSED,
-				   CapaCameraManager *manager)
+static void capa_camera_manager_zoom_normal(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv = manager->priv;
 
   priv->zoomLevel = 0;
   g_object_set(G_OBJECT(priv->imageDisplay), "autoscale", FALSE, NULL);
   g_object_set(G_OBJECT(priv->imageDisplay), "scale", 0.0, NULL);
-  do_toolbar_zoom_sensitivity(manager);
+  do_zoom_widget_sensitivity(manager);
 }
 
-static void do_toolbar_zoom_best(GtkToolButton *src G_GNUC_UNUSED,
-				 CapaCameraManager *manager)
+static void capa_camera_manager_zoom_best(CapaCameraManager *manager)
 {
   CapaCameraManagerPrivate *priv = manager->priv;
 
   priv->zoomLevel = 0;
   g_object_set(G_OBJECT(priv->imageDisplay), "autoscale", TRUE, NULL);
-  do_toolbar_zoom_sensitivity(manager);
+  do_zoom_widget_sensitivity(manager);
+}
+
+static void do_toolbar_zoom_in(GtkToolButton *src G_GNUC_UNUSED,
+			       CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_in(manager);
+}
+
+static void do_toolbar_zoom_out(GtkToolButton *src G_GNUC_UNUSED,
+				CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_out(manager);
+}
+
+static void do_toolbar_zoom_normal(GtkToolButton *src G_GNUC_UNUSED,
+				   CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_normal(manager);
+}
+
+static void do_toolbar_zoom_best(GtkToolButton *src G_GNUC_UNUSED,
+				 CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_best(manager);
+}
+
+
+static void do_menu_zoom_in(GtkImageMenuItem *src G_GNUC_UNUSED,
+			    CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_in(manager);
+}
+
+static void do_menu_zoom_out(GtkImageMenuItem *src G_GNUC_UNUSED,
+				CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_out(manager);
+}
+
+static void do_menu_zoom_normal(GtkImageMenuItem *src G_GNUC_UNUSED,
+				   CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_normal(manager);
+}
+
+static void do_menu_zoom_best(GtkImageMenuItem *src G_GNUC_UNUSED,
+				 CapaCameraManager *manager)
+{
+  capa_camera_manager_zoom_best(manager);
 }
 
 
@@ -361,11 +421,35 @@ static void do_toolbar_fullscreen(GtkToggleToolButton *src,
 {
   CapaCameraManagerPrivate *priv = manager->priv;
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
+  GtkWidget *menu = glade_xml_get_widget(priv->glade, "menu-fullscreen");
 
   if (gtk_toggle_tool_button_get_active(src))
     gtk_window_fullscreen(GTK_WINDOW(win));
   else
     gtk_window_unfullscreen(GTK_WINDOW(win));
+
+  if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu)) !=
+      gtk_toggle_tool_button_get_active(src))
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu),
+				   gtk_toggle_tool_button_get_active(src));
+}
+
+static void do_menu_fullscreen(GtkCheckMenuItem *src,
+			       CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
+  GtkWidget *tool = glade_xml_get_widget(priv->glade, "toolbar-fullscreen");
+
+  if (gtk_check_menu_item_get_active(src))
+    gtk_window_fullscreen(GTK_WINDOW(win));
+  else
+    gtk_window_unfullscreen(GTK_WINDOW(win));
+
+  if (gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(tool)) !=
+      gtk_check_menu_item_get_active(src))
+    gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(tool),
+				      gtk_check_menu_item_get_active(src));
 }
 
 static void capa_camera_manager_init(CapaCameraManager *manager)
@@ -394,6 +478,13 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
   glade_xml_signal_connect_data(priv->glade, "toolbar_fullscreen_toggle", G_CALLBACK(do_toolbar_fullscreen), manager);
 
+  glade_xml_signal_connect_data(priv->glade, "menu_zoom_in_activate", G_CALLBACK(do_menu_zoom_in), manager);
+  glade_xml_signal_connect_data(priv->glade, "menu_zoom_out_activate", G_CALLBACK(do_menu_zoom_out), manager);
+  glade_xml_signal_connect_data(priv->glade, "menu_zoom_best_activate", G_CALLBACK(do_menu_zoom_best), manager);
+  glade_xml_signal_connect_data(priv->glade, "menu_zoom_normal_activate", G_CALLBACK(do_menu_zoom_normal), manager);
+
+  glade_xml_signal_connect_data(priv->glade, "menu_fullscreen_toggle", G_CALLBACK(do_menu_fullscreen), manager);
+
   priv->progress = capa_camera_progress_new();
 
   viewport = glade_xml_get_widget(priv->glade, "image-viewport");
@@ -411,7 +502,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
   fprintf(stderr, "Adding %p to %p\n", priv->imageDisplay, viewport);
   gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
-  do_toolbar_zoom_sensitivity(manager);
+  do_zoom_widget_sensitivity(manager);
 }
 
 void capa_camera_manager_show(CapaCameraManager *manager)
