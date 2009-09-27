@@ -27,12 +27,15 @@
 #include "camera-info.h"
 #include "camera-progress.h"
 #include "image-display.h"
+#include "help-about.h"
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_MANAGER, CapaCameraManagerPrivate))
 
 struct _CapaCameraManagerPrivate {
   CapaCamera *camera;
+
+  CapaHelpAbout *about;
 
   CapaCameraInfo *summary;
   CapaCameraInfo *manual;
@@ -495,6 +498,17 @@ static void do_app_quit(GtkMenuItem *src G_GNUC_UNUSED,
 }
 
 
+static void do_help_about(GtkMenuItem *src G_GNUC_UNUSED,
+			  CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  if (!priv->about)
+    priv->about = capa_help_about_new();
+
+  capa_help_about_show(priv->about);
+}
+
 
 static void do_manager_connect(GtkMenuItem *src G_GNUC_UNUSED,
 			       CapaCameraManager *manager)
@@ -558,6 +572,8 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "menu_connect_activate", G_CALLBACK(do_manager_connect), manager);
   glade_xml_signal_connect_data(priv->glade, "menu_disconnect_activate", G_CALLBACK(do_manager_disconnect), manager);
   glade_xml_signal_connect_data(priv->glade, "menu_quit_activate", G_CALLBACK(do_app_quit), manager);
+
+  glade_xml_signal_connect_data(priv->glade, "menu_about_activate", G_CALLBACK(do_help_about), manager);
 
   win = glade_xml_get_widget(priv->glade, "camera-manager");
   g_signal_connect(win, "delete-event", G_CALLBACK(do_manager_delete), manager);

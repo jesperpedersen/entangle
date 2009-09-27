@@ -756,7 +756,7 @@ plugged in, for others try a refresh</property>
       </widget>
     </child>
   </widget>
-  <widget class="GtkAboutDialog" id="about-capa">
+  <widget class="GtkAboutDialog" id="help-about">
     <property name="border_width">5</property>
     <property name="title" translatable="yes">About - Capa</property>
     <property name="type_hint">normal</property>
