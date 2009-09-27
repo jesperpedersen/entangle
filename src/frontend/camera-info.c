@@ -141,6 +141,7 @@ static void capa_camera_info_finalize (GObject *object)
 
   if (priv->camera)
     g_object_unref(G_OBJECT(priv->camera));
+  g_object_unref(priv->glade);
 
   G_OBJECT_CLASS (capa_camera_info_parent_class)->finalize (object);
 }

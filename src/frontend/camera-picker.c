@@ -176,6 +176,7 @@ static void capa_camera_picker_finalize (GObject *object)
   gtk_list_store_clear(priv->model);
   capa_camera_list_free(priv->cameras);
   g_object_unref(priv->model);
+  g_object_unref(priv->glade);
 
   G_OBJECT_CLASS (capa_camera_picker_parent_class)->finalize (object);
 }
