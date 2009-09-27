@@ -36,6 +36,10 @@ struct _CapaCameraPrivate {
 
   char *model;
   char *port;
+
+  gboolean hasCapture;
+  gboolean hasPreview;
+  gboolean hasSettings;
 };
 
 G_DEFINE_TYPE(CapaCamera, capa_camera, G_TYPE_OBJECT);
@@ -45,6 +49,9 @@ enum {
   PROP_MODEL,
   PROP_PORT,
   PROP_PROGRESS,
+  PROP_HAS_CAPTURE,
+  PROP_HAS_PREVIEW,
+  PROP_HAS_SETTINGS,
 };
 
 static void capa_camera_get_property(GObject *object,
@@ -67,6 +74,18 @@ static void capa_camera_get_property(GObject *object,
 
     case PROP_PROGRESS:
       g_value_set_object(value, priv->progress);
+      break;
+
+    case PROP_HAS_CAPTURE:
+      g_value_set_boolean(value, priv->hasCapture);
+      break;
+
+    case PROP_HAS_PREVIEW:
+      g_value_set_boolean(value, priv->hasPreview);
+      break;
+
+    case PROP_HAS_SETTINGS:
+      g_value_set_boolean(value, priv->hasSettings);
       break;
 
     default:
@@ -99,6 +118,21 @@ static void capa_camera_set_property(GObject *object,
 	g_object_unref(G_OBJECT(priv->progress));
       priv->progress = g_value_get_object(value);
       g_object_ref(priv->progress);
+      break;
+
+    case PROP_HAS_CAPTURE:
+      priv->hasCapture = g_value_get_boolean(value);
+      fprintf(stderr, "Set has capture %d\n", priv->hasCapture);
+      break;
+
+    case PROP_HAS_PREVIEW:
+      priv->hasPreview = g_value_get_boolean(value);
+      fprintf(stderr, "Set has preview %d\n", priv->hasPreview);
+      break;
+
+    case PROP_HAS_SETTINGS:
+      priv->hasSettings = g_value_get_boolean(value);
+      fprintf(stderr, "Set has settings %d\n", priv->hasSettings);
       break;
 
     default:
@@ -169,6 +203,40 @@ static void capa_camera_class_init(CapaCameraClass *klass)
 						      G_PARAM_STATIC_NAME |
 						      G_PARAM_STATIC_NICK |
 						      G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property(object_class,
+				  PROP_HAS_CAPTURE,
+				  g_param_spec_boolean("has-capture",
+						       "Capture supported",
+						       "Whether image capture is supported",
+						       FALSE,
+						       G_PARAM_READWRITE |
+						       G_PARAM_CONSTRUCT_ONLY |
+						       G_PARAM_STATIC_NAME |
+						       G_PARAM_STATIC_NICK |
+						       G_PARAM_STATIC_BLURB));
+  g_object_class_install_property(object_class,
+				  PROP_HAS_PREVIEW,
+				  g_param_spec_boolean("has-preview",
+						       "Preview supported",
+						       "Whether image preview is supported",
+						       FALSE,
+						       G_PARAM_READWRITE |
+						       G_PARAM_CONSTRUCT_ONLY |
+						       G_PARAM_STATIC_NAME |
+						       G_PARAM_STATIC_NICK |
+						       G_PARAM_STATIC_BLURB));
+  g_object_class_install_property(object_class,
+				  PROP_HAS_SETTINGS,
+				  g_param_spec_boolean("has-settings",
+						       "Settings supported",
+						       "Whether camera settings configuration is supported",
+						       FALSE,
+						       G_PARAM_READWRITE |
+						       G_PARAM_CONSTRUCT_ONLY |
+						       G_PARAM_STATIC_NAME |
+						       G_PARAM_STATIC_NICK |
+						       G_PARAM_STATIC_BLURB));
   fprintf(stderr, "install prog done\n");
 
   g_type_class_add_private(klass, sizeof(CapaCameraPrivate));
@@ -176,11 +244,17 @@ static void capa_camera_class_init(CapaCameraClass *klass)
 
 
 CapaCamera *capa_camera_new(const char *model,
-			    const char *port)
+			    const char *port,
+			    gboolean hasCapture,
+			    gboolean hasPreview,
+			    gboolean hasSettings)
 {
   return CAPA_CAMERA(g_object_new(CAPA_TYPE_CAMERA,
 				  "model", model,
 				  "port", port,
+				  "has-capture", hasCapture,
+				  "has-preview", hasPreview,
+				  "has-settings", hasSettings,
 				  NULL));
 }
 
@@ -302,6 +376,15 @@ int capa_camera_connect(CapaCamera *cam)
     fprintf(stderr, "failed\n");
     return -1;
   }
+
+  /* Update capabilities as a sanity-check against orignal constructor */
+  priv->hasCapture = priv->hasPreview = priv->hasSettings = FALSE;
+  if (cap.operations & GP_OPERATION_CAPTURE_IMAGE)
+    priv->hasCapture = TRUE;
+  if (cap.operations & GP_OPERATION_CAPTURE_PREVIEW)
+    priv->hasPreview = TRUE;
+  if (cap.operations & GP_OPERATION_CONFIG)
+    priv->hasSettings = TRUE;
 
   fprintf(stderr, "ok\n");
   return 0;
@@ -497,3 +580,25 @@ CapaControlGroup *capa_camera_controls(CapaCamera *cam)
 
   return grp;
 }
+
+gboolean capa_camera_has_capture(CapaCamera *cam)
+{
+  CapaCameraPrivate *priv = cam->priv;
+
+  return priv->hasCapture;
+}
+
+gboolean capa_camera_has_preview(CapaCamera *cam)
+{
+  CapaCameraPrivate *priv = cam->priv;
+
+  return priv->hasPreview;
+}
+
+gboolean capa_camera_has_settings(CapaCamera *cam)
+{
+  CapaCameraPrivate *priv = cam->priv;
+
+  return priv->hasSettings;
+}
+

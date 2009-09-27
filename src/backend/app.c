@@ -66,10 +66,15 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
   ret = capa_camera_list_new();
   for (int i = 0 ; i < gp_list_count(cams) ; i++) {
     const char *model, *path;
+    int n;
     CapaCamera *cam;
+    CameraAbilities cap;
 
     gp_list_get_name(cams, i, &model);
     gp_list_get_value(cams, i, &path);
+
+    n = gp_abilities_list_lookup_model(app->params->caps, model);
+    gp_abilities_list_get_abilities(app->params->caps, n, &cap);
 
     /* For back compat, libgphoto2 always adds a default
      * USB camera called 'usb:'. We ignore that, since we
@@ -78,8 +83,11 @@ CapaCameraList *capa_app_detect_cameras(CapaApp *app)
     if (strcmp(path, "usb:") == 0)
       continue;
 
-    fprintf(stderr, "New camera '%s' '%s'\n", model, path);
-    cam = capa_camera_new(model, path);
+    fprintf(stderr, "New camera '%s' '%s' %d\n", model, path, cap.operations);
+    cam = capa_camera_new(model, path,
+			  cap.operations & GP_OPERATION_CAPTURE_IMAGE ? TRUE : FALSE,
+			  cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
+			  cap.operations & GP_OPERATION_CONFIG ? TRUE : FALSE);
     capa_camera_list_add(ret, cam);
     fprintf(stderr, "unref list object\n");
     g_object_unref(G_OBJECT(cam));

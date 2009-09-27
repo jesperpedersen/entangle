@@ -61,6 +61,35 @@ enum {
   PROP_CAMERA
 };
 
+static void do_capture_widget_sensitivity(CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *toolCapture;
+  GtkWidget *toolPreview;
+  GtkWidget *settingsScroll;
+
+  toolCapture = glade_xml_get_widget(priv->glade, "toolbar-capture");
+  toolPreview = glade_xml_get_widget(priv->glade, "toolbar-preview");
+  settingsScroll = glade_xml_get_widget(priv->glade, "settings-scroll");
+
+  gtk_widget_set_sensitive(toolCapture,
+			   priv->camera &&
+			   capa_camera_has_capture(priv->camera) &&
+			   priv->captureThread == NULL ? TRUE : FALSE);
+  gtk_widget_set_sensitive(toolPreview,
+			   priv->camera &&
+			   capa_camera_has_preview(priv->camera) &&
+			   priv->captureThread == NULL ? TRUE : FALSE);
+
+  if (priv->camera && !capa_camera_has_capture(priv->camera))
+    gtk_widget_set_tooltip_text(toolCapture, "This camera does not support image capture");
+  if (priv->camera && !capa_camera_has_preview(priv->camera))
+    gtk_widget_set_tooltip_text(toolPreview, "This camera does not support image preview");
+
+  if (priv->camera && !capa_camera_has_settings(priv->camera))
+    gtk_widget_hide(settingsScroll);
+}
+
 
 static void capa_camera_manager_get_property(GObject *object,
 					     guint prop_id,
@@ -118,6 +147,8 @@ static void capa_camera_manager_set_property(GObject *object,
       g_object_set_property(G_OBJECT(priv->camera), "progress", &prog);
       g_value_unset(&prog);
       fprintf(stderr, "done\n");
+
+      do_capture_widget_sensitivity(manager);
     } break;
 
     default:
@@ -140,6 +171,7 @@ static void capa_camera_manager_finalize (GObject *object)
 
   G_OBJECT_CLASS (capa_camera_manager_parent_class)->finalize (object);
 }
+
 
 static void capa_camera_manager_class_init(CapaCameraManagerClass *klass)
 {
@@ -266,6 +298,10 @@ static gpointer capture_thread(void *data)
   capture_load_image(manager);
 
   fprintf(stderr, "all done\n");
+
+  priv->captureThread = NULL;
+  do_capture_widget_sensitivity(manager);
+
   gdk_threads_leave();
 
   return NULL;
@@ -288,6 +324,10 @@ static gpointer preview_thread(void *data)
   capture_load_image(manager);
 
   fprintf(stderr, "all done\n");
+
+  priv->captureThread = NULL;
+  do_capture_widget_sensitivity(manager);
+
   gdk_threads_leave();
 
   return NULL;
@@ -301,6 +341,7 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
   fprintf(stderr, "starting Capture thread\n");
 
   priv->captureThread = g_thread_create(capture_thread, manager, FALSE, NULL);
+  do_capture_widget_sensitivity(manager);
 }
 
 static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
@@ -311,6 +352,7 @@ static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
   fprintf(stderr, "starting Preview thread\n");
 
   priv->captureThread = g_thread_create(preview_thread, manager, FALSE, NULL);
+  do_capture_widget_sensitivity(manager);
 }
 
 
@@ -597,6 +639,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   fprintf(stderr, "Adding %p to %p\n", priv->imageDisplay, viewport);
   gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
   do_zoom_widget_sensitivity(manager);
+  do_capture_widget_sensitivity(manager);
 }
 
 void capa_camera_manager_show(CapaCameraManager *manager)

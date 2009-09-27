@@ -55,7 +55,10 @@ struct _CapaCameraClass
 GType capa_camera_get_type(void) G_GNUC_CONST;
 
 CapaCamera *capa_camera_new(const char *model,
-			    const char *port);
+			    const char *port,
+			    gboolean hasCapture,
+			    gboolean hasPreview,
+			    gboolean hasSettings);
 
 const char *capa_camera_model(CapaCamera *cam);
 const char *capa_camera_port(CapaCamera *cam);
@@ -69,6 +72,9 @@ char *capa_camera_driver(CapaCamera *cam);
 int capa_camera_capture(CapaCamera *cam, const char *localpath);
 int capa_camera_preview(CapaCamera *cam, const char *localpath);
 
+gboolean capa_camera_has_capture(CapaCamera *cam);
+gboolean capa_camera_has_preview(CapaCamera *cam);
+gboolean capa_camera_has_settings(CapaCamera *cam);
 
 CapaControlGroup *capa_camera_controls(CapaCamera *cam);
 

@@ -82,6 +82,28 @@ static void capa_camera_cell_data_port_func(GtkTreeViewColumn *col G_GNUC_UNUSED
   g_object_unref(cam);
 }
 
+static void capa_camera_cell_data_capture_func(GtkTreeViewColumn *col G_GNUC_UNUSED,
+					       GtkCellRenderer *cell,
+					       GtkTreeModel *model,
+					       GtkTreeIter *iter,
+					       gpointer data G_GNUC_UNUSED)
+{
+  GValue val;
+  CapaCamera *cam;
+
+  memset(&val, 0, sizeof val);
+
+  gtk_tree_model_get_value(model, iter, 0, &val);
+
+  cam = g_value_get_object(&val);
+
+  fprintf(stderr, "Has %d\n", capa_camera_has_capture(cam));
+
+  g_object_set(cell, "text", capa_camera_has_capture(cam) ? "Yes" : "No", NULL);
+
+  g_object_unref(cam);
+}
+
 
 static void capa_camera_picker_update_model(CapaCameraPicker *picker, CapaCameraList *cameras)
 {
@@ -341,8 +363,10 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
   GtkWidget *list;
   GtkCellRenderer *model;
   GtkCellRenderer *port;
+  GtkCellRenderer *capture;
   GtkTreeViewColumn *modelCol;
   GtkTreeViewColumn *portCol;
+  GtkTreeViewColumn *captureCol;
   GtkTreeSelection *sel;
   GtkWidget *connect;
   GtkWidget *win;
@@ -362,18 +386,25 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
   win = glade_xml_get_widget(priv->glade, "camera-picker");
   g_signal_connect(win, "delete-event", G_CALLBACK(do_picker_delete), picker);
 
-  modelCol = gtk_tree_view_column_new();
-  portCol = gtk_tree_view_column_new();
-
   model = gtk_cell_renderer_text_new();
   port = gtk_cell_renderer_text_new();
+  capture = gtk_cell_renderer_text_new();
+
+  modelCol = gtk_tree_view_column_new_with_attributes("Model", model, NULL);
+  portCol = gtk_tree_view_column_new_with_attributes("Port", port, NULL);
+  captureCol = gtk_tree_view_column_new_with_attributes("Capture", capture, NULL);
+
+  g_object_set(G_OBJECT(modelCol), "expand", TRUE, NULL);
+  g_object_set(G_OBJECT(portCol), "expand", FALSE, NULL);
+  g_object_set(G_OBJECT(captureCol), "expand", FALSE, NULL);
 
   gtk_tree_view_append_column(GTK_TREE_VIEW(list), modelCol);
   gtk_tree_view_append_column(GTK_TREE_VIEW(list), portCol);
-  gtk_tree_view_column_pack_start(modelCol, model, TRUE);
-  gtk_tree_view_column_pack_start(portCol, port, TRUE);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(list), captureCol);
+
   gtk_tree_view_column_set_cell_data_func(modelCol, model, capa_camera_cell_data_model_func, NULL, NULL);
   gtk_tree_view_column_set_cell_data_func(portCol, port, capa_camera_cell_data_port_func, NULL, NULL);
+  gtk_tree_view_column_set_cell_data_func(captureCol, capture, capa_camera_cell_data_capture_func, NULL, NULL);
 
   gtk_tree_view_set_model(GTK_TREE_VIEW(list), GTK_TREE_MODEL(priv->model));
 
