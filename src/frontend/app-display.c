@@ -148,7 +148,33 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
   fprintf(stderr, "emit connect %p %s\n", cam, capa_camera_model(cam));
   CapaCameraManager *man;
 
-  capa_camera_connect(cam);
+  while (capa_camera_connect(cam) < 0) {
+    int response;
+    GtkWidget *msg = gtk_message_dialog_new(NULL,
+					    GTK_DIALOG_MODAL,
+					    GTK_MESSAGE_ERROR,
+					    GTK_BUTTONS_NONE,
+					    "%s",
+					    "Unable to connect to camera");
+
+    gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
+					       "%s",
+					       "Check that the camera is not\n\n"
+					       " - opened by another photo <b>application</b>\n"
+					       " - mounted as a <b>filesystem</b> on the desktop\n"
+					       " - <b>turned off</b> to save battery power\n");
+
+    gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
+    gtk_dialog_add_button(GTK_DIALOG(msg), "Retry", GTK_RESPONSE_ACCEPT);
+
+    response = gtk_dialog_run(GTK_DIALOG(msg));
+
+    gtk_widget_hide(msg);
+    //g_object_unref(G_OBJECT(msg));
+
+    if (response == GTK_RESPONSE_CANCEL)
+      return;
+  }
 
   man = g_hash_table_lookup(priv->managers, capa_camera_model(cam));
   if (!man) {
