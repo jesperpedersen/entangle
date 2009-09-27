@@ -25,7 +25,6 @@
 #include "app-display.h"
 #include "camera-picker.h"
 #include "camera-manager.h"
-#include "device-manager.h"
 
 #define CAPA_APP_DISPLAY_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP_DISPLAY, CapaAppDisplayPrivate))
@@ -33,7 +32,6 @@
 struct _CapaAppDisplayPrivate {
   CapaApp *app;
 
-  CapaDeviceManager *devManager;
   CapaCameraPicker *picker;
   GHashTable *managers;
 };
@@ -110,32 +108,11 @@ static void do_picker_close(CapaCameraPicker *picker, CapaAppDisplay *display)
   }
 }
 
-static void do_device_refresh(CapaAppDisplay *display)
-{
-  CapaAppDisplayPrivate *priv = display->priv;
-  CapaCameraList *cameras = capa_app_detect_cameras(priv->app);
-  GValue val;
-
-  memset(&val, 0, sizeof(val));
-  g_value_init(&val, G_TYPE_POINTER);
-  g_value_set_pointer(&val, cameras);
-
-  fprintf(stderr, "emit refresh\n");
-  g_object_set_property(G_OBJECT(priv->picker), "cameras", &val);
-
-  g_value_unset(&val);
-}
 
 static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDisplay *display)
 {
-  do_device_refresh(display);
-}
-
-static void do_device_addremove(CapaDeviceManager *manager G_GNUC_UNUSED,
-				char *port G_GNUC_UNUSED,
-				CapaAppDisplay *display)
-{
-  do_device_refresh(display);
+  CapaAppDisplayPrivate *priv = display->priv;
+  capa_app_refresh(priv->app);
 }
 
 static void do_manager_connect(CapaCameraManager *manager G_GNUC_UNUSED,
@@ -216,25 +193,19 @@ static void capa_app_display_init(CapaAppDisplay *display)
   priv = display->priv = CAPA_APP_DISPLAY_GET_PRIVATE(display);
 
   priv->app = capa_app_new();
-  priv->picker = capa_camera_picker_new();
+  priv->picker = capa_camera_picker_new(capa_app_cameras(priv->app));
   priv->managers = g_hash_table_new_full(g_str_hash, g_str_equal,
 					 g_free, g_object_unref);
-  priv->devManager = capa_device_manager_new();
 
   g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
   g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
   g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), display);
-
-  g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), display);
-  g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), display);
 }
 
 
 void capa_app_display_show(CapaAppDisplay *display)
 {
   CapaAppDisplayPrivate *priv = display->priv;
-
-  do_picker_refresh(priv->picker, display);
 
   capa_camera_picker_show(priv->picker);
 }

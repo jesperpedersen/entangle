@@ -29,7 +29,8 @@ CapaApp *capa_app_new(void);
 
 void capa_app_free(CapaApp *app);
 
-CapaCameraList *capa_app_detect_cameras(CapaApp *app);
+CapaCameraList *capa_app_cameras(CapaApp *app);
 
+void capa_app_refresh(CapaApp *app);
 
 #endif /* __CAPA_APPLICATION__ */

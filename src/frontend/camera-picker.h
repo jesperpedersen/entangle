@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include "camera.h"
+#include "camera-list.h"
 
 G_BEGIN_DECLS
 
@@ -57,7 +58,7 @@ struct _CapaCameraPickerClass
 
 
 GType capa_camera_picker_get_type(void) G_GNUC_CONST;
-CapaCameraPicker* capa_camera_picker_new(void);
+CapaCameraPicker* capa_camera_picker_new(CapaCameraList *cameras);
 
 void capa_camera_picker_show(CapaCameraPicker *picker);
 void capa_camera_picker_hide(CapaCameraPicker *picker);

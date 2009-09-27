@@ -24,21 +24,56 @@
 
 #include "camera.h"
 
+#include <glib-object.h>
+
+G_BEGIN_DECLS
+
+#define CAPA_TYPE_CAMERA_LIST            (capa_camera_list_get_type ())
+#define CAPA_CAMERA_LIST(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_TYPE_CAMERA_LIST, CapaCameraList))
+#define CAPA_CAMERA_LIST_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), CAPA_TYPE_CAMERA_LIST, CapaCameraListClass))
+#define CAPA_IS_CAMERA_LIST(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_TYPE_CAMERA_LIST))
+#define CAPA_IS_CAMERA_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CAPA_TYPE_CAMERA_LIST))
+#define CAPA_CAMERA_LIST_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), CAPA_TYPE_CAMERA_LIST, CapaCameraListClass))
+
+
 typedef struct _CapaCameraList CapaCameraList;
+typedef struct _CapaCameraListPrivate CapaCameraListPrivate;
+typedef struct _CapaCameraListClass CapaCameraListClass;
 
-CapaCameraList *capa_camera_list_new(void);
+struct _CapaCameraList
+{
+  GObject parent;
 
-void capa_camera_list_free(CapaCameraList *list);
+  CapaCameraListPrivate *priv;
+};
+
+struct _CapaCameraListClass
+{
+  GObjectClass parent_class;
+
+  void (*camera_added)(CapaCameraList *list, CapaCamera *cam);
+  void (*camera_removed)(CapaCameraList *list, CapaCamera *cam);
+};
+
+
+GType capa_camera_list_get_type(void) G_GNUC_CONST;
+CapaCameraList* capa_camera_list_new(void);
 
 int capa_camera_list_count(CapaCameraList *list);
 
 void capa_camera_list_add(CapaCameraList *list,
 			  CapaCamera *cam);
 
+void capa_camera_list_remove(CapaCameraList *list,
+			     CapaCamera *cam);
+
 CapaCamera *capa_camera_list_get(CapaCameraList *list,
 				 int entry);
 
+CapaCamera *capa_camera_list_find(CapaCameraList *list,
+				  const char *port);
 
+G_END_DECLS
 
 #endif /* __CAPA_CAMERA_LIST__ */
 

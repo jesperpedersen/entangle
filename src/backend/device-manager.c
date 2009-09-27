@@ -121,7 +121,6 @@ static void do_device_added(LibHalContext *ctx, const char *udi)
   g_signal_emit_by_name(G_OBJECT(manager), "device-added", port);
 
  cleanup:
-  g_free(port);
   g_free(type);
 }
 

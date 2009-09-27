@@ -22,13 +22,15 @@
 #include <glade/glade.h>
 
 #include "camera-picker.h"
-#include "camera-list.h"
 
 #define CAPA_CAMERA_PICKER_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_PICKER, CapaCameraPickerPrivate))
 
 struct _CapaCameraPickerPrivate {
   CapaCameraList *cameras;
+  gulong addSignal;
+  gulong removeSignal;
+
   GtkListStore *model;
 
   GladeXML *glade;
@@ -104,25 +106,37 @@ static void capa_camera_cell_data_capture_func(GtkTreeViewColumn *col G_GNUC_UNU
   g_object_unref(cam);
 }
 
-
-static void capa_camera_picker_update_model(CapaCameraPicker *picker, CapaCameraList *cameras)
+static void do_model_sensitivity_update(CapaCameraPicker *picker)
 {
   CapaCameraPickerPrivate *priv = picker->priv;
   GtkWidget *warning;
   GtkWidget *list;
   GtkWidget *win;
-  fprintf(stderr, "Refresh model\n");
-  gtk_list_store_clear(priv->model);
-  capa_camera_list_free(priv->cameras);
 
   warning = glade_xml_get_widget(priv->glade, "warning-no-cameras");
   list = glade_xml_get_widget(priv->glade, "camera-list");
   win = glade_xml_get_widget(priv->glade, "camera-picker");
 
-  priv->cameras = cameras;
-  if (!cameras) {
+  if (priv->cameras && capa_camera_list_count(priv->cameras)) {
+    int w, h;
+    gtk_window_get_default_size(GTK_WINDOW(win), &w, &h);
+    gtk_window_resize(GTK_WINDOW(win), w, h);
+    gtk_widget_set_sensitive(list, TRUE);
+    gtk_widget_hide(warning);
+  } else {
     gtk_widget_set_sensitive(list, FALSE);
     gtk_widget_show(warning);
+  }
+}
+
+static void do_model_refresh(CapaCameraPicker *picker)
+{
+  CapaCameraPickerPrivate *priv = picker->priv;
+  fprintf(stderr, "Refresh model\n");
+  gtk_list_store_clear(priv->model);
+
+  if (!priv->cameras) {
+    do_model_sensitivity_update(picker);
     return;
   }
 
@@ -137,17 +151,9 @@ static void capa_camera_picker_update_model(CapaCameraPicker *picker, CapaCamera
     //g_object_unref(cam);
   }
 
-  if (capa_camera_list_count(priv->cameras)) {
-    int w, h;
-    gtk_window_get_default_size(GTK_WINDOW(win), &w, &h);
-    gtk_window_resize(GTK_WINDOW(win), w, h);
-    gtk_widget_set_sensitive(list, TRUE);
-    gtk_widget_hide(warning);
-  } else {
-    gtk_widget_set_sensitive(list, FALSE);
-    gtk_widget_show(warning);
-  }
+  do_model_sensitivity_update(picker);
 }
+
 
 static void capa_camera_picker_get_property(GObject *object,
 					    guint prop_id,
@@ -160,12 +166,58 @@ static void capa_camera_picker_get_property(GObject *object,
   switch (prop_id)
     {
     case PROP_CAMERAS:
-      g_value_set_pointer(value, priv->cameras);
+      g_value_set_object(value, priv->cameras);
       break;
 
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
     }
+}
+
+static void do_camera_list_add(CapaCameraList *cameras G_GNUC_UNUSED,
+			       CapaCamera *cam,
+			       CapaCameraPicker *picker)
+{
+  CapaCameraPickerPrivate *priv = picker->priv;
+  GtkTreeIter iter;
+
+  fprintf(stderr, "Add camrea %p to model\n", cam);
+  gtk_list_store_append(priv->model, &iter);
+
+  gtk_list_store_set(priv->model, &iter, 0, cam, -1);
+
+  do_model_sensitivity_update(picker);
+}
+
+static void do_camera_list_remove(CapaCameraList *cameras G_GNUC_UNUSED,
+				  CapaCamera *cam,
+				  CapaCameraPicker *picker)
+{
+  CapaCameraPickerPrivate *priv = picker->priv;
+  GtkTreeIter iter;
+
+  if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(priv->model), &iter))
+    return;
+
+  do {
+    GValue val;
+    CapaCamera *thiscam;
+    memset(&val, 0, sizeof val);
+
+    gtk_tree_model_get_value(GTK_TREE_MODEL(priv->model), &iter, 0, &val);
+
+    thiscam = g_value_get_object(&val);
+    g_value_unset(&val);
+
+    if (cam == thiscam) {
+      fprintf(stderr, "Remove camera %p from model\n", cam);
+      gtk_list_store_remove(priv->model, &iter);
+      break;
+    }
+
+  } while (gtk_tree_model_iter_next(GTK_TREE_MODEL(priv->model), &iter));
+
+  do_model_sensitivity_update(picker);
 }
 
 static void capa_camera_picker_set_property(GObject *object,
@@ -174,13 +226,25 @@ static void capa_camera_picker_set_property(GObject *object,
 					    GParamSpec *pspec)
 {
   CapaCameraPicker *picker = CAPA_CAMERA_PICKER(object);
+  CapaCameraPickerPrivate *priv = picker->priv;
 
   fprintf(stderr, "Set prop %d\n", prop_id);
 
   switch (prop_id)
     {
     case PROP_CAMERAS:
-      capa_camera_picker_update_model(picker, g_value_get_pointer(value));
+      if (priv->cameras) {
+	g_signal_handler_disconnect(G_OBJECT(priv->cameras), priv->addSignal);
+	g_signal_handler_disconnect(G_OBJECT(priv->cameras), priv->removeSignal);
+	g_object_unref(G_OBJECT(priv->cameras));
+      }
+      priv->cameras = g_value_get_object(value);
+      g_object_ref(G_OBJECT(priv->cameras));
+      priv->addSignal = g_signal_connect(G_OBJECT(priv->cameras), "camera-added",
+					 G_CALLBACK(do_camera_list_add), picker);
+      priv->removeSignal = g_signal_connect(G_OBJECT(priv->cameras), "camera-removed",
+					    G_CALLBACK(do_camera_list_remove), picker);
+      do_model_refresh(picker);
       break;
 
     default:
@@ -196,7 +260,8 @@ static void capa_camera_picker_finalize (GObject *object)
   fprintf(stderr, "Finalize camera picker\n");
 
   gtk_list_store_clear(priv->model);
-  capa_camera_list_free(priv->cameras);
+  if (priv->cameras)
+    g_object_unref(G_OBJECT(priv->cameras));
   g_object_unref(priv->model);
   g_object_unref(priv->glade);
 
@@ -239,21 +304,24 @@ static void capa_camera_picker_class_init(CapaCameraPickerClass *klass)
 
   g_object_class_install_property(object_class,
 				  PROP_CAMERAS,
-				  g_param_spec_pointer("cameras",
-						       "Camera List",
-						       "List of known camera objects",
-						       G_PARAM_READWRITE |
-						       G_PARAM_STATIC_NAME |
-						       G_PARAM_STATIC_NICK |
-						       G_PARAM_STATIC_BLURB));
+				  g_param_spec_object("cameras",
+						      "Camera List",
+						      "List of known camera objects",
+						      CAPA_TYPE_CAMERA_LIST,
+						      G_PARAM_READWRITE |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
 
   g_type_class_add_private(klass, sizeof(CapaCameraPickerPrivate));
 }
 
 
-CapaCameraPicker *capa_camera_picker_new(void)
+CapaCameraPicker *capa_camera_picker_new(CapaCameraList *cameras)
 {
-  return CAPA_CAMERA_PICKER(g_object_new(CAPA_TYPE_CAMERA_PICKER, NULL));
+  return CAPA_CAMERA_PICKER(g_object_new(CAPA_TYPE_CAMERA_PICKER,
+					 "cameras", cameras,
+					 NULL));
 }
 
 static void do_picker_close(GtkButton *src G_GNUC_UNUSED, CapaCameraPicker *picker)
@@ -414,6 +482,8 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
 
   connect = glade_xml_get_widget(priv->glade, "picker-connect");
   gtk_widget_set_sensitive(connect, FALSE);
+
+  do_model_sensitivity_update(picker);
 }
 
 void capa_camera_picker_show(CapaCameraPicker *picker)
