@@ -11,17 +11,22 @@ libcapa_backend_la_SOURCES = \
 	backend/control.h backend/control.c \
 	backend/control-group.h backend/control-group.c \
 	backend/control-layout.h backend/control-layout.c \
+	backend/device-manager.h backend/device-manager.c \
 	backend/progress.h backend/progress.c \
 	backend/params.h backend/params.c
 
 libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(GPHOTO2_LIBS) \
+	$(HAL_LIBS) \
+	$(DBUS_GLIB_LIBS) \
 	$(WARNING_CFLAGS)
 
 libcapa_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GPHOTO2_CFLAGS) \
+	$(HAL_CFLAGS) \
+	$(DBUS_GLIB_CFLAGS) \
 	$(WARNING_CFLAGS)
 
 
