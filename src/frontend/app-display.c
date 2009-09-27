@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <gtk/gtk.h>
 
 #include "app-display.h"
 #include "camera-picker.h"
@@ -78,10 +79,33 @@ CapaAppDisplay *capa_app_display_new(void)
   return CAPA_APP_DISPLAY(g_object_new(CAPA_TYPE_APP_DISPLAY, NULL));
 }
 
-static void do_picker_close(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDisplay *display)
+static gboolean capa_app_display_visible(CapaAppDisplay *display)
 {
-  fprintf(stderr, "emit closed\n");
-  g_signal_emit_by_name(display, "app-closed", NULL);
+  CapaAppDisplayPrivate *priv = display->priv;
+  GHashTableIter iter;
+  gpointer key, value;
+
+  if (capa_camera_picker_visible(priv->picker))
+    return TRUE;
+
+  g_hash_table_iter_init(&iter, priv->managers);
+  while (g_hash_table_iter_next(&iter, &key, &value)) {
+    CapaCameraManager *man = value;
+    if (capa_camera_manager_visible(man))
+      return TRUE;
+  }
+
+  return FALSE;
+}
+
+static void do_picker_close(CapaCameraPicker *picker, CapaAppDisplay *display)
+{
+  capa_camera_picker_hide(picker);
+
+  if (!capa_app_display_visible(display)) {
+    fprintf(stderr, "emit closed\n");
+    g_signal_emit_by_name(display, "app-closed", NULL);
+  }
 }
 
 static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDisplay *display)
@@ -100,6 +124,24 @@ static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDis
   g_value_unset(&val);
 }
 
+static void do_manager_connect(CapaCameraManager *manager G_GNUC_UNUSED,
+			       CapaAppDisplay *display)
+{
+  CapaAppDisplayPrivate *priv = display->priv;
+  capa_camera_picker_show(priv->picker);
+}
+
+
+static void do_manager_disconnect(CapaCameraManager *manager, CapaAppDisplay *display)
+{
+  capa_camera_manager_hide(manager);
+  fprintf(stderr, "Doing disconnect\n");
+  if (!capa_app_display_visible(display)) {
+    fprintf(stderr, "emit closed\n");
+    g_signal_emit_by_name(display, "app-closed", NULL);
+  }
+}
+
 static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaAppDisplay *display)
 {
   CapaAppDisplayPrivate *priv = display->priv;
@@ -115,6 +157,10 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
     g_value_init(&camval, G_TYPE_OBJECT);
     g_value_set_object(&camval, cam);
     man = capa_camera_manager_new();
+
+    g_signal_connect(G_OBJECT(man), "manager-disconnect", G_CALLBACK(do_manager_disconnect), display);
+    g_signal_connect(G_OBJECT(man), "manager-connect", G_CALLBACK(do_manager_connect), display);
+
     g_object_set_property(G_OBJECT(man), "camera", &camval);
     g_hash_table_insert(priv->managers, g_strdup(capa_camera_model(cam)), man);
     g_value_unset(&camval);

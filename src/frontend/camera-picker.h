@@ -61,6 +61,7 @@ CapaCameraPicker* capa_camera_picker_new(void);
 
 void capa_camera_picker_show(CapaCameraPicker *picker);
 void capa_camera_picker_hide(CapaCameraPicker *picker);
+gboolean capa_camera_picker_visible(CapaCameraPicker *picker);
 
 G_END_DECLS
 

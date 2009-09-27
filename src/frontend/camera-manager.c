@@ -145,10 +145,19 @@ static void capa_camera_manager_class_init(CapaCameraManagerClass *klass)
   object_class->get_property = capa_camera_manager_get_property;
   object_class->set_property = capa_camera_manager_set_property;
 
-  g_signal_new("manager-close",
+  g_signal_new("manager-connect",
 	       G_TYPE_FROM_CLASS(klass),
 	       G_SIGNAL_RUN_FIRST,
-	       G_STRUCT_OFFSET(CapaCameraManagerClass, manager_close),
+	       G_STRUCT_OFFSET(CapaCameraManagerClass, manager_connect),
+	       NULL, NULL,
+	       g_cclosure_marshal_VOID__VOID,
+	       G_TYPE_NONE,
+	       0);
+
+  g_signal_new("manager-disconnect",
+	       G_TYPE_FROM_CLASS(klass),
+	       G_SIGNAL_RUN_FIRST,
+	       G_STRUCT_OFFSET(CapaCameraManagerClass, manager_disconnect),
 	       NULL, NULL,
 	       g_cclosure_marshal_VOID__VOID,
 	       G_TYPE_NONE,
@@ -487,19 +496,26 @@ static void do_app_quit(GtkMenuItem *src G_GNUC_UNUSED,
 
 
 
-static void do_manager_close(GtkMenuItem *src G_GNUC_UNUSED,
-			     CapaCameraManager *manager)
+static void do_manager_connect(GtkMenuItem *src G_GNUC_UNUSED,
+			       CapaCameraManager *manager)
 {
-  capa_camera_manager_hide(manager);
-  g_signal_emit_by_name(manager, "manager-close", NULL);
+  g_signal_emit_by_name(manager, "manager-connect", NULL);
 }
 
 
-static gboolean do_manager_delete(GtkMenuItem *src G_GNUC_UNUSED,
+static void do_manager_disconnect(GtkMenuItem *src G_GNUC_UNUSED,
 				  CapaCameraManager *manager)
 {
-  capa_camera_manager_hide(manager);
-  g_signal_emit_by_name(manager, "manager-close", NULL);
+  g_signal_emit_by_name(manager, "manager-disconnect", NULL);
+}
+
+
+static gboolean do_manager_delete(GtkWidget *widget G_GNUC_UNUSED,
+				  GdkEvent *event G_GNUC_UNUSED,
+				  CapaCameraManager *manager)
+{
+  fprintf(stderr, "Got delete\n");
+  g_signal_emit_by_name(manager, "manager-disconnect", NULL);
   return TRUE;
 }
 
@@ -512,6 +528,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   GtkWidget *display;
   GtkWidget *imageScroll;
   GtkWidget *iconScroll;
+  GtkWidget *win;
 
   priv = manager->priv = CAPA_CAMERA_MANAGER_GET_PRIVATE(manager);
 
@@ -538,9 +555,12 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
   glade_xml_signal_connect_data(priv->glade, "menu_fullscreen_toggle", G_CALLBACK(do_menu_fullscreen), manager);
 
-  glade_xml_signal_connect_data(priv->glade, "menu_disconnect_activate", G_CALLBACK(do_manager_close), manager);
+  glade_xml_signal_connect_data(priv->glade, "menu_connect_activate", G_CALLBACK(do_manager_connect), manager);
+  glade_xml_signal_connect_data(priv->glade, "menu_disconnect_activate", G_CALLBACK(do_manager_disconnect), manager);
   glade_xml_signal_connect_data(priv->glade, "menu_quit_activate", G_CALLBACK(do_app_quit), manager);
-  glade_xml_signal_connect_data(priv->glade, "camera_manager_delete", G_CALLBACK(do_manager_delete), manager);
+
+  win = glade_xml_get_widget(priv->glade, "camera-manager");
+  g_signal_connect(win, "delete-event", G_CALLBACK(do_manager_delete), manager);
 
   priv->progress = capa_camera_progress_new();
 
@@ -582,3 +602,10 @@ void capa_camera_manager_hide(CapaCameraManager *manager)
   gtk_widget_hide(win);
 }
 
+gboolean capa_camera_manager_visible(CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
+
+  return GTK_WIDGET_FLAGS(win) & GTK_VISIBLE;
+}

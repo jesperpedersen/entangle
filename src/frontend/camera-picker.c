@@ -239,6 +239,15 @@ static void do_picker_close(GtkButton *src G_GNUC_UNUSED, CapaCameraPicker *pick
   g_signal_emit_by_name(picker, "picker-close", NULL);
 }
 
+static gboolean do_picker_delete(GtkWidget *src G_GNUC_UNUSED,
+				 GdkEvent *ev G_GNUC_UNUSED,
+				 CapaCameraPicker *picker)
+{
+  fprintf(stderr, "picker delete\n");
+  g_signal_emit_by_name(picker, "picker-close", NULL);
+  return TRUE;
+}
+
 static void do_picker_refresh(GtkButton *src G_GNUC_UNUSED, CapaCameraPicker *picker)
 {
   fprintf(stderr, "picker refresh %p\n", picker);
@@ -335,6 +344,7 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
   GtkTreeViewColumn *portCol;
   GtkTreeSelection *sel;
   GtkWidget *connect;
+  GtkWidget *win;
 
   priv = picker->priv = CAPA_CAMERA_PICKER_GET_PRIVATE(picker);
 
@@ -347,6 +357,9 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
   glade_xml_signal_connect_data(priv->glade, "camera_picker_refresh", G_CALLBACK(do_picker_refresh), picker);
   glade_xml_signal_connect_data(priv->glade, "camera_picker_connect", G_CALLBACK(do_picker_connect), picker);
   glade_xml_signal_connect_data(priv->glade, "camera_picker_activate", G_CALLBACK(do_picker_activate), picker);
+
+  win = glade_xml_get_widget(priv->glade, "camera-picker");
+  g_signal_connect(win, "delete-event", G_CALLBACK(do_picker_delete), picker);
 
   modelCol = gtk_tree_view_column_new();
   portCol = gtk_tree_view_column_new();
@@ -396,3 +409,10 @@ void capa_camera_picker_hide(CapaCameraPicker *picker)
   gtk_widget_hide(win);
 }
 
+gboolean capa_camera_picker_visible(CapaCameraPicker *picker)
+{
+  CapaCameraPickerPrivate *priv = picker->priv;
+  GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-picker");
+
+  return GTK_WIDGET_FLAGS(win) & GTK_VISIBLE;
+}

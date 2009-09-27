@@ -87,6 +87,7 @@
                         <property name="label" translatable="yes">Connect camera</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
+                        <signal name="activate" handler="menu_connect_activate"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="image8">
                             <property name="visible">True</property>
@@ -248,6 +249,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="menu_about_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -668,12 +670,12 @@
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="yalign">0</property>
-                    <property name="label" translatable="yes">No cameras were detected, verify
+                    <property name="label" translatable="yes">No cameras were detected, check that
 
-  - The &lt;b&gt;cables&lt;/b&gt; are connected
-  - The camera is &lt;b&gt;turned on&lt;/b&gt;
-  - The camera is in the &lt;b&gt;correct mode&lt;/b&gt;
-  - The camera is a &lt;b&gt;supported&lt;/b&gt; model
+  - the &lt;b&gt;cables&lt;/b&gt; are connected
+  - the camera is &lt;b&gt;turned on&lt;/b&gt;
+  - the camera is in the &lt;b&gt;correct mode&lt;/b&gt;
+  - the camera is a &lt;b&gt;supported&lt;/b&gt; model
 
 USB cameras are automatically detected
 plugged in, for others try a refresh</property>

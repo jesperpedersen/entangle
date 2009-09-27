@@ -50,7 +50,8 @@ struct _CapaCameraManagerClass
 {
   GObjectClass parent_class;
 
-  void (*manager_close)(CapaCameraManager *manager);
+  void (*manager_connect)(CapaCameraManager *manager);
+  void (*manager_disconnect)(CapaCameraManager *manager);
 };
 
 
@@ -59,6 +60,8 @@ CapaCameraManager* capa_camera_manager_new(void);
 
 void capa_camera_manager_show(CapaCameraManager *manager);
 void capa_camera_manager_hide(CapaCameraManager *manager);
+
+gboolean capa_camera_manager_visible(CapaCameraManager *manager);
 
 G_END_DECLS
 
