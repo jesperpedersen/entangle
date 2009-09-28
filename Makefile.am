@@ -1,5 +1,5 @@
 
-SUBDIRS = src
+SUBDIRS = src docs
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -73,9 +73,17 @@ AC_SUBST(DBUS_GLIB_LIBS)
 
 CAPA_COMPILE_WARNINGS
 
+AC_PATH_PROG([TPAGE], [tpage])
+
+if test -z "$TPAGE" ; then
+   AC_MSG_ERROR([The 'tpage' command from Template-Toolkit is required to build the website])
+fi
+
 AC_CONFIG_FILES(
   Makefile
   src/Makefile
+  docs/Makefile
+  docs/website/Makefile
   )
 
 AC_OUTPUT

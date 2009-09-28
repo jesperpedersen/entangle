@@ -1,0 +1,8 @@
+[% SET
+   title = "Capa Assists Photograph Acquisition" %]
+
+[% WRAPPER page.html %]
+
+Hello world
+
+[% END %]
