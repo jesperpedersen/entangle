@@ -32,6 +32,8 @@ struct _CapaApp {
 
   CapaDeviceManager *devManager;
   CapaCameraList *cameras;
+
+  CapaPreferences *prefs;
 };
 
 static void do_refresh_cameras(CapaApp *app)
@@ -160,4 +162,9 @@ void capa_app_refresh(CapaApp *app)
 CapaCameraList *capa_app_cameras(CapaApp *app)
 {
   return app->cameras;
+}
+
+CapaPreferences *capa_app_preferences(CapaApp *app)
+{
+  return app->prefs;
 }

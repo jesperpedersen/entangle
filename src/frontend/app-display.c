@@ -173,7 +173,7 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
     memset(&camval, 0, sizeof camval);
     g_value_init(&camval, G_TYPE_OBJECT);
     g_value_set_object(&camval, cam);
-    man = capa_camera_manager_new();
+    man = capa_camera_manager_new(capa_app_preferences(priv->app));
 
     g_signal_connect(G_OBJECT(man), "manager-disconnect", G_CALLBACK(do_manager_disconnect), display);
     g_signal_connect(G_OBJECT(man), "manager-connect", G_CALLBACK(do_manager_connect), display);

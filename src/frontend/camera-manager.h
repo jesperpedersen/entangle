@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include "camera.h"
+#include "preferences.h"
 
 G_BEGIN_DECLS
 
@@ -56,7 +57,7 @@ struct _CapaCameraManagerClass
 
 
 GType capa_camera_manager_get_type(void) G_GNUC_CONST;
-CapaCameraManager* capa_camera_manager_new(void);
+CapaCameraManager* capa_camera_manager_new(CapaPreferences *prefs);
 
 void capa_camera_manager_show(CapaCameraManager *manager);
 void capa_camera_manager_hide(CapaCameraManager *manager);

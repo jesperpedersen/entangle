@@ -23,6 +23,8 @@
 
 #include "camera-list.h"
 
+#include "preferences.h"
+
 typedef struct _CapaApp CapaApp;
 
 CapaApp *capa_app_new(void);
@@ -32,5 +34,7 @@ void capa_app_free(CapaApp *app);
 CapaCameraList *capa_app_cameras(CapaApp *app);
 
 void capa_app_refresh(CapaApp *app);
+
+CapaPreferences *capa_app_preferences(CapaApp *app);
 
 #endif /* __CAPA_APPLICATION__ */
