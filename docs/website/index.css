@@ -127,3 +127,37 @@ body {
     margin-top: 1em;
     margin-bottom: 1em;
 }
+
+ol.styled li, ul.styled li {
+    line-height: 32px;
+    margin-left: 2em;
+}
+
+li.launch {
+    list-style: url(item-launch.png);
+}
+
+li.connect {
+    list-style: url(item-connect.png);
+}
+
+li.shoot {
+    list-style: url(item-shoot.png);
+}
+
+li.handsfree {
+    list-style: url(item-handsfree.png);
+}
+
+li.preview {
+    list-style: url(item-preview.png);
+}
+
+li.download {
+    list-style: url(item-download.png);
+}
+
+li.settings {
+    list-style: url(item-settings.png);
+}
+

@@ -3,6 +3,41 @@
 
 [% WRAPPER page.html %]
 
-Hello world
+<p>
+  Capa provides a graphical interface for "tethered shooting", aka taking
+  photographs with a digital camera completely controlled from the computer.
+</p>
+
+<p>
+  Using Capa is as easy as 1,2,3...
+</p>
+
+<ol class="styled">
+  <li class="connect">Connect camera</li>
+  <li class="launch">Launch Capa</li>
+  <li class="shoot">Shoot photos</li>
+</ol>
+
+<p>
+  With a <a href="http://nikon.com">sufficiently</a> <a href="http://canon.com">capable</a>
+  digital SLR camera Capa allows
+</p>
+
+<ul class="styled">
+  <li class="handsfree">100% hands free control of all camera settings</li>
+  <li class="shoot">Trigger the shutter from the computer</li>
+  <li class="preview">Preview of shots using a "LiveView" capability</li>
+  <li class="download">Automatic download and display of photos as they are shot</li>
+  <li class="settings">Adjustment of camera settings to match recorded image EXIF data</li>
+</ul>
+
+<p>
+  Capa is <a href="http://opensource.org">Open Source</a> software licensed under
+  the <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL v3+</a>. It is built
+  on top of <a href="http://gphoto.org/">gPhoto<sup>2</sup></a> using
+  <a href="http://gtk.org">GTK-2</a> for its interface and
+  <a href="http://freedesktop.org/wiki/Software/hal">HAL</a>
+  for device detection.
+</p>
 
 [% END %]
