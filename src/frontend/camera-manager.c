@@ -227,7 +227,7 @@ static void capa_camera_manager_class_init(CapaCameraManagerClass *klass)
 
   g_object_class_install_property(object_class,
 				  PROP_PREFERENCES,
-				  g_param_spec_object("prefs",
+				  g_param_spec_object("preferences",
 						      "Preferences",
 						      "Application preferences",
 						      CAPA_TYPE_PREFERENCES,
