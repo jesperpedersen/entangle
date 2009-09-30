@@ -126,7 +126,7 @@ static gboolean capa_image_display_expose(GtkWidget *widget,
   CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(widget);
   CapaImageDisplayPrivate *priv = display->priv;
   int ww, wh; /* Available drawing area extents */
-  int pw, ph; /* Original image size */
+  int pw = 0, ph = 0; /* Original image size */
   double iw, ih; /* Desired image size */
   double mx = 0, my = 0;  /* Offset of image within available area */
   double sx = 1, sy = 1;  /* Amount to scale by */
@@ -134,8 +134,10 @@ static gboolean capa_image_display_expose(GtkWidget *widget,
 
   gdk_drawable_get_size(widget->window, &ww, &wh);
 
-  pw = gdk_pixbuf_get_width(priv->pixbuf);
-  ph = gdk_pixbuf_get_height(priv->pixbuf);
+  if (priv->pixbuf) {
+    pw = gdk_pixbuf_get_width(priv->pixbuf);
+    ph = gdk_pixbuf_get_height(priv->pixbuf);
+  }
 
   /* Decide what size we're going to draw the image */
   if (priv->autoscale) {
@@ -206,17 +208,10 @@ static gboolean capa_image_display_expose(GtkWidget *widget,
 
   /* Draw the actual image */
   if (priv->pixbuf) {
-#if 0
-    cairo_scale(cr, sx, sy);
-    gdk_cairo_set_source_pixbuf(cr,
-				priv->pixbuf,
-				mx, my);
-#else
     cairo_scale(cr, sx, sy);
     gdk_cairo_set_source_pixbuf(cr,
 				priv->pixbuf,
 				mx/sx, my/sy);
-#endif
     cairo_paint(cr);
   }
 
