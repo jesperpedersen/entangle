@@ -624,7 +624,10 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
   priv = manager->priv = CAPA_CAMERA_MANAGER_GET_PRIVATE(manager);
 
-  priv->glade = glade_xml_new("capa.glade", "camera-manager", "capa");
+  if (access("./capa.glade", R_OK) == 0)
+    priv->glade = glade_xml_new("capa.glade", "camera-manager", "capa");
+  else
+    priv->glade = glade_xml_new(PKGDATADIR "/capa.glade", "camera-manager", "capa");
 
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_summary", G_CALLBACK(do_manager_help_summary), manager);
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_manual", G_CALLBACK(do_manager_help_manual), manager);

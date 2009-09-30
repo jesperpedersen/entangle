@@ -1,0 +1,64 @@
+# -*- rpm-spec -*-
+
+Summary: Capa Assists Photograph Acquisition
+Name: capa
+Version: @VERSION@
+Release: 1%{?dist}%{?extra_release}
+License: GPLv3+
+Group: Applications/Multimedia
+Source: http://capa-project.org/download/%{name}-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+URL: http://capa-project.org/
+
+BuildRequires: glib2 >= 2.10.0
+BuildRequires: gtk2 >= 2.12.0
+BuildRequires: libgphoto2 >= 2.4.7
+BuildRequires: libglade2 >= 2.6.0
+BuildRequires: hal-libs >= 0.5.10
+BuildRequires: dbus-glib >= 0.60
+
+Requires(post): desktop-file-utils
+Requires(postun): desktop-file-utils
+
+%description
+Capa is an application which uses GTK and libgphoto2 to provide a
+graphical interface for tethered photography with digital cameras.
+
+It includes control over camera shooting and configuration settings
+and 'hands off' shooting directly from the controlling computer.
+
+%prep
+%setup -q
+
+%build
+
+%configure
+make %{?_smp_mflags}
+
+%install
+rm -fr %{buildroot}
+
+%makeinstall
+
+%clean
+rm -fr %{buildroot}
+
+%post
+update-desktop-database %{_datadir}/applications
+
+%postun
+update-desktop-database %{_datadir}/applications
+
+%files
+%defattr(-, root, root)
+%doc README COPYING AUTHORS NEWS ChangeLog
+%doc docs/website/
+%{_bindir}/capa
+%{_datadir}/%{name}/%{name}.glade
+%{_datadir}/%{name}/%{name}.png
+%{_datadir}/%{name}/%{name}.svg
+%{_datadir}/applications/%{name}.desktop
+
+%changelog
+* Wed Sep 30 2009 Daniel P. Berrange <berrange@redhat.com> - 0.0.1-1
+- Initial package

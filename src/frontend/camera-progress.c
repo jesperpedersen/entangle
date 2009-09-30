@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <glade/glade.h>
+#include <unistd.h>
 
 #include "camera-progress.h"
 #include "camera.h"
@@ -105,7 +106,10 @@ static void capa_camera_progress_init(CapaCameraProgress *progress)
 
   priv = progress->priv = CAPA_CAMERA_PROGRESS_GET_PRIVATE(progress);
 
-  priv->glade = glade_xml_new("capa.glade", "camera-progress", "capa");
+  if (access("./capa.glade", R_OK) == 0)
+    priv->glade = glade_xml_new("capa.glade", "camera-progress", "capa");
+  else
+    priv->glade = glade_xml_new(PKGDATADIR "/capa.glade", "camera-progress", "capa");
 
   glade_xml_signal_connect_data(priv->glade, "camera_progress_cancel", G_CALLBACK(do_progress_cancel), progress);
   glade_xml_signal_connect_data(priv->glade, "camera_progress_delete", G_CALLBACK(do_progress_delete), progress);

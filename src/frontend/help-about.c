@@ -19,7 +19,7 @@
  */
 
 #include <config.h>
-
+#include <unistd.h>
 #include <string.h>
 #include <glade/glade.h>
 
@@ -86,15 +86,22 @@ static void capa_help_about_init(CapaHelpAbout *about)
 {
   CapaHelpAboutPrivate *priv;
   GtkWidget *win;
+  GdkPixbuf *buf;
 
   priv = about->priv = CAPA_HELP_ABOUT_GET_PRIVATE(about);
 
-  priv->glade = glade_xml_new("capa.glade", "help-about", "capa");
+  if (access("./capa.glade", R_OK) == 0)
+    priv->glade = glade_xml_new("capa.glade", "help-about", "capa");
+  else
+    priv->glade = glade_xml_new(PKGDATADIR "/capa.glade", "help-about", "capa");
 
   win = glade_xml_get_widget(priv->glade, "help-about");
 
   g_signal_connect(G_OBJECT(win), "delete-event", G_CALLBACK(do_about_delete), about);
   g_signal_connect(G_OBJECT(win), "response", G_CALLBACK(do_about_response), about);
+
+  buf = gdk_pixbuf_new_from_file(PKGDATADIR "/" PACKAGE ".svg", NULL);
+  gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(win),buf);
 
   gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(win), VERSION);
 }

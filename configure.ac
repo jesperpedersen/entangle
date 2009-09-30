@@ -81,6 +81,7 @@ fi
 
 AC_CONFIG_FILES(
   Makefile
+  capa.spec
   src/Makefile
   docs/Makefile
   docs/website/Makefile

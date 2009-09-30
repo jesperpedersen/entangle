@@ -4,6 +4,18 @@ noinst_LTLIBRARIES = libcapa_backend.la libcapa_frontend.la
 
 bin_PROGRAMS = capa
 
+gladedir = $(pkgdatadir)
+glade_DATA = capa.glade
+
+desktopdir = $(datadir)/applications
+desktop_DATA_IN = capa.desktop.in
+desktop_DATA = capa.desktop
+
+icondir = $(pkgdatadir)
+icon_DATA = $(PACKAGE).svg $(PACKAGE).png
+
+EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA)
+
 libcapa_backend_la_SOURCES = \
 	backend/app.h backend/app.c \
 	backend/camera.h backend/camera.c \
@@ -54,7 +66,8 @@ libcapa_frontend_la_CFLAGS = \
 	$(GTHREAD_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(GLADE2_CFLAGS) \
-	$(WARNING_CFLAGS)
+	$(WARNING_CFLAGS) \
+	-DPKGDATADIR="\"$(pkgdatadir)\""
 
 
 
@@ -75,6 +88,10 @@ capa_CFLAGS = \
 	$(WARNING_CFLAGS)
 
 
-CLEANFILES = *~ \\\#*
+%.desktop: $(srcdir)/%.desktop.in
+	sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
+
+
+CLEANFILES = *~ \\\#* $(desktop_DATA)
 
 -include $(top_srcdir)/git.mk

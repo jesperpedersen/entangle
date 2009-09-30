@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <glade/glade.h>
+#include <unistd.h>
 
 #include "camera-info.h"
 #include "camera.h"
@@ -241,7 +242,10 @@ static void capa_camera_info_init(CapaCameraInfo *info)
 
   priv = info->priv = CAPA_CAMERA_INFO_GET_PRIVATE(info);
 
-  priv->glade = glade_xml_new("capa.glade", "camera-info", "capa");
+  if (access("./capa.glade", R_OK) == 0)
+    priv->glade = glade_xml_new("capa.glade", "camera-info", "capa");
+  else
+    priv->glade = glade_xml_new(PKGDATADIR "/capa.glade", "camera-info", "capa");
 
   glade_xml_signal_connect_data(priv->glade, "camera_info_close", G_CALLBACK(do_info_close), info);
   glade_xml_signal_connect_data(priv->glade, "camera_info_delete", G_CALLBACK(do_info_delete), info);

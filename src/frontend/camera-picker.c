@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <glade/glade.h>
+#include <unistd.h>
 
 #include "camera-picker.h"
 
@@ -442,7 +443,10 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
   priv = picker->priv = CAPA_CAMERA_PICKER_GET_PRIVATE(picker);
 
   priv->model = gtk_list_store_new(1, G_TYPE_OBJECT);
-  priv->glade = glade_xml_new("capa.glade", "camera-picker", "capa");
+  if (access("./capa.glade", R_OK) == 0)
+    priv->glade = glade_xml_new("capa.glade", "camera-picker", "capa");
+  else
+    priv->glade = glade_xml_new(PKGDATADIR "/capa.glade", "camera-picker", "capa");
 
   list = glade_xml_get_widget(priv->glade, "camera-list");
 

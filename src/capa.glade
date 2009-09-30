@@ -1390,7 +1390,6 @@ copy of the Program in return for a fee.
                      END OF TERMS AND CONDITIONS
 </property>
     <property name="authors">Daniel P. Berrange &lt;dan-at-berrange-dot-com&gt;</property>
-    <property name="logo">icon.png</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
