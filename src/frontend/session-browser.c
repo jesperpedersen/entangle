@@ -171,3 +171,35 @@ static void capa_session_browser_init(CapaSessionBrowser *browser)
   gtk_icon_view_set_columns(GTK_ICON_VIEW(browser), 1000);
 }
 
+
+CapaImage *capa_session_browser_selected_image(CapaSessionBrowser *browser)
+{
+  CapaSessionBrowserPrivate *priv = browser->priv;
+  GList *items;
+  CapaImage *img = NULL;
+  GtkTreePath *path;
+  GtkTreeIter iter;
+  GValue val;
+
+  items = gtk_icon_view_get_selected_items(GTK_ICON_VIEW(browser));
+
+  if (!items)
+    return NULL;
+
+  path = g_list_nth_data(items, 0);
+  if (!path)
+    goto cleanup;
+
+  if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(priv->model), &iter, path))
+    goto cleanup;
+
+  memset(&val, 0, sizeof val);
+  gtk_tree_model_get_value(GTK_TREE_MODEL(priv->model), &iter, 0, &val);
+
+  img = g_value_get_object(&val);
+
+ cleanup:
+  g_list_foreach(items, (GFunc)(gtk_tree_path_free), NULL);
+  g_list_free(items);
+  return img;
+}

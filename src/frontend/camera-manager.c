@@ -101,20 +101,24 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 }
 
 
-static void do_camera_image(CapaCamera *cam G_GNUC_UNUSED, CapaImage *image, void *data)
+static void do_load_image(CapaCameraManager *manager, CapaImage *image)
 {
-  CapaCameraManager *manager = data;
   CapaCameraManagerPrivate *priv = manager->priv;
   GdkPixbuf *pixbuf;
-
-  gdk_threads_enter();
   pixbuf = gdk_pixbuf_new_from_file(capa_image_filename(image), NULL);
 
   g_object_set(G_OBJECT(priv->imageDisplay),
 	       "pixbuf", pixbuf,
 	       NULL);
   g_object_unref(pixbuf);
+}
 
+static void do_camera_image(CapaCamera *cam G_GNUC_UNUSED, CapaImage *image, void *data)
+{
+  CapaCameraManager *manager = data;
+
+  gdk_threads_enter();
+  do_load_image(manager, image);
   gdk_threads_leave();
 }
 
@@ -655,6 +659,21 @@ static gboolean do_manager_delete(GtkWidget *widget G_GNUC_UNUSED,
 }
 
 
+static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
+				      gpointer data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+  CapaImage *img = capa_session_browser_selected_image(priv->sessionBrowser);
+
+  fprintf(stderr, "Image selection changed\n");
+  if (img) {
+    fprintf(stderr, "Try load\n");
+    do_load_image(manager, img);
+    g_object_unref(G_OBJECT(img));
+  }
+}
+
 
 static void capa_camera_manager_init(CapaCameraManager *manager)
 {
@@ -710,6 +729,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   priv->imageDisplay = capa_image_display_new();
 
   priv->sessionBrowser = capa_session_browser_new();
+
+  g_signal_connect(G_OBJECT(priv->sessionBrowser), "selection-changed",
+		   G_CALLBACK(do_session_image_selected), manager);
 
   imageScroll = glade_xml_get_widget(priv->glade, "image-scroll");
   iconScroll = glade_xml_get_widget(priv->glade, "icon-scroll");

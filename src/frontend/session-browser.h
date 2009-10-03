@@ -23,6 +23,8 @@
 
 #include <gtk/gtk.h>
 
+#include "image.h"
+
 G_BEGIN_DECLS
 
 #define CAPA_TYPE_SESSION_BROWSER            (capa_session_browser_get_type ())
@@ -53,6 +55,8 @@ struct _CapaSessionBrowserClass
 GType capa_session_browser_get_type(void) G_GNUC_CONST;
 
 CapaSessionBrowser* capa_session_browser_new(void);
+
+CapaImage *capa_session_browser_selected_image(CapaSessionBrowser *browser);
 
 G_END_DECLS
 
