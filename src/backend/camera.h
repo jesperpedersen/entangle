@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include "control-group.h"
+#include "image.h"
+#include "session.h"
 
 G_BEGIN_DECLS
 
@@ -49,6 +51,12 @@ struct _CapaCamera
 struct _CapaCameraClass
 {
   GObjectClass parent_class;
+
+  void (*camera_image)(CapaCamera *cam, CapaImage *image);
+  void (*camera_error)(CapaCamera *cam, const char *err);
+
+  void (*camera_op_begin)(CapaCamera *cam);
+  void (*camera_op_end)(CapaCamera *cam);
 };
 
 
@@ -69,13 +77,17 @@ char *capa_camera_summary(CapaCamera *cam);
 char *capa_camera_manual(CapaCamera *cam);
 char *capa_camera_driver(CapaCamera *cam);
 
-int capa_camera_capture(CapaCamera *cam, const char *localpath);
-int capa_camera_preview(CapaCamera *cam, const char *localpath);
+int capa_camera_capture(CapaCamera *cam);
+int capa_camera_preview(CapaCamera *cam);
+int capa_camera_monitor_start(CapaCamera *cam);
+int capa_camera_monitor_end(CapaCamera *cam);
+
 
 gboolean capa_camera_has_capture(CapaCamera *cam);
 gboolean capa_camera_has_preview(CapaCamera *cam);
 gboolean capa_camera_has_settings(CapaCamera *cam);
 
+CapaSession *capa_camera_session(CapaCamera *cam);
 CapaControlGroup *capa_camera_controls(CapaCamera *cam);
 
 G_END_DECLS

@@ -127,6 +127,7 @@ CapaApp *capa_app_new(void)
 {
   CapaApp *app = g_new0(CapaApp, 1);
 
+  app->prefs = capa_preferences_new();
   app->params = capa_params_new();
   app->cameras = capa_camera_list_new();
   app->devManager = capa_device_manager_new();

@@ -89,6 +89,7 @@ static char *capa_find_picture_dir(void)
     ret = g_strdup_printf("Capture");
   }
   g_free(baseDir);
+  fprintf(stderr, "******** PICTURE '%s'\n", ret);
   return ret;
 }
 

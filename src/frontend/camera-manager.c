@@ -51,7 +51,12 @@ struct _CapaCameraManagerPrivate {
 
   int zoomLevel;
 
-  GThread *captureThread;
+  gulong sigImage;
+  gulong sigError;
+  gulong sigOpBegin;
+  gulong sigOpEnd;
+
+  gboolean inOperation;
 
   GladeXML *glade;
 };
@@ -78,11 +83,11 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
   gtk_widget_set_sensitive(toolCapture,
 			   priv->camera &&
 			   capa_camera_has_capture(priv->camera) &&
-			   priv->captureThread == NULL ? TRUE : FALSE);
+			   !priv->inOperation ? TRUE : FALSE);
   gtk_widget_set_sensitive(toolPreview,
 			   priv->camera &&
 			   capa_camera_has_preview(priv->camera) &&
-			   priv->captureThread == NULL ? TRUE : FALSE);
+			   !priv->inOperation ? TRUE : FALSE);
 
   if (priv->camera && !capa_camera_has_capture(priv->camera))
     gtk_widget_set_tooltip_text(toolCapture, "This camera does not support image capture");
@@ -91,6 +96,107 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 
   if (priv->camera && !capa_camera_has_settings(priv->camera))
     gtk_widget_hide(settingsScroll);
+}
+
+
+static void do_camera_image(CapaCamera *cam G_GNUC_UNUSED, CapaImage *image, void *data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GdkPixbuf *pixbuf;
+
+  gdk_threads_enter();
+  pixbuf = gdk_pixbuf_new_from_file(capa_image_filename(image), NULL);
+
+  g_object_set(G_OBJECT(priv->imageDisplay),
+	       "pixbuf", pixbuf,
+	       NULL);
+  g_object_unref(pixbuf);
+
+  gdk_threads_leave();
+}
+
+static void do_camera_error(CapaCamera *cam G_GNUC_UNUSED, const char *err, void *data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  fprintf(stderr, "Something went wrong '%s' %p\n", err, priv);
+}
+
+static void do_camera_op_begin(CapaCamera *cam G_GNUC_UNUSED, void *data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  gdk_threads_enter();
+  capa_camera_progress_show(priv->progress, "Capturing image");
+  gdk_threads_leave();
+}
+
+static void do_camera_op_end(CapaCamera *cam G_GNUC_UNUSED, void *data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  gdk_threads_enter();
+  capa_camera_progress_hide(priv->progress);
+  priv->inOperation = FALSE;
+  do_capture_widget_sensitivity(manager);
+  gdk_threads_leave();
+}
+
+static void do_remove_camera(CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  g_object_set(G_OBJECT(priv->camera),
+	       "progress", NULL,
+	       "session", NULL, NULL);
+
+  g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigImage);
+  g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigError);
+  g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigOpBegin);
+  g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigOpEnd);
+}
+
+static void do_add_camera(CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  char *title;
+  GtkWidget *win;
+  CapaSession *session;
+  char *directory;
+
+  title = g_strdup_printf("%s Camera Manager - Capa",
+			  capa_camera_model(priv->camera));
+
+  win = glade_xml_get_widget(priv->glade, "camera-manager");
+  gtk_window_set_title(GTK_WINDOW(win), title);
+  g_free(title);
+
+  priv->sigImage = g_signal_connect(G_OBJECT(priv->camera), "camera-image",
+				    G_CALLBACK(do_camera_image), manager);
+  priv->sigError = g_signal_connect(G_OBJECT(priv->camera), "camera-error",
+				    G_CALLBACK(do_camera_error), manager);
+  priv->sigOpBegin = g_signal_connect(G_OBJECT(priv->camera), "camera-op-begin",
+				      G_CALLBACK(do_camera_op_begin), manager);
+  priv->sigOpEnd = g_signal_connect(G_OBJECT(priv->camera), "camera-op-end",
+				    G_CALLBACK(do_camera_op_end), manager);
+
+  directory = g_strdup_printf("%s/%s",
+			      capa_preferences_picture_dir(priv->prefs),
+			      capa_camera_model(priv->camera));
+
+  g_mkdir_with_parents(directory, 0777);
+
+  session = capa_session_new(directory);
+  g_object_set(G_OBJECT(priv->camera),
+	       "progress", priv->progress,
+	       "session", session,
+	       NULL);
+  g_object_unref(G_OBJECT(session));
+  g_free(directory);
 }
 
 
@@ -117,6 +223,7 @@ static void capa_camera_manager_get_property(GObject *object,
     }
 }
 
+
 static void capa_camera_manager_set_property(GObject *object,
 					     guint prop_id,
 					     const GValue *value,
@@ -130,31 +237,14 @@ static void capa_camera_manager_set_property(GObject *object,
   switch (prop_id)
     {
     case PROP_CAMERA: {
-      char *title;
-      GtkWidget *win;
-      GValue prog;
       if (priv->camera) {
-	g_object_set_property(G_OBJECT(priv->camera), "progress", NULL);
+	do_remove_camera(manager);
 	g_object_unref(G_OBJECT(priv->camera));
       }
       priv->camera = g_value_get_object(value);
       g_object_ref(G_OBJECT(priv->camera));
 
-      title = g_strdup_printf("%s Camera Manager - Capa",
-			      capa_camera_model(priv->camera));
-
-      win = glade_xml_get_widget(priv->glade, "camera-manager");
-      gtk_window_set_title(GTK_WINDOW(win), title);
-      g_free(title);
-
-      memset(&prog, 0, sizeof prog);
-      g_value_init(&prog, CAPA_TYPE_CAMERA_PROGRESS);
-      g_value_set_object(&prog, priv->progress);
-      fprintf(stderr, "setting\n");
-      g_object_set_property(G_OBJECT(priv->camera), "progress", &prog);
-      g_value_unset(&prog);
-      fprintf(stderr, "done\n");
-
+      do_add_camera(manager);
       do_capture_widget_sensitivity(manager);
     } break;
 
@@ -292,82 +382,6 @@ static void do_manager_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
   capa_camera_info_show(priv->driver);
 }
 
-static void capture_load_image(CapaCameraManager *manager,
-			       const char *localpath)
-{
-  CapaCameraManagerPrivate *priv = manager->priv;
-  GdkPixbuf *pixbuf;
-  pixbuf = gdk_pixbuf_new_from_file(localpath, NULL);
-
-  g_object_set(G_OBJECT(priv->imageDisplay),
-	       "pixbuf", pixbuf,
-	       NULL);
-  g_object_unref(pixbuf);
-}
-
-static gpointer capture_thread(void *data)
-{
-  CapaCameraManager *manager = data;
-  CapaCameraManagerPrivate *priv = manager->priv;
-  char *localpath = g_strdup_printf("%s/%s",
-				    capa_preferences_picture_dir(priv->prefs),
-				    "capture.tiff"); /* XXX sequence*/
-
-  fprintf(stderr, "starting Capture\n");
-  gdk_threads_enter();
-  capa_camera_progress_show(priv->progress, "Capturing image");
-  gdk_threads_leave();
-  capa_camera_capture(priv->camera, localpath);
-
-  gdk_threads_enter();
-  capa_camera_progress_hide(priv->progress);
-
-  capture_load_image(manager, localpath);
-
-  fprintf(stderr, "all done\n");
-
-  priv->captureThread = NULL;
-  do_capture_widget_sensitivity(manager);
-
-  gdk_threads_leave();
-
-  g_free(localpath);
-
-  return NULL;
-}
-
-static gpointer preview_thread(void *data)
-{
-  CapaCameraManager *manager = data;
-  CapaCameraManagerPrivate *priv = manager->priv;
-  char *localpath = g_strdup_printf("%s/%s",
-				    capa_preferences_picture_dir(priv->prefs),
-				    "preview.tiff"); /* XXX sequence*/
-
-  fprintf(stderr, "starting Preview\n");
-  gdk_threads_enter();
-  capa_camera_progress_show(priv->progress, "Capturing image");
-  gdk_threads_leave();
-  capa_camera_preview(priv->camera, localpath);
-
-  gdk_threads_enter();
-  capa_camera_progress_hide(priv->progress);
-
-  capture_load_image(manager, localpath);
-
-  fprintf(stderr, "all done\n");
-
-  priv->captureThread = NULL;
-  do_capture_widget_sensitivity(manager);
-
-  gdk_threads_leave();
-
-  unlink(localpath);
-  g_free(localpath);
-
-  return NULL;
-}
-
 static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 			       CapaCameraManager *manager)
 {
@@ -375,8 +389,12 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 
   fprintf(stderr, "starting Capture thread\n");
 
-  priv->captureThread = g_thread_create(capture_thread, manager, FALSE, NULL);
+  if (priv->inOperation)
+    return;
+
+  priv->inOperation = TRUE;
   do_capture_widget_sensitivity(manager);
+  capa_camera_capture(priv->camera);
 }
 
 static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
@@ -385,9 +403,12 @@ static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
   CapaCameraManagerPrivate *priv = manager->priv;
 
   fprintf(stderr, "starting Preview thread\n");
+  if (priv->inOperation)
+    return;
 
-  priv->captureThread = g_thread_create(preview_thread, manager, FALSE, NULL);
+  priv->inOperation = TRUE;
   do_capture_widget_sensitivity(manager);
+  capa_camera_preview(priv->camera);
 }
 
 
