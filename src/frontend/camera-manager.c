@@ -417,6 +417,20 @@ static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
   capa_camera_preview(priv->camera);
 }
 
+static void do_toolbar_monitor(GtkToolButton *src G_GNUC_UNUSED,
+			       CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  fprintf(stderr, "starting monitor thread\n");
+
+  if (priv->inOperation)
+    return;
+
+  priv->inOperation = TRUE;
+  do_capture_widget_sensitivity(manager);
+  capa_camera_monitor(priv->camera);
+}
 
 static void do_zoom_widget_sensitivity(CapaCameraManager *manager)
 {
@@ -662,6 +676,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
   glade_xml_signal_connect_data(priv->glade, "toolbar_capture_click", G_CALLBACK(do_toolbar_capture), manager);
   glade_xml_signal_connect_data(priv->glade, "toolbar_preview_click", G_CALLBACK(do_toolbar_preview), manager);
+  glade_xml_signal_connect_data(priv->glade, "toolbar_monitor_click", G_CALLBACK(do_toolbar_monitor), manager);
 
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_in_click", G_CALLBACK(do_toolbar_zoom_in), manager);
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_out_click", G_CALLBACK(do_toolbar_zoom_out), manager);

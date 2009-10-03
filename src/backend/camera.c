@@ -523,7 +523,7 @@ static void *do_camera_capture_thread(void *data)
   fprintf(stderr, "Getting file\n");
   if (gp_camera_file_get(priv->cam, camerapath.folder, camerapath.name,
 			 GP_FILE_TYPE_NORMAL, datafile, priv->params->ctx) != GP_OK)
-    goto error;
+    goto error_delete;
 
 
   localpath = capa_session_next_filename(priv->session);
@@ -650,6 +650,129 @@ int capa_camera_preview(CapaCamera *cam)
   return 0;
 }
 
+
+static int do_camera_file_added(CapaCamera *cam,
+				CameraFilePath *camerapath)
+{
+  CapaCameraPrivate *priv = cam->priv;
+  CameraFile *datafile = NULL;
+  const char *localpath;
+  CapaImage *image;
+
+  fprintf(stderr, "captured '%s' '%s'\n", camerapath->folder, camerapath->name);
+
+  gp_file_new(&datafile);
+
+  fprintf(stderr, "Getting file\n");
+  if (gp_camera_file_get(priv->cam, camerapath->folder, camerapath->name,
+			 GP_FILE_TYPE_NORMAL, datafile, priv->params->ctx) != GP_OK)
+    goto error_delete;
+
+  localpath = capa_session_next_filename(priv->session);
+
+  fprintf(stderr, "Saving local file '%s'\n", localpath);
+  if (gp_file_save(datafile, localpath) != GP_OK)
+    goto error_delete;
+
+  gp_file_unref(datafile);
+
+  fprintf(stderr, "Deleting camera file\n");
+  /* XXX should we really do this TBD ? */
+  if (gp_camera_file_delete(priv->cam, camerapath->folder, camerapath->name, priv->params->ctx) != GP_OK)
+    goto error;
+
+  fprintf(stderr, "Done\n");
+
+  image = capa_image_new(localpath);
+  capa_session_add(priv->session, image);
+
+  g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
+
+  g_object_unref(image);
+
+  return 0;
+
+ error_delete:
+  fprintf(stderr, "Error, try delete camera file\n");
+  gp_camera_file_delete(priv->cam, camerapath->folder, camerapath->name, priv->params->ctx);
+
+ error:
+  fprintf(stderr, "Error\n");
+  if (datafile)
+    gp_file_unref(datafile);
+  return -1;
+}
+
+static void *do_camera_monitor_thread(void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+  CameraEventType eventType;
+  void *eventData;
+
+  g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
+
+  fprintf(stderr, "Starting monitor\n");
+  while (!capa_progress_cancelled(priv->progress)) {
+    if (gp_camera_wait_for_event(priv->cam, 500, &eventType, &eventData, priv->params->ctx) != GP_OK) {
+      fprintf(stderr, "Failed capture\n");
+      g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to wait for events");
+      goto cleanup;
+    }
+
+    switch (eventType) {
+    case GP_EVENT_TIMEOUT:
+      /* We just use timeouts to check progress cancellation */
+      break;
+
+    case GP_EVENT_FOLDER_ADDED:
+      /* Don't care about this */
+      break;
+
+    case GP_EVENT_FILE_ADDED:
+      if (do_camera_file_added(cam, eventData) < 0) {
+	g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to process file");
+	goto cleanup;
+      }
+      break;
+
+    case GP_EVENT_UNKNOWN:
+    default:
+      g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unexpected/unknown camera event");
+      fprintf(stderr, "Unknown event type %d\n", eventType);
+      goto cleanup;
+    }
+  }
+
+ cleanup:
+  priv->operation = NULL;
+  g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
+
+  return NULL;
+}
+
+
+int capa_camera_monitor(CapaCamera *cam)
+{
+  CapaCameraPrivate *priv = cam->priv;
+
+  if (priv->cam == NULL)
+    return -1;
+
+  if (priv->operation != NULL)
+    return -1;
+
+  if (priv->session == NULL)
+    return -1;
+
+  /* We need a progress widget in order todo cancellation */
+  if (priv->progress == NULL)
+    return -1;
+
+  priv->operation = g_thread_create(do_camera_monitor_thread, cam, FALSE, NULL);
+
+  return 0;
+}
 
 static int do_process_control(CapaControlGroup *grp,
 			      const char *path,

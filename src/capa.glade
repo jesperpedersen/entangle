@@ -497,6 +497,19 @@
                 <property name="homogeneous">True</property>
               </packing>
             </child>
+            <child>
+              <widget class="GtkToolButton" id="toolbar-monitor">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Monitor</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-jump-to</property>
+                <signal name="clicked" handler="toolbar_monitor_click"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="expand">False</property>

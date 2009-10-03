@@ -79,8 +79,7 @@ char *capa_camera_driver(CapaCamera *cam);
 
 int capa_camera_capture(CapaCamera *cam);
 int capa_camera_preview(CapaCamera *cam);
-int capa_camera_monitor_start(CapaCamera *cam);
-int capa_camera_monitor_end(CapaCamera *cam);
+int capa_camera_monitor(CapaCamera *cam);
 
 
 gboolean capa_camera_has_capture(CapaCamera *cam);
