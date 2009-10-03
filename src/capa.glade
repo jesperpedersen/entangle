@@ -507,6 +507,7 @@
           <widget class="GtkHPaned" id="hpaned1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="border_width">6</property>
             <property name="position">200</property>
             <property name="position_set">True</property>
             <child>
@@ -517,7 +518,6 @@
                   <widget class="GtkScrolledWindow" id="settings-scroll">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="border_width">6</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">etched-in</property>
@@ -544,7 +544,6 @@
                   <widget class="GtkScrolledWindow" id="image-scroll">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="border_width">6</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <child>
@@ -567,7 +566,6 @@
                   <widget class="GtkScrolledWindow" id="icon-scroll">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="border_width">6</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">etched-in</property>
