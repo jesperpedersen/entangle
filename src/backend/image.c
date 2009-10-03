@@ -151,11 +151,32 @@ const char *capa_image_filename(CapaImage *image)
 gboolean capa_image_load(CapaImage *image)
 {
   CapaImagePrivate *priv = image->priv;
+  GdkPixbuf *thumb;
+  int tw, th;
 
   if (stat(priv->filename, &priv->st) < 0) {
     memset(&priv->st, 0, sizeof priv->st);
     return FALSE;
   }
+
+  /* XXX stupidly inefficient to load it here, or in this way.
+   * Switch to a background thread + cached thumbnails as
+   * per fd.o spec */
+  thumb = gdk_pixbuf_new_from_file_at_size(priv->filename,
+					   96, 96, NULL);
+
+  tw = gdk_pixbuf_get_width(thumb);
+  th = gdk_pixbuf_get_height(thumb);
+
+  if (thumb) {
+    gdk_pixbuf_copy_area(thumb,
+			 0, 0,
+			 tw, th,
+			 priv->thumbnail,
+			 (96-tw)/2, (96-th)/2);
+  }
+  g_object_unref(thumb);
+
   return TRUE;
 }
 

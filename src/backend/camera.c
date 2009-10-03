@@ -541,6 +541,8 @@ static void *do_camera_capture_thread(void *data)
   fprintf(stderr, "Done\n");
 
   image = capa_image_new(localpath);
+  /* XXX don't do this here in future */
+  capa_image_load(image);
   capa_session_add(priv->session, image);
 
   g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
