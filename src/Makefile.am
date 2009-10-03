@@ -24,9 +24,11 @@ libcapa_backend_la_SOURCES = \
 	backend/control-group.h backend/control-group.c \
 	backend/control-layout.h backend/control-layout.c \
 	backend/device-manager.h backend/device-manager.c \
+	backend/image.h backend/image.c \
 	backend/progress.h backend/progress.c \
 	backend/preferences.h backend/preferences.c \
-	backend/params.h backend/params.c
+	backend/params.h backend/params.c \
+	backend/session.h backend/session.c
 
 libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
