@@ -785,6 +785,7 @@ static int do_process_control(CapaControlGroup *grp,
   char *fullpath;
   int id;
   const char *label;
+  const char *info;
 
   if (gp_widget_get_type(widget, &type) != GP_OK)
     return -1;
@@ -794,6 +795,9 @@ static int do_process_control(CapaControlGroup *grp,
 
   gp_widget_get_id(widget, &id);
   gp_widget_get_label(widget, &label);
+  gp_widget_get_info(widget, &info);
+  if (info == NULL)
+    info = label;
 
   fullpath = g_strdup_printf("%s/%s", path, name);
 
@@ -836,7 +840,7 @@ static int do_process_control(CapaControlGroup *grp,
       CapaControl *control;
 
       fprintf(stderr, "Add %s %d %s\n", fullpath, id, label);
-      control = capa_control_new(fullpath, id, label);
+      control = capa_control_new(fullpath, id, label, info);
       capa_control_group_add(grp, control);
     } break;
   }

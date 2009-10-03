@@ -53,10 +53,13 @@ struct _CapaControlClass
 GType capa_control_get_type(void) G_GNUC_CONST;
 CapaControl* capa_control_new(const char *path,
 			      int id,
-			      const char *label);
+			      const char *label,
+			      const char *info);
 
 
+int capa_control_id(CapaControl *control);
 const char *capa_control_label(CapaControl *control);
+const char *capa_control_info(CapaControl *control);
 
 G_END_DECLS
 

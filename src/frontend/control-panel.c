@@ -77,7 +77,7 @@ static void do_setup_control_group(CapaControlPanel *panel,
 
       gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
       gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
-      gtk_widget_set_tooltip_text(label, capa_control_label(control));
+      gtk_widget_set_tooltip_text(label, capa_control_info(control));
 
       //gtk_container_add(GTK_CONTAINER(box), subbox);
       //g_object_unref(G_OBJECT(subbox));

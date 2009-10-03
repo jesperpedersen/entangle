@@ -29,6 +29,7 @@ struct _CapaControlPrivate {
   char *path;
   int id;
   char *label;
+  char *info;
 };
 
 G_DEFINE_TYPE(CapaControl, capa_control, G_TYPE_OBJECT);
@@ -38,6 +39,7 @@ enum {
   PROP_PATH,
   PROP_ID,
   PROP_LABEL,
+  PROP_INFO,
 };
 
 static void capa_control_get_property(GObject *object,
@@ -60,6 +62,10 @@ static void capa_control_get_property(GObject *object,
 
     case PROP_LABEL:
       g_value_set_string(value, priv->label);
+      break;
+
+    case PROP_INFO:
+      g_value_set_string(value, priv->info);
       break;
 
     default:
@@ -91,6 +97,11 @@ static void capa_control_set_property(GObject *object,
       priv->label = g_value_dup_string(value);
       break;
 
+    case PROP_INFO:
+      g_free(priv->info);
+      priv->info = g_value_dup_string(value);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
     }
@@ -103,6 +114,7 @@ static void capa_control_finalize (GObject *object)
 
   g_free(priv->path);
   g_free(priv->label);
+  g_free(priv->info);
 
   G_OBJECT_CLASS (capa_control_parent_class)->finalize (object);
 }
@@ -153,16 +165,29 @@ static void capa_control_class_init(CapaControlClass *klass)
 						      G_PARAM_STATIC_NICK |
 						      G_PARAM_STATIC_BLURB));
 
+  g_object_class_install_property(object_class,
+				  PROP_INFO,
+				  g_param_spec_string("info",
+						      "Control info",
+						      "Info of the control",
+						      NULL,
+						      G_PARAM_READWRITE |
+						      G_PARAM_CONSTRUCT_ONLY |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+
   g_type_class_add_private(klass, sizeof(CapaControlPrivate));
 }
 
 
-CapaControl *capa_control_new(const char *path, int id, const char *label)
+CapaControl *capa_control_new(const char *path, int id, const char *label, const char *info)
 {
   return CAPA_CONTROL(g_object_new(CAPA_TYPE_CONTROL,
 				   "path", path,
 				   "id", id,
 				   "label", label,
+				   "info", info,
 				   NULL));
 }
 
@@ -175,9 +200,23 @@ static void capa_control_init(CapaControl *control)
 }
 
 
+int capa_control_id(CapaControl *control)
+{
+  CapaControlPrivate *priv = control->priv;
+
+  return priv->id;
+}
+
 const char *capa_control_label(CapaControl *control)
 {
   CapaControlPrivate *priv = control->priv;
 
   return priv->label;
+}
+
+const char *capa_control_info(CapaControl *control)
+{
+  CapaControlPrivate *priv = control->priv;
+
+  return priv->info;
 }
