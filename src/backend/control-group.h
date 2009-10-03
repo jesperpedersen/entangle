@@ -41,22 +41,27 @@ typedef struct _CapaControlGroupClass CapaControlGroupClass;
 
 struct _CapaControlGroup
 {
-  GObject parent;
+  CapaControl parent;
 
   CapaControlGroupPrivate *priv;
 };
 
 struct _CapaControlGroupClass
 {
-  GObjectClass parent_class;
+  CapaControlClass parent_class;
 };
 
 
 GType capa_control_group_get_type(void) G_GNUC_CONST;
-CapaControlGroup* capa_control_group_new(void);
+CapaControlGroup* capa_control_group_new(const char *path,
+					 int id,
+					 const char *label);
 
 void capa_control_group_add(CapaControlGroup *group,
 			    CapaControl *control);
+
+int capa_control_group_count(CapaControlGroup *group);
+CapaControl *capa_control_group_get(CapaControlGroup *group, int idx);
 
 
 G_END_DECLS

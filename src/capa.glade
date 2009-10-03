@@ -521,21 +521,25 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="border_width">6</property>
-            <property name="position">200</property>
-            <property name="position_set">True</property>
             <child>
-              <widget class="GtkVBox" id="vbox2">
+              <widget class="GtkVBox" id="settings-box">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkScrolledWindow" id="settings-scroll">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">automatic</property>
+                    <property name="hscrollbar_policy">never</property>
                     <property name="vscrollbar_policy">automatic</property>
-                    <property name="shadow_type">etched-in</property>
                     <child>
-                      <placeholder/>
+                      <widget class="GtkViewport" id="settings-viewport">
+                        <property name="visible">True</property>
+                        <property name="resize_mode">queue</property>
+                        <property name="shadow_type">etched-in</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </widget>
                     </child>
                   </widget>
                   <packing>

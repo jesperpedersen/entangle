@@ -55,6 +55,9 @@ CapaControl* capa_control_new(const char *path,
 			      int id,
 			      const char *label);
 
+
+const char *capa_control_label(CapaControl *control);
+
 G_END_DECLS
 
 #endif /* __CONTROL__ */

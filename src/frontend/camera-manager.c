@@ -30,6 +30,7 @@
 #include "image-display.h"
 #include "help-about.h"
 #include "session-browser.h"
+#include "control-panel.h"
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_MANAGER, CapaCameraManagerPrivate))
@@ -49,7 +50,7 @@ struct _CapaCameraManagerPrivate {
 
   CapaImageDisplay *imageDisplay;
   CapaSessionBrowser *sessionBrowser;
-  //GtkImage *imageDisplay;
+  CapaControlPanel *controlPanel;
 
   int zoomLevel;
 
@@ -207,6 +208,10 @@ static void do_add_camera(CapaCameraManager *manager)
 	       "session", session,
 	       NULL);
 
+  g_object_set(G_OBJECT(priv->controlPanel),
+	       "camera", priv->camera,
+	       NULL);
+
   g_object_unref(G_OBJECT(session));
   g_free(directory);
 }
@@ -283,6 +288,9 @@ static void capa_camera_manager_finalize (GObject *object)
   if (priv->prefs)
     g_object_unref(G_OBJECT(priv->prefs));
 
+  g_object_unref(G_OBJECT(priv->controlPanel));
+  g_object_unref(G_OBJECT(priv->imageDisplay));
+  g_object_unref(G_OBJECT(priv->sessionBrowser));
   g_object_unref(G_OBJECT(priv->progress));
   g_object_unref(priv->glade);
 
@@ -682,6 +690,8 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   GtkWidget *display;
   GtkWidget *imageScroll;
   GtkWidget *iconScroll;
+  GtkWidget *settingsBox;
+  GtkWidget *settingsViewport;
   GtkWidget *win;
 
   priv = manager->priv = CAPA_CAMERA_MANAGER_GET_PRIVATE(manager);
@@ -727,14 +737,16 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   viewport = glade_xml_get_widget(priv->glade, "image-viewport");
 
   priv->imageDisplay = capa_image_display_new();
-
   priv->sessionBrowser = capa_session_browser_new();
+  priv->controlPanel = capa_control_panel_new();
 
   g_signal_connect(G_OBJECT(priv->sessionBrowser), "selection-changed",
 		   G_CALLBACK(do_session_image_selected), manager);
 
   imageScroll = glade_xml_get_widget(priv->glade, "image-scroll");
   iconScroll = glade_xml_get_widget(priv->glade, "icon-scroll");
+  settingsBox = glade_xml_get_widget(priv->glade, "settings-box");
+  settingsViewport = glade_xml_get_widget(priv->glade, "settings-viewport");
   display = glade_xml_get_widget(priv->glade, "display-panel");
 
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(iconScroll),
@@ -745,11 +757,13 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   gtk_container_child_set(GTK_CONTAINER(display), iconScroll, "resize", FALSE, NULL);
 
   /* XXX match icon size + padding + scrollbar needs */
+  gtk_widget_set_size_request(settingsBox, 250, 100);
   gtk_widget_set_size_request(iconScroll, 140, 140);
 
   fprintf(stderr, "Adding %p to %p\n", priv->imageDisplay, viewport);
   gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
   gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
+  gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));
   do_zoom_widget_sensitivity(manager);
   do_capture_widget_sensitivity(manager);
 }
@@ -760,6 +774,7 @@ void capa_camera_manager_show(CapaCameraManager *manager)
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
 
   gtk_widget_show(win);
+  gtk_widget_show(GTK_WIDGET(priv->controlPanel));
   gtk_widget_show(GTK_WIDGET(priv->imageDisplay));
   gtk_widget_show(GTK_WIDGET(priv->sessionBrowser));
   gtk_window_present(GTK_WINDOW(win));

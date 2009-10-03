@@ -22,7 +22,6 @@ libcapa_backend_la_SOURCES = \
 	backend/camera-list.h backend/camera-list.c \
 	backend/control.h backend/control.c \
 	backend/control-group.h backend/control-group.c \
-	backend/control-layout.h backend/control-layout.c \
 	backend/device-manager.h backend/device-manager.c \
 	backend/image.h backend/image.c \
 	backend/progress.h backend/progress.c \
@@ -54,6 +53,7 @@ libcapa_frontend_la_SOURCES = \
 	frontend/camera-manager.h frontend/camera-manager.c \
 	frontend/camera-progress.h frontend/camera-progress.c \
 	frontend/camera-picker.h frontend/camera-picker.c \
+	frontend/control-panel.h frontend/control-panel.c \
 	frontend/image-display.h frontend/image-display.c \
 	frontend/help-about.h frontend/help-about.c \
 	frontend/session-browser.h frontend/session-browser.c

@@ -30,7 +30,7 @@ struct _CapaControlGroupPrivate {
   CapaControl **controls;
 };
 
-G_DEFINE_TYPE(CapaControlGroup, capa_control_group, G_TYPE_OBJECT);
+G_DEFINE_TYPE(CapaControlGroup, capa_control_group, CAPA_TYPE_CONTROL);
 
 
 static void capa_control_group_finalize (GObject *object)
@@ -56,9 +56,15 @@ static void capa_control_group_class_init(CapaControlGroupClass *klass)
 }
 
 
-CapaControlGroup *capa_control_group_new(void)
+CapaControlGroup *capa_control_group_new(const char *path,
+					 int id,
+					 const char *label)
 {
-  return CAPA_CONTROL_GROUP(g_object_new(CAPA_TYPE_CONTROL_GROUP, NULL));
+  return CAPA_CONTROL_GROUP(g_object_new(CAPA_TYPE_CONTROL_GROUP,
+					 "path", path,
+					 "id", id,
+					 "label", label,
+					 NULL));
 }
 
 
@@ -79,3 +85,21 @@ void capa_control_group_add(CapaControlGroup *group,
   g_object_ref(G_OBJECT(control));
 }
 
+
+int capa_control_group_count(CapaControlGroup *group)
+{
+  CapaControlGroupPrivate *priv = group->priv;
+
+  return priv->ncontrol;
+}
+
+
+CapaControl *capa_control_group_get(CapaControlGroup *group, int idx)
+{
+  CapaControlGroupPrivate *priv = group->priv;
+
+  if (idx < 0 || idx >= priv->ncontrol)
+    return NULL;
+
+  return priv->controls[idx];
+}

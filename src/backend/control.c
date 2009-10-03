@@ -129,15 +129,17 @@ static void capa_control_class_init(CapaControlClass *klass)
 
   g_object_class_install_property(object_class,
 				  PROP_ID,
-				  g_param_spec_string("id",
-						      "Control id",
-						      "Id of the control",
-						      NULL,
-						      G_PARAM_READWRITE |
-						      G_PARAM_CONSTRUCT_ONLY |
-						      G_PARAM_STATIC_NAME |
-						      G_PARAM_STATIC_NICK |
-						      G_PARAM_STATIC_BLURB));
+				  g_param_spec_int("id",
+						   "Control id",
+						   "Id of the control",
+						   0,
+						   G_MAXINT,
+						   0,
+						   G_PARAM_READWRITE |
+						   G_PARAM_CONSTRUCT_ONLY |
+						   G_PARAM_STATIC_NAME |
+						   G_PARAM_STATIC_NICK |
+						   G_PARAM_STATIC_BLURB));
 
   g_object_class_install_property(object_class,
 				  PROP_LABEL,
@@ -165,10 +167,17 @@ CapaControl *capa_control_new(const char *path, int id, const char *label)
 }
 
 
-static void capa_control_init(CapaControl *picker)
+static void capa_control_init(CapaControl *control)
 {
   CapaControlPrivate *priv;
 
-  priv = picker->priv = CAPA_CONTROL_GET_PRIVATE(picker);
+  priv = control->priv = CAPA_CONTROL_GET_PRIVATE(control);
 }
 
+
+const char *capa_control_label(CapaControl *control)
+{
+  CapaControlPrivate *priv = control->priv;
+
+  return priv->label;
+}

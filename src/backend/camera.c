@@ -781,9 +781,10 @@ static int do_process_control(CapaControlGroup *grp,
 			      CameraWidget *widget)
 {
   CameraWidgetType type;
-  CapaControl *control;
   const char *name;
   char *fullpath;
+  int id;
+  const char *label;
 
   if (gp_widget_get_type(widget, &type) != GP_OK)
     return -1;
@@ -791,13 +792,15 @@ static int do_process_control(CapaControlGroup *grp,
   if (gp_widget_get_name(widget, &name) != GP_OK)
     return -1;
 
+  gp_widget_get_id(widget, &id);
+  gp_widget_get_label(widget, &label);
+
   fullpath = g_strdup_printf("%s/%s", path, name);
 
   switch (type) {
   case GP_WIDGET_WINDOW:
-  case GP_WIDGET_SECTION:
     {
-      fprintf(stderr, "Recurse %s\n", fullpath);
+      fprintf(stderr, "Toplevel %s\n", fullpath);
       for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
 	CameraWidget *child;
 	if (gp_widget_get_child(widget, i, &child) != GP_OK)
@@ -807,12 +810,30 @@ static int do_process_control(CapaControlGroup *grp,
       }
     } break;
 
+  case GP_WIDGET_SECTION:
+    {
+      CapaControlGroup *subgrp;
+      subgrp = capa_control_group_new(fullpath, id, label);
+
+      fprintf(stderr, "Recurse %s\n", fullpath);
+      for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+	CameraWidget *child;
+	if (gp_widget_get_child(widget, i, &child) != GP_OK) {
+	  g_object_unref(G_OBJECT(subgrp));
+	  goto error;
+	}
+	if (do_process_control(subgrp, fullpath, child) < 0) {
+	  g_object_unref(G_OBJECT(subgrp));
+	  goto error;
+	}
+      }
+
+      capa_control_group_add(grp, CAPA_CONTROL(subgrp));
+    } break;
+
   default:
     {
-      int id;
-      const char *label;
-      gp_widget_get_id(widget, &id);
-      gp_widget_get_label(widget, &label);
+      CapaControl *control;
 
       fprintf(stderr, "Add %s %d %s\n", fullpath, id, label);
       control = capa_control_new(fullpath, id, label);
@@ -827,11 +848,12 @@ static int do_process_control(CapaControlGroup *grp,
   return -1;
 }
 
+
 CapaControlGroup *capa_camera_controls(CapaCamera *cam)
 {
   CapaCameraPrivate *priv = cam->priv;
   CameraWidget *win = NULL;
-  CapaControlGroup *grp;
+  CapaControlGroup *group;
 
   if (priv->cam == NULL)
     return NULL;
@@ -839,16 +861,16 @@ CapaControlGroup *capa_camera_controls(CapaCamera *cam)
   if (gp_camera_get_config(priv->cam, &win, priv->params->ctx) != GP_OK)
     return NULL;
 
-  grp = capa_control_group_new();
+  group = capa_control_group_new("/", 0, "Settings");
 
-  if (do_process_control(grp, "", win) < 0) {
-    g_object_unref(grp);
-    grp = NULL;
+  if (do_process_control(group, "", win) < 0) {
+    g_object_unref(group);
+    group = NULL;
   }
 
   gp_widget_unref(win);
 
-  return grp;
+  return group;
 }
 
 gboolean capa_camera_has_capture(CapaCamera *cam)
