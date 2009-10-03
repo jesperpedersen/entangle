@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdlib.h>
 
 #include "session.h"
 #include "image.h"
@@ -31,6 +34,8 @@
 
 struct _CapaSessionPrivate {
   char *directory;
+  char *filenamePattern;
+  int nextFilenameDigit;
 
   GList *images;
 };
@@ -40,12 +45,13 @@ G_DEFINE_TYPE(CapaSession, capa_session, G_TYPE_OBJECT);
 enum {
   PROP_0,
   PROP_DIRECTORY,
+  PROP_FILENAME_PATTERN,
 };
 
 static void capa_session_get_property(GObject *object,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *pspec)
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *pspec)
 {
   CapaSession *picker = CAPA_SESSION(object);
   CapaSessionPrivate *priv = picker->priv;
@@ -54,6 +60,11 @@ static void capa_session_get_property(GObject *object,
     {
     case PROP_DIRECTORY:
       g_value_set_string(value, priv->directory);
+      g_mkdir_with_parents(priv->directory, 0777);
+      break;
+
+    case PROP_FILENAME_PATTERN:
+      g_value_set_string(value, priv->filenamePattern);
       break;
 
     default:
@@ -62,9 +73,9 @@ static void capa_session_get_property(GObject *object,
 }
 
 static void capa_session_set_property(GObject *object,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *pspec)
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *pspec)
 {
   CapaSession *picker = CAPA_SESSION(object);
   CapaSessionPrivate *priv = picker->priv;
@@ -74,6 +85,12 @@ static void capa_session_set_property(GObject *object,
     case PROP_DIRECTORY:
       g_free(priv->directory);
       priv->directory = g_value_dup_string(value);
+      break;
+
+    case PROP_FILENAME_PATTERN:
+      g_free(priv->filenamePattern);
+      priv->filenamePattern = g_value_dup_string(value);
+      priv->nextFilenameDigit = 0;
       break;
 
     default:
@@ -102,6 +119,7 @@ static void capa_session_finalize(GObject *object)
     g_list_free(priv->images);
   }
 
+  g_free(priv->filenamePattern);
   g_free(priv->directory);
 
   G_OBJECT_CLASS (capa_session_parent_class)->finalize (object);
@@ -128,15 +146,29 @@ static void capa_session_class_init(CapaSessionClass *klass)
                                                       G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
 
+  g_object_class_install_property(object_class,
+                                  PROP_FILENAME_PATTERN,
+                                  g_param_spec_string("filename-pattern",
+                                                      "Filename patern",
+                                                      "Pattern for creating new filenames",
+                                                      NULL,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_CONSTRUCT_ONLY |
+                                                      G_PARAM_STATIC_NAME |
+                                                      G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
+
   g_type_class_add_private(klass, sizeof(CapaSessionPrivate));
 }
 
 
-CapaSession *capa_session_new(const char *directory)
+CapaSession *capa_session_new(const char *directory,
+			      const char *filenamePattern)
 {
   return CAPA_SESSION(g_object_new(CAPA_TYPE_SESSION,
-				 "directory", directory,
-				 NULL));
+				   "directory", directory,
+				   "filename-pattern", filenamePattern,
+				   NULL));
 }
 
 
@@ -154,6 +186,86 @@ const char *capa_session_directory(CapaSession *session)
 
   return priv->directory;
 }
+
+const char *capa_session_filename_pattern(CapaSession *session)
+{
+  CapaSessionPrivate *priv = session->priv;
+
+  return priv->filenamePattern;
+}
+
+char *capa_session_next_filename(CapaSession *session)
+{
+  CapaSessionPrivate *priv = session->priv;
+  const char *template = strchr(priv->filenamePattern, 'X');
+  const char *postfix;
+  char *prefix;
+  char *format;
+  char *filename;
+  int i;
+  int max;
+  int ndigits;
+
+  fprintf(stderr, "NEXT FILENAME '%s'\n", template);
+
+  if (!template)
+    return NULL;
+
+  postfix = template;
+  while (*postfix == 'X')
+    postfix++;
+
+  prefix = g_strndup(priv->filenamePattern,
+		     template - priv->filenamePattern);
+
+  ndigits = postfix - template;
+
+  for (max = 1, i = 0 ; i < ndigits ; i++)
+    max *= 10;
+
+  format = g_strdup_printf("%%s/%%s%%0%dd%%s", ndigits);
+
+  fprintf(stderr, "TEST %d (%d) possible with '%s' prefix='%s' postfix='%s'\n", max, ndigits, format, prefix, postfix);
+
+  for (i = priv->nextFilenameDigit ; i < max ; i++) {
+    filename = g_strdup_printf(format, priv->directory,
+			       prefix, i, postfix);
+
+    fprintf(stderr, "Test filename '%s'\n", filename);
+    if (access(filename, R_OK) < 0) {
+      if (errno != ENOENT) {
+	g_free(filename);
+	filename = NULL;
+      }
+      /* Cache digit offset to avoid stat() sooo many files next time */
+      priv->nextFilenameDigit = i + 1;
+      break;
+    }
+    g_free(filename);
+    filename = NULL;
+  }
+
+  g_free(prefix);
+  g_free(format);
+  return filename;
+}
+
+
+char *capa_session_temp_filename(CapaSession *session)
+{
+  CapaSessionPrivate *priv = session->priv;
+  char *pattern = g_strdup_printf("%s/%s", priv->directory, "previewXXXXXX");
+  int fd = mkstemp(pattern);
+
+  if (fd < 0) {
+    g_free(pattern);
+    return NULL;
+  }
+
+  close(fd);
+  return pattern;
+}
+
 
 void capa_session_add(CapaSession *session, CapaImage *image)
 {

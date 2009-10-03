@@ -33,6 +33,7 @@
 
 struct _CapaPreferencesPrivate {
   char *pictureDir;
+  char *filenamePattern;
 };
 
 G_DEFINE_TYPE(CapaPreferences, capa_preferences, G_TYPE_OBJECT);
@@ -40,6 +41,7 @@ G_DEFINE_TYPE(CapaPreferences, capa_preferences, G_TYPE_OBJECT);
 enum {
   PROP_0,
   PROP_PICTURE_DIR,
+  PROP_FILENAME_PATTERN,
 };
 
 
@@ -107,6 +109,10 @@ static void capa_preferences_get_property(GObject *object,
       g_value_set_string(value, priv->pictureDir);
       break;
 
+    case PROP_FILENAME_PATTERN:
+      g_value_set_string(value, priv->filenamePattern);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
     }
@@ -127,6 +133,11 @@ static void capa_preferences_set_property(GObject *object,
       priv->pictureDir = g_value_dup_string(value);
       break;
 
+    case PROP_FILENAME_PATTERN:
+      g_free(priv->filenamePattern);
+      priv->filenamePattern = g_value_dup_string(value);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
     }
@@ -141,6 +152,7 @@ static void capa_preferences_finalize(GObject *object)
   fprintf(stderr, "Finalize preferences %p\n", object);
 
   g_free(priv->pictureDir);
+  g_free(priv->filenamePattern);
 
   G_OBJECT_CLASS (capa_preferences_parent_class)->finalize (object);
 }
@@ -165,15 +177,24 @@ static void capa_preferences_class_init(CapaPreferencesClass *klass)
                                                       G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
 
+  g_object_class_install_property(object_class,
+                                  PROP_FILENAME_PATTERN,
+                                  g_param_spec_string("filename-pattern",
+                                                      "Filename pattern",
+                                                      "Pattern for creating new filenames",
+                                                      NULL,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_STATIC_NAME |
+                                                      G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
+
   g_type_class_add_private(klass, sizeof(CapaPreferencesPrivate));
 }
 
 
 CapaPreferences *capa_preferences_new(void)
 {
-  return CAPA_PREFERENCES(g_object_new(CAPA_TYPE_PREFERENCES,
-				       "picture-dir", capa_find_picture_dir(),
-				       NULL));
+  return CAPA_PREFERENCES(g_object_new(CAPA_TYPE_PREFERENCES, NULL));
 }
 
 
@@ -182,6 +203,9 @@ static void capa_preferences_init(CapaPreferences *picker)
   CapaPreferencesPrivate *priv;
 
   priv = picker->priv = CAPA_PREFERENCES_GET_PRIVATE(picker);
+
+  priv->pictureDir = capa_find_picture_dir();
+  priv->filenamePattern = g_strdup("captureXXXXXX.tiff");
 }
 
 
@@ -190,4 +214,12 @@ const char *capa_preferences_picture_dir(CapaPreferences *prefs)
   CapaPreferencesPrivate *priv = prefs->priv;
 
   return priv->pictureDir;
+}
+
+
+const char *capa_preferences_filename_pattern(CapaPreferences *prefs)
+{
+  CapaPreferencesPrivate *priv = prefs->priv;
+
+  return priv->filenamePattern;
 }

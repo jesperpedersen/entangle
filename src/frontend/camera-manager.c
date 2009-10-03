@@ -188,9 +188,15 @@ static void do_add_camera(CapaCameraManager *manager)
 			      capa_preferences_picture_dir(priv->prefs),
 			      capa_camera_model(priv->camera));
 
-  g_mkdir_with_parents(directory, 0777);
+  session = capa_session_new(directory,
+			     capa_preferences_filename_pattern(priv->prefs));
 
-  session = capa_session_new(directory);
+  fprintf(stderr, "New session '%s' '%s' -> '%s' '%s'\n",
+	  capa_session_directory(session),
+	  capa_session_filename_pattern(session),
+	  capa_session_next_filename(session),
+	  capa_session_temp_filename(session));
+
   g_object_set(G_OBJECT(priv->camera),
 	       "progress", priv->progress,
 	       "session", session,

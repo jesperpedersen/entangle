@@ -58,6 +58,8 @@ CapaPreferences *capa_preferences_new(void);
 
 const char *capa_preferences_picture_dir(CapaPreferences *prefs);
 
+const char *capa_preferences_filename_pattern(CapaPreferences *prefs);
+
 G_END_DECLS
 
 #endif /* __CAPA_PREFERENCES__ */

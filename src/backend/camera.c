@@ -526,9 +526,7 @@ static void *do_camera_capture_thread(void *data)
     goto error;
 
 
-  localpath = g_strdup_printf("%s/%s",
-			      capa_session_directory(priv->session),
-			      camerapath.name);
+  localpath = capa_session_next_filename(priv->session);
 
   fprintf(stderr, "Saving local file '%s'\n", localpath);
   if (gp_file_save(datafile, localpath) != GP_OK)
@@ -603,9 +601,7 @@ static void *do_camera_preview_thread(void *data)
     goto error;
   }
 
-  localpath = g_strdup_printf("%s/%s",
-			      capa_session_directory(priv->session),
-			      "preview.tiff");
+  localpath = capa_session_temp_filename(priv->session),
 
   fprintf(stderr, "Saving file '%s'\n", localpath);
   if (gp_file_save(datafile, localpath) != GP_OK)

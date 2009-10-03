@@ -57,9 +57,14 @@ struct _CapaSessionClass
 
 GType capa_session_get_type(void) G_GNUC_CONST;
 
-CapaSession *capa_session_new(const char *directory);
+CapaSession *capa_session_new(const char *directory,
+			      const char *filenamePattern);
 
 const char *capa_session_directory(CapaSession *session);
+const char *capa_session_filename_pattern(CapaSession *session);
+
+char *capa_session_next_filename(CapaSession *session);
+char *capa_session_temp_filename(CapaSession *session);
 
 gboolean capa_session_load(CapaSession *session);
 
