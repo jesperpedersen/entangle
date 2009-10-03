@@ -583,10 +583,7 @@
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">etched-in</property>
                     <child>
-                      <widget class="GtkIconView" id="icon-viewer">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                      </widget>
+                      <placeholder/>
                     </child>
                   </widget>
                   <packing>

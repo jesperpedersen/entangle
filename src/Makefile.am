@@ -32,6 +32,7 @@ libcapa_backend_la_SOURCES = \
 
 libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
+	$(GDK_PIXBUF_LIBS) \
 	$(GPHOTO2_LIBS) \
 	$(HAL_LIBS) \
 	$(DBUS_GLIB_LIBS) \
@@ -39,6 +40,7 @@ libcapa_backend_la_LDFLAGS = \
 
 libcapa_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
+	$(GDK_PIXBUF_CFLAGS) \
 	$(GPHOTO2_CFLAGS) \
 	$(HAL_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
@@ -53,7 +55,8 @@ libcapa_frontend_la_SOURCES = \
 	frontend/camera-progress.h frontend/camera-progress.c \
 	frontend/camera-picker.h frontend/camera-picker.c \
 	frontend/image-display.h frontend/image-display.c \
-	frontend/help-about.h frontend/help-about.c
+	frontend/help-about.h frontend/help-about.c \
+	frontend/session-browser.h frontend/session-browser.c
 
 libcapa_frontend_la_LIBADD = libcapa_backend.la
 

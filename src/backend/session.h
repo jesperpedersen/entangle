@@ -73,6 +73,10 @@ gboolean capa_session_load(CapaSession *session);
 
 void capa_session_add(CapaSession *session, CapaImage *image);
 
+int capa_session_image_count(CapaSession *session);
+
+CapaImage *capa_session_image_get(CapaSession *session, int idx);
+
 G_END_DECLS
 
 #endif /* __CAPA_SESSION__ */

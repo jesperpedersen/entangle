@@ -30,6 +30,8 @@
 struct _CapaImagePrivate {
   char *filename;
 
+  GdkPixbuf *thumbnail;
+
   gboolean hasStat;
   struct stat st;
 };
@@ -88,6 +90,9 @@ static void capa_image_finalize(GObject *object)
 
   fprintf(stderr, "Finalize image %p\n", object);
 
+  if (priv->thumbnail)
+    g_object_unref(G_OBJECT(priv->thumbnail));
+
   g_free(priv->filename);
 
   G_OBJECT_CLASS (capa_image_parent_class)->finalize (object);
@@ -131,6 +136,9 @@ static void capa_image_init(CapaImage *picker)
   CapaImagePrivate *priv;
 
   priv = picker->priv = CAPA_IMAGE_GET_PRIVATE(picker);
+
+  priv->thumbnail = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 96, 96);
+  gdk_pixbuf_fill(priv->thumbnail, 0x000000FF);
 }
 
 
@@ -163,4 +171,12 @@ off_t capa_image_file_size(CapaImage *image)
   CapaImagePrivate *priv = image->priv;
 
   return priv->st.st_mtime;
+}
+
+
+GdkPixbuf *capa_image_thumbnail(CapaImage *image)
+{
+  CapaImagePrivate *priv = image->priv;
+
+  return priv->thumbnail;
 }

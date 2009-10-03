@@ -314,6 +314,8 @@ gboolean capa_session_load(CapaSession *session)
     char *filename = g_strdup_printf("%s/%s", priv->directory, ent->d_name);
     CapaImage *image = capa_image_new(filename);
 
+    fprintf(stderr, "Loading '%s'\n", filename);
+
     if (capa_image_load(image))
       capa_session_add(session, image);
 
@@ -322,4 +324,18 @@ gboolean capa_session_load(CapaSession *session)
   closedir(dh);
 
   return TRUE;
+}
+
+int capa_session_image_count(CapaSession *session)
+{
+  CapaSessionPrivate *priv = session->priv;
+
+  return g_list_length(priv->images);
+}
+
+CapaImage *capa_session_image_get(CapaSession *session, int idx)
+{
+  CapaSessionPrivate *priv = session->priv;
+
+  return g_list_nth_data(priv->images, idx);
 }
