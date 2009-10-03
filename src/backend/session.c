@@ -134,6 +134,26 @@ static void capa_session_class_init(CapaSessionClass *klass)
   object_class->get_property = capa_session_get_property;
   object_class->set_property = capa_session_set_property;
 
+  g_signal_new("session-image-added",
+               G_TYPE_FROM_CLASS(klass),
+               G_SIGNAL_RUN_FIRST,
+               G_STRUCT_OFFSET(CapaSessionClass, session_image_added),
+               NULL, NULL,
+               g_cclosure_marshal_VOID__OBJECT,
+               G_TYPE_NONE,
+               1,
+               CAPA_TYPE_IMAGE);
+
+  g_signal_new("session-image-removed",
+               G_TYPE_FROM_CLASS(klass),
+               G_SIGNAL_RUN_FIRST,
+               G_STRUCT_OFFSET(CapaSessionClass, session_image_removed),
+               NULL, NULL,
+               g_cclosure_marshal_VOID__OBJECT,
+               G_TYPE_NONE,
+               1,
+               CAPA_TYPE_IMAGE);
+
   g_object_class_install_property(object_class,
                                   PROP_DIRECTORY,
                                   g_param_spec_string("directory",
@@ -273,6 +293,8 @@ void capa_session_add(CapaSession *session, CapaImage *image)
 
   g_object_ref(G_OBJECT(image));
   priv->images = g_list_prepend(priv->images, image);
+
+  g_signal_emit_by_name(G_OBJECT(session), "session-image-added", image);
 }
 
 gboolean capa_session_load(CapaSession *session)

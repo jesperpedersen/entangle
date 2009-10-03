@@ -52,6 +52,9 @@ struct _CapaSession
 struct _CapaSessionClass
 {
   GObjectClass parent_class;
+
+  void (*session_image_added)(CapaSession *session, CapaImage *image);
+  void (*session_image_removed)(CapaSession *session, CapaImage *image);
 };
 
 
