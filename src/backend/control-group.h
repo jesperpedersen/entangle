@@ -55,7 +55,8 @@ struct _CapaControlGroupClass
 GType capa_control_group_get_type(void) G_GNUC_CONST;
 CapaControlGroup* capa_control_group_new(const char *path,
 					 int id,
-					 const char *label);
+					 const char *label,
+					 const char *info);
 
 void capa_control_group_add(CapaControlGroup *group,
 			    CapaControl *control);

@@ -25,6 +25,13 @@
 #include "camera.h"
 #include "params.h"
 #include "progress.h"
+#include "control-button.h"
+#include "control-choice.h"
+#include "control-date.h"
+#include "control-group.h"
+#include "control-range.h"
+#include "control-text.h"
+#include "control-toggle.h"
 
 #define CAPA_CAMERA_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA, CapaCameraPrivate))
@@ -776,11 +783,11 @@ int capa_camera_monitor(CapaCamera *cam)
   return 0;
 }
 
-static int do_process_control(CapaControlGroup *grp,
-			      const char *path,
-			      CameraWidget *widget)
+static CapaControl *do_build_controls(const char *path,
+				      CameraWidget *widget)
 {
   CameraWidgetType type;
+  CapaControl *ret = NULL;
   const char *name;
   char *fullpath;
   int id;
@@ -788,10 +795,10 @@ static int do_process_control(CapaControlGroup *grp,
   const char *info;
 
   if (gp_widget_get_type(widget, &type) != GP_OK)
-    return -1;
+    return NULL;
 
   if (gp_widget_get_name(widget, &name) != GP_OK)
-    return -1;
+    return NULL;
 
   gp_widget_get_id(widget, &id);
   gp_widget_get_label(widget, &label);
@@ -802,54 +809,82 @@ static int do_process_control(CapaControlGroup *grp,
   fullpath = g_strdup_printf("%s/%s", path, name);
 
   switch (type) {
+    /* We treat both window and section as just groups */
   case GP_WIDGET_WINDOW:
-    {
-      fprintf(stderr, "Toplevel %s\n", fullpath);
-      for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
-	CameraWidget *child;
-	if (gp_widget_get_child(widget, i, &child) != GP_OK)
-	  goto error;
-	if (do_process_control(grp, fullpath, child) < 0)
-	  goto error;
-      }
-    } break;
-
   case GP_WIDGET_SECTION:
     {
-      CapaControlGroup *subgrp;
-      subgrp = capa_control_group_new(fullpath, id, label);
-
-      fprintf(stderr, "Recurse %s\n", fullpath);
+      CapaControlGroup *grp;
+      fprintf(stderr, "Add group %s %d %s\n", fullpath, id, label);
+      grp = capa_control_group_new(fullpath, id, label, info);
       for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
 	CameraWidget *child;
+	CapaControl *subctl;
 	if (gp_widget_get_child(widget, i, &child) != GP_OK) {
-	  g_object_unref(G_OBJECT(subgrp));
+	  g_object_unref(G_OBJECT(grp));
 	  goto error;
 	}
-	if (do_process_control(subgrp, fullpath, child) < 0) {
-	  g_object_unref(G_OBJECT(subgrp));
+	if (!(subctl = do_build_controls(fullpath, child))) {
+	  g_object_unref(G_OBJECT(grp));
 	  goto error;
 	}
+
+	capa_control_group_add(grp, subctl);
       }
 
-      capa_control_group_add(grp, CAPA_CONTROL(subgrp));
+      ret = CAPA_CONTROL(grp);
     } break;
 
-  default:
+  case GP_WIDGET_BUTTON:
     {
-      CapaControl *control;
+      fprintf(stderr, "Add button %s %d %s\n", fullpath, id, label);
+      ret = CAPA_CONTROL(capa_control_button_new(fullpath, id, label, info));
+    } break;
 
-      fprintf(stderr, "Add %s %d %s\n", fullpath, id, label);
-      control = capa_control_new(fullpath, id, label, info);
-      capa_control_group_add(grp, control);
+    /* Unclear why these two are the same in libgphoto */
+  case GP_WIDGET_RADIO:
+  case GP_WIDGET_MENU:
+    {
+      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      ret = CAPA_CONTROL(capa_control_choice_new(fullpath, id, label, info));
+
+      for (int i = 0 ; i < gp_widget_count_choices(widget) ; i++) {
+	const char *value;
+	gp_widget_get_choice(widget, i, &value);
+	capa_control_choice_add_value(CAPA_CONTROL_CHOICE(ret), value);
+      }
+    } break;
+
+  case GP_WIDGET_DATE:
+    {
+      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      ret = CAPA_CONTROL(capa_control_date_new(fullpath, id, label, info));
+    } break;
+
+  case GP_WIDGET_RANGE:
+    {
+      float min, max, step;
+      gp_widget_get_range(widget, &min, &max, &step);
+      fprintf(stderr, "Add range %s %d %s %f %f %f\n", fullpath, id, label, min, max, step);
+      ret = CAPA_CONTROL(capa_control_range_new(fullpath, id, label, info,
+						min, max, step));
+    } break;
+
+  case GP_WIDGET_TEXT:
+    {
+      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      ret = CAPA_CONTROL(capa_control_text_new(fullpath, id, label, info));
+    } break;
+
+  case GP_WIDGET_TOGGLE:
+    {
+      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      ret = CAPA_CONTROL(capa_control_toggle_new(fullpath, id, label, info));
     } break;
   }
 
-  return 0;
-
-  error:
+ error:
   g_free(fullpath);
-  return -1;
+  return ret;
 }
 
 
@@ -857,7 +892,7 @@ CapaControlGroup *capa_camera_controls(CapaCamera *cam)
 {
   CapaCameraPrivate *priv = cam->priv;
   CameraWidget *win = NULL;
-  CapaControlGroup *group;
+  CapaControl *group;
 
   if (priv->cam == NULL)
     return NULL;
@@ -865,16 +900,10 @@ CapaControlGroup *capa_camera_controls(CapaCamera *cam)
   if (gp_camera_get_config(priv->cam, &win, priv->params->ctx) != GP_OK)
     return NULL;
 
-  group = capa_control_group_new("/", 0, "Settings");
-
-  if (do_process_control(group, "", win) < 0) {
-    g_object_unref(group);
-    group = NULL;
-  }
-
+  group = do_build_controls("", win);
   gp_widget_unref(win);
 
-  return group;
+  return CAPA_CONTROL_GROUP(group);
 }
 
 gboolean capa_camera_has_capture(CapaCamera *cam)

@@ -21,12 +21,18 @@ libcapa_backend_la_SOURCES = \
 	backend/camera.h backend/camera.c \
 	backend/camera-list.h backend/camera-list.c \
 	backend/control.h backend/control.c \
+	backend/control-button.h backend/control-button.c \
+	backend/control-choice.h backend/control-choice.c \
+	backend/control-date.h backend/control-date.c \
 	backend/control-group.h backend/control-group.c \
+	backend/control-range.h backend/control-range.c \
+	backend/control-text.h backend/control-text.c \
+	backend/control-toggle.h backend/control-toggle.c \
 	backend/device-manager.h backend/device-manager.c \
 	backend/image.h backend/image.c \
-	backend/progress.h backend/progress.c \
-	backend/preferences.h backend/preferences.c \
 	backend/params.h backend/params.c \
+	backend/preferences.h backend/preferences.c \
+	backend/progress.h backend/progress.c \
 	backend/session.h backend/session.c
 
 libcapa_backend_la_LDFLAGS = \
@@ -54,8 +60,8 @@ libcapa_frontend_la_SOURCES = \
 	frontend/camera-progress.h frontend/camera-progress.c \
 	frontend/camera-picker.h frontend/camera-picker.c \
 	frontend/control-panel.h frontend/control-panel.c \
-	frontend/image-display.h frontend/image-display.c \
 	frontend/help-about.h frontend/help-about.c \
+	frontend/image-display.h frontend/image-display.c \
 	frontend/session-browser.h frontend/session-browser.c
 
 libcapa_frontend_la_LIBADD = libcapa_backend.la

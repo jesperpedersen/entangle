@@ -58,12 +58,14 @@ static void capa_control_group_class_init(CapaControlGroupClass *klass)
 
 CapaControlGroup *capa_control_group_new(const char *path,
 					 int id,
-					 const char *label)
+					 const char *label,
+					 const char *info)
 {
   return CAPA_CONTROL_GROUP(g_object_new(CAPA_TYPE_CONTROL_GROUP,
 					 "path", path,
 					 "id", id,
 					 "label", label,
+					 "info", info,
 					 NULL));
 }
 

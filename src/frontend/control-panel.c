@@ -21,7 +21,13 @@
 #include <string.h>
 
 #include "control-panel.h"
-#include "control.h"
+#include "control-button.h"
+#include "control-choice.h"
+#include "control-date.h"
+#include "control-group.h"
+#include "control-range.h"
+#include "control-text.h"
+#include "control-toggle.h"
 
 #define CAPA_CONTROL_PANEL_GET_PRIVATE(obj) \
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL_PANEL, CapaControlPanelPrivate))
@@ -70,22 +76,82 @@ static void do_setup_control_group(CapaControlPanel *panel,
       //g_object_unref(G_OBJECT(subbox));
 
       do_setup_control_group(panel, GTK_VBOX(subbox), CAPA_CONTROL_GROUP(control));
-    } else {
-      //GtkWidget *subbox = gtk_hbox_new(FALSE, 6);
-      GtkWidget *label = gtk_label_new(capa_control_label(control));
-      GtkWidget *entry = gtk_entry_new();
+    } else if (CAPA_IS_CONTROL_BUTTON(control)) {
+      GtkWidget *value;
 
+      value = gtk_button_new_with_label(capa_control_label(control));
+      gtk_container_add(GTK_CONTAINER(box), value);
+    } else if (CAPA_IS_CONTROL_CHOICE(control)) {
+      GtkWidget *label;
+      GtkWidget *value;
+
+      /*
+       * Need todo better here
+       *
+       *  If there's only two entries 0/1, turn into toggle
+       *  If there's a continuous sequence of numbers turn
+       *      into a spinbutton
+       *
+       *  Some sequences of numbers are nonsene, and need to
+       *  be turned in to real labels.
+       *
+       *   eg Shutter speed 0.00025 should be presented 1/4000
+       */
+
+      label = gtk_label_new(capa_control_label(control));
       gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
       gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
       gtk_widget_set_tooltip_text(label, capa_control_info(control));
-
-      //gtk_container_add(GTK_CONTAINER(box), subbox);
-      //g_object_unref(G_OBJECT(subbox));
-
-      //gtk_container_add(GTK_CONTAINER(subbox), label);
-      //gtk_container_add(GTK_CONTAINER(subbox), entry);
       gtk_container_add(GTK_CONTAINER(box), label);
-      gtk_container_add(GTK_CONTAINER(box), entry);
+
+      value = gtk_combo_box_new_text();
+      for (int n = 0 ; n < capa_control_choice_value_count(CAPA_CONTROL_CHOICE(control)) ; n++)
+	gtk_combo_box_append_text(GTK_COMBO_BOX(value),
+				  capa_control_choice_value_get(CAPA_CONTROL_CHOICE(control), n));
+      gtk_container_add(GTK_CONTAINER(box), value);
+    } else if (CAPA_IS_CONTROL_DATE(control)) {
+      GtkWidget *label;
+      GtkWidget *value;
+
+      label = gtk_label_new(capa_control_label(control));
+      gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+      gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
+      gtk_widget_set_tooltip_text(label, capa_control_info(control));
+      gtk_container_add(GTK_CONTAINER(box), label);
+
+      value = gtk_entry_new();
+      gtk_container_add(GTK_CONTAINER(box), value);
+    } else if (CAPA_IS_CONTROL_RANGE(control)) {
+      GtkWidget *label;
+      GtkWidget *value;
+
+      label = gtk_label_new(capa_control_label(control));
+      gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+      gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
+      gtk_widget_set_tooltip_text(label, capa_control_info(control));
+      gtk_container_add(GTK_CONTAINER(box), label);
+
+      value = gtk_hscale_new_with_range(capa_control_range_get_min(CAPA_CONTROL_RANGE(control)),
+					capa_control_range_get_max(CAPA_CONTROL_RANGE(control)),
+					capa_control_range_get_step(CAPA_CONTROL_RANGE(control)));
+      gtk_container_add(GTK_CONTAINER(box), value);
+    } else if (CAPA_IS_CONTROL_TEXT(control)) {
+      GtkWidget *label;
+      GtkWidget *value;
+
+      label = gtk_label_new(capa_control_label(control));
+      gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+      gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
+      gtk_widget_set_tooltip_text(label, capa_control_info(control));
+      gtk_container_add(GTK_CONTAINER(box), label);
+
+      value = gtk_entry_new();
+      gtk_container_add(GTK_CONTAINER(box), value);
+    } else if (CAPA_IS_CONTROL_TOGGLE(control)) {
+      GtkWidget *value;
+
+      value = gtk_check_button_new_with_label(capa_control_label(control));
+      gtk_container_add(GTK_CONTAINER(box), value);
     }
   }
 }

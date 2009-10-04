@@ -32,7 +32,7 @@ struct _CapaControlPrivate {
   char *info;
 };
 
-G_DEFINE_TYPE(CapaControl, capa_control, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE(CapaControl, capa_control, G_TYPE_OBJECT);
 
 enum {
   PROP_0,

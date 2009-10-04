@@ -757,7 +757,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   gtk_container_child_set(GTK_CONTAINER(display), iconScroll, "resize", FALSE, NULL);
 
   /* XXX match icon size + padding + scrollbar needs */
-  gtk_widget_set_size_request(settingsBox, 250, 100);
+  gtk_widget_set_size_request(settingsBox, 300, 100);
   gtk_widget_set_size_request(iconScroll, 140, 140);
 
   fprintf(stderr, "Adding %p to %p\n", priv->imageDisplay, viewport);
