@@ -280,7 +280,7 @@ static void capa_camera_class_init(CapaCameraClass *klass)
 				  g_param_spec_object("progress",
 						      "Progress updater",
 						      "Operation progress updater",
-						      CAPA_PROGRESS_TYPE,
+						      CAPA_TYPE_PROGRESS,
 						      G_PARAM_READWRITE |
 						      G_PARAM_STATIC_NAME |
 						      G_PARAM_STATIC_NICK |

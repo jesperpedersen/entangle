@@ -45,7 +45,7 @@ static void capa_camera_progress_interface_init (gpointer g_iface,
 
 //G_DEFINE_TYPE(CapaCameraProgress, capa_camera_progress, G_TYPE_OBJECT);
 G_DEFINE_TYPE_EXTENDED(CapaCameraProgress, capa_camera_progress, G_TYPE_OBJECT, 0,
-		       G_IMPLEMENT_INTERFACE(CAPA_PROGRESS_TYPE, capa_camera_progress_interface_init));
+		       G_IMPLEMENT_INTERFACE(CAPA_TYPE_PROGRESS, capa_camera_progress_interface_init));
 
 
 static void capa_camera_progress_finalize (GObject *object)

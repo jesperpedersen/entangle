@@ -27,10 +27,10 @@
 
 G_BEGIN_DECLS
 
-#define CAPA_PROGRESS_TYPE                (capa_progress_get_type ())
-#define CAPA_PROGRESS(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_PROGRESS_TYPE, CapaProgress))
-#define CAPA_IS_PROGRESS(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_PROGRESS_TYPE))
-#define CAPA_PROGRESS_GET_INTERFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), CAPA_PROGRESS_TYPE, CapaProgressInterface))
+#define CAPA_TYPE_PROGRESS                (capa_progress_get_type ())
+#define CAPA_PROGRESS(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_TYPE_PROGRESS, CapaProgress))
+#define CAPA_IS_PROGRESS(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_TYPE_PROGRESS))
+#define CAPA_PROGRESS_GET_INTERFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), CAPA_TYPE_PROGRESS, CapaProgressInterface))
 
 typedef struct _CapaProgress CapaProgress; /* dummy object */
 typedef struct _CapaProgressInterface CapaProgressInterface;
