@@ -1,14 +1,20 @@
 
 PAGES = $(wildcard *.html.in)
 TEMPLATES = page.html navigation.html
+IMAGES = $(wildcard *.png)
+STYLES = $(wildcard *.css)
 
-websitedir = $(datadir)/docs/$(PACKAGE)-$(VERSION)/web
-website_DATA = $(PAGES:%.html.in=%.html)
+HTMLPAGES = $(PAGES:%.html.in=%.html)
+
+websitedir = $(datadir)/$(PACKAGE)/website
+website_DATA = $(HTMLPAGES) $(IMAGES) $(STYLES)
+
+EXTRA_DIST = $(TEMPLATES) $(PAGES) $(IMAGES) $(STYLES)
 
 %.html: %.html.in $(TEMPLATES)
 	$(TPAGE) $< > $@
 
-CLEANFILES = $(website_DATA)
+CLEANFILES = $(HTMLPAGES)
 
 GITIGNOREFILES = $(CLEANFILES)
 

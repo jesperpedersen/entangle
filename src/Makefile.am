@@ -12,7 +12,7 @@ desktop_DATA_IN = capa.desktop.in
 desktop_DATA = capa.desktop
 
 icondir = $(pkgdatadir)
-icon_DATA = $(PACKAGE).svg $(PACKAGE).png
+icon_DATA = $(PACKAGE).svg $(wildcard *.png)
 
 EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA)
 

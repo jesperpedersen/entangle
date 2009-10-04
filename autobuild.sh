@@ -28,7 +28,7 @@ make
 make install
 
 rm -f *.tar.gz
-make dist
+make distcheck
 
 if [ -n "$AUTOBUILD_COUNTER" ]; then
   EXTRA_RELEASE=".auto$AUTOBUILD_COUNTER"

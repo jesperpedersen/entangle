@@ -1,6 +1,6 @@
 # -*- rpm-spec -*-
 
-Summary: Capa Assists Photograph Acquisition
+Summary: Tethered shooting & control of digital cameras
 Name: capa
 Version: @VERSION@
 Release: 1%{?dist}%{?extra_release}
@@ -16,6 +16,7 @@ BuildRequires: libgphoto2 >= 2.4.7
 BuildRequires: libglade2 >= 2.6.0
 BuildRequires: hal-libs >= 0.5.10
 BuildRequires: dbus-glib >= 0.60
+BuildRequires: /usr/bin/tpage
 
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
@@ -52,12 +53,17 @@ update-desktop-database %{_datadir}/applications
 %files
 %defattr(-, root, root)
 %doc README COPYING AUTHORS NEWS ChangeLog
-%doc docs/website/
 %{_bindir}/capa
 %{_datadir}/%{name}/%{name}.glade
-%{_datadir}/%{name}/%{name}.png
+%{_datadir}/%{name}/%{name}-16x16.png
+%{_datadir}/%{name}/%{name}-32x32.png
+%{_datadir}/%{name}/%{name}-48x48.png
+%{_datadir}/%{name}/%{name}-64x64.png
+%{_datadir}/%{name}/%{name}-128x128.png
+%{_datadir}/%{name}/%{name}-256x256.png
 %{_datadir}/%{name}/%{name}.svg
 %{_datadir}/applications/%{name}.desktop
+%doc %{_datadir}/%{name}/website/
 
 %changelog
 * Wed Sep 30 2009 Daniel P. Berrange <berrange@redhat.com> - 0.0.1-1
