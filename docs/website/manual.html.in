@@ -1,0 +1,10 @@
+[% SET
+   title = "User manual" %]
+
+[% WRAPPER page.html %]
+
+<p>
+  It would be a good idea if somewhere were to write a user manual :-)
+</p>
+
+[% END %]

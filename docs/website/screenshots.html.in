@@ -1,0 +1,7 @@
+[% SET
+   title = "Screenshots" %]
+
+[% WRAPPER page.html %]
+
+
+[% END %]

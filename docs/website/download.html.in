@@ -1,0 +1,10 @@
+[% SET
+   title = "Download official releases" %]
+
+[% WRAPPER page.html %]
+
+<p>
+  At this time there are no official releases, check back soon
+</p>
+
+[% END %]

@@ -1,0 +1,23 @@
+[% SET
+   title = "Source code management" %]
+
+[% WRAPPER page.html %]
+
+<p>
+  Capa uses GIT for managing source code. Don't be afraid.
+</p>
+
+<p>
+  The code is browseable</a> online
+</p>
+<pre>
+  <a href="http://gitorious.org/capa/capa">http://gitorious.org/capa/capa</a>
+</pre>
+<p>
+  Or get a direct local checkout using
+</p>
+<pre>
+  # git clone git://gitorious.org/capa/capa.git
+</pre>
+
+[% END %]

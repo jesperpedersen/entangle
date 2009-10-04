@@ -10,4 +10,6 @@ website_DATA = $(PAGES:%.html.in=%.html)
 
 CLEANFILES = $(website_DATA)
 
+GITIGNOREFILES = $(CLEANFILES)
+
 -include $(top_srcdir)/git.mk

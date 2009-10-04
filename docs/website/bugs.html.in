@@ -1,0 +1,26 @@
+[% SET
+   title = "Bug and feature tracking" %]
+
+[% WRAPPER page.html %]
+
+<h2>Viewing bug and feature reports</h2>
+
+<p>
+  There will be a bug tracker a
+</p>
+
+<h2>Reporting new bugs</h2>
+
+<p>
+  If the GUI is crashing then before filing a bug report, collect
+  basic debugging information using the <code>--debug-capa</code>
+  command line flag
+</p>
+
+<p>
+  If a camera is not behaving well with Capa, then before filing
+  a bug report, collect gphoto2 debugging information using the
+  <code>--debug-gphoto</code> command line flag
+</p>
+
+[% END %]

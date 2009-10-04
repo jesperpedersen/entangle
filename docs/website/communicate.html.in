@@ -1,0 +1,10 @@
+[% SET
+   title = "Communicate with development team" %]
+
+[% WRAPPER page.html %]
+
+<p>
+  There will be mailing lists....
+</p>
+
+[% END %]

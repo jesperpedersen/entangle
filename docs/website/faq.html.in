@@ -1,0 +1,38 @@
+[% SET
+   title = "Frequently Asked Questions" %]
+
+[% WRAPPER page.html %]
+
+<dl>
+  <dt>Where does the name come from ?</dt>
+  <dd>
+    <p>The original desire was to have a name which met the following criteria</p>
+    <ul>
+      <li>Recursive acronym</li>
+      <li>Easily typed short format</li>
+      <li>No clashes with existing projects on <a href="http://freshmeat.net">freshmeat</a></li>
+      <li>No clashes with other photography apps <a href="http://google.com">on google</a></li>
+      <li>Derived from / related to the word 'capture'</li>
+    </ul>
+    <p>
+      After a little brainstorming the result was <code>Capa: Capa Assists Photograph Acquisition</code>.
+    </p>
+  </dd>
+  <dt>What license is the code under?</dt>
+  <dd><p>The <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL v3+</a></p></dd>
+  <dt>What does the build process depend on?</dt>
+  <dd>
+    <p>At the time of writing the required build depedancies are:</p>
+    <ul>
+      <li><a href="http://gphoto.org/">libgphoto >= 2.4.7</a></li>
+      <li><a href="http://gtk.org">glib >= 2.10.0</a></li>
+      <li><a href="http://gtk.org">gtk >= 2.12.0</a></li>
+      <li><a href="http://gtk.org">glade >= 2.6.0</a></li>
+      <li><a href="http://freedesktop.org/wiki/Software/hal">HAL >= 0.5.0</a></li>
+      <li><a href="http://freedesktop.org/wiki/Software/hal">dbus-glib >= 0.60</a></li>
+
+    </ul>
+  </dd>
+</dl>
+
+[% END %]

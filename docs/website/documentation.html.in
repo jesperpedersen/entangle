@@ -1,0 +1,14 @@
+[% SET
+   title = "Documentation" %]
+
+[% WRAPPER page.html %]
+
+<ul>
+  <li>Everyone wants to see <a href="screenshots.html">screenshots</a></li>
+  <li>To learn about using Capa try <a href="manual.html">the manual</a></li>
+  <li>Before asking a question, read the <a href="faq.html">Frequently Asked Questions</a><li>
+  <li>Look at the <a href="todo.html">Todo</a> list to see what's coming next</li>
+</ul>
+
+
+[% END %]

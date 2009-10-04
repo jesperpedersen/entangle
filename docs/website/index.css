@@ -58,7 +58,7 @@ body {
 
     /* The next <h1> spills out of header, so force this down
        to botom to avoid covering hyperlinks */
-    z-index: -100;
+    z-index: -1;
 }
 
 #header h1 {
@@ -71,6 +71,10 @@ body {
     padding: 1em;
 }
 
+#header h1 a {
+    color: inherit;
+    text-decoration: none;
+}
 
 #footer {
     color: #888;
@@ -84,7 +88,7 @@ body {
     margin: 2em;
 }
 
-#navigation a {
+#navigation a, #content a {
     color: #2c3b5f;
 }
 
@@ -161,3 +165,10 @@ li.settings {
     list-style: url(item-settings.png);
 }
 
+dl dt {
+    font-weight: bold;
+}
+
+dl dd {
+    margin-bottom: 2em;
+}

@@ -1,0 +1,34 @@
+[% SET
+   title = "Todo items &amp; ideas for future work" %]
+
+[% WRAPPER page.html %]
+
+<h2>Core planned, but missing functionality</h2>
+
+<ul>
+  <li>New/open/close of sessions</li>
+  <li>Custimizable camera setting control layouts</li>
+  <li>Handle disconnect &amp; re-connect of camera while manager is open</li>
+  <li>Automatic refresh of settings from camera to track changes</li>
+  <li>Preferences dialog w/ gconf(?) backend</li>
+  <li>Track camera based off serial number + model</li>
+</ul>
+
+<h2>Important scalability work</h2>
+
+<ul>
+  <li>Load all images in background threads</li>
+  <li>Use the freedesktop thumbnail spec for caching thumbnails</li>
+</ul>
+
+<h2>Ideas for future "cool stuff"</h2>
+
+<ul>
+  <li>Ability to configure camera settings from image EXIF tags</li>
+  <li>Add support for libgudev as option instead of HAL</li>
+  <li>Automatically unmount gvfs volumes to allow camera use</li>
+  <li>Allow tear-off windows for thumbnails to allow larger comparisons</li>
+  <li>Real fullscreen mode where menus, settings, thumbnails &amp; toolbar are hidden</li>
+</ul>
+
+[% END %]
