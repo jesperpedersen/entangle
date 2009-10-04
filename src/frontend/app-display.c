@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <gtk/gtk.h>
 
 #include "internal.h"
@@ -189,6 +190,25 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
   capa_camera_picker_hide(picker);
 }
 
+static void do_set_icons(void)
+{
+  GList *icons = NULL;
+  int iconSizes[] = { 16, 32, 48, 64, 128, 0 };
+
+  for (int i = 0 ; iconSizes[i] != 0 ; i++) {
+    char *local = g_strdup_printf("./capa-%dx%d.png", iconSizes[i], iconSizes[i]);
+    if (access(local, R_OK) < 0) {
+      g_free(local);
+      local = g_strdup_printf("%s/capa-%dx%d.png", PKGDATADIR, iconSizes[i], iconSizes[i]);
+    }
+    GdkPixbuf *pix = gdk_pixbuf_new_from_file(local, NULL);
+    if (pix)
+      icons = g_list_append(icons, pix);
+  }
+
+  gtk_window_set_default_icon_list(icons);
+}
+
 static void capa_app_display_init(CapaAppDisplay *display)
 {
   CapaAppDisplayPrivate *priv;
@@ -203,6 +223,8 @@ static void capa_app_display_init(CapaAppDisplay *display)
   g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
   g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
   g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), display);
+
+  do_set_icons();
 }
 
 

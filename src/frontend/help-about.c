@@ -102,7 +102,10 @@ static void capa_help_about_init(CapaHelpAbout *about)
   g_signal_connect(G_OBJECT(win), "delete-event", G_CALLBACK(do_about_delete), about);
   g_signal_connect(G_OBJECT(win), "response", G_CALLBACK(do_about_response), about);
 
-  buf = gdk_pixbuf_new_from_file(PKGDATADIR "/" PACKAGE ".svg", NULL);
+  if (access("./capa-256x256.png", R_OK) < 0)
+    buf = gdk_pixbuf_new_from_file(PKGDATADIR "/capa-256x256.png", NULL);
+  else
+    buf = gdk_pixbuf_new_from_file("./capa-256x256.png", NULL);
   gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(win),buf);
 
   gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(win), VERSION);
