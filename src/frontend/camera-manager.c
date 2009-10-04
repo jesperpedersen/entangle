@@ -288,9 +288,6 @@ static void capa_camera_manager_finalize (GObject *object)
   if (priv->prefs)
     g_object_unref(G_OBJECT(priv->prefs));
 
-  g_object_unref(G_OBJECT(priv->controlPanel));
-  g_object_unref(G_OBJECT(priv->imageDisplay));
-  g_object_unref(G_OBJECT(priv->sessionBrowser));
   g_object_unref(G_OBJECT(priv->progress));
   g_object_unref(priv->glade);
 
