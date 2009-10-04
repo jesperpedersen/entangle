@@ -1,6 +1,9 @@
 
 /************************** LAYOUT ************************/
 
+
+@import url(jquery.fancybox/jquery.fancybox.css);
+
 /* Reset default page padding / margins */
 body, html {
     padding: 0px;
@@ -199,6 +202,8 @@ div.screenshot p img {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    border: 0px;
+    width: 300px;
 }
 
 #footer p {

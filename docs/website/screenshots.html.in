@@ -3,9 +3,20 @@
 
 [% WRAPPER page.html %]
 
+<script type="text/javascript">
+$(document).ready(function() {
+    $("a.fb").fancybox({
+        'hideOnContentClick': true,
+        'overlayOpacity': 0.9,
+        'overlayShow': true,
+        'padding': '20',
+    });
+});
+</script>
+
 <div class="screenshot">
   <p class="image">
-    <img src="screenshot-camera-pick-none.png" alt="Camera picker">
+    <a title="Camera picker with no devices present" class="fb" rel="fb" href="screenshot-camera-pick-none.png"><img src="screenshot-camera-pick-none.png" alt="Camera picker"></a>
   </p>
   <p>
     If you don't have any cameras connected then there isn't
@@ -17,7 +28,7 @@
 
 <div class="screenshot">
   <p class="image">
-    <img src="screenshot-camera-pick-one.png" alt="Camera picker">
+    <a title="Camera picker with a couple of devices" class="fb" rel="fb" href="screenshot-camera-pick-one.png"><img src="screenshot-camera-pick-one.png" alt="Camera picker"></a>
   </p>
   <p>
     Once you've plugged in a camera or two you'll want to decide
@@ -29,7 +40,7 @@
 
 <div class="screenshot">
   <p class="image">
-    <img src="screenshot-camera-in-use.png" alt="Camera In Use">
+    <a title="Error when camera cannot be accessed" class="fb" rel="fb" href="screenshot-camera-in-use.png"><img src="screenshot-camera-in-use.png" alt="Camera In Use"></a>
   </p>
   <p>
     Recent Linux desktops may well have a plugin which automatically
@@ -42,7 +53,7 @@
 
 <div class="screenshot">
   <p class="image">
-    <img style="width: 500px" src="screenshot-camera-manager.png" alt="Camera Manager">
+    <a title="Main camera shooting &amp; control display" class="fb" rel="fb" href="screenshot-camera-manager.png"><img src="screenshot-camera-manager.png" alt="Camera Manager"></a>
   </p>
   <p>
     Once connected to a camera, the real fun can begin. The main
@@ -65,7 +76,7 @@
 
 <div class="screenshot">
   <p class="image">
-    <img src="screenshot-progress.png" alt="Camera Progress">
+    <a title="Camera capture operation progress" class="fb" rel="fb" href="screenshot-progress.png"><img src="screenshot-progress.png" alt="Camera Progress"></a>
   </p>
   <p>
     Some operations done on the camera can take a while to complete.
@@ -76,7 +87,7 @@
 
 <div class="screenshot">
   <p class="image">
-    <img style="width: 400px" src="screenshot-camera-info.png" alt="Camera Info">
+    <a title="Camera capabilities and driver information" class="fb" rel="fb" href="screenshot-camera-info.png"><img src="screenshot-camera-info.png" alt="Camera Info"></a>
   </p>
   <p>
     The gphoto library provides a short overview of all the
@@ -87,7 +98,7 @@
 
 <div class="screenshot">
   <p class="image">
-    <img src="screenshot-about.png" alt="About dialog">
+    <a title="Application about screen" class="fb" rel="fb" href="screenshot-about.png"><img src="screenshot-about.png" alt="About dialog"></a>
   </p>
   <p>
     The about dialog isn't the most interesting part of the application,

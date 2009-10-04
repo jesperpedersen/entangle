@@ -6,10 +6,15 @@ STYLES = $(wildcard *.css)
 
 HTMLPAGES = $(PAGES:%.html.in=%.html)
 
+FANCYBOX = $(wildcard jquery.fancybox/*.png) $(wildcard jquery.fancybox/*.js) $(wildcard jquery.fancybox/*.css)
+
 websitedir = $(datadir)/$(PACKAGE)/website
 website_DATA = $(HTMLPAGES) $(IMAGES) $(STYLES)
 
-EXTRA_DIST = $(TEMPLATES) $(PAGES) $(IMAGES) $(STYLES)
+fancyboxdir = $(websitedir)/jquery.fancybox
+fancybox_DATA = $(FANCYBOX)
+
+EXTRA_DIST = $(TEMPLATES) $(PAGES) $(IMAGES) $(STYLES) $(FANCYBOX)
 
 %.html: %.html.in $(TEMPLATES)
 	$(TPAGE) $< > $@
