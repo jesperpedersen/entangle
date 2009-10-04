@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "internal.h"
 #include "params.h"
 
 static void do_capa_log(GPLogLevel level G_GNUC_UNUSED,
@@ -30,17 +31,19 @@ static void do_capa_log(GPLogLevel level G_GNUC_UNUSED,
 			va_list args,
 			void *data G_GNUC_UNUSED)
 {
-  fprintf(stderr, "%s: ", domain);
-  vfprintf(stderr, format, args);
-  fprintf(stderr, "\n");
+  char *msg = g_strdup_vprintf(format, args);
+  g_debug("%s: %s", domain, msg);
 }
 
 CapaParams *capa_params_new(void)
 {
   CapaParams *params = g_new0(CapaParams, 1);
+  static gboolean log_added = FALSE;
 
-  if (getenv("CAPA_DEBUG"))
+  if (capa_debug_gphoto && !log_added) {
+    log_added = TRUE;
     gp_log_add_func(GP_LOG_DEBUG, do_capa_log, NULL);
+  }
 
   params->ctx = gp_context_new();
 
@@ -56,7 +59,7 @@ CapaParams *capa_params_new(void)
   if (gp_port_info_list_load(params->ports) != GP_OK)
     goto error;
 
-  fprintf(stderr, "New params %p\n", params);
+  CAPA_DEBUG("New params %p", params);
 
   return params;
 
@@ -80,7 +83,7 @@ void capa_params_free(CapaParams *params)
   if (!params)
     return;
 
-  fprintf(stderr, "Free params %p\n", params);
+  CAPA_DEBUG("Free params %p", params);
 
   if (params->ports)
     gp_port_info_list_free(params->ports);

@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include "internal.h"
 #include "image-display.h"
 
 #define CAPA_IMAGE_DISPLAY_GET_PRIVATE(obj) \
@@ -76,7 +77,7 @@ static void capa_image_display_set_property(GObject *object,
   CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
   CapaImageDisplayPrivate *priv = display->priv;
 
-  fprintf(stderr, "Set prop on image display %d\n", prop_id);
+  CAPA_DEBUG("Set prop on image display %d", prop_id);
 
   switch (prop_id)
     {
@@ -89,7 +90,7 @@ static void capa_image_display_set_property(GObject *object,
       if (GTK_WIDGET_VISIBLE(object))
 	gtk_widget_queue_resize(GTK_WIDGET(object));
       else
-	fprintf(stderr, "not visible\n");
+	CAPA_DEBUG("not visible");
       break;
 
     case PROP_AUTOSCALE:
@@ -178,9 +179,9 @@ static gboolean capa_image_display_expose(GtkWidget *widget,
   sx = iw / pw;
   sy = ih / ph;
 
-  fprintf(stderr, "Got win %dx%d image %dx%d, autoscale=%d scale=%lf\n",
+  CAPA_DEBUG("Got win %dx%d image %dx%d, autoscale=%d scale=%lf",
 	  ww, wh, pw, ph, priv->autoscale ? 1 : 0, priv->scale);
-  fprintf(stderr, "Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf\n", iw, ih, mx, my, sx, sy);
+  CAPA_DEBUG("Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf", iw, ih, mx, my, sx, sy);
 
 
   cr = gdk_cairo_create(widget->window);
@@ -229,7 +230,7 @@ static void capa_image_display_size_request(GtkWidget *widget,
   if (!priv->pixbuf) {
     requisition->width = 100;
     requisition->height = 100;
-    fprintf(stderr, "No image, size request 100,100\n");
+    CAPA_DEBUG("No image, size request 100,100");
     return;
   }
 
@@ -250,7 +251,7 @@ static void capa_image_display_size_request(GtkWidget *widget,
     }
   }
 
-  fprintf(stderr, "Size request %d %d\n", requisition->width, requisition->height);
+  CAPA_DEBUG("Size request %d %d", requisition->width, requisition->height);
 }
 
 static void capa_image_display_class_init(CapaImageDisplayClass *klass)

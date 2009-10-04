@@ -23,6 +23,7 @@
 #include <glade/glade.h>
 #include <unistd.h>
 
+#include "internal.h"
 #include "camera-manager.h"
 #include "camera-list.h"
 #include "camera-info.h"
@@ -128,7 +129,7 @@ static void do_camera_error(CapaCamera *cam G_GNUC_UNUSED, const char *err, void
   CapaCameraManager *manager = data;
   CapaCameraManagerPrivate *priv = manager->priv;
 
-  fprintf(stderr, "Something went wrong '%s' %p\n", err, priv);
+  CAPA_DEBUG("Something went wrong '%s' %p", err, priv);
 }
 
 static void do_camera_op_begin(CapaCamera *cam G_GNUC_UNUSED, void *data)
@@ -249,7 +250,7 @@ static void capa_camera_manager_set_property(GObject *object,
   CapaCameraManager *manager = CAPA_CAMERA_MANAGER(object);
   CapaCameraManagerPrivate *priv = manager->priv;
 
-  fprintf(stderr, "Set prop %d\n", prop_id);
+  CAPA_DEBUG("Set prop %d", prop_id);
 
   switch (prop_id)
     {
@@ -281,7 +282,7 @@ static void capa_camera_manager_finalize (GObject *object)
   CapaCameraManager *manager = CAPA_CAMERA_MANAGER(object);
   CapaCameraManagerPrivate *priv = manager->priv;
 
-  fprintf(stderr, "Finalize manager\n");
+  CAPA_DEBUG("Finalize manager");
 
   if (priv->camera)
     g_object_unref(G_OBJECT(priv->camera));
@@ -404,7 +405,7 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 {
   CapaCameraManagerPrivate *priv = manager->priv;
 
-  fprintf(stderr, "starting Capture thread\n");
+  CAPA_DEBUG("starting Capture thread");
 
   if (priv->inOperation)
     return;
@@ -419,7 +420,7 @@ static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
 {
   CapaCameraManagerPrivate *priv = manager->priv;
 
-  fprintf(stderr, "starting Preview thread\n");
+  CAPA_DEBUG("starting Preview thread");
   if (priv->inOperation)
     return;
 
@@ -433,7 +434,7 @@ static void do_toolbar_monitor(GtkToolButton *src G_GNUC_UNUSED,
 {
   CapaCameraManagerPrivate *priv = manager->priv;
 
-  fprintf(stderr, "starting monitor thread\n");
+  CAPA_DEBUG("starting monitor thread");
 
   if (priv->inOperation)
     return;
@@ -658,7 +659,7 @@ static gboolean do_manager_delete(GtkWidget *widget G_GNUC_UNUSED,
 				  GdkEvent *event G_GNUC_UNUSED,
 				  CapaCameraManager *manager)
 {
-  fprintf(stderr, "Got delete\n");
+  CAPA_DEBUG("Got delete");
   g_signal_emit_by_name(manager, "manager-disconnect", NULL);
   return TRUE;
 }
@@ -671,9 +672,9 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
   CapaCameraManagerPrivate *priv = manager->priv;
   CapaImage *img = capa_session_browser_selected_image(priv->sessionBrowser);
 
-  fprintf(stderr, "Image selection changed\n");
+  CAPA_DEBUG("Image selection changed");
   if (img) {
-    fprintf(stderr, "Try load\n");
+    CAPA_DEBUG("Try load");
     do_load_image(manager, img);
     g_object_unref(G_OBJECT(img));
   }
@@ -757,7 +758,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   gtk_widget_set_size_request(settingsBox, 300, 100);
   gtk_widget_set_size_request(iconScroll, 140, 140);
 
-  fprintf(stderr, "Adding %p to %p\n", priv->imageDisplay, viewport);
+  CAPA_DEBUG("Adding %p to %p", priv->imageDisplay, viewport);
   gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
   gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
   gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));

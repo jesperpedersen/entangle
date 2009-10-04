@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "internal.h"
 #include "app.h"
 #include "params.h"
 #include "device-manager.h"
@@ -45,7 +46,7 @@ static void do_refresh_cameras(CapaApp *app)
 
   capa_params_refresh(app->params);
 
-  fprintf(stderr, "Detecting1\n");
+  CAPA_DEBUG("Detecting cameras");
 
   if (gp_list_new(&cams) != GP_OK)
     return;
@@ -76,7 +77,7 @@ static void do_refresh_cameras(CapaApp *app)
     if (strcmp(port, "usb:") == 0)
       continue;
 
-    fprintf(stderr, "New camera '%s' '%s' %d\n", model, port, cap.operations);
+    CAPA_DEBUG("New camera '%s' '%s' %d", model, port, cap.operations);
     cam = capa_camera_new(model, port,
 			  cap.operations & GP_OPERATION_CAPTURE_IMAGE ? TRUE : FALSE,
 			  cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
@@ -90,7 +91,7 @@ static void do_refresh_cameras(CapaApp *app)
     gboolean found = FALSE;
     CapaCamera *cam = capa_camera_list_get(app->cameras, i);
 
-    fprintf(stderr, "Checking if %s exists\n", capa_camera_port(cam));
+    CAPA_DEBUG("Checking if %s exists", capa_camera_port(cam));
 
     for (int j = 0 ; j < gp_list_count(cams) ; j++) {
       const char *port;
@@ -151,7 +152,7 @@ void capa_app_free(CapaApp *app)
 
   g_object_unref(G_OBJECT(app->devManager));
 
-  fprintf(stderr, "Free app\n");
+  CAPA_DEBUG("Free app");
   g_free(app);
 }
 

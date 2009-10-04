@@ -23,6 +23,7 @@
 #include <string.h>
 #include <glade/glade.h>
 
+#include "internal.h"
 #include "help-about.h"
 
 #define CAPA_HELP_ABOUT_GET_PRIVATE(obj) \
@@ -64,7 +65,7 @@ static void do_about_response(GtkDialog *dialog G_GNUC_UNUSED,
 			      CapaHelpAbout *about)
 {
   CapaHelpAboutPrivate *priv = about->priv;
-  fprintf(stderr, "about response\n");
+  CAPA_DEBUG("about response");
   GtkWidget *win = glade_xml_get_widget(priv->glade, "help-about");
 
   gtk_widget_hide(win);
@@ -75,7 +76,7 @@ static gboolean do_about_delete(GtkWidget *src G_GNUC_UNUSED,
 				CapaHelpAbout *about)
 {
   CapaHelpAboutPrivate *priv = about->priv;
-  fprintf(stderr, "about delete\n");
+  CAPA_DEBUG("about delete");
   GtkWidget *win = glade_xml_get_widget(priv->glade, "help-about");
 
   gtk_widget_hide(win);

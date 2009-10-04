@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 
+#include "internal.h"
 #include "control-button.h"
 
 #define CAPA_CONTROL_BUTTON_GET_PRIVATE(obj) \

@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include "internal.h"
 #include "control-panel.h"
 #include "control-button.h"
 #include "control-choice.h"
@@ -201,7 +202,7 @@ static void capa_control_panel_set_property(GObject *object,
   CapaControlPanel *panel = CAPA_CONTROL_PANEL(object);
   CapaControlPanelPrivate *priv = panel->priv;
 
-  fprintf(stderr, "Set prop on control panel %d\n", prop_id);
+  CAPA_DEBUG("Set prop on control panel %d", prop_id);
 
   switch (prop_id)
     {

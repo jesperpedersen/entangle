@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include "internal.h"
 #include "progress.h"
 
 void capa_progress_start(CapaProgress *prog, float target, const char *format, va_list args)

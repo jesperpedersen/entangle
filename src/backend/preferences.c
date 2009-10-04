@@ -24,6 +24,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "internal.h"
 #include "preferences.h"
 #include "params.h"
 #include "progress.h"
@@ -91,7 +92,7 @@ static char *capa_find_picture_dir(void)
     ret = g_strdup_printf("Capture");
   }
   g_free(baseDir);
-  fprintf(stderr, "******** PICTURE '%s'\n", ret);
+  CAPA_DEBUG("******** PICTURE '%s'", ret);
   return ret;
 }
 
@@ -149,7 +150,7 @@ static void capa_preferences_finalize(GObject *object)
   CapaPreferences *preferences = CAPA_PREFERENCES(object);
   CapaPreferencesPrivate *priv = preferences->priv;
 
-  fprintf(stderr, "Finalize preferences %p\n", object);
+  CAPA_DEBUG("Finalize preferences %p", object);
 
   g_free(priv->pictureDir);
   g_free(priv->filenamePattern);

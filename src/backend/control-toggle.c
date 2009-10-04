@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 
+#include "internal.h"
 #include "control-toggle.h"
 
 #define CAPA_CONTROL_TOGGLE_GET_PRIVATE(obj) \

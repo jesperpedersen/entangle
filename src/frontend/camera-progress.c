@@ -22,6 +22,7 @@
 #include <glade/glade.h>
 #include <unistd.h>
 
+#include "internal.h"
 #include "camera-progress.h"
 #include "camera.h"
 #include "progress.h"
@@ -70,7 +71,7 @@ static gboolean do_progress_cancel(GtkButton *src,
 {
   CapaCameraProgressPrivate *priv = progress->priv;
   GtkWidget *win;
-  fprintf(stderr, "progress cancel\n");
+  CAPA_DEBUG("progress cancel");
 
   priv->cancelled = TRUE;
 
@@ -88,7 +89,7 @@ static gboolean do_progress_delete(GtkWidget *src G_GNUC_UNUSED,
   CapaCameraProgressPrivate *priv = progress->priv;
   GtkWidget *cancel;
   GtkWidget *win;
-  fprintf(stderr, "progress delete\n");
+  CAPA_DEBUG("progress delete");
 
   priv->cancelled = TRUE;
 
@@ -207,7 +208,7 @@ static gboolean do_capa_camera_progress_cancelled(CapaProgress *iface)
   CapaCameraProgress *prog = CAPA_CAMERA_PROGRESS(iface);
   CapaCameraProgressPrivate *priv = prog->priv;
 
-  fprintf(stderr, "Cancel called\n");
+  CAPA_DEBUG("Cancel called");
 
   return priv->cancelled;
 }

@@ -22,6 +22,7 @@
 #include <glade/glade.h>
 #include <unistd.h>
 
+#include "internal.h"
 #include "camera-info.h"
 #include "camera.h"
 
@@ -104,7 +105,7 @@ static void capa_camera_info_set_property(GObject *object,
   CapaCameraInfo *info = CAPA_CAMERA_INFO(object);
   CapaCameraInfoPrivate *priv = info->priv;
 
-  fprintf(stderr, "Set prop %d\n", prop_id);
+  CAPA_DEBUG("Set prop %d", prop_id);
 
   switch (prop_id)
     {
@@ -216,7 +217,7 @@ static gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
 			      CapaCameraInfo *info)
 {
   CapaCameraInfoPrivate *priv = info->priv;
-  fprintf(stderr, "info close\n");
+  CAPA_DEBUG("info close");
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
 
   gtk_widget_hide(win);
@@ -228,7 +229,7 @@ static gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
 			       CapaCameraInfo *info)
 {
   CapaCameraInfoPrivate *priv = info->priv;
-  fprintf(stderr, "info delete\n");
+  CAPA_DEBUG("info delete");
   GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
 
   gtk_widget_hide(win);

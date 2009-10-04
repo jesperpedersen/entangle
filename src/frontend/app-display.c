@@ -22,6 +22,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
+#include "internal.h"
 #include "app-display.h"
 #include "camera-picker.h"
 #include "camera-manager.h"
@@ -44,7 +45,7 @@ static void capa_app_display_finalize (GObject *object)
   CapaAppDisplay *display = CAPA_APP_DISPLAY(object);
   CapaAppDisplayPrivate *priv = display->priv;
 
-  fprintf(stderr, "Finalize display\n");
+  CAPA_DEBUG("Finalize display");
 
   capa_app_free(priv->app);
 
@@ -103,7 +104,7 @@ static void do_picker_close(CapaCameraPicker *picker, CapaAppDisplay *display)
   capa_camera_picker_hide(picker);
 
   if (!capa_app_display_visible(display)) {
-    fprintf(stderr, "emit closed\n");
+    CAPA_DEBUG("emit closed");
     g_signal_emit_by_name(display, "app-closed", NULL);
   }
 }
@@ -126,9 +127,9 @@ static void do_manager_connect(CapaCameraManager *manager G_GNUC_UNUSED,
 static void do_manager_disconnect(CapaCameraManager *manager, CapaAppDisplay *display)
 {
   capa_camera_manager_hide(manager);
-  fprintf(stderr, "Doing disconnect\n");
+  CAPA_DEBUG("Doing disconnect");
   if (!capa_app_display_visible(display)) {
-    fprintf(stderr, "emit closed\n");
+    CAPA_DEBUG("emit closed");
     g_signal_emit_by_name(display, "app-closed", NULL);
   }
 }
@@ -136,7 +137,7 @@ static void do_manager_disconnect(CapaCameraManager *manager, CapaAppDisplay *di
 static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaAppDisplay *display)
 {
   CapaAppDisplayPrivate *priv = display->priv;
-  fprintf(stderr, "emit connect %p %s\n", cam, capa_camera_model(cam));
+  CAPA_DEBUG("emit connect %p %s", cam, capa_camera_model(cam));
   CapaCameraManager *man;
 
   while (capa_camera_connect(cam) < 0) {

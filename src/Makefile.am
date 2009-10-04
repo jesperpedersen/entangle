@@ -82,7 +82,7 @@ libcapa_frontend_la_CFLAGS = \
 
 
 
-capa_SOURCES = main.c
+capa_SOURCES = main.c internal.h
 
 capa_LDADD = libcapa_frontend.la
 

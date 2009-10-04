@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include "internal.h"
 #include "session-browser.h"
 #include "session.h"
 
@@ -43,7 +44,7 @@ enum {
 static void do_model_refresh(CapaSessionBrowser *browser)
 {
   CapaSessionBrowserPrivate *priv = browser->priv;
-  fprintf(stderr, "Refresh model\n");
+  CAPA_DEBUG("Refresh model");
   gtk_list_store_clear(priv->model);
 
   if (!priv->session) {
@@ -92,7 +93,7 @@ static void capa_session_browser_set_property(GObject *object,
   CapaSessionBrowser *browser = CAPA_SESSION_BROWSER(object);
   CapaSessionBrowserPrivate *priv = browser->priv;
 
-  fprintf(stderr, "Set prop on session browser %d\n", prop_id);
+  CAPA_DEBUG("Set prop on session browser %d", prop_id);
 
   switch (prop_id)
     {

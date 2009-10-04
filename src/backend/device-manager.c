@@ -25,6 +25,7 @@
 #include <libhal.h>
 #include <dbus/dbus-glib-lowlevel.h>
 
+#include "internal.h"
 #include "device-manager.h"
 
 #define CAPA_DEVICE_MANAGER_GET_PRIVATE(obj) \
@@ -42,7 +43,7 @@ static void capa_device_manager_finalize (GObject *object)
 {
   CapaDeviceManager *manager = CAPA_DEVICE_MANAGER(object);
   CapaDeviceManagerPrivate *priv = manager->priv;
-  fprintf(stderr, "Finalize manager\n");
+  CAPA_DEBUG("Finalize manager");
 
   if (priv->ctx) {
     libhal_ctx_shutdown(priv->ctx, NULL);
@@ -95,26 +96,26 @@ static void do_device_added(LibHalContext *ctx, const char *udi)
   int bus;
   int dev;
 
-  fprintf(stderr, "Add UDI %s\n", udi);
+  CAPA_DEBUG("Add UDI %s", udi);
 
   if (!(type = libhal_device_get_property_string(ctx, udi, "info.bus", NULL)))
     goto cleanup;
-  fprintf(stderr, "type %s\n", type);
+  CAPA_DEBUG("type %s", type);
   if (strcmp(type, "usb_device") != 0) {
-    fprintf(stderr, "Dont want\n");
+    CAPA_DEBUG("Dont want");
     goto cleanup;
   }
 
   if (!(bus = libhal_device_get_property_int(ctx, udi, "usb_device.bus_number", NULL)))
     goto cleanup;
-  fprintf(stderr, "bus %d\n", bus);
+  CAPA_DEBUG("bus %d", bus);
   if (!(dev = libhal_device_get_property_int(ctx, udi, "usb_device.linux.device_number", NULL)))
     goto cleanup;
-  fprintf(stderr, "dev %d\n", dev);
+  CAPA_DEBUG("dev %d", dev);
 
   port = g_strdup_printf("usb:%03d,%03d", bus, dev);
 
-  fprintf(stderr, "Add device '%s' '%s'\n", udi, port);
+  CAPA_DEBUG("Add device '%s' '%s'", udi, port);
 
   g_hash_table_insert(priv->ports, g_strdup(udi), port);
 
@@ -130,12 +131,12 @@ static void do_device_removed(LibHalContext *ctx, const char *udi)
   CapaDeviceManagerPrivate *priv = manager->priv;
   char *port;
 
-  fprintf(stderr, "Remove UDI %s\n", udi);
+  CAPA_DEBUG("Remove UDI %s", udi);
 
   port = g_hash_table_lookup(priv->ports, udi);
 
   if (port) {
-    fprintf(stderr, "Remove device '%s' '%s'\n", udi, port);
+    CAPA_DEBUG("Remove device '%s' '%s'", udi, port);
     g_signal_emit_by_name(G_OBJECT(manager), "device-added", port);
     g_hash_table_remove(priv->ports, udi);
   }
@@ -175,7 +176,7 @@ static void capa_device_manager_init(CapaDeviceManager *manager)
   libhal_ctx_init(priv->ctx, NULL);
 
   dbus_connection_setup_with_g_main(conn, g_main_context_default());
-  fprintf(stderr, "Listing for HAL events\n");
+  CAPA_DEBUG("Listing for HAL events");
 
   udis = libhal_manager_find_device_string_match(priv->ctx,
 						 "info.bus",

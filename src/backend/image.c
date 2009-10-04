@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "internal.h"
 #include "image.h"
 
 #define CAPA_IMAGE_GET_PRIVATE(obj) \
@@ -88,7 +89,7 @@ static void capa_image_finalize(GObject *object)
   CapaImage *image = CAPA_IMAGE(object);
   CapaImagePrivate *priv = image->priv;
 
-  fprintf(stderr, "Finalize image %p\n", object);
+  CAPA_DEBUG("Finalize image %p", object);
 
   if (priv->thumbnail)
     g_object_unref(G_OBJECT(priv->thumbnail));

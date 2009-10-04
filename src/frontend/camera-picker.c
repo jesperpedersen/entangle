@@ -22,6 +22,7 @@
 #include <glade/glade.h>
 #include <unistd.h>
 
+#include "internal.h"
 #include "camera-picker.h"
 
 #define CAPA_CAMERA_PICKER_GET_PRIVATE(obj) \
@@ -100,7 +101,7 @@ static void capa_camera_cell_data_capture_func(GtkTreeViewColumn *col G_GNUC_UNU
 
   cam = g_value_get_object(&val);
 
-  fprintf(stderr, "Has %d\n", capa_camera_has_capture(cam));
+  CAPA_DEBUG("Has %d", capa_camera_has_capture(cam));
 
   g_object_set(cell, "text", capa_camera_has_capture(cam) ? "Yes" : "No", NULL);
 
@@ -133,7 +134,7 @@ static void do_model_sensitivity_update(CapaCameraPicker *picker)
 static void do_model_refresh(CapaCameraPicker *picker)
 {
   CapaCameraPickerPrivate *priv = picker->priv;
-  fprintf(stderr, "Refresh model\n");
+  CAPA_DEBUG("Refresh model");
   gtk_list_store_clear(priv->model);
 
   if (!priv->cameras) {
@@ -182,7 +183,7 @@ static void do_camera_list_add(CapaCameraList *cameras G_GNUC_UNUSED,
   CapaCameraPickerPrivate *priv = picker->priv;
   GtkTreeIter iter;
 
-  fprintf(stderr, "Add camrea %p to model\n", cam);
+  CAPA_DEBUG("Add camrea %p to model", cam);
   gtk_list_store_append(priv->model, &iter);
 
   gtk_list_store_set(priv->model, &iter, 0, cam, -1);
@@ -211,7 +212,7 @@ static void do_camera_list_remove(CapaCameraList *cameras G_GNUC_UNUSED,
     g_value_unset(&val);
 
     if (cam == thiscam) {
-      fprintf(stderr, "Remove camera %p from model\n", cam);
+      CAPA_DEBUG("Remove camera %p from model", cam);
       gtk_list_store_remove(priv->model, &iter);
       break;
     }
@@ -229,7 +230,7 @@ static void capa_camera_picker_set_property(GObject *object,
   CapaCameraPicker *picker = CAPA_CAMERA_PICKER(object);
   CapaCameraPickerPrivate *priv = picker->priv;
 
-  fprintf(stderr, "Set prop %d\n", prop_id);
+  CAPA_DEBUG("Set prop %d", prop_id);
 
   switch (prop_id)
     {
@@ -258,7 +259,7 @@ static void capa_camera_picker_finalize (GObject *object)
   CapaCameraPicker *picker = CAPA_CAMERA_PICKER(object);
   CapaCameraPickerPrivate *priv = picker->priv;
 
-  fprintf(stderr, "Finalize camera picker\n");
+  CAPA_DEBUG("Finalize camera picker");
 
   gtk_list_store_clear(priv->model);
   if (priv->cameras)
@@ -327,7 +328,7 @@ CapaCameraPicker *capa_camera_picker_new(CapaCameraList *cameras)
 
 static void do_picker_close(GtkButton *src G_GNUC_UNUSED, CapaCameraPicker *picker)
 {
-  fprintf(stderr, "picker close\n");
+  CAPA_DEBUG("picker close");
   g_signal_emit_by_name(picker, "picker-close", NULL);
 }
 
@@ -335,14 +336,14 @@ static gboolean do_picker_delete(GtkWidget *src G_GNUC_UNUSED,
 				 GdkEvent *ev G_GNUC_UNUSED,
 				 CapaCameraPicker *picker)
 {
-  fprintf(stderr, "picker delete\n");
+  CAPA_DEBUG("picker delete");
   g_signal_emit_by_name(picker, "picker-close", NULL);
   return TRUE;
 }
 
 static void do_picker_refresh(GtkButton *src G_GNUC_UNUSED, CapaCameraPicker *picker)
 {
-  fprintf(stderr, "picker refresh %p\n", picker);
+  CAPA_DEBUG("picker refresh %p", picker);
   g_signal_emit_by_name(picker, "picker-refresh", NULL);
 }
 
@@ -355,7 +356,7 @@ static CapaCamera *capa_picker_get_selected_camera(CapaCameraPicker *picker)
   gboolean selected;
   GValue val;
 
-  fprintf(stderr, "select camera\n");
+  CAPA_DEBUG("select camera");
 
   list = glade_xml_get_widget(priv->glade, "camera-list");
 
@@ -378,7 +379,7 @@ static void do_picker_activate(GtkTreeView *src G_GNUC_UNUSED,
 {
   CapaCamera *cam;
   cam = capa_picker_get_selected_camera(picker);
-  fprintf(stderr, "picker activate %p %p\n", picker, cam);
+  CAPA_DEBUG("picker activate %p %p", picker, cam);
 
   if (cam) {
     GValue val;
@@ -398,7 +399,7 @@ static void do_picker_connect(GtkButton *src G_GNUC_UNUSED,
 {
   CapaCamera *cam;
   cam = capa_picker_get_selected_camera(picker);
-  fprintf(stderr, "picker connect %p %p\n", picker, cam);
+  CAPA_DEBUG("picker connect %p %p", picker, cam);
   if (cam) {
     GValue val;
     memset(&val, 0, sizeof val);
@@ -418,7 +419,7 @@ static void do_camera_select(GtkTreeSelection *sel, CapaCameraPicker *picker)
   GtkTreeIter iter;
   gboolean selected;
 
-  fprintf(stderr, "selection changed\n");
+  CAPA_DEBUG("selection changed");
 
   connect = glade_xml_get_widget(priv->glade, "picker-connect");
 
@@ -502,7 +503,7 @@ void capa_camera_picker_show(CapaCameraPicker *picker)
 
   //gtk_tree_selection_unselect_all(sel);
 
-  fprintf(stderr, "Show\n");
+  CAPA_DEBUG("Show");
   gtk_widget_show(win);
   gtk_window_present(GTK_WINDOW(win));
 }

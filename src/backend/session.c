@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include "internal.h"
 #include "session.h"
 #include "image.h"
 
@@ -112,7 +113,7 @@ static void capa_session_finalize(GObject *object)
   CapaSession *session = CAPA_SESSION(object);
   CapaSessionPrivate *priv = session->priv;
 
-  fprintf(stderr, "Finalize session %p\n", object);
+  CAPA_DEBUG("Finalize session %p", object);
 
   if (priv->images) {
     g_list_foreach(priv->images, do_image_unref, NULL);
@@ -226,7 +227,7 @@ char *capa_session_next_filename(CapaSession *session)
   int max;
   int ndigits;
 
-  fprintf(stderr, "NEXT FILENAME '%s'\n", template);
+  CAPA_DEBUG("NEXT FILENAME '%s'", template);
 
   if (!template)
     return NULL;
@@ -245,13 +246,13 @@ char *capa_session_next_filename(CapaSession *session)
 
   format = g_strdup_printf("%%s/%%s%%0%dd%%s", ndigits);
 
-  fprintf(stderr, "TEST %d (%d) possible with '%s' prefix='%s' postfix='%s'\n", max, ndigits, format, prefix, postfix);
+  CAPA_DEBUG("TEST %d (%d) possible with '%s' prefix='%s' postfix='%s'", max, ndigits, format, prefix, postfix);
 
   for (i = priv->nextFilenameDigit ; i < max ; i++) {
     filename = g_strdup_printf(format, priv->directory,
 			       prefix, i, postfix);
 
-    fprintf(stderr, "Test filename '%s'\n", filename);
+    CAPA_DEBUG("Test filename '%s'", filename);
     if (access(filename, R_OK) < 0) {
       if (errno != ENOENT) {
 	g_free(filename);
@@ -314,7 +315,7 @@ gboolean capa_session_load(CapaSession *session)
     char *filename = g_strdup_printf("%s/%s", priv->directory, ent->d_name);
     CapaImage *image = capa_image_new(filename);
 
-    fprintf(stderr, "Loading '%s'\n", filename);
+    CAPA_DEBUG("Loading '%s'", filename);
 
     if (capa_image_load(image))
       capa_session_add(session, image);

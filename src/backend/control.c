@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 
+#include "internal.h"
 #include "control.h"
 
 #define CAPA_CONTROL_GET_PRIVATE(obj) \

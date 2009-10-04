@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "internal.h"
 #include "camera-list.h"
 
 #define CAPA_CAMERA_LIST_GET_PRIVATE(obj) \
@@ -39,10 +40,10 @@ static void capa_camera_list_finalize (GObject *object)
 {
   CapaCameraList *list = CAPA_CAMERA_LIST(object);
   CapaCameraListPrivate *priv = list->priv;
-  fprintf(stderr, "Finalize list\n");
+  CAPA_DEBUG("Finalize list");
 
   for (int i = 0 ; i < priv->ncamera ; i++) {
-    fprintf(stderr, "Unref camera in list %p\n", priv->cameras[i]);
+    CAPA_DEBUG("Unref camera in list %p", priv->cameras[i]);
     g_object_unref(G_OBJECT(priv->cameras[i]));
   }
   g_free(priv->cameras);
@@ -113,7 +114,7 @@ void capa_camera_list_add(CapaCameraList *list,
   g_object_ref(G_OBJECT(cam));
 
   g_signal_emit_by_name(G_OBJECT(list), "camera-added", cam);
-  fprintf(stderr, "Added camera %p\n", cam);
+  CAPA_DEBUG("Added camera %p", cam);
 }
 
 void capa_camera_list_remove(CapaCameraList *list,
@@ -133,7 +134,7 @@ void capa_camera_list_remove(CapaCameraList *list,
     }
   }
 
-  fprintf(stderr, "Removed camera %p from list\n", cam);
+  CAPA_DEBUG("Removed camera %p from list", cam);
   g_signal_emit_by_name(G_OBJECT(list), "camera-removed", cam);
 
   g_object_unref(cam);
@@ -159,7 +160,7 @@ CapaCamera *capa_camera_list_find(CapaCameraList *list,
   for (i = 0 ; i < priv->ncamera ; i++) {
     const char *thisport = capa_camera_port(priv->cameras[i]);
 
-    fprintf(stderr, "Compare '%s' '%s'\n", port, thisport);
+    CAPA_DEBUG("Compare '%s' '%s'", port, thisport);
 
     if (strcmp(thisport, port) == 0)
       return priv->cameras[i];

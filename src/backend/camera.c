@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "internal.h"
 #include "camera.h"
 #include "params.h"
 #include "progress.h"
@@ -146,17 +147,17 @@ static void capa_camera_set_property(GObject *object,
 
     case PROP_HAS_CAPTURE:
       priv->hasCapture = g_value_get_boolean(value);
-      fprintf(stderr, "Set has capture %d\n", priv->hasCapture);
+      CAPA_DEBUG("Set has capture %d", priv->hasCapture);
       break;
 
     case PROP_HAS_PREVIEW:
       priv->hasPreview = g_value_get_boolean(value);
-      fprintf(stderr, "Set has preview %d\n", priv->hasPreview);
+      CAPA_DEBUG("Set has preview %d", priv->hasPreview);
       break;
 
     case PROP_HAS_SETTINGS:
       priv->hasSettings = g_value_get_boolean(value);
-      fprintf(stderr, "Set has settings %d\n", priv->hasSettings);
+      CAPA_DEBUG("Set has settings %d", priv->hasSettings);
       break;
 
     default:
@@ -170,7 +171,7 @@ static void capa_camera_finalize(GObject *object)
   CapaCamera *camera = CAPA_CAMERA(object);
   CapaCameraPrivate *priv = camera->priv;
 
-  fprintf(stderr, "Finalize camera %p\n", object);
+  CAPA_DEBUG("Finalize camera %p", object);
 
   if (priv->progress)
     g_object_unref(priv->progress);
@@ -316,7 +317,7 @@ static void capa_camera_class_init(CapaCameraClass *klass)
 						       G_PARAM_STATIC_NAME |
 						       G_PARAM_STATIC_NICK |
 						       G_PARAM_STATIC_BLURB));
-  fprintf(stderr, "install prog done\n");
+  CAPA_DEBUG("install prog done");
 
   g_type_class_add_private(klass, sizeof(CapaCameraPrivate));
 }
@@ -403,15 +404,15 @@ static GPContextFeedback do_capa_camera_progress_cancelled(GPContext *ctx G_GNUC
   CapaCamera *cam = data;
   CapaCameraPrivate *priv = cam->priv;
 
-  fprintf(stderr, "Cancel check\n");
+  CAPA_DEBUG("Cancel check");
 
   if (priv->progress &&
       capa_progress_cancelled(priv->progress)) {
-    fprintf(stderr, "yes\n");
+    CAPA_DEBUG("yes");
     return GP_CONTEXT_FEEDBACK_CANCEL;
   }
 
-  fprintf(stderr, "no\n");
+  CAPA_DEBUG("no");
   return GP_CONTEXT_FEEDBACK_OK;
 }
 
@@ -422,7 +423,7 @@ int capa_camera_connect(CapaCamera *cam)
   GPPortInfo port;
   CameraAbilities cap;
 
-  fprintf(stderr, "Conencting to cam\n");
+  CAPA_DEBUG("Conencting to cam");
 
   if (priv->cam != NULL)
     return 0;
@@ -452,7 +453,7 @@ int capa_camera_connect(CapaCamera *cam)
   if (gp_camera_init(priv->cam, priv->params->ctx) != GP_OK) {
     gp_camera_unref(priv->cam);
     priv->cam = NULL;
-    fprintf(stderr, "failed\n");
+    CAPA_DEBUG("failed");
     return -1;
   }
 
@@ -465,7 +466,7 @@ int capa_camera_connect(CapaCamera *cam)
   if (cap.operations & GP_OPERATION_CONFIG)
     priv->hasSettings = TRUE;
 
-  fprintf(stderr, "ok\n");
+  CAPA_DEBUG("ok");
   return 0;
 }
 
@@ -517,17 +518,17 @@ static void *do_camera_capture_thread(void *data)
 
   g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
 
-  fprintf(stderr, "Starting capture\n");
+  CAPA_DEBUG("Starting capture");
   if (gp_camera_capture(priv->cam, GP_CAPTURE_IMAGE, &camerapath, priv->params->ctx) != GP_OK) {
-    fprintf(stderr, "Failed capture\n");
+    CAPA_DEBUG("Failed capture");
     goto error;
   }
 
-  fprintf(stderr, "captured '%s' '%s'\n", camerapath.folder, camerapath.name);
+  CAPA_DEBUG("captured '%s' '%s'", camerapath.folder, camerapath.name);
 
   gp_file_new(&datafile);
 
-  fprintf(stderr, "Getting file\n");
+  CAPA_DEBUG("Getting file");
   if (gp_camera_file_get(priv->cam, camerapath.folder, camerapath.name,
 			 GP_FILE_TYPE_NORMAL, datafile, priv->params->ctx) != GP_OK)
     goto error_delete;
@@ -535,17 +536,17 @@ static void *do_camera_capture_thread(void *data)
 
   localpath = capa_session_next_filename(priv->session);
 
-  fprintf(stderr, "Saving local file '%s'\n", localpath);
+  CAPA_DEBUG("Saving local file '%s'", localpath);
   if (gp_file_save(datafile, localpath) != GP_OK)
     goto error_delete;
 
   gp_file_unref(datafile);
 
-  fprintf(stderr, "Deleting camera file\n");
+  CAPA_DEBUG("Deleting camera file");
   if (gp_camera_file_delete(priv->cam, camerapath.folder, camerapath.name, priv->params->ctx) != GP_OK)
     goto error;
 
-  fprintf(stderr, "Done\n");
+  CAPA_DEBUG("Done");
 
   image = capa_image_new(localpath);
   /* XXX don't do this here in future */
@@ -562,11 +563,11 @@ static void *do_camera_capture_thread(void *data)
   return NULL;
 
  error_delete:
-  fprintf(stderr, "Error, try delete camera file\n");
+  CAPA_DEBUG("Error, try delete camera file");
   gp_camera_file_delete(priv->cam, camerapath.folder, camerapath.name, priv->params->ctx);
 
  error:
-  fprintf(stderr, "Error\n");
+  CAPA_DEBUG("Error");
   if (datafile)
     gp_file_unref(datafile);
   priv->operation = NULL;
@@ -604,15 +605,15 @@ static void *do_camera_preview_thread(void *data)
   g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
   gp_file_new(&datafile);
 
-  fprintf(stderr, "Starting preview\n");
+  CAPA_DEBUG("Starting preview");
   if (gp_camera_capture_preview(priv->cam, datafile, priv->params->ctx) != GP_OK) {
-    fprintf(stderr, "Failed capture\n");
+    CAPA_DEBUG("Failed capture");
     goto error;
   }
 
-  localpath = capa_session_temp_filename(priv->session),
+  localpath = capa_session_temp_filename(priv->session);
 
-  fprintf(stderr, "Saving file '%s'\n", localpath);
+  CAPA_DEBUG("Saving file '%s'", localpath);
   if (gp_file_save(datafile, localpath) != GP_OK)
     goto error;
 
@@ -625,13 +626,13 @@ static void *do_camera_preview_thread(void *data)
   g_object_unref(image);
   unlink(localpath);
 
-  fprintf(stderr, "Done\n");
+  CAPA_DEBUG("Done");
   priv->operation = NULL;
   g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
   return NULL;
 
  error:
-  fprintf(stderr, "Error\n");
+  CAPA_DEBUG("Error");
   if (datafile)
     gp_file_unref(datafile);
   priv->operation = NULL;
@@ -668,29 +669,29 @@ static int do_camera_file_added(CapaCamera *cam,
   const char *localpath;
   CapaImage *image;
 
-  fprintf(stderr, "captured '%s' '%s'\n", camerapath->folder, camerapath->name);
+  CAPA_DEBUG("captured '%s' '%s'", camerapath->folder, camerapath->name);
 
   gp_file_new(&datafile);
 
-  fprintf(stderr, "Getting file\n");
+  CAPA_DEBUG("Getting file");
   if (gp_camera_file_get(priv->cam, camerapath->folder, camerapath->name,
 			 GP_FILE_TYPE_NORMAL, datafile, priv->params->ctx) != GP_OK)
     goto error_delete;
 
   localpath = capa_session_next_filename(priv->session);
 
-  fprintf(stderr, "Saving local file '%s'\n", localpath);
+  CAPA_DEBUG("Saving local file '%s'", localpath);
   if (gp_file_save(datafile, localpath) != GP_OK)
     goto error_delete;
 
   gp_file_unref(datafile);
 
-  fprintf(stderr, "Deleting camera file\n");
+  CAPA_DEBUG("Deleting camera file");
   /* XXX should we really do this TBD ? */
   if (gp_camera_file_delete(priv->cam, camerapath->folder, camerapath->name, priv->params->ctx) != GP_OK)
     goto error;
 
-  fprintf(stderr, "Done\n");
+  CAPA_DEBUG("Done");
 
   image = capa_image_new(localpath);
   capa_session_add(priv->session, image);
@@ -702,11 +703,11 @@ static int do_camera_file_added(CapaCamera *cam,
   return 0;
 
  error_delete:
-  fprintf(stderr, "Error, try delete camera file\n");
+  CAPA_DEBUG("Error, try delete camera file");
   gp_camera_file_delete(priv->cam, camerapath->folder, camerapath->name, priv->params->ctx);
 
  error:
-  fprintf(stderr, "Error\n");
+  CAPA_DEBUG("Error");
   if (datafile)
     gp_file_unref(datafile);
   return -1;
@@ -721,10 +722,10 @@ static void *do_camera_monitor_thread(void *data)
 
   g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
 
-  fprintf(stderr, "Starting monitor\n");
+  CAPA_DEBUG("Starting monitor");
   while (!capa_progress_cancelled(priv->progress)) {
     if (gp_camera_wait_for_event(priv->cam, 500, &eventType, &eventData, priv->params->ctx) != GP_OK) {
-      fprintf(stderr, "Failed capture\n");
+      CAPA_DEBUG("Failed capture");
       g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to wait for events");
       goto cleanup;
     }
@@ -748,7 +749,7 @@ static void *do_camera_monitor_thread(void *data)
     case GP_EVENT_UNKNOWN:
     default:
       g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unexpected/unknown camera event");
-      fprintf(stderr, "Unknown event type %d\n", eventType);
+      CAPA_DEBUG("Unknown event type %d", eventType);
       goto cleanup;
     }
   }
@@ -814,7 +815,7 @@ static CapaControl *do_build_controls(const char *path,
   case GP_WIDGET_SECTION:
     {
       CapaControlGroup *grp;
-      fprintf(stderr, "Add group %s %d %s\n", fullpath, id, label);
+      CAPA_DEBUG("Add group %s %d %s", fullpath, id, label);
       grp = capa_control_group_new(fullpath, id, label, info);
       for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
 	CameraWidget *child;
@@ -836,7 +837,7 @@ static CapaControl *do_build_controls(const char *path,
 
   case GP_WIDGET_BUTTON:
     {
-      fprintf(stderr, "Add button %s %d %s\n", fullpath, id, label);
+      CAPA_DEBUG("Add button %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_button_new(fullpath, id, label, info));
     } break;
 
@@ -844,7 +845,7 @@ static CapaControl *do_build_controls(const char *path,
   case GP_WIDGET_RADIO:
   case GP_WIDGET_MENU:
     {
-      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_choice_new(fullpath, id, label, info));
 
       for (int i = 0 ; i < gp_widget_count_choices(widget) ; i++) {
@@ -856,7 +857,7 @@ static CapaControl *do_build_controls(const char *path,
 
   case GP_WIDGET_DATE:
     {
-      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_date_new(fullpath, id, label, info));
     } break;
 
@@ -864,20 +865,20 @@ static CapaControl *do_build_controls(const char *path,
     {
       float min, max, step;
       gp_widget_get_range(widget, &min, &max, &step);
-      fprintf(stderr, "Add range %s %d %s %f %f %f\n", fullpath, id, label, min, max, step);
+      CAPA_DEBUG("Add range %s %d %s %f %f %f", fullpath, id, label, min, max, step);
       ret = CAPA_CONTROL(capa_control_range_new(fullpath, id, label, info,
 						min, max, step));
     } break;
 
   case GP_WIDGET_TEXT:
     {
-      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_text_new(fullpath, id, label, info));
     } break;
 
   case GP_WIDGET_TOGGLE:
     {
-      fprintf(stderr, "Add date %s %d %s\n", fullpath, id, label);
+      CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_toggle_new(fullpath, id, label, info));
     } break;
   }
