@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL_DATE__
-#define __CONTROL_DATE__
+#ifndef __CAPA_CONTROL_DATE_H__
+#define __CAPA_CONTROL_DATE_H__
 
 #include <glib-object.h>
 
@@ -61,5 +61,5 @@ CapaControlDate* capa_control_date_new(const char *path,
 
 G_END_DECLS
 
-#endif /* __CONTROL_DATE__ */
+#endif /* __CAPA_CONTROL_DATE_H__ */
 

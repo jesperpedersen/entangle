@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL_GROUP__
-#define __CONTROL_GROUP__
+#ifndef __CAPA_CONTROL_GROUP_H__
+#define __CAPA_CONTROL_GROUP_H__
 
 #include <glib-object.h>
 
@@ -67,5 +67,5 @@ CapaControl *capa_control_group_get(CapaControlGroup *group, int idx);
 
 G_END_DECLS
 
-#endif /* __CONTROL_GROUP__ */
+#endif /* __CAPA_CONTROL_GROUP_H__ */
 

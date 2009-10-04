@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL_TEXT__
-#define __CONTROL_TEXT__
+#ifndef __CAPA_CONTROL_TEXT_H__
+#define __CAPA_CONTROL_TEXT_H__
 
 #include <glib-object.h>
 
@@ -60,5 +60,5 @@ CapaControlText* capa_control_text_new(const char *path,
 
 G_END_DECLS
 
-#endif /* __CONTROL_TEXT__ */
+#endif /* __CAPA_CONTROL_TEXT_H__ */
 

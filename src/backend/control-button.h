@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL_BUTTON__
-#define __CONTROL_BUTTON__
+#ifndef __CAPA_CONTROL_BUTTON_H__
+#define __CAPA_CONTROL_BUTTON_H__
 
 #include <glib-object.h>
 
@@ -61,5 +61,5 @@ CapaControlButton* capa_control_button_new(const char *path,
 
 G_END_DECLS
 
-#endif /* __CONTROL_BUTTON__ */
+#endif /* __CAPA_CONTROL_BUTTON_H__ */
 

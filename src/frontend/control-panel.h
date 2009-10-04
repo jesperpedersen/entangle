@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_CONTROL_PANEL__
-#define __CAPA_CONTROL_PANEL__
+#ifndef __CAPA_CONTROL_PANEL_H__
+#define __CAPA_CONTROL_PANEL_H__
 
 #include <gtk/gtk.h>
 
@@ -59,5 +59,5 @@ CapaControlPanel* capa_control_panel_new(void);
 
 G_END_DECLS
 
-#endif /* __CAPA_CONTROL_PANEL__ */
+#endif /* __CAPA_CONTROL_PANEL_H__ */
 

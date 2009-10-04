@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL__
-#define __CONTROL__
+#ifndef __CAPA_CONTROL_H__
+#define __CAPA_CONTROL_H__
 
 #include <glib-object.h>
 
@@ -63,5 +63,5 @@ const char *capa_control_info(CapaControl *control);
 
 G_END_DECLS
 
-#endif /* __CONTROL__ */
+#endif /* __CAPA_CONTROL_H__ */
 

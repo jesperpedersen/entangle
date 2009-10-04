@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __DEVICE_MANAGER__
-#define __DEVICE_MANAGER__
+#ifndef __CAPA_DEVICE_MANAGER_H__
+#define __CAPA_DEVICE_MANAGER_H__
 
 #include <glib-object.h>
 
@@ -62,5 +62,5 @@ char *capa_device_manager_port_serial(CapaDeviceManager *manager, const char *po
 
 G_END_DECLS
 
-#endif /* __DEVICE_MANAGER__ */
+#endif /* __CAPA_DEVICE_MANAGER_H__ */
 

@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __HELP_ABOUT__
-#define __HELP_ABOUT__
+#ifndef __CAPA_HELP_ABOUT_H__
+#define __CAPA_HELP_ABOUT_H__
 
 #include <glib-object.h>
 
@@ -61,5 +61,5 @@ void capa_help_about_hide(CapaHelpAbout *about);
 
 G_END_DECLS
 
-#endif /* __HELP_ABOUT__ */
+#endif /* __CAPA_HELP_ABOUT_H__ */
 

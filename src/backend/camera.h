@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_CAMERA__
-#define __CAPA_CAMERA__
+#ifndef __CAPA_CAMERA_H__
+#define __CAPA_CAMERA_H__
 
 #include <glib-object.h>
 
@@ -91,4 +91,4 @@ CapaControlGroup *capa_camera_controls(CapaCamera *cam);
 
 G_END_DECLS
 
-#endif /* __CAPA_CAMERA__ */
+#endif /* __CAPA_CAMERA_H__ */

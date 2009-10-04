@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL_TOGGLE__
-#define __CONTROL_TOGGLE__
+#ifndef __CAPA_CONTROL_TOGGLE_H__
+#define __CAPA_CONTROL_TOGGLE_H__
 
 #include <glib-object.h>
 
@@ -60,5 +60,5 @@ CapaControlToggle* capa_control_toggle_new(const char *path,
 
 G_END_DECLS
 
-#endif /* __CONTROL_TOGGLE__ */
+#endif /* __CAPA_CONTROL_TOGGLE_H__ */
 

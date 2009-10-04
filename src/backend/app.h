@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_APP__
-#define __CAPA_APP__
+#ifndef __CAPA_APP_H__
+#define __CAPA_APP_H__
 
 #include "camera-list.h"
 
@@ -37,4 +37,4 @@ void capa_app_refresh(CapaApp *app);
 
 CapaPreferences *capa_app_preferences(CapaApp *app);
 
-#endif /* __CAPA_APPLICATION__ */
+#endif /* __CAPA_APP_H__ */

@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_PARAMS__
-#define __CAPA_PARAMS__
+#ifndef __CAPA_PARAMS_H__
+#define __CAPA_PARAMS_H__
 
 #include <gphoto2.h>
 
@@ -39,4 +39,4 @@ void capa_params_free(CapaParams *params);
 void capa_params_refresh(CapaParams *params);
 
 
-#endif /* __CAPA_PARAMS__ */
+#endif /* __CAPA_PARAMS_H__ */

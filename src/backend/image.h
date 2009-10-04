@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_IMAGE__
-#define __CAPA_IMAGE__
+#ifndef __CAPA_IMAGE_H__
+#define __CAPA_IMAGE_H__
 
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -70,4 +70,4 @@ GdkPixbuf *capa_image_thumbnail(CapaImage *image);
 
 G_END_DECLS
 
-#endif /* __CAPA_IMAGE__ */
+#endif /* __CAPA_IMAGE_H__ */

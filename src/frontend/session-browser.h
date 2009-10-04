@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_SESSION_BROWSER__
-#define __CAPA_SESSION_BROWSER__
+#ifndef __CAPA_SESSION_BROWSER_H__
+#define __CAPA_SESSION_BROWSER_H__
 
 #include <gtk/gtk.h>
 
@@ -60,5 +60,5 @@ CapaImage *capa_session_browser_selected_image(CapaSessionBrowser *browser);
 
 G_END_DECLS
 
-#endif /* __CAPA_SESSION_BROWSER__ */
+#endif /* __CAPA_SESSION_BROWSER_H__ */
 

@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAMERA_PROGRESS__
-#define __CAMERA_PROGRESS__
+#ifndef __CAPA_CAMERA_PROGRESS_H__
+#define __CAPA_CAMERA_PROGRESS_H__
 
 #include <glib-object.h>
 
@@ -62,5 +62,5 @@ void capa_camera_progress_hide(CapaCameraProgress *progress);
 
 G_END_DECLS
 
-#endif /* __CAMERA_PROGRESS__ */
+#endif /* __CAPA_CAMERA_PROGRESS_H__ */
 

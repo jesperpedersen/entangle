@@ -18,9 +18,8 @@
  *
  */
 
-
-#ifndef __CAPA_APP_DISPLAY__
-#define __CAPA_APP_DISPLAY__
+#ifndef __CAPA_APP_DISPLAY_H__
+#define __CAPA_APP_DISPLAY_H__
 
 #include <glib-object.h>
 
@@ -62,5 +61,5 @@ void capa_app_display_show(CapaAppDisplay *display);
 
 G_END_DECLS
 
-#endif /* __CAPA_APP_DISPLAY__ */
+#endif /* __CAPA_APP_DISPLAY_H__ */
 

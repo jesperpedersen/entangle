@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_IMAGE_DISPLAY__
-#define __CAPA_IMAGE_DISPLAY__
+#ifndef __CAPA_IMAGE_DISPLAY_H__
+#define __CAPA_IMAGE_DISPLAY_H__
 
 #include <gtk/gtk.h>
 
@@ -56,5 +56,5 @@ CapaImageDisplay* capa_image_display_new(void);
 
 G_END_DECLS
 
-#endif /* __CAPA_IMAGE_DISPLAY__ */
+#endif /* __CAPA_IMAGE_DISPLAY_H__ */
 

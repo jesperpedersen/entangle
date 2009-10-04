@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAMERA_MANAGER__
-#define __CAMERA_MANAGER__
+#ifndef __CAPA_CAMERA_MANAGER_H__
+#define __CAPA_CAMERA_MANAGER_H__
 
 #include <glib-object.h>
 
@@ -66,5 +66,5 @@ gboolean capa_camera_manager_visible(CapaCameraManager *manager);
 
 G_END_DECLS
 
-#endif /* __CAMERA_MANAGER__ */
+#endif /* __CAPA_CAMERA_MANAGER_H__ */
 

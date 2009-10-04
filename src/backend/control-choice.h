@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL_CHOICE__
-#define __CONTROL_CHOICE__
+#ifndef __CAPA_CONTROL_CHOICE_H__
+#define __CAPA_CONTROL_CHOICE_H__
 
 #include <glib-object.h>
 
@@ -67,5 +67,5 @@ const char *capa_control_choice_value_get(CapaControlChoice *choice,
 
 G_END_DECLS
 
-#endif /* __CONTROL_CHOICE__ */
+#endif /* __CAPA_CONTROL_CHOICE_H__ */
 

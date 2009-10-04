@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_PREFERENCES__
-#define __CAPA_PREFERENCES__
+#ifndef __CAPA_PREFERENCES_H__
+#define __CAPA_PREFERENCES_H__
 
 #include <glib-object.h>
 
@@ -62,4 +62,4 @@ const char *capa_preferences_filename_pattern(CapaPreferences *prefs);
 
 G_END_DECLS
 
-#endif /* __CAPA_PREFERENCES__ */
+#endif /* __CAPA_PREFERENCES_H__ */

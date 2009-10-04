@@ -19,8 +19,8 @@
  */
 
 
-#ifndef __CAPA_CAMERA_LIST__
-#define __CAPA_CAMERA_LIST__
+#ifndef __CAPA_CAMERA_LIST_H__
+#define __CAPA_CAMERA_LIST_H__
 
 #include "camera.h"
 
@@ -75,5 +75,5 @@ CapaCamera *capa_camera_list_find(CapaCameraList *list,
 
 G_END_DECLS
 
-#endif /* __CAPA_CAMERA_LIST__ */
+#endif /* __CAPA_CAMERA_LIST_H__ */
 

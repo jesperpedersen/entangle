@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAMERA_INFO__
-#define __CAMERA_INFO__
+#ifndef __CAPA_CAMERA_INFO_H__
+#define __CAPA_CAMERA_INFO_H__
 
 #include <glib-object.h>
 
@@ -71,5 +71,5 @@ void capa_camera_info_hide(CapaCameraInfo *info);
 
 G_END_DECLS
 
-#endif /* __CAMERA_INFO__ */
+#endif /* __CAPA_CAMERA_INFO_H__ */
 

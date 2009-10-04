@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CONTROL_RANGE__
-#define __CONTROL_RANGE__
+#ifndef __CAPA_CONTROL_RANGE_H__
+#define __CAPA_CONTROL_RANGE_H__
 
 #include <glib-object.h>
 
@@ -68,5 +68,5 @@ float capa_control_range_get_step(CapaControlRange *range);
 
 G_END_DECLS
 
-#endif /* __CONTROL_RANGE__ */
+#endif /* __CAPA_CONTROL_RANGE_H__ */
 

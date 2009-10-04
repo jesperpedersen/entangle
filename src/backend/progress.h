@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_PROGRESS__
-#define __CAPA_PROGRESS__
+#ifndef __CAPA_PROGRESS_H__
+#define __CAPA_PROGRESS_H__
 
 #include <glib-object.h>
 
@@ -54,4 +54,4 @@ gboolean capa_progress_cancelled(CapaProgress *prog);
 
 G_END_DECLS
 
-#endif /* __CAPA_PROGRESS__ */
+#endif /* __CAPA_PROGRESS_H__ */

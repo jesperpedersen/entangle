@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAPA_SESSION__
-#define __CAPA_SESSION__
+#ifndef __CAPA_SESSION_H__
+#define __CAPA_SESSION_H__
 
 #include <glib-object.h>
 #include <sys/types.h>
@@ -79,4 +79,4 @@ CapaImage *capa_session_image_get(CapaSession *session, int idx);
 
 G_END_DECLS
 
-#endif /* __CAPA_SESSION__ */
+#endif /* __CAPA_SESSION_H__ */

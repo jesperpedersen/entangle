@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __CAMERA_PICKER__
-#define __CAMERA_PICKER__
+#ifndef __CAPA_CAMERA_PICKER_H__
+#define __CAPA_CAMERA_PICKER_H__
 
 #include <glib-object.h>
 
@@ -66,5 +66,5 @@ gboolean capa_camera_picker_visible(CapaCameraPicker *picker);
 
 G_END_DECLS
 
-#endif /* __CAMERA_PICKER__ */
+#endif /* __CAPA_CAMERA_PICKER_H__ */
 
