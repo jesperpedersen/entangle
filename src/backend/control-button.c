@@ -29,7 +29,7 @@
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL_BUTTON, CapaControlButtonPrivate))
 
 struct _CapaControlButtonPrivate {
-
+  gboolean dummy;
 };
 
 G_DEFINE_TYPE(CapaControlButton, capa_control_button, CAPA_TYPE_CONTROL);

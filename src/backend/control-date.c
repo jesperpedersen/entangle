@@ -29,6 +29,7 @@
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL_DATE, CapaControlDatePrivate))
 
 struct _CapaControlDatePrivate {
+  gboolean dummy;
 };
 
 G_DEFINE_TYPE(CapaControlDate, capa_control_date, CAPA_TYPE_CONTROL);
