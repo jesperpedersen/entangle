@@ -30,8 +30,19 @@
       <li><a href="http://gtk.org">glade >= 2.6.0</a></li>
       <li><a href="http://freedesktop.org/wiki/Software/hal">HAL >= 0.5.0</a></li>
       <li><a href="http://freedesktop.org/wiki/Software/hal">dbus-glib >= 0.60</a></li>
-
     </ul>
+  </dd>
+  <dt>Why was this application created?</dt>
+  <dd>
+    <p>During a presentation at the local photography club, the speaker
+      was using tethered shooting during practical demonstrations to
+      quickly display shots on a projector screen. This seemed like quite
+      a useful thing to be able todo, but while many Linux apps use
+      libgphoto for accessing/downloading images from a camera, none
+      exposed its remote shooting and configuration capabilities.
+      This was a gap in the open source application suite just crying out
+      to be filled.
+    </p>
   </dd>
 </dl>
 

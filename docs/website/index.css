@@ -2,7 +2,7 @@
 /************************** LAYOUT ************************/
 
 /* Reset default page padding / margins */
-body {
+body, html {
     padding: 0px;
     margin: 0px;
 }
@@ -35,7 +35,7 @@ body {
     position: absolute;
     width: 25%;
     top: 115px;
-    right: 0px;
+    right: 10px;
 }
 
 /* Footer is lined up with content */
@@ -55,33 +55,37 @@ body {
     background: #dfb63b url(header-bg.png) repeat-x top left;
     border-bottom: 1px solid #7d6621;
     color: white;
-
-    /* The next <h1> spills out of header, so force this down
-       to botom to avoid covering hyperlinks */
-    z-index: -1;
 }
 
 #header h1 {
+    margin: 0px;
+    padding: 0px;
+    background-image: url(logo-bg.png);
+    background-repeat: no-repeat;
+    background-position: top right;
+    height: 53px;
+    padding: 30px;
+}
+
+body {
     background-image: url(logo-bg.png);
     background-repeat: no-repeat;
     background-position: top right;
     height: 463px;
-    margin: 0px;
-    padding: 0px;
-    padding: 1em;
 }
 
 #header h1 a {
-    color: inherit;
+    color: white;
     text-decoration: none;
 }
+
 
 #footer {
     color: #888;
 }
 
 #footer a {
-    color: inherit;
+    color: #888;
 }
 
 #content {
@@ -90,6 +94,7 @@ body {
 
 #navigation a, #content a {
     color: #2c3b5f;
+    text-decoration: underline;
 }
 
 #navigation div.section {
@@ -172,3 +177,33 @@ dl dt {
 dl dd {
     margin-bottom: 2em;
 }
+
+div.screenshot p {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    background: url(panel-bg.png) repeat top left;
+    border: 2px solid #332a0d;
+    padding: 1em;
+    margin-top: 0px;
+}
+
+div.screenshot p.image {
+    margin-top: 2em;
+    background: transparent;
+    border: 0px;
+    margin-bottom: 0px;
+}
+
+div.screenshot p img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#footer p {
+    margin: 2em;
+    padding: 5px;
+    border-top: 1px solid #7d6621;
+}
+

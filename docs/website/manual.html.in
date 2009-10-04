@@ -4,7 +4,7 @@
 [% WRAPPER page.html %]
 
 <p>
-  It would be a good idea if somewhere were to write a user manual :-)
+  It would be a good idea if someone were to write a user manual :-)
 </p>
 
 [% END %]

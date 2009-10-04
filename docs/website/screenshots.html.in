@@ -3,5 +3,97 @@
 
 [% WRAPPER page.html %]
 
+<div class="screenshot">
+  <p class="image">
+    <img src="screenshot-camera-pick-none.png" alt="Camera picker">
+  </p>
+  <p>
+    If you don't have any cameras connected then there isn't
+    really much you can do with the application. If you see
+    this then you really ought to plug in the USB cable and
+    turn on camera.
+  </p>
+</div>
+
+<div class="screenshot">
+  <p class="image">
+    <img src="screenshot-camera-pick-one.png" alt="Camera picker">
+  </p>
+  <p>
+    Once you've plugged in a camera or two you'll want to decide
+    which to use. Not all cameras support USB triggered image
+    capture. This Nikon dSLR does, but the Canon point-and-shoot
+    isn't much use.
+  </p>
+</div>
+
+<div class="screenshot">
+  <p class="image">
+    <img src="screenshot-camera-in-use.png" alt="Camera In Use">
+  </p>
+  <p>
+    Recent Linux desktops may well have a plugin which automatically
+    mounts any camera as a filesystem on the desktop. Unfortunately
+    this prevents use from using the camera. If this happens you'll
+    see a dialog like this one. The solution is simple, unmount the
+    camera and retry. In the future we'll offer todo this automatically
+  </p>
+</div>
+
+<div class="screenshot">
+  <p class="image">
+    <img style="width: 500px" src="screenshot-camera-manager.png" alt="Camera Manager">
+  </p>
+  <p>
+    Once connected to a camera, the real fun can begin. The main
+    camera manager window is where you can control shooting and
+    settings. The 'Preview' button uses 'live view' to take a
+    quick snapshot. The 'Capture' button triggers the camera
+    shutter once and then downloads the result. An alternative
+    approach is to trigger the shutter on the camera directly
+    and have the images downloaded on the fly. This is what the
+    'Monitor' button is for.
+  </p>
+  <p>
+    On the left hand side of the screen there are 100's of controls
+    for changing camera settings. In the future this control set
+    will be customizable to allow infrequently used settings to be
+    hidden, and important ones prioritized. The thumbnails along the
+    bottom show images captured so far.
+  </p>
+</div>
+
+<div class="screenshot">
+  <p class="image">
+    <img src="screenshot-progress.png" alt="Camera Progress">
+  </p>
+  <p>
+    Some operations done on the camera can take a while to complete.
+    If this is likely to happen, the progress window will appear
+    allowing the operation to be cancelled if you get bored.
+  </p>
+</div>
+
+<div class="screenshot">
+  <p class="image">
+    <img style="width: 400px" src="screenshot-camera-info.png" alt="Camera Info">
+  </p>
+  <p>
+    The gphoto library provides a short overview of all the
+    capabilities supported by the connected camrra. This dialog
+    is displaying that information
+  </p>
+</div>
+
+<div class="screenshot">
+  <p class="image">
+    <img src="screenshot-about.png" alt="About dialog">
+  </p>
+  <p>
+    The about dialog isn't the most interesting part of the application,
+    but here it is showing the logo in all its glory
+  </p>
+</div>
+
 
 [% END %]
