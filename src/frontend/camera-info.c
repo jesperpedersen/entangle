@@ -18,6 +18,8 @@
  *
  */
 
+#include <config.h>
+
 #include <string.h>
 #include <glade/glade.h>
 #include <unistd.h>

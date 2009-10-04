@@ -18,6 +18,8 @@
  *
  */
 
+#include <config.h>
+
 #include <stdio.h>
 
 #include "internal.h"
