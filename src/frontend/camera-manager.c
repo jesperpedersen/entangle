@@ -80,10 +80,12 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
   CapaCameraManagerPrivate *priv = manager->priv;
   GtkWidget *toolCapture;
   GtkWidget *toolPreview;
+  GtkWidget *toolMonitor;
   GtkWidget *settingsScroll;
 
   toolCapture = glade_xml_get_widget(priv->glade, "toolbar-capture");
   toolPreview = glade_xml_get_widget(priv->glade, "toolbar-preview");
+  toolMonitor = glade_xml_get_widget(priv->glade, "toolbar-monitor");
   settingsScroll = glade_xml_get_widget(priv->glade, "settings-scroll");
 
   gtk_widget_set_sensitive(toolCapture,
@@ -94,9 +96,16 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 			   priv->camera &&
 			   capa_camera_has_preview(priv->camera) &&
 			   !priv->inOperation ? TRUE : FALSE);
+  gtk_widget_set_sensitive(toolMonitor,
+			   priv->camera &&
+			   capa_camera_has_capture(priv->camera) &&
+			   !priv->inOperation ? TRUE : FALSE);
 
-  if (priv->camera && !capa_camera_has_capture(priv->camera))
+  if (priv->camera && !capa_camera_has_capture(priv->camera)) {
     gtk_widget_set_tooltip_text(toolCapture, "This camera does not support image capture");
+    /* XXX is this check correct ? unclear */
+    gtk_widget_set_tooltip_text(toolMonitor, "This camera does not support image capture");
+  }
   if (priv->camera && !capa_camera_has_preview(priv->camera))
     gtk_widget_set_tooltip_text(toolPreview, "This camera does not support image preview");
 
