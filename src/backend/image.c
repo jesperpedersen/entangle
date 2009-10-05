@@ -167,6 +167,7 @@ gboolean capa_image_load(CapaImage *image)
    * per fd.o spec */
   thumb = gdk_pixbuf_new_from_file_at_size(priv->filename,
 					   96, 96, NULL);
+  CAPA_DEBUG("Generated thumbnail %p\n", thumb);
 
   tw = gdk_pixbuf_get_width(thumb);
   th = gdk_pixbuf_get_height(thumb);

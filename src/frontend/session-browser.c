@@ -32,6 +32,8 @@
 struct _CapaSessionBrowserPrivate {
   CapaSession *session;
 
+  gulong sigImageAdded;
+
   GtkListStore *model;
 };
 
@@ -68,6 +70,26 @@ static void do_model_refresh(CapaSessionBrowser *browser)
 }
 
 
+static void do_image_added(CapaSession *session G_GNUC_UNUSED,
+			   CapaImage *img,
+			   gpointer data)
+{
+  CapaSessionBrowser *manager = data;
+  CapaSessionBrowserPrivate *priv = manager->priv;
+  GdkPixbuf *pixbuf = capa_image_thumbnail(img);
+  GtkTreeIter iter;
+
+  fprintf(stderr, "Got new image for model %s %p\n", capa_image_filename(img), priv);
+
+  gtk_list_store_append(priv->model, &iter);
+
+    /* XXX what's our refcount policy going to be for pixbuf.... */
+  gtk_list_store_set(priv->model, &iter, 0, img, 1, pixbuf, -1);
+
+  gtk_widget_queue_resize(GTK_WIDGET(manager));
+}
+
+
 static void capa_session_browser_get_property(GObject *object,
 					      guint prop_id,
 					      GValue *value,
@@ -100,10 +122,17 @@ static void capa_session_browser_set_property(GObject *object,
   switch (prop_id)
     {
     case PROP_SESSION:
-      if (priv->session)
-	g_object_unref(G_OBJECT(priv->session));
+      if (priv->session) {
+        g_signal_handler_disconnect(G_OBJECT(priv->session),
+				    priv->sigImageAdded);
+        g_object_unref(G_OBJECT(priv->session));
+      }
       priv->session = g_value_get_object(value);
       g_object_ref(G_OBJECT(priv->session));
+
+      priv->sigImageAdded = g_signal_connect(G_OBJECT(priv->session), "session-image-added",
+					     G_CALLBACK(do_image_added), browser);
+
       do_model_refresh(browser);
       break;
 
