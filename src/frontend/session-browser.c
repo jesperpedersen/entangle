@@ -203,6 +203,10 @@ CapaSessionBrowser *capa_session_browser_new(void)
 static void capa_session_browser_init(CapaSessionBrowser *browser)
 {
   CapaSessionBrowserPrivate *priv;
+  const GtkTargetEntry const targets[] = {
+    { g_strdup("demo"), GTK_TARGET_OTHER_APP, 1 },
+  };
+  int ntargets = 1;
 
   priv = browser->priv = CAPA_SESSION_BROWSER_GET_PRIVATE(browser);
   memset(priv, 0, sizeof *priv);
@@ -219,6 +223,12 @@ static void capa_session_browser_init(CapaSessionBrowser *browser)
   gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(priv->model),
 				       GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID,
 				       GTK_SORT_ASCENDING);
+
+  gtk_icon_view_enable_model_drag_source(GTK_ICON_VIEW(browser),
+					 GDK_BUTTON1_MASK,
+					 targets,
+					 ntargets,
+					 GDK_ACTION_PRIVATE);
 
   gtk_icon_view_set_orientation(GTK_ICON_VIEW(browser), GTK_ORIENTATION_HORIZONTAL);
   /* XXX gross hack - GtkIconView doesn't seem to have a better

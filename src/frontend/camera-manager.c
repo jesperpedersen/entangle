@@ -24,6 +24,7 @@
 #include <math.h>
 #include <glade/glade.h>
 #include <unistd.h>
+#include <gdk/gdkx.h>
 
 #include "internal.h"
 #include "camera-manager.h"
@@ -31,6 +32,7 @@
 #include "camera-info.h"
 #include "camera-progress.h"
 #include "image-display.h"
+#include "image-polaroid.h"
 #include "help-about.h"
 #include "session-browser.h"
 #include "control-panel.h"
@@ -691,6 +693,31 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
   }
 }
 
+static void do_drag_failed(GtkWidget *widget,
+			   GdkDragContext *ctx G_GNUC_UNUSED,
+			   GtkDragResult res,
+			   gpointer data)
+{
+  CapaCameraManager *manager = data;
+  CapaCameraManagerPrivate *priv = manager->priv;
+
+  if (res == GTK_DRAG_RESULT_NO_TARGET) {
+    CapaImage *img = capa_session_browser_selected_image(priv->sessionBrowser);
+    if (img) {
+      GdkScreen *screen;
+      int x, y;
+      gdk_display_get_pointer(gtk_widget_get_display(widget),
+			      &screen,
+			      &x, &y, NULL);
+      GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
+      CapaImagePolaroid *pol = capa_image_polaroid_new();
+      g_object_set(G_OBJECT(pol), "image", img, NULL);
+      capa_image_polaroid_show(pol, GTK_WINDOW(win), x, y);
+      g_object_unref(G_OBJECT(img));
+    }
+  }
+}
+
 
 static void capa_camera_manager_init(CapaCameraManager *manager)
 {
@@ -702,6 +729,11 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   GtkWidget *settingsBox;
   GtkWidget *settingsViewport;
   GtkWidget *win;
+  XID xid;
+  GdkDragProtocol protocol;
+  GtkTargetEntry targets[] = {
+    { g_strdup("demo"), GTK_TARGET_SAME_APP, 0,}
+  };
 
   priv = manager->priv = CAPA_CAMERA_MANAGER_GET_PRIVATE(manager);
 
@@ -757,6 +789,21 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   settingsBox = glade_xml_get_widget(priv->glade, "settings-box");
   settingsViewport = glade_xml_get_widget(priv->glade, "settings-viewport");
   display = glade_xml_get_widget(priv->glade, "display-panel");
+
+  gtk_icon_view_enable_model_drag_source(GTK_ICON_VIEW(priv->sessionBrowser),
+					 GDK_BUTTON1_MASK,
+					 targets,
+					 1,
+					 GDK_ACTION_PRIVATE);
+
+  xid = gdk_x11_drawable_get_xid(GDK_DRAWABLE(gdk_get_default_root_window()));
+  if (gdk_drag_get_protocol(xid, &protocol))
+    gtk_drag_dest_set_proxy(win,
+			    gdk_get_default_root_window(),
+			    protocol, TRUE);
+
+
+  g_signal_connect(G_OBJECT(priv->sessionBrowser), "drag-failed", G_CALLBACK(do_drag_failed), manager);
 
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(iconScroll),
 				 GTK_POLICY_AUTOMATIC,

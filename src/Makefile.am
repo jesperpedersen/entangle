@@ -62,6 +62,7 @@ libcapa_frontend_la_SOURCES = \
 	frontend/control-panel.h frontend/control-panel.c \
 	frontend/help-about.h frontend/help-about.c \
 	frontend/image-display.h frontend/image-display.c \
+	frontend/image-polaroid.h frontend/image-polaroid.c \
 	frontend/session-browser.h frontend/session-browser.c
 
 libcapa_frontend_la_LIBADD = libcapa_backend.la
