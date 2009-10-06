@@ -43,6 +43,9 @@ struct _CapaCameraPrivate {
   CapaParams *params;
   Camera *cam;
 
+  CameraWidget *widgets;
+  CapaControlGroup *controls;
+
   CapaSession *session;
 
   CapaProgress *progress;
@@ -183,6 +186,10 @@ static void capa_camera_finalize(GObject *object)
     gp_camera_exit(priv->cam, priv->params->ctx);
     gp_camera_free(priv->cam);
   }
+  if (priv->widgets)
+    gp_widget_unref(priv->widgets);
+  if (priv->controls)
+    g_object_unref(priv->controls);
   capa_params_free(priv->params);
   g_free(priv->model);
   g_free(priv->port);
@@ -790,7 +797,92 @@ int capa_camera_monitor(CapaCamera *cam)
   return 0;
 }
 
-static CapaControl *do_build_controls(const char *path,
+static void do_update_control_text(GObject *object,
+				   GParamSpec *param G_GNUC_UNUSED,
+				   void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+  char *text;
+  char *path;
+  int id;
+  CameraWidget *widget;
+
+  g_object_get(object, "path", &path, "id", &id, "value", &text, NULL);
+  CAPA_DEBUG("update of widget %s", path);
+
+  if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
+    CAPA_DEBUG("cannot get widget id %d", id);
+    return;
+  }
+
+  if (gp_widget_set_value(widget, text) != GP_OK) {
+    CAPA_DEBUG("cannot set widget id %d to %s", id, text);
+  }
+
+  if (gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx) != GP_OK)
+    CAPA_DEBUG("cannot set config");
+
+}
+
+static void do_update_control_float(GObject *object,
+				    GParamSpec *param G_GNUC_UNUSED,
+				    void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+  float value;
+  char *path;
+  int id;
+  CameraWidget *widget;
+
+  g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
+  CAPA_DEBUG("update of widget %s", path);
+
+  if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
+    CAPA_DEBUG("cannot get widget id %d", id);
+    return;
+  }
+
+  if (gp_widget_set_value(widget, &value) != GP_OK) {
+    CAPA_DEBUG("cannot set widget id %d to %f", id, value);
+  }
+
+  if (gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx) != GP_OK)
+    CAPA_DEBUG("cannot set config");
+
+}
+
+static void do_update_control_boolean(GObject *object,
+				      GParamSpec *param G_GNUC_UNUSED,
+				      void *data)
+{
+  CapaCamera *cam = data;
+  CapaCameraPrivate *priv = cam->priv;
+  gboolean value;
+  char *path;
+  int id;
+  CameraWidget *widget;
+
+  g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
+  CAPA_DEBUG("update of widget %s", path);
+
+  if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
+    CAPA_DEBUG("cannot get widget id %d", id);
+    return;
+  }
+
+  if (gp_widget_set_value(widget, &value) != GP_OK) {
+    CAPA_DEBUG("cannot set widget id %d to %d", id, value);
+  }
+
+  if (gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx) != GP_OK)
+    CAPA_DEBUG("cannot set config");
+
+}
+
+static CapaControl *do_build_controls(CapaCamera *cam,
+				      const char *path,
 				      CameraWidget *widget)
 {
   CameraWidgetType type;
@@ -830,7 +922,7 @@ static CapaControl *do_build_controls(const char *path,
 	  g_object_unref(G_OBJECT(grp));
 	  goto error;
 	}
-	if (!(subctl = do_build_controls(fullpath, child))) {
+	if (!(subctl = do_build_controls(cam, fullpath, child))) {
 	  g_object_unref(G_OBJECT(grp));
 	  goto error;
 	}
@@ -863,6 +955,8 @@ static CapaControl *do_build_controls(const char *path,
 
       gp_widget_get_value(widget, &value);
       g_object_set(G_OBJECT(ret), "value", value, NULL);
+      g_signal_connect(G_OBJECT(ret), "notify::value",
+		       G_CALLBACK(do_update_control_text), cam);
     } break;
 
   case GP_WIDGET_DATE:
@@ -884,6 +978,8 @@ static CapaControl *do_build_controls(const char *path,
 
       gp_widget_get_value(widget, &value);
       g_object_set(G_OBJECT(ret), "value", value, NULL);
+      g_signal_connect(G_OBJECT(ret), "notify::value",
+		       G_CALLBACK(do_update_control_float), cam);
     } break;
 
   case GP_WIDGET_TEXT:
@@ -894,6 +990,8 @@ static CapaControl *do_build_controls(const char *path,
 
       gp_widget_get_value(widget, &value);
       g_object_set(G_OBJECT(ret), "value", value, NULL);
+      g_signal_connect(G_OBJECT(ret), "notify::value",
+		       G_CALLBACK(do_update_control_text), cam);
     } break;
 
   case GP_WIDGET_TOGGLE:
@@ -904,6 +1002,8 @@ static CapaControl *do_build_controls(const char *path,
 
       gp_widget_get_value(widget, &value);
       g_object_set(G_OBJECT(ret), "value", (gboolean)value, NULL);
+      g_signal_connect(G_OBJECT(ret), "notify::value",
+		       G_CALLBACK(do_update_control_boolean), cam);
     } break;
   }
 
@@ -916,19 +1016,18 @@ static CapaControl *do_build_controls(const char *path,
 CapaControlGroup *capa_camera_controls(CapaCamera *cam)
 {
   CapaCameraPrivate *priv = cam->priv;
-  CameraWidget *win = NULL;
-  CapaControl *group;
 
   if (priv->cam == NULL)
     return NULL;
 
-  if (gp_camera_get_config(priv->cam, &win, priv->params->ctx) != GP_OK)
-    return NULL;
+  if (priv->controls == NULL) {
+    if (gp_camera_get_config(priv->cam, &priv->widgets, priv->params->ctx) != GP_OK)
+      return NULL;
 
-  group = do_build_controls("", win);
-  gp_widget_unref(win);
+    priv->controls = CAPA_CONTROL_GROUP(do_build_controls(cam, "", priv->widgets));
+  }
 
-  return CAPA_CONTROL_GROUP(group);
+  return priv->controls;
 }
 
 gboolean capa_camera_has_capture(CapaCamera *cam)

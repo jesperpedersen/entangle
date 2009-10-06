@@ -55,6 +55,54 @@ static void do_control_remove(GtkWidget *widget,
   gtk_container_remove(GTK_CONTAINER(panel), widget);
 }
 
+static void do_update_control_entry(GtkWidget *widget,
+				    GdkEventFocus *ev G_GNUC_UNUSED,
+				    gpointer data)
+{
+  CapaControlText *control = data;
+  const char *text;
+
+  text = gtk_entry_get_text(GTK_ENTRY(widget));
+
+  CAPA_DEBUG("entry [%s]", text);
+  g_object_set(G_OBJECT(control), "value", text, NULL);
+}
+
+static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
+				    GtkScrollType scroll G_GNUC_UNUSED,
+				    gdouble value,
+				    gpointer data)
+{
+  CapaControlText *control = data;
+
+  CAPA_DEBUG("range [%lf]", value);
+  g_object_set(G_OBJECT(control), "value", (float)value, NULL);
+}
+
+static void do_update_control_combo(GtkComboBox *widget,
+				    gpointer data)
+{
+  CapaControlChoice *control = data;
+  char *text;
+
+  text = gtk_combo_box_get_active_text(widget);
+  CAPA_DEBUG("combo [%s]", text);
+  g_object_set(G_OBJECT(control), "value", text, NULL);
+
+  g_free(text);
+}
+
+static void do_update_control_toggle(GtkToggleButton *widget,
+				     gpointer data)
+{
+  CapaControlChoice *control = data;
+  gboolean active;
+
+  active = gtk_toggle_button_get_active(widget);
+  CAPA_DEBUG("toggle [%d]", active);
+  g_object_set(G_OBJECT(control), "value", active, NULL);
+}
+
 static void do_setup_control_group(CapaControlPanel *panel,
 				   GtkVBox *box,
 				   CapaControlGroup *grp)
@@ -119,6 +167,8 @@ static void do_setup_control_group(CapaControlPanel *panel,
       }
 
       gtk_combo_box_set_active(GTK_COMBO_BOX(value), active);
+      g_signal_connect(G_OBJECT(value), "changed",
+		       G_CALLBACK(do_update_control_combo), control);
       gtk_container_add(GTK_CONTAINER(box), value);
     } else if (CAPA_IS_CONTROL_DATE(control)) {
       GtkWidget *label;
@@ -151,6 +201,8 @@ static void do_setup_control_group(CapaControlPanel *panel,
 					capa_control_range_get_step(CAPA_CONTROL_RANGE(control)));
       g_object_get(G_OBJECT(control), "value", &offset, NULL);
       gtk_range_set_value(GTK_RANGE(value), offset);
+      g_signal_connect(G_OBJECT(value), "change-value",
+		       G_CALLBACK(do_update_control_range), control);
       gtk_container_add(GTK_CONTAINER(box), value);
     } else if (CAPA_IS_CONTROL_TEXT(control)) {
       GtkWidget *label;
@@ -166,6 +218,8 @@ static void do_setup_control_group(CapaControlPanel *panel,
       value = gtk_entry_new();
       g_object_get(G_OBJECT(control), "value", &text, NULL);
       gtk_entry_set_text(GTK_ENTRY(value), text);
+      g_signal_connect(G_OBJECT(value), "focus-out-event",
+		       G_CALLBACK(do_update_control_entry), control);
       gtk_container_add(GTK_CONTAINER(box), value);
     } else if (CAPA_IS_CONTROL_TOGGLE(control)) {
       GtkWidget *value;
@@ -174,6 +228,8 @@ static void do_setup_control_group(CapaControlPanel *panel,
       value = gtk_check_button_new_with_label(capa_control_label(control));
       g_object_get(G_OBJECT(control), "value", &active, NULL);
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
+      g_signal_connect(G_OBJECT(value), "toggled",
+		       G_CALLBACK(do_update_control_toggle), control);
       gtk_container_add(GTK_CONTAINER(box), value);
     }
   }
