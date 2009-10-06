@@ -34,6 +34,50 @@ struct _CapaControlTextPrivate {
 
 G_DEFINE_TYPE(CapaControlText, capa_control_text, CAPA_TYPE_CONTROL);
 
+enum {
+  PROP_0,
+  PROP_VALUE,
+};
+
+static void capa_control_get_property(GObject *object,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *pspec)
+{
+  CapaControlText *picker = CAPA_CONTROL_TEXT(object);
+  CapaControlTextPrivate *priv = picker->priv;
+
+  switch (prop_id)
+    {
+    case PROP_VALUE:
+      g_value_set_string(value, priv->value);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
+}
+
+static void capa_control_set_property(GObject *object,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *pspec)
+{
+  CapaControlText *picker = CAPA_CONTROL_TEXT(object);
+  CapaControlTextPrivate *priv = picker->priv;
+
+  switch (prop_id)
+    {
+    case PROP_VALUE:
+      g_free(priv->value);
+      priv->value = g_value_dup_string(value);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
+}
+
 
 static void capa_control_text_finalize (GObject *object)
 {
@@ -50,6 +94,20 @@ static void capa_control_text_class_init(CapaControlTextClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->finalize = capa_control_text_finalize;
+  object_class->get_property = capa_control_get_property;
+  object_class->set_property = capa_control_set_property;
+
+  g_object_class_install_property(object_class,
+				  PROP_VALUE,
+				  g_param_spec_string("value",
+						      "Control value",
+						      "Current value of the control",
+						      NULL,
+						      G_PARAM_READWRITE |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+
 
   g_type_class_add_private(klass, sizeof(CapaControlTextPrivate));
 }

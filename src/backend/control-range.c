@@ -29,6 +29,7 @@
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL_RANGE, CapaControlRangePrivate))
 
 struct _CapaControlRangePrivate {
+  float value;
   float min;
   float max;
   float step;
@@ -38,6 +39,7 @@ G_DEFINE_TYPE(CapaControlRange, capa_control_range, CAPA_TYPE_CONTROL);
 
 enum {
   PROP_0,
+  PROP_VALUE,
   PROP_RANGE_MIN,
   PROP_RANGE_MAX,
   PROP_RANGE_STEP
@@ -53,6 +55,10 @@ static void capa_control_range_get_property(GObject *object,
 
   switch (prop_id)
     {
+    case PROP_VALUE:
+      g_value_set_float(value, priv->value);
+      break;
+
     case PROP_RANGE_MIN:
       g_value_set_float(value, priv->min);
       break;
@@ -80,6 +86,10 @@ static void capa_control_range_set_property(GObject *object,
 
   switch (prop_id)
     {
+    case PROP_VALUE:
+      priv->value = g_value_get_float(value);
+      break;
+
     case PROP_RANGE_MIN:
       priv->min = g_value_get_float(value);
       break;
@@ -110,6 +120,19 @@ static void capa_control_range_class_init(CapaControlRangeClass *klass)
   object_class->finalize = capa_control_range_finalize;
   object_class->get_property = capa_control_range_get_property;
   object_class->set_property = capa_control_range_set_property;
+
+  g_object_class_install_property(object_class,
+				  PROP_VALUE,
+				  g_param_spec_float("value",
+						     "Control value",
+						     "Current control value",
+						     -10000000.0,
+						     10000000.0,
+						     0.0,
+						     G_PARAM_READWRITE |
+						     G_PARAM_STATIC_NAME |
+						     G_PARAM_STATIC_NICK |
+						     G_PARAM_STATIC_BLURB));
 
   g_object_class_install_property(object_class,
 				  PROP_RANGE_MIN,

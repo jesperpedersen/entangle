@@ -29,10 +29,53 @@
       (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL_TOGGLE, CapaControlTogglePrivate))
 
 struct _CapaControlTogglePrivate {
-  gboolean enabled;
+  gboolean value;
 };
 
 G_DEFINE_TYPE(CapaControlToggle, capa_control_toggle, CAPA_TYPE_CONTROL);
+
+enum {
+  PROP_0,
+  PROP_VALUE,
+};
+
+static void capa_control_get_property(GObject *object,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *pspec)
+{
+  CapaControlToggle *picker = CAPA_CONTROL_TOGGLE(object);
+  CapaControlTogglePrivate *priv = picker->priv;
+
+  switch (prop_id)
+    {
+    case PROP_VALUE:
+      g_value_set_boolean(value, priv->value);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
+}
+
+static void capa_control_set_property(GObject *object,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *pspec)
+{
+  CapaControlToggle *picker = CAPA_CONTROL_TOGGLE(object);
+  CapaControlTogglePrivate *priv = picker->priv;
+
+  switch (prop_id)
+    {
+    case PROP_VALUE:
+      priv->value = g_value_get_boolean(value);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
+}
 
 
 static void capa_control_toggle_finalize (GObject *object)
@@ -45,6 +88,19 @@ static void capa_control_toggle_class_init(CapaControlToggleClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->finalize = capa_control_toggle_finalize;
+  object_class->get_property = capa_control_get_property;
+  object_class->set_property = capa_control_set_property;
+
+  g_object_class_install_property(object_class,
+				  PROP_VALUE,
+				  g_param_spec_boolean("value",
+						       "Control value",
+						       "Current value of the control",
+						       FALSE,
+						       G_PARAM_READWRITE |
+						       G_PARAM_STATIC_NAME |
+						       G_PARAM_STATIC_NICK |
+						       G_PARAM_STATIC_BLURB));
 
   g_type_class_add_private(klass, sizeof(CapaControlTogglePrivate));
 }

@@ -58,11 +58,11 @@ CapaControlChoice* capa_control_choice_new(const char *path,
 					   const char *label,
 					   const char *info);
 
-void capa_control_choice_add_value(CapaControlChoice *choice,
-				   const char *value);
+void capa_control_choice_add_entry(CapaControlChoice *choice,
+				   const char *entry);
 
-int capa_control_choice_value_count(CapaControlChoice *choice);
-const char *capa_control_choice_value_get(CapaControlChoice *choice,
+int capa_control_choice_entry_count(CapaControlChoice *choice);
+const char *capa_control_choice_entry_get(CapaControlChoice *choice,
 					  int idx);
 
 G_END_DECLS

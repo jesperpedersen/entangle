@@ -851,41 +851,59 @@ static CapaControl *do_build_controls(const char *path,
   case GP_WIDGET_RADIO:
   case GP_WIDGET_MENU:
     {
+      char *value = NULL;
       CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_choice_new(fullpath, id, label, info));
 
       for (int i = 0 ; i < gp_widget_count_choices(widget) ; i++) {
-	const char *value;
-	gp_widget_get_choice(widget, i, &value);
-	capa_control_choice_add_value(CAPA_CONTROL_CHOICE(ret), value);
+	const char *choice;
+	gp_widget_get_choice(widget, i, &choice);
+	capa_control_choice_add_entry(CAPA_CONTROL_CHOICE(ret), choice);
       }
+
+      gp_widget_get_value(widget, &value);
+      g_object_set(G_OBJECT(ret), "value", value, NULL);
     } break;
 
   case GP_WIDGET_DATE:
     {
+      int value = 0;
       CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_date_new(fullpath, id, label, info));
+      g_object_set(G_OBJECT(ret), "value", value, NULL);
     } break;
 
   case GP_WIDGET_RANGE:
     {
       float min, max, step;
+      float value = 0.0;
       gp_widget_get_range(widget, &min, &max, &step);
       CAPA_DEBUG("Add range %s %d %s %f %f %f", fullpath, id, label, min, max, step);
       ret = CAPA_CONTROL(capa_control_range_new(fullpath, id, label, info,
 						min, max, step));
+
+      gp_widget_get_value(widget, &value);
+      g_object_set(G_OBJECT(ret), "value", value, NULL);
     } break;
 
   case GP_WIDGET_TEXT:
     {
+      char *value = NULL;
       CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_text_new(fullpath, id, label, info));
+
+      gp_widget_get_value(widget, &value);
+      g_object_set(G_OBJECT(ret), "value", value, NULL);
     } break;
 
   case GP_WIDGET_TOGGLE:
     {
+      int value = 0;
       CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
       ret = CAPA_CONTROL(capa_control_toggle_new(fullpath, id, label, info));
+
+      gp_widget_get_value(widget, &value);
+      g_object_set(G_OBJECT(ret), "value", (gboolean)value, NULL);
     } break;
   }
 

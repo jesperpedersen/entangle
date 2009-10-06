@@ -87,6 +87,8 @@ static void do_setup_control_group(CapaControlPanel *panel,
     } else if (CAPA_IS_CONTROL_CHOICE(control)) {
       GtkWidget *label;
       GtkWidget *value;
+      char *text;
+      int active = -1;
 
       /*
        * Need todo better here
@@ -108,13 +110,20 @@ static void do_setup_control_group(CapaControlPanel *panel,
       gtk_container_add(GTK_CONTAINER(box), label);
 
       value = gtk_combo_box_new_text();
-      for (int n = 0 ; n < capa_control_choice_value_count(CAPA_CONTROL_CHOICE(control)) ; n++)
+      g_object_get(G_OBJECT(control), "value", &text, NULL);
+      for (int n = 0 ; n < capa_control_choice_entry_count(CAPA_CONTROL_CHOICE(control)) ; n++) {
+	if (strcmp(text, capa_control_choice_entry_get(CAPA_CONTROL_CHOICE(control), n)) == 0)
+	  active = n;
 	gtk_combo_box_append_text(GTK_COMBO_BOX(value),
-				  capa_control_choice_value_get(CAPA_CONTROL_CHOICE(control), n));
+				  capa_control_choice_entry_get(CAPA_CONTROL_CHOICE(control), n));
+      }
+
+      gtk_combo_box_set_active(GTK_COMBO_BOX(value), active);
       gtk_container_add(GTK_CONTAINER(box), value);
     } else if (CAPA_IS_CONTROL_DATE(control)) {
       GtkWidget *label;
       GtkWidget *value;
+      int date;
 
       label = gtk_label_new(capa_control_label(control));
       gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
@@ -123,10 +132,13 @@ static void do_setup_control_group(CapaControlPanel *panel,
       gtk_container_add(GTK_CONTAINER(box), label);
 
       value = gtk_entry_new();
+      g_object_get(G_OBJECT(control), "value", &date, NULL);
+      //gtk_entry_set_text(GTK_ENTRY(value), text);
       gtk_container_add(GTK_CONTAINER(box), value);
     } else if (CAPA_IS_CONTROL_RANGE(control)) {
       GtkWidget *label;
       GtkWidget *value;
+      float offset;
 
       label = gtk_label_new(capa_control_label(control));
       gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
@@ -137,10 +149,13 @@ static void do_setup_control_group(CapaControlPanel *panel,
       value = gtk_hscale_new_with_range(capa_control_range_get_min(CAPA_CONTROL_RANGE(control)),
 					capa_control_range_get_max(CAPA_CONTROL_RANGE(control)),
 					capa_control_range_get_step(CAPA_CONTROL_RANGE(control)));
+      g_object_get(G_OBJECT(control), "value", &offset, NULL);
+      gtk_range_set_value(GTK_RANGE(value), offset);
       gtk_container_add(GTK_CONTAINER(box), value);
     } else if (CAPA_IS_CONTROL_TEXT(control)) {
       GtkWidget *label;
       GtkWidget *value;
+      const char *text;
 
       label = gtk_label_new(capa_control_label(control));
       gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
@@ -149,11 +164,16 @@ static void do_setup_control_group(CapaControlPanel *panel,
       gtk_container_add(GTK_CONTAINER(box), label);
 
       value = gtk_entry_new();
+      g_object_get(G_OBJECT(control), "value", &text, NULL);
+      gtk_entry_set_text(GTK_ENTRY(value), text);
       gtk_container_add(GTK_CONTAINER(box), value);
     } else if (CAPA_IS_CONTROL_TOGGLE(control)) {
       GtkWidget *value;
+      gboolean active;
 
       value = gtk_check_button_new_with_label(capa_control_label(control));
+      g_object_get(G_OBJECT(control), "value", &active, NULL);
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
       gtk_container_add(GTK_CONTAINER(box), value);
     }
   }
