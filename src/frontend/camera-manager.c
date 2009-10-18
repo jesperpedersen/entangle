@@ -205,7 +205,7 @@ static void do_add_camera(CapaCameraManager *manager)
   priv->sigOpEnd = g_signal_connect(G_OBJECT(priv->camera), "camera-op-end",
 				    G_CALLBACK(do_camera_op_end), manager);
 
-  directory = g_strdup_printf("%s/%s",
+  directory = g_strdup_printf("%s/%s/Default Session",
 			      capa_preferences_picture_dir(priv->prefs),
 			      capa_camera_model(priv->camera));
 
@@ -411,6 +411,113 @@ static void do_manager_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
 		 NULL);
   }
   capa_camera_info_show(priv->driver);
+}
+
+static void capa_camera_manager_new_session(CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *chooser;
+  GtkWidget *win;
+  gchar *dir;
+
+  win = glade_xml_get_widget(priv->glade, "camera-manager");
+
+  chooser = gtk_file_chooser_dialog_new("Start new session",
+					GTK_WINDOW(win),
+					GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
+					GTK_STOCK_CANCEL,
+					GTK_RESPONSE_REJECT,
+					GTK_STOCK_OK,
+					GTK_RESPONSE_ACCEPT,
+					NULL);
+  gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(chooser), TRUE);
+
+  dir = g_strdup_printf("%s/%s",
+			capa_preferences_picture_dir(priv->prefs),
+			capa_camera_model(priv->camera));
+  g_mkdir_with_parents(dir, 0777);
+  CAPA_DEBUG("Set curent folder '%s'", dir);
+  gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), dir);
+  g_free(dir);
+
+  gtk_widget_hide(chooser);
+
+  if (gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT) {
+    CapaSession *session;
+    dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
+    session = capa_session_new(dir, capa_preferences_filename_pattern(priv->prefs));
+    capa_session_load(session);
+    g_object_set(G_OBJECT(priv->camera), "session", session, NULL);
+    g_object_unref(session);
+  }
+
+  gtk_widget_destroy(chooser);
+}
+
+static void capa_camera_manager_open_session(CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *chooser;
+  GtkWidget *win;
+  gchar *dir;
+
+  win = glade_xml_get_widget(priv->glade, "camera-manager");
+
+  chooser = gtk_file_chooser_dialog_new("Open existing session",
+					GTK_WINDOW(win),
+					GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+					GTK_STOCK_CANCEL,
+					GTK_RESPONSE_REJECT,
+					GTK_STOCK_OK,
+					GTK_RESPONSE_ACCEPT,
+					NULL);
+  gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(chooser), TRUE);
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(chooser), FALSE);
+
+  dir = g_strdup_printf("%s/%s",
+			capa_preferences_picture_dir(priv->prefs),
+			capa_camera_model(priv->camera));
+  g_mkdir_with_parents(dir, 0777);
+
+  gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), dir);
+  g_free(dir);
+
+  gtk_widget_hide(chooser);
+
+  if (gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT) {
+    CapaSession *session;
+    dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
+    session = capa_session_new(dir, capa_preferences_filename_pattern(priv->prefs));
+    capa_session_load(session);
+    g_object_set(G_OBJECT(priv->camera), "session", session, NULL);
+    g_object_unref(session);
+  }
+
+  gtk_widget_destroy(chooser);
+}
+
+static void do_toolbar_new_session(GtkToolButton *src G_GNUC_UNUSED,
+				   CapaCameraManager *manager)
+{
+  capa_camera_manager_new_session(manager);
+}
+
+static void do_toolbar_open_session(GtkToolButton *src G_GNUC_UNUSED,
+				    CapaCameraManager *manager)
+{
+  capa_camera_manager_open_session(manager);
+}
+
+static void do_menu_new_session(GtkImageMenuItem *src G_GNUC_UNUSED,
+				CapaCameraManager *manager)
+{
+  capa_camera_manager_new_session(manager);
+}
+
+static void do_menu_open_session(GtkImageMenuItem *src G_GNUC_UNUSED,
+				CapaCameraManager *manager)
+{
+  capa_camera_manager_open_session(manager);
 }
 
 static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
@@ -746,6 +853,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_manual", G_CALLBACK(do_manager_help_manual), manager);
   glade_xml_signal_connect_data(priv->glade, "camera_menu_help_driver", G_CALLBACK(do_manager_help_driver), manager);
 
+  glade_xml_signal_connect_data(priv->glade, "toolbar_new_click", G_CALLBACK(do_toolbar_new_session), manager);
+  glade_xml_signal_connect_data(priv->glade, "toolbar_open_click", G_CALLBACK(do_toolbar_open_session), manager);
+
   glade_xml_signal_connect_data(priv->glade, "toolbar_capture_click", G_CALLBACK(do_toolbar_capture), manager);
   glade_xml_signal_connect_data(priv->glade, "toolbar_preview_click", G_CALLBACK(do_toolbar_preview), manager);
   glade_xml_signal_connect_data(priv->glade, "toolbar_monitor_click", G_CALLBACK(do_toolbar_monitor), manager);
@@ -756,6 +866,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_normal_click", G_CALLBACK(do_toolbar_zoom_normal), manager);
 
   glade_xml_signal_connect_data(priv->glade, "toolbar_fullscreen_toggle", G_CALLBACK(do_toolbar_fullscreen), manager);
+
+  glade_xml_signal_connect_data(priv->glade, "menu_new_session_activate", G_CALLBACK(do_menu_new_session), manager);
+  glade_xml_signal_connect_data(priv->glade, "menu_open_session_activate", G_CALLBACK(do_menu_open_session), manager);
 
   glade_xml_signal_connect_data(priv->glade, "menu_zoom_in_activate", G_CALLBACK(do_menu_zoom_in), manager);
   glade_xml_signal_connect_data(priv->glade, "menu_zoom_out_activate", G_CALLBACK(do_menu_zoom_out), manager);

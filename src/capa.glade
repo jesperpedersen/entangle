@@ -26,6 +26,7 @@
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
                         <property name="always_show_image">True</property>
+                        <signal name="activate" handler="menu_new_session_activate"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="image2">
                             <property name="visible">True</property>
@@ -40,38 +41,11 @@
                         <property name="label">Open session</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
+                        <signal name="activate" handler="menu_open_session_activate"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="image3">
                             <property name="visible">True</property>
                             <property name="stock">gtk-open</property>
-                            <property name="icon-size">1</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkImageMenuItem" id="imagemenuitem3">
-                        <property name="label">Rename session</property>
-                        <property name="visible">True</property>
-                        <property name="use_stock">False</property>
-                        <child internal-child="image">
-                          <widget class="GtkImage" id="image4">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-save-as</property>
-                            <property name="icon-size">1</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkImageMenuItem" id="imagemenuitem4">
-                        <property name="label">Close session</property>
-                        <property name="visible">True</property>
-                        <property name="use_stock">False</property>
-                        <child internal-child="image">
-                          <widget class="GtkImage" id="image5">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-close</property>
                             <property name="icon-size">1</property>
                           </widget>
                         </child>
