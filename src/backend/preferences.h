@@ -41,14 +41,14 @@ typedef struct _CapaPreferencesClass CapaPreferencesClass;
 
 struct _CapaPreferences
 {
-  GObject parent;
+    GObject parent;
 
-  CapaPreferencesPrivate *priv;
+    CapaPreferencesPrivate *priv;
 };
 
 struct _CapaPreferencesClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
 
@@ -63,3 +63,12 @@ const char *capa_preferences_filename_pattern(CapaPreferences *prefs);
 G_END_DECLS
 
 #endif /* __CAPA_PREFERENCES_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

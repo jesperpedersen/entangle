@@ -41,25 +41,34 @@ typedef struct _CapaControlDateClass CapaControlDateClass;
 
 struct _CapaControlDate
 {
-  CapaControl parent;
+    CapaControl parent;
 
-  CapaControlDatePrivate *priv;
+    CapaControlDatePrivate *priv;
 };
 
 struct _CapaControlDateClass
 {
-  CapaControlClass parent_class;
+    CapaControlClass parent_class;
 };
 
 
 GType capa_control_date_get_type(void) G_GNUC_CONST;
 CapaControlDate* capa_control_date_new(const char *path,
-				       int id,
-				       const char *label,
-				       const char *info);
+                                       int id,
+                                       const char *label,
+                                       const char *info);
 
 
 G_END_DECLS
 
 #endif /* __CAPA_CONTROL_DATE_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

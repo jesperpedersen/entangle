@@ -44,24 +44,24 @@ typedef struct _CapaSessionClass CapaSessionClass;
 
 struct _CapaSession
 {
-  GObject parent;
+    GObject parent;
 
-  CapaSessionPrivate *priv;
+    CapaSessionPrivate *priv;
 };
 
 struct _CapaSessionClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*session_image_added)(CapaSession *session, CapaImage *image);
-  void (*session_image_removed)(CapaSession *session, CapaImage *image);
+    void (*session_image_added)(CapaSession *session, CapaImage *image);
+    void (*session_image_removed)(CapaSession *session, CapaImage *image);
 };
 
 
 GType capa_session_get_type(void) G_GNUC_CONST;
 
 CapaSession *capa_session_new(const char *directory,
-			      const char *filenamePattern);
+                              const char *filenamePattern);
 
 const char *capa_session_directory(CapaSession *session);
 const char *capa_session_filename_pattern(CapaSession *session);
@@ -80,3 +80,12 @@ CapaImage *capa_session_image_get(CapaSession *session, int idx);
 G_END_DECLS
 
 #endif /* __CAPA_SESSION_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

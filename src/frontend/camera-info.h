@@ -42,23 +42,23 @@ typedef struct _CapaCameraInfoClass CapaCameraInfoClass;
 
 struct _CapaCameraInfo
 {
-  GObject parent;
+    GObject parent;
 
-  CapaCameraInfoPrivate *priv;
+    CapaCameraInfoPrivate *priv;
 };
 
 struct _CapaCameraInfoClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*info_close)(CapaCameraInfo *info);
+    void (*info_close)(CapaCameraInfo *info);
 };
 
 typedef enum {
-  CAPA_CAMERA_INFO_DATA_SUMMARY,
-  CAPA_CAMERA_INFO_DATA_MANUAL,
-  CAPA_CAMERA_INFO_DATA_DRIVER,
-  CAPA_CAMERA_INFO_DATA_SUPPORTED,
+    CAPA_CAMERA_INFO_DATA_SUMMARY,
+    CAPA_CAMERA_INFO_DATA_MANUAL,
+    CAPA_CAMERA_INFO_DATA_DRIVER,
+    CAPA_CAMERA_INFO_DATA_SUPPORTED,
 } CapaCameraInfoData;
 
 GType capa_camera_info_get_type(void) G_GNUC_CONST;
@@ -73,3 +73,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CAMERA_INFO_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

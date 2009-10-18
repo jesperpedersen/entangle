@@ -42,17 +42,17 @@ typedef struct _CapaCameraManagerClass CapaCameraManagerClass;
 
 struct _CapaCameraManager
 {
-  GObject parent;
+    GObject parent;
 
-  CapaCameraManagerPrivate *priv;
+    CapaCameraManagerPrivate *priv;
 };
 
 struct _CapaCameraManagerClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*manager_connect)(CapaCameraManager *manager);
-  void (*manager_disconnect)(CapaCameraManager *manager);
+    void (*manager_connect)(CapaCameraManager *manager);
+    void (*manager_disconnect)(CapaCameraManager *manager);
 };
 
 
@@ -68,3 +68,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CAMERA_MANAGER_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

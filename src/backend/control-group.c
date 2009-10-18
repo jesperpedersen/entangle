@@ -25,12 +25,12 @@
 #include "internal.h"
 #include "control-group.h"
 
-#define CAPA_CONTROL_GROUP_GET_PRIVATE(obj) \
-      (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL_GROUP, CapaControlGroupPrivate))
+#define CAPA_CONTROL_GROUP_GET_PRIVATE(obj)                             \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CONTROL_GROUP, CapaControlGroupPrivate))
 
 struct _CapaControlGroupPrivate {
-  size_t ncontrol;
-  CapaControl **controls;
+    size_t ncontrol;
+    CapaControl **controls;
 };
 
 G_DEFINE_TYPE(CapaControlGroup, capa_control_group, CAPA_TYPE_CONTROL);
@@ -38,73 +38,82 @@ G_DEFINE_TYPE(CapaControlGroup, capa_control_group, CAPA_TYPE_CONTROL);
 
 static void capa_control_group_finalize (GObject *object)
 {
-  CapaControlGroup *picker = CAPA_CONTROL_GROUP(object);
-  CapaControlGroupPrivate *priv = picker->priv;
+    CapaControlGroup *picker = CAPA_CONTROL_GROUP(object);
+    CapaControlGroupPrivate *priv = picker->priv;
 
-  for (int i = 0 ; i < priv->ncontrol ; i++) {
-    g_object_unref(priv->controls[i]);
-  }
-  g_free(priv->controls);
+    for (int i = 0 ; i < priv->ncontrol ; i++) {
+        g_object_unref(priv->controls[i]);
+    }
+    g_free(priv->controls);
 
-  G_OBJECT_CLASS (capa_control_group_parent_class)->finalize (object);
+    G_OBJECT_CLASS (capa_control_group_parent_class)->finalize (object);
 }
 
 static void capa_control_group_class_init(CapaControlGroupClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = capa_control_group_finalize;
+    object_class->finalize = capa_control_group_finalize;
 
-  g_type_class_add_private(klass, sizeof(CapaControlGroupPrivate));
+    g_type_class_add_private(klass, sizeof(CapaControlGroupPrivate));
 }
 
 
 CapaControlGroup *capa_control_group_new(const char *path,
-					 int id,
-					 const char *label,
-					 const char *info)
+                                         int id,
+                                         const char *label,
+                                         const char *info)
 {
-  return CAPA_CONTROL_GROUP(g_object_new(CAPA_TYPE_CONTROL_GROUP,
-					 "path", path,
-					 "id", id,
-					 "label", label,
-					 "info", info,
-					 NULL));
+    return CAPA_CONTROL_GROUP(g_object_new(CAPA_TYPE_CONTROL_GROUP,
+                                           "path", path,
+                                           "id", id,
+                                           "label", label,
+                                           "info", info,
+                                           NULL));
 }
 
 
 static void capa_control_group_init(CapaControlGroup *picker)
 {
-  CapaControlGroupPrivate *priv;
+    CapaControlGroupPrivate *priv;
 
-  priv = picker->priv = CAPA_CONTROL_GROUP_GET_PRIVATE(picker);
+    priv = picker->priv = CAPA_CONTROL_GROUP_GET_PRIVATE(picker);
 }
 
 void capa_control_group_add(CapaControlGroup *group,
-			    CapaControl *control)
+                            CapaControl *control)
 {
-  CapaControlGroupPrivate *priv = group->priv;
+    CapaControlGroupPrivate *priv = group->priv;
 
-  priv->controls = g_renew(CapaControl *, priv->controls, priv->ncontrol+1);
-  priv->controls[priv->ncontrol++] = control;
-  g_object_ref(G_OBJECT(control));
+    priv->controls = g_renew(CapaControl *, priv->controls, priv->ncontrol+1);
+    priv->controls[priv->ncontrol++] = control;
+    g_object_ref(G_OBJECT(control));
 }
 
 
 int capa_control_group_count(CapaControlGroup *group)
 {
-  CapaControlGroupPrivate *priv = group->priv;
+    CapaControlGroupPrivate *priv = group->priv;
 
-  return priv->ncontrol;
+    return priv->ncontrol;
 }
 
 
 CapaControl *capa_control_group_get(CapaControlGroup *group, int idx)
 {
-  CapaControlGroupPrivate *priv = group->priv;
+    CapaControlGroupPrivate *priv = group->priv;
 
-  if (idx < 0 || idx >= priv->ncontrol)
-    return NULL;
+    if (idx < 0 || idx >= priv->ncontrol)
+        return NULL;
 
-  return priv->controls[idx];
+    return priv->controls[idx];
 }
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

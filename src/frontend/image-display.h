@@ -39,14 +39,14 @@ typedef struct _CapaImageDisplayClass CapaImageDisplayClass;
 
 struct _CapaImageDisplay
 {
-  GtkDrawingArea parent;
+    GtkDrawingArea parent;
 
-  CapaImageDisplayPrivate *priv;
+    CapaImageDisplayPrivate *priv;
 };
 
 struct _CapaImageDisplayClass
 {
-  GtkDrawingAreaClass parent_class;
+    GtkDrawingAreaClass parent_class;
 
 };
 
@@ -58,3 +58,12 @@ G_END_DECLS
 
 #endif /* __CAPA_IMAGE_DISPLAY_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

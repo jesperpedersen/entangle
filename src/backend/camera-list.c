@@ -27,12 +27,12 @@
 #include "internal.h"
 #include "camera-list.h"
 
-#define CAPA_CAMERA_LIST_GET_PRIVATE(obj) \
-      (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_LIST, CapaCameraListPrivate))
+#define CAPA_CAMERA_LIST_GET_PRIVATE(obj)                               \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_LIST, CapaCameraListPrivate))
 
 struct _CapaCameraListPrivate {
-  size_t ncamera;
-  CapaCamera **cameras;
+    size_t ncamera;
+    CapaCamera **cameras;
 };
 
 G_DEFINE_TYPE(CapaCameraList, capa_camera_list, G_TYPE_OBJECT);
@@ -40,134 +40,143 @@ G_DEFINE_TYPE(CapaCameraList, capa_camera_list, G_TYPE_OBJECT);
 
 static void capa_camera_list_finalize (GObject *object)
 {
-  CapaCameraList *list = CAPA_CAMERA_LIST(object);
-  CapaCameraListPrivate *priv = list->priv;
-  CAPA_DEBUG("Finalize list");
+    CapaCameraList *list = CAPA_CAMERA_LIST(object);
+    CapaCameraListPrivate *priv = list->priv;
+    CAPA_DEBUG("Finalize list");
 
-  for (int i = 0 ; i < priv->ncamera ; i++) {
-    CAPA_DEBUG("Unref camera in list %p", priv->cameras[i]);
-    g_object_unref(G_OBJECT(priv->cameras[i]));
-  }
-  g_free(priv->cameras);
+    for (int i = 0 ; i < priv->ncamera ; i++) {
+        CAPA_DEBUG("Unref camera in list %p", priv->cameras[i]);
+        g_object_unref(G_OBJECT(priv->cameras[i]));
+    }
+    g_free(priv->cameras);
 
-  G_OBJECT_CLASS (capa_camera_list_parent_class)->finalize (object);
+    G_OBJECT_CLASS (capa_camera_list_parent_class)->finalize (object);
 }
 
 
 static void capa_camera_list_class_init(CapaCameraListClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = capa_camera_list_finalize;
+    object_class->finalize = capa_camera_list_finalize;
 
-  g_signal_new("camera-added",
-	       G_TYPE_FROM_CLASS(klass),
-	       G_SIGNAL_RUN_FIRST,
-	       G_STRUCT_OFFSET(CapaCameraListClass, camera_added),
-	       NULL, NULL,
-	       g_cclosure_marshal_VOID__OBJECT,
-	       G_TYPE_NONE,
-	       1,
-	       CAPA_TYPE_CAMERA);
+    g_signal_new("camera-added",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaCameraListClass, camera_added),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 CAPA_TYPE_CAMERA);
 
-  g_signal_new("camera-removed",
-	       G_TYPE_FROM_CLASS(klass),
-	       G_SIGNAL_RUN_FIRST,
-	       G_STRUCT_OFFSET(CapaCameraListClass, camera_removed),
-	       NULL, NULL,
-	       g_cclosure_marshal_VOID__OBJECT,
-	       G_TYPE_NONE,
-	       1,
-	       CAPA_TYPE_CAMERA);
+    g_signal_new("camera-removed",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaCameraListClass, camera_removed),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 CAPA_TYPE_CAMERA);
 
 
-  g_type_class_add_private(klass, sizeof(CapaCameraListPrivate));
+    g_type_class_add_private(klass, sizeof(CapaCameraListPrivate));
 }
 
 
 CapaCameraList *capa_camera_list_new(void)
 {
-  return CAPA_CAMERA_LIST(g_object_new(CAPA_TYPE_CAMERA_LIST, NULL));
+    return CAPA_CAMERA_LIST(g_object_new(CAPA_TYPE_CAMERA_LIST, NULL));
 }
 
 
 static void capa_camera_list_init(CapaCameraList *list)
 {
-  CapaCameraListPrivate *priv;
+    CapaCameraListPrivate *priv;
 
-  priv = list->priv = CAPA_CAMERA_LIST_GET_PRIVATE(list);
+    priv = list->priv = CAPA_CAMERA_LIST_GET_PRIVATE(list);
 }
 
 
 int capa_camera_list_count(CapaCameraList *list)
 {
-  CapaCameraListPrivate *priv = list->priv;
+    CapaCameraListPrivate *priv = list->priv;
 
-  return priv->ncamera;
+    return priv->ncamera;
 }
 
 void capa_camera_list_add(CapaCameraList *list,
-			  CapaCamera *cam)
+                          CapaCamera *cam)
 {
-  CapaCameraListPrivate *priv = list->priv;
+    CapaCameraListPrivate *priv = list->priv;
 
-  priv->cameras = g_renew(CapaCamera *, priv->cameras, priv->ncamera+1);
-  priv->cameras[priv->ncamera++] = cam;
-  g_object_ref(G_OBJECT(cam));
+    priv->cameras = g_renew(CapaCamera *, priv->cameras, priv->ncamera+1);
+    priv->cameras[priv->ncamera++] = cam;
+    g_object_ref(G_OBJECT(cam));
 
-  g_signal_emit_by_name(G_OBJECT(list), "camera-added", cam);
-  CAPA_DEBUG("Added camera %p", cam);
+    g_signal_emit_by_name(G_OBJECT(list), "camera-added", cam);
+    CAPA_DEBUG("Added camera %p", cam);
 }
 
 void capa_camera_list_remove(CapaCameraList *list,
-			     CapaCamera *cam)
+                             CapaCamera *cam)
 {
-  CapaCameraListPrivate *priv = list->priv;
-  gboolean removed = FALSE;
+    CapaCameraListPrivate *priv = list->priv;
+    gboolean removed = FALSE;
 
-  for (int i = 0 ; i < priv->ncamera ; i++) {
-    if (priv->cameras[i] == cam) {
-      removed = TRUE;
-      if (i < (priv->ncamera-1))
-	memmove(priv->cameras + i,
-		priv->cameras + i + 1,
-		sizeof(*priv->cameras) * (priv->ncamera - i - 1));
-      priv->ncamera--;
+    for (int i = 0 ; i < priv->ncamera ; i++) {
+        if (priv->cameras[i] == cam) {
+            removed = TRUE;
+            if (i < (priv->ncamera-1))
+                memmove(priv->cameras + i,
+                        priv->cameras + i + 1,
+                        sizeof(*priv->cameras) * (priv->ncamera - i - 1));
+            priv->ncamera--;
+        }
     }
-  }
 
-  CAPA_DEBUG("Removed camera %p from list", cam);
-  g_signal_emit_by_name(G_OBJECT(list), "camera-removed", cam);
+    CAPA_DEBUG("Removed camera %p from list", cam);
+    g_signal_emit_by_name(G_OBJECT(list), "camera-removed", cam);
 
-  g_object_unref(cam);
+    g_object_unref(cam);
 }
 
 CapaCamera *capa_camera_list_get(CapaCameraList *list,
-				 int entry)
+                                 int entry)
 {
-  CapaCameraListPrivate *priv = list->priv;
+    CapaCameraListPrivate *priv = list->priv;
 
-  if (entry < 0 || entry >= priv->ncamera)
-    return NULL;
+    if (entry < 0 || entry >= priv->ncamera)
+        return NULL;
 
-  return priv->cameras[entry];
+    return priv->cameras[entry];
 }
 
 CapaCamera *capa_camera_list_find(CapaCameraList *list,
-				  const char *port)
+                                  const char *port)
 {
-  CapaCameraListPrivate *priv = list->priv;
-  int i;
+    CapaCameraListPrivate *priv = list->priv;
+    int i;
 
-  for (i = 0 ; i < priv->ncamera ; i++) {
-    const char *thisport = capa_camera_port(priv->cameras[i]);
+    for (i = 0 ; i < priv->ncamera ; i++) {
+        const char *thisport = capa_camera_port(priv->cameras[i]);
 
-    CAPA_DEBUG("Compare '%s' '%s'", port, thisport);
+        CAPA_DEBUG("Compare '%s' '%s'", port, thisport);
 
-    if (strcmp(thisport, port) == 0)
-      return priv->cameras[i];
-  }
+        if (strcmp(thisport, port) == 0)
+            return priv->cameras[i];
+    }
 
-  return NULL;
+    return NULL;
 }
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

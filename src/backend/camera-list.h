@@ -42,17 +42,17 @@ typedef struct _CapaCameraListClass CapaCameraListClass;
 
 struct _CapaCameraList
 {
-  GObject parent;
+    GObject parent;
 
-  CapaCameraListPrivate *priv;
+    CapaCameraListPrivate *priv;
 };
 
 struct _CapaCameraListClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*camera_added)(CapaCameraList *list, CapaCamera *cam);
-  void (*camera_removed)(CapaCameraList *list, CapaCamera *cam);
+    void (*camera_added)(CapaCameraList *list, CapaCamera *cam);
+    void (*camera_removed)(CapaCameraList *list, CapaCamera *cam);
 };
 
 
@@ -62,18 +62,27 @@ CapaCameraList* capa_camera_list_new(void);
 int capa_camera_list_count(CapaCameraList *list);
 
 void capa_camera_list_add(CapaCameraList *list,
-			  CapaCamera *cam);
+                          CapaCamera *cam);
 
 void capa_camera_list_remove(CapaCameraList *list,
-			     CapaCamera *cam);
+                             CapaCamera *cam);
 
 CapaCamera *capa_camera_list_get(CapaCameraList *list,
-				 int entry);
+                                 int entry);
 
 CapaCamera *capa_camera_list_find(CapaCameraList *list,
-				  const char *port);
+                                  const char *port);
 
 G_END_DECLS
 
 #endif /* __CAPA_CAMERA_LIST_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

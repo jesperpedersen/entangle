@@ -42,14 +42,14 @@ typedef struct _CapaAppClass CapaAppClass;
 
 struct _CapaApp
 {
-  GObject parent;
+    GObject parent;
 
-  CapaAppPrivate *priv;
+    CapaAppPrivate *priv;
 };
 
 struct _CapaAppClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
 GType capa_app_get_type(void) G_GNUC_CONST;
@@ -64,3 +64,12 @@ CapaPreferences *capa_app_preferences(CapaApp *app);
 G_END_DECLS
 
 #endif /* __CAPA_APP_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

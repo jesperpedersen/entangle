@@ -39,17 +39,17 @@ typedef struct _CapaDeviceManagerClass CapaDeviceManagerClass;
 
 struct _CapaDeviceManager
 {
-  GObject parent;
+    GObject parent;
 
-  CapaDeviceManagerPrivate *priv;
+    CapaDeviceManagerPrivate *priv;
 };
 
 struct _CapaDeviceManagerClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*device_added)(CapaDeviceManager *manager, const char *port);
-  void (*device_removed)(CapaDeviceManager *manager, const char *port);
+    void (*device_added)(CapaDeviceManager *manager, const char *port);
+    void (*device_removed)(CapaDeviceManager *manager, const char *port);
 };
 
 
@@ -64,3 +64,12 @@ G_END_DECLS
 
 #endif /* __CAPA_DEVICE_MANAGER_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

@@ -25,299 +25,308 @@
 #include "internal.h"
 #include "image-display.h"
 
-#define CAPA_IMAGE_DISPLAY_GET_PRIVATE(obj) \
-      (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_IMAGE_DISPLAY, CapaImageDisplayPrivate))
+#define CAPA_IMAGE_DISPLAY_GET_PRIVATE(obj)                             \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_IMAGE_DISPLAY, CapaImageDisplayPrivate))
 
 struct _CapaImageDisplayPrivate {
-  GdkPixbuf *pixbuf;
+    GdkPixbuf *pixbuf;
 
-  gboolean autoscale;
-  float scale;
+    gboolean autoscale;
+    float scale;
 };
 
 G_DEFINE_TYPE(CapaImageDisplay, capa_image_display, GTK_TYPE_DRAWING_AREA);
 
 enum {
-  PROP_O,
-  PROP_PIXBUF,
-  PROP_AUTOSCALE,
-  PROP_SCALE,
+    PROP_O,
+    PROP_PIXBUF,
+    PROP_AUTOSCALE,
+    PROP_SCALE,
 };
 
 static void capa_image_display_get_property(GObject *object,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *pspec)
+                                            guint prop_id,
+                                            GValue *value,
+                                            GParamSpec *pspec)
 {
-  CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
-  CapaImageDisplayPrivate *priv = display->priv;
+    CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
+    CapaImageDisplayPrivate *priv = display->priv;
 
-  switch (prop_id)
-    {
-    case PROP_PIXBUF:
-      g_value_set_object(value, priv->pixbuf);
-      break;
+    switch (prop_id)
+        {
+        case PROP_PIXBUF:
+            g_value_set_object(value, priv->pixbuf);
+            break;
 
-    case PROP_AUTOSCALE:
-      g_value_set_boolean(value, priv->autoscale);
-      break;
+        case PROP_AUTOSCALE:
+            g_value_set_boolean(value, priv->autoscale);
+            break;
 
-    case PROP_SCALE:
-      g_value_set_float(value, priv->scale);
-      break;
+        case PROP_SCALE:
+            g_value_set_float(value, priv->scale);
+            break;
 
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-    }
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        }
 }
 
 static void capa_image_display_set_property(GObject *object,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *pspec)
+                                            guint prop_id,
+                                            const GValue *value,
+                                            GParamSpec *pspec)
 {
-  CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
-  CapaImageDisplayPrivate *priv = display->priv;
+    CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
+    CapaImageDisplayPrivate *priv = display->priv;
 
-  CAPA_DEBUG("Set prop on image display %d", prop_id);
+    CAPA_DEBUG("Set prop on image display %d", prop_id);
 
-  switch (prop_id)
-    {
-    case PROP_PIXBUF:
-      if (priv->pixbuf)
-	g_object_unref(G_OBJECT(priv->pixbuf));
-      priv->pixbuf = g_value_get_object(value);
-      g_object_ref(G_OBJECT(priv->pixbuf));
+    switch (prop_id)
+        {
+        case PROP_PIXBUF:
+            if (priv->pixbuf)
+                g_object_unref(G_OBJECT(priv->pixbuf));
+            priv->pixbuf = g_value_get_object(value);
+            g_object_ref(G_OBJECT(priv->pixbuf));
 
-      if (GTK_WIDGET_VISIBLE(object))
-	gtk_widget_queue_resize(GTK_WIDGET(object));
-      else
-	CAPA_DEBUG("not visible");
-      break;
+            if (GTK_WIDGET_VISIBLE(object))
+                gtk_widget_queue_resize(GTK_WIDGET(object));
+            else
+                CAPA_DEBUG("not visible");
+            break;
 
-    case PROP_AUTOSCALE:
-      priv->autoscale = g_value_get_boolean(value);
-      if (GTK_WIDGET_VISIBLE(object))
-	gtk_widget_queue_resize(GTK_WIDGET(object));
-      break;
+        case PROP_AUTOSCALE:
+            priv->autoscale = g_value_get_boolean(value);
+            if (GTK_WIDGET_VISIBLE(object))
+                gtk_widget_queue_resize(GTK_WIDGET(object));
+            break;
 
-    case PROP_SCALE:
-      priv->scale = g_value_get_float(value);
-      if (GTK_WIDGET_VISIBLE(object))
-	gtk_widget_queue_resize(GTK_WIDGET(object));
-      break;
+        case PROP_SCALE:
+            priv->scale = g_value_get_float(value);
+            if (GTK_WIDGET_VISIBLE(object))
+                gtk_widget_queue_resize(GTK_WIDGET(object));
+            break;
 
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-    }
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        }
 }
 
 static void capa_image_display_finalize (GObject *object)
 {
-  CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
-  CapaImageDisplayPrivate *priv = display->priv;
+    CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
+    CapaImageDisplayPrivate *priv = display->priv;
 
-  if (priv->pixbuf)
-    g_object_unref(G_OBJECT(priv->pixbuf));
+    if (priv->pixbuf)
+        g_object_unref(G_OBJECT(priv->pixbuf));
 
-  G_OBJECT_CLASS (capa_image_display_parent_class)->finalize (object);
+    G_OBJECT_CLASS (capa_image_display_parent_class)->finalize (object);
 }
 
 static gboolean capa_image_display_expose(GtkWidget *widget,
-					  GdkEventExpose *expose)
+                                          GdkEventExpose *expose)
 {
-  CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(widget);
-  CapaImageDisplayPrivate *priv = display->priv;
-  int ww, wh; /* Available drawing area extents */
-  int pw = 0, ph = 0; /* Original image size */
-  double iw, ih; /* Desired image size */
-  double mx = 0, my = 0;  /* Offset of image within available area */
-  double sx = 1, sy = 1;  /* Amount to scale by */
-  cairo_t *cr;
+    CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(widget);
+    CapaImageDisplayPrivate *priv = display->priv;
+    int ww, wh; /* Available drawing area extents */
+    int pw = 0, ph = 0; /* Original image size */
+    double iw, ih; /* Desired image size */
+    double mx = 0, my = 0;  /* Offset of image within available area */
+    double sx = 1, sy = 1;  /* Amount to scale by */
+    cairo_t *cr;
 
-  gdk_drawable_get_size(widget->window, &ww, &wh);
+    gdk_drawable_get_size(widget->window, &ww, &wh);
 
-  if (priv->pixbuf) {
-    pw = gdk_pixbuf_get_width(priv->pixbuf);
-    ph = gdk_pixbuf_get_height(priv->pixbuf);
-  }
-
-  /* Decide what size we're going to draw the image */
-  if (priv->autoscale) {
-    double aspectWin, aspectImage;
-    aspectWin = (double)ww / (double)wh;
-    aspectImage = (double)pw / (double)ph;
-
-    if (aspectWin > aspectImage) {
-      /* Match drawn height to widget height, scale width preserving aspect */
-      ih = (double)wh;
-      iw = (double)ih * aspectImage;
-    } else if (aspectWin < aspectImage) {
-      /* Match drawn width to widget width, scale height preserving aspect */
-      iw = (double)ww;
-      ih = (double)iw / aspectImage;
-    } else {
-      /* Match drawn size to widget size */
-      iw = (double)ww;
-      ih = (double)wh;
+    if (priv->pixbuf) {
+        pw = gdk_pixbuf_get_width(priv->pixbuf);
+        ph = gdk_pixbuf_get_height(priv->pixbuf);
     }
-  } else {
-    if (priv->scale > 0) {
-      /* Scale image larger */
-      iw = (double)pw * priv->scale;
-      ih = (double)ph * priv->scale;
+
+    /* Decide what size we're going to draw the image */
+    if (priv->autoscale) {
+        double aspectWin, aspectImage;
+        aspectWin = (double)ww / (double)wh;
+        aspectImage = (double)pw / (double)ph;
+
+        if (aspectWin > aspectImage) {
+            /* Match drawn height to widget height, scale width preserving aspect */
+            ih = (double)wh;
+            iw = (double)ih * aspectImage;
+        } else if (aspectWin < aspectImage) {
+            /* Match drawn width to widget width, scale height preserving aspect */
+            iw = (double)ww;
+            ih = (double)iw / aspectImage;
+        } else {
+            /* Match drawn size to widget size */
+            iw = (double)ww;
+            ih = (double)wh;
+        }
     } else {
-      /* Use native image size */
-      iw = (double)pw;
-      ih = (double)ph;
+        if (priv->scale > 0) {
+            /* Scale image larger */
+            iw = (double)pw * priv->scale;
+            ih = (double)ph * priv->scale;
+        } else {
+            /* Use native image size */
+            iw = (double)pw;
+            ih = (double)ph;
+        }
     }
-  }
 
-  /* Calculate any offset within available area */
-  mx = (ww - iw)/2;
-  my = (wh - ih)/2;
+    /* Calculate any offset within available area */
+    mx = (ww - iw)/2;
+    my = (wh - ih)/2;
 
-  /* Calculate the scale factor for drawing */
-  sx = iw / pw;
-  sy = ih / ph;
+    /* Calculate the scale factor for drawing */
+    sx = iw / pw;
+    sy = ih / ph;
 
-  CAPA_DEBUG("Got win %dx%d image %dx%d, autoscale=%d scale=%lf",
-	  ww, wh, pw, ph, priv->autoscale ? 1 : 0, priv->scale);
-  CAPA_DEBUG("Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf", iw, ih, mx, my, sx, sy);
+    CAPA_DEBUG("Got win %dx%d image %dx%d, autoscale=%d scale=%lf",
+               ww, wh, pw, ph, priv->autoscale ? 1 : 0, priv->scale);
+    CAPA_DEBUG("Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf", iw, ih, mx, my, sx, sy);
 
 
-  cr = gdk_cairo_create(widget->window);
-  cairo_rectangle(cr,
-		  expose->area.x,
-		  expose->area.y,
-		  expose->area.width + 1,
-		  expose->area.height + 1);
-  cairo_clip(cr);
-
-  /* We need to fill the background first */
-  cairo_rectangle(cr, 0, 0, ww, wh);
-  /* Next cut out the inner area where the pixbuf
-     will be drawn. This avoids 'flashing' since we're
-     not double-buffering. Note we're using the undocumented
-     behaviour of drawing the rectangle from right to left
-     to cut out the whole */
-  if (priv->pixbuf)
+    cr = gdk_cairo_create(widget->window);
     cairo_rectangle(cr,
-		    mx + iw,
-		    my,
-		    -1 * iw,
-		    ih);
-  cairo_fill(cr);
+                    expose->area.x,
+                    expose->area.y,
+                    expose->area.width + 1,
+                    expose->area.height + 1);
+    cairo_clip(cr);
 
-  /* Draw the actual image */
-  if (priv->pixbuf) {
-    cairo_scale(cr, sx, sy);
-    gdk_cairo_set_source_pixbuf(cr,
-				priv->pixbuf,
-				mx/sx, my/sy);
-    cairo_paint(cr);
-  }
+    /* We need to fill the background first */
+    cairo_rectangle(cr, 0, 0, ww, wh);
+    /* Next cut out the inner area where the pixbuf
+       will be drawn. This avoids 'flashing' since we're
+       not double-buffering. Note we're using the undocumented
+       behaviour of drawing the rectangle from right to left
+       to cut out the whole */
+    if (priv->pixbuf)
+        cairo_rectangle(cr,
+                        mx + iw,
+                        my,
+                        -1 * iw,
+                        ih);
+    cairo_fill(cr);
 
-  cairo_destroy(cr);
+    /* Draw the actual image */
+    if (priv->pixbuf) {
+        cairo_scale(cr, sx, sy);
+        gdk_cairo_set_source_pixbuf(cr,
+                                    priv->pixbuf,
+                                    mx/sx, my/sy);
+        cairo_paint(cr);
+    }
 
-  return TRUE;
+    cairo_destroy(cr);
+
+    return TRUE;
 }
 
 static void capa_image_display_size_request(GtkWidget *widget,
-					    GtkRequisition *requisition)
+                                            GtkRequisition *requisition)
 {
-  CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(widget);
-  CapaImageDisplayPrivate *priv = display->priv;
+    CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(widget);
+    CapaImageDisplayPrivate *priv = display->priv;
 
-  if (!priv->pixbuf) {
-    requisition->width = 100;
-    requisition->height = 100;
-    CAPA_DEBUG("No image, size request 100,100");
-    return;
-  }
-
-  if (priv->autoscale) {
-    /* For best fit mode, we'll say 100x100 is the smallest we're happy
-     * to draw to. Whatever the container allocates us beyond that will
-     * be used filled with the image */
-    requisition->width = 100;
-    requisition->height = 100;
-  } else {
-    /* Start a 1-to-1 mode */
-    requisition->width = gdk_pixbuf_get_width(priv->pixbuf);
-    requisition->height = gdk_pixbuf_get_height(priv->pixbuf);
-    if (priv->scale > 0) {
-      /* Scaling mode */
-      requisition->width = (int)((double)requisition->width * priv->scale);
-      requisition->height = (int)((double)requisition->height * priv->scale);
+    if (!priv->pixbuf) {
+        requisition->width = 100;
+        requisition->height = 100;
+        CAPA_DEBUG("No image, size request 100,100");
+        return;
     }
-  }
 
-  CAPA_DEBUG("Size request %d %d", requisition->width, requisition->height);
+    if (priv->autoscale) {
+        /* For best fit mode, we'll say 100x100 is the smallest we're happy
+         * to draw to. Whatever the container allocates us beyond that will
+         * be used filled with the image */
+        requisition->width = 100;
+        requisition->height = 100;
+    } else {
+        /* Start a 1-to-1 mode */
+        requisition->width = gdk_pixbuf_get_width(priv->pixbuf);
+        requisition->height = gdk_pixbuf_get_height(priv->pixbuf);
+        if (priv->scale > 0) {
+            /* Scaling mode */
+            requisition->width = (int)((double)requisition->width * priv->scale);
+            requisition->height = (int)((double)requisition->height * priv->scale);
+        }
+    }
+
+    CAPA_DEBUG("Size request %d %d", requisition->width, requisition->height);
 }
 
 static void capa_image_display_class_init(CapaImageDisplayClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
+    GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
 
-  object_class->finalize = capa_image_display_finalize;
-  object_class->get_property = capa_image_display_get_property;
-  object_class->set_property = capa_image_display_set_property;
+    object_class->finalize = capa_image_display_finalize;
+    object_class->get_property = capa_image_display_get_property;
+    object_class->set_property = capa_image_display_set_property;
 
-  widget_class->expose_event = capa_image_display_expose;
-  widget_class->size_request = capa_image_display_size_request;
+    widget_class->expose_event = capa_image_display_expose;
+    widget_class->size_request = capa_image_display_size_request;
 
-  g_object_class_install_property(object_class,
-				  PROP_PIXBUF,
-				  g_param_spec_object("pixbuf",
-						      "Pixbuf",
-						      "Pixbuf for the image to be displayed",
-						      GDK_TYPE_PIXBUF,
-						      G_PARAM_READWRITE |
-						      G_PARAM_STATIC_NAME |
-						      G_PARAM_STATIC_NICK |
-						      G_PARAM_STATIC_BLURB));
-  g_object_class_install_property(object_class,
-				  PROP_AUTOSCALE,
-				  g_param_spec_boolean("autoscale",
-						       "Automatic scaling",
-						       "Automatically scale image to fit available area",
-						       TRUE,
-						       G_PARAM_READWRITE |
-						       G_PARAM_STATIC_NAME |
-						       G_PARAM_STATIC_NICK |
-						       G_PARAM_STATIC_BLURB));
-  g_object_class_install_property(object_class,
-				  PROP_SCALE,
-				  g_param_spec_float("scale",
-						     "Scale image",
-						     "Scale factor for image, 0-1 for zoom out, 1->32 for zoom in",
-						     0.0,
-						     32.0,
-						     0.0,
-						     G_PARAM_READWRITE |
-						     G_PARAM_STATIC_NAME |
-						     G_PARAM_STATIC_NICK |
-						     G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_PIXBUF,
+                                    g_param_spec_object("pixbuf",
+                                                        "Pixbuf",
+                                                        "Pixbuf for the image to be displayed",
+                                                        GDK_TYPE_PIXBUF,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_AUTOSCALE,
+                                    g_param_spec_boolean("autoscale",
+                                                         "Automatic scaling",
+                                                         "Automatically scale image to fit available area",
+                                                         TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_SCALE,
+                                    g_param_spec_float("scale",
+                                                       "Scale image",
+                                                       "Scale factor for image, 0-1 for zoom out, 1->32 for zoom in",
+                                                       0.0,
+                                                       32.0,
+                                                       0.0,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_STATIC_NAME |
+                                                       G_PARAM_STATIC_NICK |
+                                                       G_PARAM_STATIC_BLURB));
 
-  g_type_class_add_private(klass, sizeof(CapaImageDisplayPrivate));
+    g_type_class_add_private(klass, sizeof(CapaImageDisplayPrivate));
 }
 
 CapaImageDisplay *capa_image_display_new(void)
 {
-  return CAPA_IMAGE_DISPLAY(g_object_new(CAPA_TYPE_IMAGE_DISPLAY, NULL));
+    return CAPA_IMAGE_DISPLAY(g_object_new(CAPA_TYPE_IMAGE_DISPLAY, NULL));
 }
 
 
 static void capa_image_display_init(CapaImageDisplay *display)
 {
-  CapaImageDisplayPrivate *priv;
+    CapaImageDisplayPrivate *priv;
 
-  priv = display->priv = CAPA_IMAGE_DISPLAY_GET_PRIVATE(display);
-  memset(priv, 0, sizeof *priv);
+    priv = display->priv = CAPA_IMAGE_DISPLAY_GET_PRIVATE(display);
+    memset(priv, 0, sizeof *priv);
 
-  gtk_widget_set_double_buffered(GTK_WIDGET(display), FALSE);
-  priv->autoscale = TRUE;
+    gtk_widget_set_double_buffered(GTK_WIDGET(display), FALSE);
+    priv->autoscale = TRUE;
 }
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

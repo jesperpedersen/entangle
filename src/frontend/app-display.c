@@ -30,14 +30,14 @@
 #include "camera-picker.h"
 #include "camera-manager.h"
 
-#define CAPA_APP_DISPLAY_GET_PRIVATE(obj) \
-      (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP_DISPLAY, CapaAppDisplayPrivate))
+#define CAPA_APP_DISPLAY_GET_PRIVATE(obj)                               \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP_DISPLAY, CapaAppDisplayPrivate))
 
 struct _CapaAppDisplayPrivate {
-  CapaApp *app;
+    CapaApp *app;
 
-  CapaCameraPicker *picker;
-  GHashTable *managers;
+    CapaCameraPicker *picker;
+    GHashTable *managers;
 };
 
 G_DEFINE_TYPE(CapaAppDisplay, capa_app_display, G_TYPE_OBJECT);
@@ -45,192 +45,201 @@ G_DEFINE_TYPE(CapaAppDisplay, capa_app_display, G_TYPE_OBJECT);
 
 static void capa_app_display_finalize (GObject *object)
 {
-  CapaAppDisplay *display = CAPA_APP_DISPLAY(object);
-  CapaAppDisplayPrivate *priv = display->priv;
+    CapaAppDisplay *display = CAPA_APP_DISPLAY(object);
+    CapaAppDisplayPrivate *priv = display->priv;
 
-  CAPA_DEBUG("Finalize display");
+    CAPA_DEBUG("Finalize display");
 
-  g_object_unref(G_OBJECT(priv->app));
+    g_object_unref(G_OBJECT(priv->app));
 
-  g_object_unref(G_OBJECT(priv->picker));
+    g_object_unref(G_OBJECT(priv->picker));
 
-  g_hash_table_unref(priv->managers);
+    g_hash_table_unref(priv->managers);
 
-  G_OBJECT_CLASS (capa_app_display_parent_class)->finalize (object);
+    G_OBJECT_CLASS (capa_app_display_parent_class)->finalize (object);
 }
 
 static void capa_app_display_class_init(CapaAppDisplayClass *klass)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = capa_app_display_finalize;
+    object_class->finalize = capa_app_display_finalize;
 
-  g_signal_new("app-closed",
-	       G_TYPE_FROM_CLASS(klass),
-	       G_SIGNAL_RUN_FIRST,
-	       G_STRUCT_OFFSET(CapaAppDisplayClass, app_closed),
-	       NULL, NULL,
-	       g_cclosure_marshal_VOID__VOID,
-	       G_TYPE_NONE,
-	       0);
+    g_signal_new("app-closed",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaAppDisplayClass, app_closed),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE,
+                 0);
 
-  g_type_class_add_private(klass, sizeof(CapaAppDisplayPrivate));
+    g_type_class_add_private(klass, sizeof(CapaAppDisplayPrivate));
 }
 
 
 CapaAppDisplay *capa_app_display_new(void)
 {
-  return CAPA_APP_DISPLAY(g_object_new(CAPA_TYPE_APP_DISPLAY, NULL));
+    return CAPA_APP_DISPLAY(g_object_new(CAPA_TYPE_APP_DISPLAY, NULL));
 }
 
 static gboolean capa_app_display_visible(CapaAppDisplay *display)
 {
-  CapaAppDisplayPrivate *priv = display->priv;
-  GHashTableIter iter;
-  gpointer key, value;
+    CapaAppDisplayPrivate *priv = display->priv;
+    GHashTableIter iter;
+    gpointer key, value;
 
-  if (capa_camera_picker_visible(priv->picker))
-    return TRUE;
+    if (capa_camera_picker_visible(priv->picker))
+        return TRUE;
 
-  g_hash_table_iter_init(&iter, priv->managers);
-  while (g_hash_table_iter_next(&iter, &key, &value)) {
-    CapaCameraManager *man = value;
-    if (capa_camera_manager_visible(man))
-      return TRUE;
-  }
+    g_hash_table_iter_init(&iter, priv->managers);
+    while (g_hash_table_iter_next(&iter, &key, &value)) {
+        CapaCameraManager *man = value;
+        if (capa_camera_manager_visible(man))
+            return TRUE;
+    }
 
-  return FALSE;
+    return FALSE;
 }
 
 static void do_picker_close(CapaCameraPicker *picker, CapaAppDisplay *display)
 {
-  capa_camera_picker_hide(picker);
+    capa_camera_picker_hide(picker);
 
-  if (!capa_app_display_visible(display)) {
-    CAPA_DEBUG("emit closed");
-    g_signal_emit_by_name(display, "app-closed", NULL);
-  }
+    if (!capa_app_display_visible(display)) {
+        CAPA_DEBUG("emit closed");
+        g_signal_emit_by_name(display, "app-closed", NULL);
+    }
 }
 
 
 static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDisplay *display)
 {
-  CapaAppDisplayPrivate *priv = display->priv;
-  capa_app_refresh_cameras(priv->app);
+    CapaAppDisplayPrivate *priv = display->priv;
+    capa_app_refresh_cameras(priv->app);
 }
 
 static void do_manager_connect(CapaCameraManager *manager G_GNUC_UNUSED,
-			       CapaAppDisplay *display)
+                               CapaAppDisplay *display)
 {
-  CapaAppDisplayPrivate *priv = display->priv;
-  capa_camera_picker_show(priv->picker);
+    CapaAppDisplayPrivate *priv = display->priv;
+    capa_camera_picker_show(priv->picker);
 }
 
 
 static void do_manager_disconnect(CapaCameraManager *manager, CapaAppDisplay *display)
 {
-  capa_camera_manager_hide(manager);
-  CAPA_DEBUG("Doing disconnect");
-  if (!capa_app_display_visible(display)) {
-    CAPA_DEBUG("emit closed");
-    g_signal_emit_by_name(display, "app-closed", NULL);
-  }
+    capa_camera_manager_hide(manager);
+    CAPA_DEBUG("Doing disconnect");
+    if (!capa_app_display_visible(display)) {
+        CAPA_DEBUG("emit closed");
+        g_signal_emit_by_name(display, "app-closed", NULL);
+    }
 }
 
 static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaAppDisplay *display)
 {
-  CapaAppDisplayPrivate *priv = display->priv;
-  CAPA_DEBUG("emit connect %p %s", cam, capa_camera_model(cam));
-  CapaCameraManager *man;
+    CapaAppDisplayPrivate *priv = display->priv;
+    CAPA_DEBUG("emit connect %p %s", cam, capa_camera_model(cam));
+    CapaCameraManager *man;
 
-  while (capa_camera_connect(cam) < 0) {
-    int response;
-    GtkWidget *msg = gtk_message_dialog_new(NULL,
-					    GTK_DIALOG_MODAL,
-					    GTK_MESSAGE_ERROR,
-					    GTK_BUTTONS_NONE,
-					    "%s",
-					    "Unable to connect to camera");
+    while (capa_camera_connect(cam) < 0) {
+        int response;
+        GtkWidget *msg = gtk_message_dialog_new(NULL,
+                                                GTK_DIALOG_MODAL,
+                                                GTK_MESSAGE_ERROR,
+                                                GTK_BUTTONS_NONE,
+                                                "%s",
+                                                "Unable to connect to camera");
 
-    gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
-					       "%s",
-					       "Check that the camera is not\n\n"
-					       " - opened by another photo <b>application</b>\n"
-					       " - mounted as a <b>filesystem</b> on the desktop\n"
-					       " - <b>turned off</b> to save battery power\n");
+        gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
+                                                   "%s",
+                                                   "Check that the camera is not\n\n"
+                                                   " - opened by another photo <b>application</b>\n"
+                                                   " - mounted as a <b>filesystem</b> on the desktop\n"
+                                                   " - <b>turned off</b> to save battery power\n");
 
-    gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
-    gtk_dialog_add_button(GTK_DIALOG(msg), "Retry", GTK_RESPONSE_ACCEPT);
+        gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
+        gtk_dialog_add_button(GTK_DIALOG(msg), "Retry", GTK_RESPONSE_ACCEPT);
 
-    response = gtk_dialog_run(GTK_DIALOG(msg));
+        response = gtk_dialog_run(GTK_DIALOG(msg));
 
-    gtk_widget_hide(msg);
-    //g_object_unref(G_OBJECT(msg));
+        gtk_widget_hide(msg);
+        //g_object_unref(G_OBJECT(msg));
 
-    if (response == GTK_RESPONSE_CANCEL)
-      return;
-  }
+        if (response == GTK_RESPONSE_CANCEL)
+            return;
+    }
 
-  man = g_hash_table_lookup(priv->managers, capa_camera_model(cam));
-  if (!man) {
-    GValue camval;
-    memset(&camval, 0, sizeof camval);
-    g_value_init(&camval, G_TYPE_OBJECT);
-    g_value_set_object(&camval, cam);
-    man = capa_camera_manager_new(capa_app_preferences(priv->app));
+    man = g_hash_table_lookup(priv->managers, capa_camera_model(cam));
+    if (!man) {
+        GValue camval;
+        memset(&camval, 0, sizeof camval);
+        g_value_init(&camval, G_TYPE_OBJECT);
+        g_value_set_object(&camval, cam);
+        man = capa_camera_manager_new(capa_app_preferences(priv->app));
 
-    g_signal_connect(G_OBJECT(man), "manager-disconnect", G_CALLBACK(do_manager_disconnect), display);
-    g_signal_connect(G_OBJECT(man), "manager-connect", G_CALLBACK(do_manager_connect), display);
+        g_signal_connect(G_OBJECT(man), "manager-disconnect", G_CALLBACK(do_manager_disconnect), display);
+        g_signal_connect(G_OBJECT(man), "manager-connect", G_CALLBACK(do_manager_connect), display);
 
-    g_object_set_property(G_OBJECT(man), "camera", &camval);
-    g_hash_table_insert(priv->managers, g_strdup(capa_camera_model(cam)), man);
-    g_value_unset(&camval);
-  }
-  capa_camera_manager_show(man);
-  capa_camera_picker_hide(picker);
+        g_object_set_property(G_OBJECT(man), "camera", &camval);
+        g_hash_table_insert(priv->managers, g_strdup(capa_camera_model(cam)), man);
+        g_value_unset(&camval);
+    }
+    capa_camera_manager_show(man);
+    capa_camera_picker_hide(picker);
 }
 
 static void do_set_icons(void)
 {
-  GList *icons = NULL;
-  int iconSizes[] = { 16, 32, 48, 64, 128, 0 };
+    GList *icons = NULL;
+    int iconSizes[] = { 16, 32, 48, 64, 128, 0 };
 
-  for (int i = 0 ; iconSizes[i] != 0 ; i++) {
-    char *local = g_strdup_printf("./capa-%dx%d.png", iconSizes[i], iconSizes[i]);
-    if (access(local, R_OK) < 0) {
-      g_free(local);
-      local = g_strdup_printf("%s/capa-%dx%d.png", PKGDATADIR, iconSizes[i], iconSizes[i]);
+    for (int i = 0 ; iconSizes[i] != 0 ; i++) {
+        char *local = g_strdup_printf("./capa-%dx%d.png", iconSizes[i], iconSizes[i]);
+        if (access(local, R_OK) < 0) {
+            g_free(local);
+            local = g_strdup_printf("%s/capa-%dx%d.png", PKGDATADIR, iconSizes[i], iconSizes[i]);
+        }
+        GdkPixbuf *pix = gdk_pixbuf_new_from_file(local, NULL);
+        if (pix)
+            icons = g_list_append(icons, pix);
     }
-    GdkPixbuf *pix = gdk_pixbuf_new_from_file(local, NULL);
-    if (pix)
-      icons = g_list_append(icons, pix);
-  }
 
-  gtk_window_set_default_icon_list(icons);
+    gtk_window_set_default_icon_list(icons);
 }
 
 static void capa_app_display_init(CapaAppDisplay *display)
 {
-  CapaAppDisplayPrivate *priv;
+    CapaAppDisplayPrivate *priv;
 
-  priv = display->priv = CAPA_APP_DISPLAY_GET_PRIVATE(display);
+    priv = display->priv = CAPA_APP_DISPLAY_GET_PRIVATE(display);
 
-  priv->app = capa_app_new();
-  priv->picker = capa_camera_picker_new(capa_app_cameras(priv->app));
-  priv->managers = g_hash_table_new_full(g_str_hash, g_str_equal,
-					 g_free, g_object_unref);
+    priv->app = capa_app_new();
+    priv->picker = capa_camera_picker_new(capa_app_cameras(priv->app));
+    priv->managers = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                           g_free, g_object_unref);
 
-  g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
-  g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
-  g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), display);
+    g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
+    g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
+    g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), display);
 
-  do_set_icons();
+    do_set_icons();
 }
 
 
 void capa_app_display_show(CapaAppDisplay *display)
 {
-  CapaAppDisplayPrivate *priv = display->priv;
+    CapaAppDisplayPrivate *priv = display->priv;
 
-  capa_camera_picker_show(priv->picker);
+    capa_camera_picker_show(priv->picker);
 }
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

@@ -41,16 +41,16 @@ typedef struct _CapaAppDisplayClass CapaAppDisplayClass;
 
 struct _CapaAppDisplay
 {
-  GObject parent;
+    GObject parent;
 
-  CapaAppDisplayPrivate *priv;
+    CapaAppDisplayPrivate *priv;
 };
 
 struct _CapaAppDisplayClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*app_closed)(CapaAppDisplay *picker);
+    void (*app_closed)(CapaAppDisplay *picker);
 };
 
 
@@ -63,3 +63,12 @@ G_END_DECLS
 
 #endif /* __CAPA_APP_DISPLAY_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

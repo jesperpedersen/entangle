@@ -39,22 +39,22 @@ typedef struct _CapaControlClass CapaControlClass;
 
 struct _CapaControl
 {
-  GObject parent;
+    GObject parent;
 
-  CapaControlPrivate *priv;
+    CapaControlPrivate *priv;
 };
 
 struct _CapaControlClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
 
 GType capa_control_get_type(void) G_GNUC_CONST;
 CapaControl* capa_control_new(const char *path,
-			      int id,
-			      const char *label,
-			      const char *info);
+                              int id,
+                              const char *label,
+                              const char *info);
 
 
 int capa_control_id(CapaControl *control);
@@ -65,3 +65,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CONTROL_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

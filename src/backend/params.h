@@ -26,9 +26,9 @@
 typedef struct _CapaParams CapaParams;
 
 struct _CapaParams {
-  GPContext *ctx;
-  CameraAbilitiesList *caps;
-  GPPortInfoList *ports;
+    GPContext *ctx;
+    CameraAbilitiesList *caps;
+    GPPortInfoList *ports;
 };
 
 
@@ -40,3 +40,12 @@ void capa_params_refresh(CapaParams *params);
 
 
 #endif /* __CAPA_PARAMS_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

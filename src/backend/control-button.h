@@ -41,25 +41,34 @@ typedef struct _CapaControlButtonClass CapaControlButtonClass;
 
 struct _CapaControlButton
 {
-  CapaControl parent;
+    CapaControl parent;
 
-  CapaControlButtonPrivate *priv;
+    CapaControlButtonPrivate *priv;
 };
 
 struct _CapaControlButtonClass
 {
-  CapaControlClass parent_class;
+    CapaControlClass parent_class;
 };
 
 
 GType capa_control_button_get_type(void) G_GNUC_CONST;
 CapaControlButton* capa_control_button_new(const char *path,
-					   int id,
-					   const char *label,
-					   const char *info);
+                                           int id,
+                                           const char *label,
+                                           const char *info);
 
 
 G_END_DECLS
 
 #endif /* __CAPA_CONTROL_BUTTON_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

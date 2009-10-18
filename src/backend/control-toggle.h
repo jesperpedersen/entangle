@@ -41,24 +41,33 @@ typedef struct _CapaControlToggleClass CapaControlToggleClass;
 
 struct _CapaControlToggle
 {
-  CapaControl parent;
+    CapaControl parent;
 
-  CapaControlTogglePrivate *priv;
+    CapaControlTogglePrivate *priv;
 };
 
 struct _CapaControlToggleClass
 {
-  CapaControlClass parent_class;
+    CapaControlClass parent_class;
 };
 
 
 GType capa_control_toggle_get_type(void) G_GNUC_CONST;
 CapaControlToggle* capa_control_toggle_new(const char *path,
-					   int id,
-					   const char *label,
-					   const char *info);
+                                           int id,
+                                           const char *label,
+                                           const char *info);
 
 G_END_DECLS
 
 #endif /* __CAPA_CONTROL_TOGGLE_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

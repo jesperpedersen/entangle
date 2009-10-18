@@ -43,30 +43,30 @@ typedef struct _CapaCameraClass CapaCameraClass;
 
 struct _CapaCamera
 {
-  GObject parent;
+    GObject parent;
 
-  CapaCameraPrivate *priv;
+    CapaCameraPrivate *priv;
 };
 
 struct _CapaCameraClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*camera_image)(CapaCamera *cam, CapaImage *image);
-  void (*camera_error)(CapaCamera *cam, const char *err);
+    void (*camera_image)(CapaCamera *cam, CapaImage *image);
+    void (*camera_error)(CapaCamera *cam, const char *err);
 
-  void (*camera_op_begin)(CapaCamera *cam);
-  void (*camera_op_end)(CapaCamera *cam);
+    void (*camera_op_begin)(CapaCamera *cam);
+    void (*camera_op_end)(CapaCamera *cam);
 };
 
 
 GType capa_camera_get_type(void) G_GNUC_CONST;
 
 CapaCamera *capa_camera_new(const char *model,
-			    const char *port,
-			    gboolean hasCapture,
-			    gboolean hasPreview,
-			    gboolean hasSettings);
+                            const char *port,
+                            gboolean hasCapture,
+                            gboolean hasPreview,
+                            gboolean hasSettings);
 
 const char *capa_camera_model(CapaCamera *cam);
 const char *capa_camera_port(CapaCamera *cam);
@@ -92,3 +92,12 @@ CapaControlGroup *capa_camera_controls(CapaCamera *cam);
 G_END_DECLS
 
 #endif /* __CAPA_CAMERA_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

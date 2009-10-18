@@ -41,14 +41,14 @@ typedef struct _CapaSessionBrowserClass CapaSessionBrowserClass;
 
 struct _CapaSessionBrowser
 {
-  GtkIconView parent;
+    GtkIconView parent;
 
-  CapaSessionBrowserPrivate *priv;
+    CapaSessionBrowserPrivate *priv;
 };
 
 struct _CapaSessionBrowserClass
 {
-  GtkIconViewClass parent_class;
+    GtkIconViewClass parent_class;
 
 };
 
@@ -62,3 +62,12 @@ G_END_DECLS
 
 #endif /* __CAPA_SESSION_BROWSER_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

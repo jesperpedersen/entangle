@@ -41,14 +41,14 @@ typedef struct _CapaControlPanelClass CapaControlPanelClass;
 
 struct _CapaControlPanel
 {
-  GtkVBox parent;
+    GtkVBox parent;
 
-  CapaControlPanelPrivate *priv;
+    CapaControlPanelPrivate *priv;
 };
 
 struct _CapaControlPanelClass
 {
-  GtkVBoxClass parent_class;
+    GtkVBoxClass parent_class;
 
 };
 
@@ -61,3 +61,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CONTROL_PANEL_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

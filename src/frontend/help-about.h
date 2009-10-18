@@ -39,16 +39,16 @@ typedef struct _CapaHelpAboutClass CapaHelpAboutClass;
 
 struct _CapaHelpAbout
 {
-  GObject parent;
+    GObject parent;
 
-  CapaHelpAboutPrivate *priv;
+    CapaHelpAboutPrivate *priv;
 };
 
 struct _CapaHelpAboutClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*about_close)(CapaHelpAbout *about);
+    void (*about_close)(CapaHelpAbout *about);
 };
 
 
@@ -63,3 +63,12 @@ G_END_DECLS
 
 #endif /* __CAPA_HELP_ABOUT_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

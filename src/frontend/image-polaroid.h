@@ -39,16 +39,16 @@ typedef struct _CapaImagePolaroidClass CapaImagePolaroidClass;
 
 struct _CapaImagePolaroid
 {
-  GObject parent;
+    GObject parent;
 
-  CapaImagePolaroidPrivate *priv;
+    CapaImagePolaroidPrivate *priv;
 };
 
 struct _CapaImagePolaroidClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*polaroid_close)(CapaImagePolaroid *polaroid);
+    void (*polaroid_close)(CapaImagePolaroid *polaroid);
 };
 
 
@@ -57,11 +57,20 @@ GType capa_image_polaroid_get_type(void) G_GNUC_CONST;
 CapaImagePolaroid* capa_image_polaroid_new(void);
 
 void capa_image_polaroid_show(CapaImagePolaroid *polaroid,
-			      GtkWindow *parent,
-			      int x, int y);
+                              GtkWindow *parent,
+                              int x, int y);
 void capa_image_polaroid_hide(CapaImagePolaroid *polaroid);
 
 G_END_DECLS
 
 #endif /* __CAPA_IMAGE_POLAROID_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

@@ -41,25 +41,25 @@ typedef struct _CapaControlGroupClass CapaControlGroupClass;
 
 struct _CapaControlGroup
 {
-  CapaControl parent;
+    CapaControl parent;
 
-  CapaControlGroupPrivate *priv;
+    CapaControlGroupPrivate *priv;
 };
 
 struct _CapaControlGroupClass
 {
-  CapaControlClass parent_class;
+    CapaControlClass parent_class;
 };
 
 
 GType capa_control_group_get_type(void) G_GNUC_CONST;
 CapaControlGroup* capa_control_group_new(const char *path,
-					 int id,
-					 const char *label,
-					 const char *info);
+                                         int id,
+                                         const char *label,
+                                         const char *info);
 
 void capa_control_group_add(CapaControlGroup *group,
-			    CapaControl *control);
+                            CapaControl *control);
 
 int capa_control_group_count(CapaControlGroup *group);
 CapaControl *capa_control_group_get(CapaControlGroup *group, int idx);
@@ -69,3 +69,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CONTROL_GROUP_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

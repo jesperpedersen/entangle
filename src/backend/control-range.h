@@ -41,25 +41,25 @@ typedef struct _CapaControlRangeClass CapaControlRangeClass;
 
 struct _CapaControlRange
 {
-  CapaControl parent;
+    CapaControl parent;
 
-  CapaControlRangePrivate *priv;
+    CapaControlRangePrivate *priv;
 };
 
 struct _CapaControlRangeClass
 {
-  CapaControlClass parent_class;
+    CapaControlClass parent_class;
 };
 
 
 GType capa_control_range_get_type(void) G_GNUC_CONST;
 CapaControlRange* capa_control_range_new(const char *path,
-					 int id,
-					 const char *label,
-					 const char *info,
-					 float min,
-					 float max,
-					 float step);
+                                         int id,
+                                         const char *label,
+                                         const char *info,
+                                         float min,
+                                         float max,
+                                         float step);
 
 
 float capa_control_range_get_min(CapaControlRange *range);
@@ -70,3 +70,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CONTROL_RANGE_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

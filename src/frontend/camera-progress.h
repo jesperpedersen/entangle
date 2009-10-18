@@ -41,16 +41,16 @@ typedef struct _CapaCameraProgressClass CapaCameraProgressClass;
 
 struct _CapaCameraProgress
 {
-  GObject parent;
+    GObject parent;
 
-  CapaCameraProgressPrivate *priv;
+    CapaCameraProgressPrivate *priv;
 };
 
 struct _CapaCameraProgressClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*progress_close)(CapaCameraProgress *progress);
+    void (*progress_close)(CapaCameraProgress *progress);
 };
 
 GType capa_camera_progress_get_type(void) G_GNUC_CONST;
@@ -64,3 +64,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CAMERA_PROGRESS_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

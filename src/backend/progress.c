@@ -25,37 +25,46 @@
 
 void capa_progress_start(CapaProgress *prog, float target, const char *format, va_list args)
 {
-  CAPA_PROGRESS_GET_INTERFACE(prog)->start(prog, target, format, args);
+    CAPA_PROGRESS_GET_INTERFACE(prog)->start(prog, target, format, args);
 }
 
 void capa_progress_update(CapaProgress *prog, float current)
 {
-  CAPA_PROGRESS_GET_INTERFACE(prog)->update(prog, current);
+    CAPA_PROGRESS_GET_INTERFACE(prog)->update(prog, current);
 }
 
 void capa_progress_stop(CapaProgress *prog)
 {
-  CAPA_PROGRESS_GET_INTERFACE(prog)->stop(prog);
+    CAPA_PROGRESS_GET_INTERFACE(prog)->stop(prog);
 }
 
 gboolean capa_progress_cancelled(CapaProgress *prog)
 {
-  return CAPA_PROGRESS_GET_INTERFACE(prog)->cancelled(prog);
+    return CAPA_PROGRESS_GET_INTERFACE(prog)->cancelled(prog);
 }
 
 GType
 capa_progress_get_type (void)
 {
-  static GType progress_type = 0;
+    static GType progress_type = 0;
 
-  if (!progress_type) {
-    progress_type =
-      g_type_register_static_simple (G_TYPE_INTERFACE, "CapaProgress",
-                                     sizeof (CapaProgressInterface),
-                                     NULL, 0, NULL, 0);
+    if (!progress_type) {
+        progress_type =
+            g_type_register_static_simple (G_TYPE_INTERFACE, "CapaProgress",
+                                           sizeof (CapaProgressInterface),
+                                           NULL, 0, NULL, 0);
 
-      g_type_interface_add_prerequisite (progress_type, G_TYPE_OBJECT);
-  }
+        g_type_interface_add_prerequisite (progress_type, G_TYPE_OBJECT);
+    }
 
-  return progress_type;
+    return progress_type;
 }
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

@@ -28,70 +28,79 @@
 #include "params.h"
 
 static void do_capa_log(GPLogLevel level G_GNUC_UNUSED,
-			const char *domain,
-			const char *format,
-			va_list args,
-			void *data G_GNUC_UNUSED)
+                        const char *domain,
+                        const char *format,
+                        va_list args,
+                        void *data G_GNUC_UNUSED)
 {
-  char *msg = g_strdup_vprintf(format, args);
-  g_debug("%s: %s", domain, msg);
+    char *msg = g_strdup_vprintf(format, args);
+    g_debug("%s: %s", domain, msg);
 }
 
 CapaParams *capa_params_new(void)
 {
-  CapaParams *params = g_new0(CapaParams, 1);
-  static gboolean log_added = FALSE;
+    CapaParams *params = g_new0(CapaParams, 1);
+    static gboolean log_added = FALSE;
 
-  if (capa_debug_gphoto && !log_added) {
-    log_added = TRUE;
-    gp_log_add_func(GP_LOG_DEBUG, do_capa_log, NULL);
-  }
+    if (capa_debug_gphoto && !log_added) {
+        log_added = TRUE;
+        gp_log_add_func(GP_LOG_DEBUG, do_capa_log, NULL);
+    }
 
-  params->ctx = gp_context_new();
+    params->ctx = gp_context_new();
 
-  if (gp_abilities_list_new(&params->caps) != GP_OK)
-    return NULL;
+    if (gp_abilities_list_new(&params->caps) != GP_OK)
+        return NULL;
 
-  if (gp_abilities_list_load(params->caps, params->ctx) != GP_OK)
-    goto error;
+    if (gp_abilities_list_load(params->caps, params->ctx) != GP_OK)
+        goto error;
 
-  if (gp_port_info_list_new(&params->ports) != GP_OK)
-    goto error;
+    if (gp_port_info_list_new(&params->ports) != GP_OK)
+        goto error;
 
-  if (gp_port_info_list_load(params->ports) != GP_OK)
-    goto error;
+    if (gp_port_info_list_load(params->ports) != GP_OK)
+        goto error;
 
-  CAPA_DEBUG("New params %p", params);
+    CAPA_DEBUG("New params %p", params);
 
-  return params;
+    return params;
 
  error:
-  capa_params_free(params);
-  return NULL;
+    capa_params_free(params);
+    return NULL;
 }
 
 void capa_params_refresh(CapaParams *params)
 {
-  if (params->ports)
-    gp_port_info_list_free(params->ports);
-  if (gp_port_info_list_new(&params->ports) != GP_OK)
-    return;
-  if (gp_port_info_list_load(params->ports) != GP_OK)
-    return;
+    if (params->ports)
+        gp_port_info_list_free(params->ports);
+    if (gp_port_info_list_new(&params->ports) != GP_OK)
+        return;
+    if (gp_port_info_list_load(params->ports) != GP_OK)
+        return;
 }
 
 void capa_params_free(CapaParams *params)
 {
-  if (!params)
-    return;
+    if (!params)
+        return;
 
-  CAPA_DEBUG("Free params %p", params);
+    CAPA_DEBUG("Free params %p", params);
 
-  if (params->ports)
-    gp_port_info_list_free(params->ports);
-  if (params->caps)
-    gp_abilities_list_free(params->caps);
-  gp_context_unref(params->ctx);
-  g_free(params);
+    if (params->ports)
+        gp_port_info_list_free(params->ports);
+    if (params->caps)
+        gp_abilities_list_free(params->caps);
+    gp_context_unref(params->ctx);
+    g_free(params);
 }
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

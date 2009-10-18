@@ -41,24 +41,33 @@ typedef struct _CapaControlTextClass CapaControlTextClass;
 
 struct _CapaControlText
 {
-  CapaControl parent;
+    CapaControl parent;
 
-  CapaControlTextPrivate *priv;
+    CapaControlTextPrivate *priv;
 };
 
 struct _CapaControlTextClass
 {
-  CapaControlClass parent_class;
+    CapaControlClass parent_class;
 };
 
 
 GType capa_control_text_get_type(void) G_GNUC_CONST;
 CapaControlText* capa_control_text_new(const char *path,
-				       int id,
-				       const char *label,
-				       const char *info);
+                                       int id,
+                                       const char *label,
+                                       const char *info);
 
 G_END_DECLS
 
 #endif /* __CAPA_CONTROL_TEXT_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

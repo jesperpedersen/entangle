@@ -44,14 +44,14 @@ typedef struct _CapaImageClass CapaImageClass;
 
 struct _CapaImage
 {
-  GObject parent;
+    GObject parent;
 
-  CapaImagePrivate *priv;
+    CapaImagePrivate *priv;
 };
 
 struct _CapaImageClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
 
@@ -71,3 +71,12 @@ GdkPixbuf *capa_image_thumbnail(CapaImage *image);
 G_END_DECLS
 
 #endif /* __CAPA_IMAGE_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

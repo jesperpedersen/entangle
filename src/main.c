@@ -30,48 +30,57 @@ gboolean capa_debug_gphoto = FALSE;
 
 int main(int argc, char **argv)
 {
-  CapaAppDisplay *display;
-  GOptionGroup *group;
-  GOptionContext *context;
-  GError *error = NULL;
-  static const GOptionEntry entries[] = {
-    { "debug-capa", 'd', 0, G_OPTION_ARG_NONE, &capa_debug_app, "Enable debugging of application code", NULL },
-    { "debug-gphoto", 'g', 0, G_OPTION_ARG_NONE, &capa_debug_gphoto, "Enable debugging of gphoto library", NULL },
-    { NULL, 0, 0, 0, NULL, NULL, NULL },
-  };
-  static const char *help_msg = "Run 'capa --help' to see full list of options";
+    CapaAppDisplay *display;
+    GOptionGroup *group;
+    GOptionContext *context;
+    GError *error = NULL;
+    static const GOptionEntry entries[] = {
+        { "debug-capa", 'd', 0, G_OPTION_ARG_NONE, &capa_debug_app, "Enable debugging of application code", NULL },
+        { "debug-gphoto", 'g', 0, G_OPTION_ARG_NONE, &capa_debug_gphoto, "Enable debugging of gphoto library", NULL },
+        { NULL, 0, 0, 0, NULL, NULL, NULL },
+    };
+    static const char *help_msg = "Run 'capa --help' to see full list of options";
 
-  g_thread_init(NULL);
+    g_thread_init(NULL);
 
-  group = g_option_group_new("capa",
-			     "Capa application options",
-			     "Show Capa options",
-			     NULL, NULL);
+    group = g_option_group_new("capa",
+                               "Capa application options",
+                               "Show Capa options",
+                               NULL, NULL);
 
-  g_option_group_add_entries(group, entries);
+    g_option_group_add_entries(group, entries);
 
-  /* Setup command line options */
-  context = g_option_context_new("");
-  g_option_context_add_group(context, gtk_get_option_group (TRUE));
-  g_option_context_add_group(context, group);
-  g_option_context_parse(context, &argc, &argv, &error);
-  if (error) {
-    g_print ("%s\n%s\n", error->message, help_msg);
-    g_error_free (error);
-    return 1;
-  }
+    /* Setup command line options */
+    context = g_option_context_new("");
+    g_option_context_add_group(context, gtk_get_option_group (TRUE));
+    g_option_context_add_group(context, group);
+    g_option_context_parse(context, &argc, &argv, &error);
+    if (error) {
+        g_print ("%s\n%s\n", error->message, help_msg);
+        g_error_free (error);
+        return 1;
+    }
 
-  gdk_threads_init();
-  gtk_init(&argc, &argv);
+    gdk_threads_init();
+    gtk_init(&argc, &argv);
 
-  display = capa_app_display_new();
+    display = capa_app_display_new();
 
-  g_signal_connect(display, "app-closed", gtk_main_quit, NULL);
+    g_signal_connect(display, "app-closed", gtk_main_quit, NULL);
 
-  capa_app_display_show(display);
+    capa_app_display_show(display);
 
-  gtk_main();
+    gtk_main();
 
-  g_object_unref(display);
-  return 0;
+    g_object_unref(display);
+    return 0;
 }
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

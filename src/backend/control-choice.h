@@ -41,31 +41,40 @@ typedef struct _CapaControlChoiceClass CapaControlChoiceClass;
 
 struct _CapaControlChoice
 {
-  CapaControl parent;
+    CapaControl parent;
 
-  CapaControlChoicePrivate *priv;
+    CapaControlChoicePrivate *priv;
 };
 
 struct _CapaControlChoiceClass
 {
-  CapaControlClass parent_class;
+    CapaControlClass parent_class;
 };
 
 
 GType capa_control_choice_get_type(void) G_GNUC_CONST;
 CapaControlChoice* capa_control_choice_new(const char *path,
-					   int id,
-					   const char *label,
-					   const char *info);
+                                           int id,
+                                           const char *label,
+                                           const char *info);
 
 void capa_control_choice_add_entry(CapaControlChoice *choice,
-				   const char *entry);
+                                   const char *entry);
 
 int capa_control_choice_entry_count(CapaControlChoice *choice);
 const char *capa_control_choice_entry_get(CapaControlChoice *choice,
-					  int idx);
+                                          int idx);
 
 G_END_DECLS
 
 #endif /* __CAPA_CONTROL_CHOICE_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

@@ -36,13 +36,13 @@ typedef struct _CapaProgress CapaProgress; /* dummy object */
 typedef struct _CapaProgressInterface CapaProgressInterface;
 
 struct _CapaProgressInterface {
-  GTypeInterface parent;
+    GTypeInterface parent;
 
-  void (*start) (CapaProgress *prog, float target, const char *format, va_list args);
-  void (*update) (CapaProgress *prog, float current);
-  void (*stop) (CapaProgress *prog);
+    void (*start) (CapaProgress *prog, float target, const char *format, va_list args);
+    void (*update) (CapaProgress *prog, float current);
+    void (*stop) (CapaProgress *prog);
 
-  gboolean (*cancelled) (CapaProgress *prog);
+    gboolean (*cancelled) (CapaProgress *prog);
 };
 
 GType capa_progress_get_type(void);
@@ -55,3 +55,12 @@ gboolean capa_progress_cancelled(CapaProgress *prog);
 G_END_DECLS
 
 #endif /* __CAPA_PROGRESS_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

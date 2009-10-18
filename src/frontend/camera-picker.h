@@ -42,18 +42,18 @@ typedef struct _CapaCameraPickerClass CapaCameraPickerClass;
 
 struct _CapaCameraPicker
 {
-  GObject parent;
+    GObject parent;
 
-  CapaCameraPickerPrivate *priv;
+    CapaCameraPickerPrivate *priv;
 };
 
 struct _CapaCameraPickerClass
 {
-  GObjectClass parent_class;
+    GObjectClass parent_class;
 
-  void (*picker_connect)(CapaCameraPicker *picker, CapaCamera *cam);
-  void (*picker_refresh)(CapaCameraPicker *picker);
-  void (*picker_close)(CapaCameraPicker *picker);
+    void (*picker_connect)(CapaCameraPicker *picker, CapaCamera *cam);
+    void (*picker_refresh)(CapaCameraPicker *picker);
+    void (*picker_close)(CapaCameraPicker *picker);
 };
 
 
@@ -68,3 +68,12 @@ G_END_DECLS
 
 #endif /* __CAPA_CAMERA_PICKER_H__ */
 
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */
