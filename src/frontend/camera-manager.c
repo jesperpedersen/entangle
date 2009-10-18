@@ -448,6 +448,10 @@ static void capa_camera_manager_new_session(CapaCameraManager *manager)
         session = capa_session_new(dir, capa_preferences_filename_pattern(priv->prefs));
         capa_session_load(session);
         g_object_set(G_OBJECT(priv->camera), "session", session, NULL);
+        g_object_set(G_OBJECT(priv->sessionBrowser),
+                     "session", session,
+                     NULL);
+
         g_object_unref(session);
     }
 
@@ -490,6 +494,10 @@ static void capa_camera_manager_open_session(CapaCameraManager *manager)
         session = capa_session_new(dir, capa_preferences_filename_pattern(priv->prefs));
         capa_session_load(session);
         g_object_set(G_OBJECT(priv->camera), "session", session, NULL);
+        g_object_set(G_OBJECT(priv->sessionBrowser),
+                     "session", session,
+                     NULL);
+
         g_object_unref(session);
     }
 
