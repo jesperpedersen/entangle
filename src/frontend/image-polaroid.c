@@ -162,7 +162,6 @@ static gboolean capa_image_polaroid_key_release(GtkWidget *widget G_GNUC_UNUSED,
         ev->keyval == GDK_KP_Enter ||
         ev->keyval == GDK_Return) {
         capa_image_polaroid_hide(polaroid);
-        g_object_unref(G_OBJECT(polaroid));
         return TRUE;
     }
 

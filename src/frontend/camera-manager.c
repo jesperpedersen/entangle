@@ -57,6 +57,8 @@ struct _CapaCameraManagerPrivate {
     CapaSessionBrowser *sessionBrowser;
     CapaControlPanel *controlPanel;
 
+    GHashTable *polaroids;
+
     int zoomLevel;
 
     gulong sigImage;
@@ -302,6 +304,8 @@ static void capa_camera_manager_finalize (GObject *object)
         g_object_unref(G_OBJECT(priv->camera));
     if (priv->prefs)
         g_object_unref(G_OBJECT(priv->prefs));
+
+    g_hash_table_destroy(priv->polaroids);
 
     g_object_unref(G_OBJECT(priv->progress));
     g_object_unref(priv->glade);
@@ -851,6 +855,16 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
     }
 }
 
+
+static void do_polaroid_remove(gpointer data)
+{
+    CapaImagePolaroid *pol = data;
+
+    capa_image_polaroid_hide(pol);
+    g_object_unref(G_OBJECT(pol));
+}
+
+
 static void do_drag_failed(GtkWidget *widget,
                            GdkDragContext *ctx G_GNUC_UNUSED,
                            GtkDragResult res,
@@ -868,14 +882,19 @@ static void do_drag_failed(GtkWidget *widget,
                                     &screen,
                                     &x, &y, NULL);
             GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
-            CapaImagePolaroid *pol = capa_image_polaroid_new();
-            g_object_set(G_OBJECT(pol), "image", img, NULL);
+            const gchar *filename = capa_image_filename(img);
+            CapaImagePolaroid *pol;
+            if (!(pol = g_hash_table_lookup(priv->polaroids, filename))) {
+                pol = capa_image_polaroid_new();
+                g_object_set(G_OBJECT(pol), "image", img, NULL);
+                g_object_unref(G_OBJECT(img));
+                g_hash_table_insert(priv->polaroids, g_strdup(filename), pol);
+            }
+            CAPA_DEBUG("Polaroid %p for %s", pol, filename);
             capa_image_polaroid_show(pol, GTK_WINDOW(win), x, y);
-            g_object_unref(G_OBJECT(img));
         }
     }
 }
-
 
 static void capa_camera_manager_init(CapaCameraManager *manager)
 {
@@ -983,6 +1002,11 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
     gtk_widget_set_size_request(settingsBox, 300, 100);
     gtk_widget_set_size_request(iconScroll, 140, 140);
 
+    priv->polaroids = g_hash_table_new_full(g_str_hash,
+                                            g_str_equal,
+                                            g_free,
+                                            do_polaroid_remove);
+
     CAPA_DEBUG("Adding %p to %p", priv->imageDisplay, viewport);
     gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
@@ -1007,6 +1031,9 @@ void capa_camera_manager_hide(CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
+
+    CAPA_DEBUG("Removing all polaroids");
+    g_hash_table_remove_all(priv->polaroids);
 
     gtk_widget_hide(win);
 }
