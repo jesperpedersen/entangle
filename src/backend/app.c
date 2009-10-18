@@ -30,30 +30,174 @@
 #include "params.h"
 #include "device-manager.h"
 
-struct _CapaApp {
+#define CAPA_APP_GET_PRIVATE(obj) \
+      (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP, CapaAppPrivate))
+
+struct _CapaAppPrivate {
   CapaParams *params;
 
   CapaDeviceManager *devManager;
   CapaCameraList *cameras;
 
-  CapaPreferences *prefs;
+  CapaPreferences *preferences;
 };
+
+G_DEFINE_TYPE(CapaApp, capa_app, G_TYPE_OBJECT);
+
+enum {
+  PROP_0,
+  PROP_CAMERAS,
+  PROP_PREFERENCES,
+  PROP_DEVMANAGER,
+};
+
+static void capa_app_get_property(GObject *object,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *pspec)
+{
+  CapaApp *app = CAPA_APP(object);
+  CapaAppPrivate *priv = app->priv;
+
+  switch (prop_id)
+    {
+    case PROP_CAMERAS:
+      g_value_set_object(value, priv->cameras);
+      break;
+
+    case PROP_PREFERENCES:
+      g_value_set_object(value, priv->preferences);
+      break;
+
+    case PROP_DEVMANAGER:
+      g_value_set_object(value, priv->devManager);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
+}
+
+static void capa_app_set_property(GObject *object,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *pspec)
+{
+  CapaApp *app = CAPA_APP(object);
+  CapaAppPrivate *priv = app->priv;
+
+  switch (prop_id)
+    {
+    case PROP_CAMERAS:
+      CAPA_DEBUG("DAMN");
+      if (priv->cameras)
+	g_object_unref(G_OBJECT(priv->cameras));
+      priv->cameras = g_value_get_object(value);
+      g_object_ref(priv->cameras);
+      break;
+
+    case PROP_PREFERENCES:
+      if (priv->preferences)
+	g_object_unref(G_OBJECT(priv->preferences));
+      priv->preferences = g_value_get_object(value);
+      g_object_ref(priv->preferences);
+      break;
+
+    case PROP_DEVMANAGER:
+      if (priv->devManager)
+	g_object_unref(G_OBJECT(priv->devManager));
+      priv->devManager = g_value_get_object(value);
+      g_object_ref(priv->devManager);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
+}
+
+
+static void capa_app_finalize(GObject *object)
+{
+  CapaApp *app = CAPA_APP(object);
+  CapaAppPrivate *priv = app->priv;
+
+  CAPA_DEBUG("Finalize app %p", object);
+
+  if (priv->cameras)
+    g_object_unref(priv->cameras);
+  if (priv->preferences)
+    g_object_unref(priv->preferences);
+  if (priv->devManager)
+    g_object_unref(priv->devManager);
+
+  capa_params_free(priv->params);
+
+  G_OBJECT_CLASS (capa_app_parent_class)->finalize (object);
+}
+
+
+static void capa_app_class_init(CapaAppClass *klass)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->finalize = capa_app_finalize;
+  object_class->get_property = capa_app_get_property;
+  object_class->set_property = capa_app_set_property;
+
+  g_object_class_install_property(object_class,
+				  PROP_CAMERAS,
+				  g_param_spec_object("cameras",
+						      "Camera list",
+						      "List of detected cameras",
+						      CAPA_TYPE_CAMERA_LIST,
+						      G_PARAM_READABLE |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property(object_class,
+				  PROP_PREFERENCES,
+				  g_param_spec_object("preferences",
+						      "Preferences",
+						      "Application preferences",
+						      CAPA_TYPE_PREFERENCES,
+						      G_PARAM_READABLE |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property(object_class,
+				  PROP_DEVMANAGER,
+				  g_param_spec_object("device-manager",
+						      "Device manager",
+						      "Device manager for detecting cameras",
+						      CAPA_TYPE_SESSION,
+						      G_PARAM_READABLE |
+						      G_PARAM_STATIC_NAME |
+						      G_PARAM_STATIC_NICK |
+						      G_PARAM_STATIC_BLURB));
+
+
+  g_type_class_add_private(klass, sizeof(CapaAppPrivate));
+}
+
 
 static void do_refresh_cameras(CapaApp *app)
 {
+  CapaAppPrivate *priv = app->priv;
   CameraList *cams = NULL;
   GHashTable *toRemove;
   GHashTableIter iter;
   gpointer key, value;
 
-  capa_params_refresh(app->params);
+  capa_params_refresh(priv->params);
 
   CAPA_DEBUG("Detecting cameras");
 
   if (gp_list_new(&cams) != GP_OK)
     return;
 
-  gp_abilities_list_detect(app->params->caps, app->params->ports, cams, app->params->ctx);
+  gp_abilities_list_detect(priv->params->caps, priv->params->ports, cams, priv->params->ctx);
 
   for (int i = 0 ; i < gp_list_count(cams) ; i++) {
     const char *model, *port;
@@ -64,13 +208,13 @@ static void do_refresh_cameras(CapaApp *app)
     gp_list_get_name(cams, i, &model);
     gp_list_get_value(cams, i, &port);
 
-    cam = capa_camera_list_find(app->cameras, port);
+    cam = capa_camera_list_find(priv->cameras, port);
 
     if (cam)
       continue;
 
-    n = gp_abilities_list_lookup_model(app->params->caps, model);
-    gp_abilities_list_get_abilities(app->params->caps, n, &cap);
+    n = gp_abilities_list_lookup_model(priv->params->caps, model);
+    gp_abilities_list_get_abilities(priv->params->caps, n, &cap);
 
     /* For back compat, libgphoto2 always adds a default
      * USB camera called 'usb:'. We ignore that, since we
@@ -84,14 +228,14 @@ static void do_refresh_cameras(CapaApp *app)
 			  cap.operations & GP_OPERATION_CAPTURE_IMAGE ? TRUE : FALSE,
 			  cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
 			  cap.operations & GP_OPERATION_CONFIG ? TRUE : FALSE);
-    capa_camera_list_add(app->cameras, cam);
+    capa_camera_list_add(priv->cameras, cam);
     g_object_unref(G_OBJECT(cam));
   }
 
   toRemove = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-  for (int i = 0 ; i < capa_camera_list_count(app->cameras) ; i++) {
+  for (int i = 0 ; i < capa_camera_list_count(priv->cameras) ; i++) {
     gboolean found = FALSE;
-    CapaCamera *cam = capa_camera_list_get(app->cameras, i);
+    CapaCamera *cam = capa_camera_list_get(priv->cameras, i);
 
     CAPA_DEBUG("Checking if %s exists", capa_camera_port(cam));
 
@@ -114,7 +258,7 @@ static void do_refresh_cameras(CapaApp *app)
   while (g_hash_table_iter_next(&iter, &key, &value)) {
     CapaCamera *cam = value;
 
-    capa_camera_list_remove(app->cameras, cam);
+    capa_camera_list_remove(priv->cameras, cam);
   }
   g_hash_table_unref(toRemove);
 }
@@ -128,47 +272,41 @@ static void do_device_addremove(CapaDeviceManager *manager G_GNUC_UNUSED,
 
 CapaApp *capa_app_new(void)
 {
-  CapaApp *app = g_new0(CapaApp, 1);
+  return CAPA_APP(g_object_new(CAPA_TYPE_APP, NULL));
+}
 
-  app->prefs = capa_preferences_new();
-  app->params = capa_params_new();
-  app->cameras = capa_camera_list_new();
-  app->devManager = capa_device_manager_new();
 
-  g_signal_connect(app->devManager, "device-added", G_CALLBACK(do_device_addremove), app);
-  g_signal_connect(app->devManager, "device-removed", G_CALLBACK(do_device_addremove), app);
+static void capa_app_init(CapaApp *app)
+{
+  CapaAppPrivate *priv;
+
+  priv = app->priv = CAPA_APP_GET_PRIVATE(app);
+
+  priv->preferences = capa_preferences_new();
+  priv->params = capa_params_new();
+  priv->cameras = capa_camera_list_new();
+  priv->devManager = capa_device_manager_new();
+
+  g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), app);
+  g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), app);
 
   do_refresh_cameras(app);
-
-  return app;
 }
 
-void capa_app_free(CapaApp *app)
-{
-  if (!app)
-    return;
 
-  capa_params_free(app->params);
-
-  g_object_unref(G_OBJECT(app->cameras));
-
-  g_object_unref(G_OBJECT(app->devManager));
-
-  CAPA_DEBUG("Free app");
-  g_free(app);
-}
-
-void capa_app_refresh(CapaApp *app)
+void capa_app_refresh_cameras(CapaApp *app)
 {
   do_refresh_cameras(app);
 }
 
 CapaCameraList *capa_app_cameras(CapaApp *app)
 {
-  return app->cameras;
+  CapaAppPrivate *priv = app->priv;
+  return priv->cameras;
 }
 
 CapaPreferences *capa_app_preferences(CapaApp *app)
 {
-  return app->prefs;
+  CapaAppPrivate *priv = app->priv;
+  return priv->preferences;
 }

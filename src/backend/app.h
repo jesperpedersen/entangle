@@ -21,20 +21,46 @@
 #ifndef __CAPA_APP_H__
 #define __CAPA_APP_H__
 
-#include "camera-list.h"
+#include <glib-object.h>
 
 #include "preferences.h"
+#include "camera-list.h"
+
+G_BEGIN_DECLS
+
+#define CAPA_TYPE_APP            (capa_app_get_type ())
+#define CAPA_APP(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_TYPE_APP, CapaApp))
+#define CAPA_APP_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), CAPA_TYPE_APP, CapaAppClass))
+#define CAPA_IS_APP(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_TYPE_APP))
+#define CAPA_IS_APP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CAPA_TYPE_APP))
+#define CAPA_APP_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), CAPA_TYPE_APP, CapaAppClass))
+
 
 typedef struct _CapaApp CapaApp;
+typedef struct _CapaAppPrivate CapaAppPrivate;
+typedef struct _CapaAppClass CapaAppClass;
+
+struct _CapaApp
+{
+  GObject parent;
+
+  CapaAppPrivate *priv;
+};
+
+struct _CapaAppClass
+{
+  GObjectClass parent_class;
+};
+
+GType capa_app_get_type(void) G_GNUC_CONST;
 
 CapaApp *capa_app_new(void);
 
-void capa_app_free(CapaApp *app);
+void capa_app_refresh_cameras(CapaApp *app);
 
 CapaCameraList *capa_app_cameras(CapaApp *app);
-
-void capa_app_refresh(CapaApp *app);
-
 CapaPreferences *capa_app_preferences(CapaApp *app);
+
+G_END_DECLS
 
 #endif /* __CAPA_APP_H__ */

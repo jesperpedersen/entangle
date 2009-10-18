@@ -50,7 +50,7 @@ static void capa_app_display_finalize (GObject *object)
 
   CAPA_DEBUG("Finalize display");
 
-  capa_app_free(priv->app);
+  g_object_unref(G_OBJECT(priv->app));
 
   g_object_unref(G_OBJECT(priv->picker));
 
@@ -116,7 +116,7 @@ static void do_picker_close(CapaCameraPicker *picker, CapaAppDisplay *display)
 static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDisplay *display)
 {
   CapaAppDisplayPrivate *priv = display->priv;
-  capa_app_refresh(priv->app);
+  capa_app_refresh_cameras(priv->app);
 }
 
 static void do_manager_connect(CapaCameraManager *manager G_GNUC_UNUSED,
