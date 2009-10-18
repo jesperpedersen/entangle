@@ -520,6 +520,48 @@ static void do_menu_open_session(GtkImageMenuItem *src G_GNUC_UNUSED,
   capa_camera_manager_open_session(manager);
 }
 
+static void do_menu_settings_toggled(GtkCheckMenuItem *src,
+				     CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *settings;
+  GtkWidget *toolbar;
+  gboolean active;
+
+  settings = glade_xml_get_widget(priv->glade, "settings-box");
+  toolbar = glade_xml_get_widget(priv->glade, "toolbar-settings");
+
+  active = gtk_check_menu_item_get_active(src);
+  gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(toolbar), active);
+
+  if (active)
+    gtk_widget_show(settings);
+  else
+    gtk_widget_hide(settings);
+}
+
+
+static void do_toolbar_settings_toggled(GtkToggleToolButton *src,
+					CapaCameraManager *manager)
+{
+  CapaCameraManagerPrivate *priv = manager->priv;
+  GtkWidget *settings;
+  GtkWidget *menu;
+  gboolean active;
+
+  settings = glade_xml_get_widget(priv->glade, "settings-box");
+  menu = glade_xml_get_widget(priv->glade, "menu-settings");
+
+  active = gtk_toggle_tool_button_get_active(src);
+  gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu), active);
+
+  if (active)
+    gtk_widget_show(settings);
+  else
+    gtk_widget_hide(settings);
+}
+
+
 static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 			       CapaCameraManager *manager)
 {
@@ -882,6 +924,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
   glade_xml_signal_connect_data(priv->glade, "menu_quit_activate", G_CALLBACK(do_app_quit), manager);
 
   glade_xml_signal_connect_data(priv->glade, "menu_about_activate", G_CALLBACK(do_help_about), manager);
+
+  glade_xml_signal_connect_data(priv->glade, "menu_settings_toggled", G_CALLBACK(do_menu_settings_toggled), manager);
+  glade_xml_signal_connect_data(priv->glade, "toolbar_settings_toggled", G_CALLBACK(do_toolbar_settings_toggled), manager);
 
   win = glade_xml_get_widget(priv->glade, "camera-manager");
   g_signal_connect(win, "delete-event", G_CALLBACK(do_manager_delete), manager);

@@ -113,25 +113,6 @@
                   <widget class="GtkMenu" id="menu2">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkImageMenuItem" id="imagemenuitem12">
-                        <property name="label" translatable="yes">Camera properties</property>
-                        <property name="visible">True</property>
-                        <property name="use_stock">False</property>
-                        <child internal-child="image">
-                          <widget class="GtkImage" id="image7">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-properties</property>
-                            <property name="icon-size">1</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkSeparatorMenuItem" id="separatormenuitem3">
-                        <property name="visible">True</property>
-                      </widget>
-                    </child>
-                    <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem11">
                         <property name="label">gtk-preferences</property>
                         <property name="visible">True</property>
@@ -195,6 +176,15 @@
                     <child>
                       <widget class="GtkSeparatorMenuItem" id="separatormenuitem4">
                         <property name="visible">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckMenuItem" id="menu-settings">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Settings</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <signal name="toggled" handler="menu_settings_toggled"/>
                       </widget>
                     </child>
                     <child>
@@ -436,13 +426,14 @@ fit the available window real estate</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="toolbar-settings">
+              <widget class="GtkToggleToolButton" id="toolbar-settings">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">View the full list of camera settings</property>
                 <property name="label" translatable="yes">Settings</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-properties</property>
-                <signal name="clicked" handler="toolbar_settings_click"/>
+                <property name="active">True</property>
+                <signal name="toggled" handler="toolbar_settings_toggled"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
