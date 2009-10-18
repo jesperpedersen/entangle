@@ -63,7 +63,6 @@ static void capa_session_get_property(GObject *object,
     {
     case PROP_DIRECTORY:
       g_value_set_string(value, priv->directory);
-      g_mkdir_with_parents(priv->directory, 0777);
       break;
 
     case PROP_FILENAME_PATTERN:
@@ -88,6 +87,7 @@ static void capa_session_set_property(GObject *object,
     case PROP_DIRECTORY:
       g_free(priv->directory);
       priv->directory = g_value_dup_string(value);
+      g_mkdir_with_parents(priv->directory, 0777);
       break;
 
     case PROP_FILENAME_PATTERN:
