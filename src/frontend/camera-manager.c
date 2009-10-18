@@ -283,6 +283,7 @@ static void capa_camera_manager_set_property(GObject *object,
             if (priv->prefs)
                 g_object_unref(G_OBJECT(priv->prefs));
             priv->prefs = g_value_get_object(value);
+            g_object_ref(G_OBJECT(priv->prefs));
             break;
 
         default:
