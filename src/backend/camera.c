@@ -516,6 +516,43 @@ char *capa_camera_driver(CapaCamera *cam)
 }
 
 
+typedef struct _CapaCameraDelayedImageAdd {
+    CapaSession *session;
+    CapaImage *image;
+} CapaCameraDelayedImageAdd;
+
+static gboolean do_delayed_session_add_cb(gpointer opaque)
+{
+    CapaCameraDelayedImageAdd *data = opaque;
+
+    CAPA_DEBUG("Delayed image add %p %p", data->session, data->image);
+    capa_session_add(data->session, data->image);
+    g_object_unref(G_OBJECT(data->session));
+    g_object_unref(G_OBJECT(data->image));
+    g_free(data);
+
+    return FALSE;
+}
+
+/* Need to run the 'capa_session_add' in the main
+ * thread so the emitted signals don't end up coming
+ * from a background thread which causes GDK thread
+ * problems. So use a idle function todo this
+ */
+static void do_delayed_session_add(CapaSession *session,
+                                   CapaImage *image)
+{
+    CapaCameraDelayedImageAdd *data = g_new0(CapaCameraDelayedImageAdd, 1);
+
+    data->session = session;
+    data->image = image;
+    CAPA_DEBUG("Schedule delayed image add %p %p", data->session, data->image);
+    g_object_ref(G_OBJECT(data->session));
+    g_object_ref(G_OBJECT(data->image));
+
+    g_idle_add(do_delayed_session_add_cb, data);
+}
+
 static void *do_camera_capture_thread(void *data)
 {
     CapaCamera *cam = data;
@@ -560,7 +597,7 @@ static void *do_camera_capture_thread(void *data)
     image = capa_image_new(localpath);
     /* XXX don't do this here in future */
     capa_image_load(image);
-    capa_session_add(priv->session, image);
+    do_delayed_session_add(priv->session, image);
 
     g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
 
@@ -707,7 +744,7 @@ static int do_camera_file_added(CapaCamera *cam,
     image = capa_image_new(localpath);
     /* XXX don't do this here in future */
     capa_image_load(image);
-    capa_session_add(priv->session, image);
+    do_delayed_session_add(priv->session, image);
 
     g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
 
