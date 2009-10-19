@@ -31,6 +31,8 @@
 struct _CapaImageDisplayPrivate {
     GdkPixbuf *pixbuf;
 
+    GdkPixmap *pixmap;
+
     gboolean autoscale;
     float scale;
 };
@@ -43,6 +45,35 @@ enum {
     PROP_AUTOSCALE,
     PROP_SCALE,
 };
+
+static void do_capa_pixmap_setup(CapaImageDisplay *display)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+    int pw, ph;
+
+    if (!GTK_WIDGET_REALIZED(display)) {
+        CAPA_DEBUG("Skipping setup for non-realized widget");
+        return;
+    }
+
+    CAPA_DEBUG("Setting up server pixmap");
+
+    if (priv->pixmap) {
+        g_object_unref(priv->pixmap);
+        priv->pixmap = NULL;
+    }
+    if (!priv->pixbuf)
+        return;
+
+    pw = gdk_pixbuf_get_width(priv->pixbuf);
+    ph = gdk_pixbuf_get_height(priv->pixbuf);
+    priv->pixmap = gdk_pixmap_new(GTK_WIDGET(display)->window,
+                                  pw, ph, -1);
+    gdk_draw_pixbuf(priv->pixmap, NULL, priv->pixbuf,
+                    0, 0, 0, 0, pw, ph,
+                    GDK_RGB_DITHER_NORMAL, 0, 0);
+}
+
 
 static void capa_image_display_get_property(GObject *object,
                                             guint prop_id,
@@ -89,10 +120,10 @@ static void capa_image_display_set_property(GObject *object,
             priv->pixbuf = g_value_get_object(value);
             g_object_ref(G_OBJECT(priv->pixbuf));
 
+            do_capa_pixmap_setup(display);
+
             if (GTK_WIDGET_VISIBLE(object))
                 gtk_widget_queue_resize(GTK_WIDGET(object));
-            else
-                CAPA_DEBUG("not visible");
             break;
 
         case PROP_AUTOSCALE:
@@ -119,8 +150,17 @@ static void capa_image_display_finalize (GObject *object)
 
     if (priv->pixbuf)
         g_object_unref(G_OBJECT(priv->pixbuf));
+    if (priv->pixmap)
+        g_object_unref(G_OBJECT(priv->pixmap));
 
     G_OBJECT_CLASS (capa_image_display_parent_class)->finalize (object);
+}
+
+static void capa_image_display_realize(GtkWidget *widget)
+{
+    GTK_WIDGET_CLASS(capa_image_display_parent_class)->realize(widget);
+
+    do_capa_pixmap_setup(CAPA_IMAGE_DISPLAY(widget));
 }
 
 static gboolean capa_image_display_expose(GtkWidget *widget,
@@ -137,10 +177,8 @@ static gboolean capa_image_display_expose(GtkWidget *widget,
 
     gdk_drawable_get_size(widget->window, &ww, &wh);
 
-    if (priv->pixbuf) {
-        pw = gdk_pixbuf_get_width(priv->pixbuf);
-        ph = gdk_pixbuf_get_height(priv->pixbuf);
-    }
+    if (priv->pixmap)
+        gdk_drawable_get_size(GDK_DRAWABLE(priv->pixmap), &pw, &ph);
 
     /* Decide what size we're going to draw the image */
     if (priv->autoscale) {
@@ -196,12 +234,12 @@ static gboolean capa_image_display_expose(GtkWidget *widget,
 
     /* We need to fill the background first */
     cairo_rectangle(cr, 0, 0, ww, wh);
-    /* Next cut out the inner area where the pixbuf
+    /* Next cut out the inner area where the pixmap
        will be drawn. This avoids 'flashing' since we're
        not double-buffering. Note we're using the undocumented
        behaviour of drawing the rectangle from right to left
        to cut out the whole */
-    if (priv->pixbuf)
+    if (priv->pixmap)
         cairo_rectangle(cr,
                         mx + iw,
                         my,
@@ -210,10 +248,10 @@ static gboolean capa_image_display_expose(GtkWidget *widget,
     cairo_fill(cr);
 
     /* Draw the actual image */
-    if (priv->pixbuf) {
+    if (priv->pixmap) {
         cairo_scale(cr, sx, sy);
-        gdk_cairo_set_source_pixbuf(cr,
-                                    priv->pixbuf,
+        gdk_cairo_set_source_pixmap(cr,
+                                    priv->pixmap,
                                     mx/sx, my/sy);
         cairo_paint(cr);
     }
@@ -265,6 +303,7 @@ static void capa_image_display_class_init(CapaImageDisplayClass *klass)
     object_class->get_property = capa_image_display_get_property;
     object_class->set_property = capa_image_display_set_property;
 
+    widget_class->realize = capa_image_display_realize;
     widget_class->expose_event = capa_image_display_expose;
     widget_class->size_request = capa_image_display_size_request;
 
