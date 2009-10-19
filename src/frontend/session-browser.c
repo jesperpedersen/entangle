@@ -48,6 +48,7 @@ enum {
 static void do_model_refresh(CapaSessionBrowser *browser)
 {
     CapaSessionBrowserPrivate *priv = browser->priv;
+    int count;
     CAPA_DEBUG("Refresh model");
     gtk_list_store_clear(priv->model);
 
@@ -55,18 +56,29 @@ static void do_model_refresh(CapaSessionBrowser *browser)
         return;
     }
 
-    for (int i = 0 ; i < capa_session_image_count(priv->session) ; i++) {
+    count = capa_session_image_count(priv->session);
+    for (int i = 0 ; i < count ; i++) {
         CapaImage *img = capa_session_image_get(priv->session, i);
         GdkPixbuf *pixbuf = capa_image_thumbnail(img);
         int mod = capa_image_last_modified(img);
         GtkTreeIter iter;
 
         gtk_list_store_append(priv->model, &iter);
-
+        CAPA_DEBUG("ADD IMAGE FIRST %p", img);
         /* XXX what's our refcount policy going to be for pixbuf.... */
         gtk_list_store_set(priv->model, &iter, 0, img, 1, pixbuf, 2, mod, -1);
 
         //g_object_unref(cam);
+    }
+
+    if (count) {
+        GtkTreePath *path = NULL;
+        path = gtk_tree_path_new_from_indices(count - 1, -1);
+
+        gtk_icon_view_select_path(GTK_ICON_VIEW(browser), path);
+        gtk_icon_view_scroll_to_path(GTK_ICON_VIEW(browser), path, FALSE, 0, 0);
+
+        gtk_tree_path_free(path);
     }
 }
 
@@ -75,10 +87,11 @@ static void do_image_added(CapaSession *session G_GNUC_UNUSED,
                            CapaImage *img,
                            gpointer data)
 {
-    CapaSessionBrowser *manager = data;
-    CapaSessionBrowserPrivate *priv = manager->priv;
+    CapaSessionBrowser *browser = data;
+    CapaSessionBrowserPrivate *priv = browser->priv;
     GdkPixbuf *pixbuf = capa_image_thumbnail(img);
     GtkTreeIter iter;
+    GtkTreePath *path = NULL;
     int mod = capa_image_last_modified(img);
 
     fprintf(stderr, "Got new image for model %s %p\n", capa_image_filename(img), priv);
@@ -87,8 +100,15 @@ static void do_image_added(CapaSession *session G_GNUC_UNUSED,
 
     /* XXX what's our refcount policy going to be for pixbuf.... */
     gtk_list_store_set(priv->model, &iter, 0, img, 1, pixbuf, 2, mod, -1);
+    CAPA_DEBUG("ADD IMAGE EXTRA %p", img);
+    path = gtk_tree_model_get_path(GTK_TREE_MODEL(priv->model), &iter);
 
-    gtk_widget_queue_resize(GTK_WIDGET(manager));
+    gtk_icon_view_select_path(GTK_ICON_VIEW(browser), path);
+    gtk_icon_view_scroll_to_path(GTK_ICON_VIEW(browser), path, FALSE, 0, 0);
+
+    gtk_tree_path_free(path);
+
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
 }
 
 
