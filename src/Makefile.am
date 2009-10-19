@@ -90,6 +90,7 @@ capa_LDADD = libcapa_frontend.la
 capa_LDFLAGS = \
 	$(GTHREAD_LIBS) \
 	$(GTK_LIBS) \
+	$(GOBJECT_INTROSPECTION_LIBS) \
 	$(WARNING_CFLAGS)
 
 capa_CFLAGS = \
@@ -97,6 +98,7 @@ capa_CFLAGS = \
 	-I$(srcdir)/frontend \
 	$(GTHREAD_FLAGSS) \
 	$(GTK_CFLAGS) \
+	$(GOBJECT_INTROSPECTION_CFLAGS) \
 	$(WARNING_CFLAGS)
 
 
@@ -104,6 +106,51 @@ capa_CFLAGS = \
 	sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
 
-CLEANFILES = *~ \\\#* $(desktop_DATA)
+CLEANFILES = *~ $(desktop_DATA)
+
+if WITH_GOBJECT_INTROSPECTION
+capa-0.1.gir: capa gphoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
+	$(G_IR_SCANNER) -v \
+                --namespace capa \
+                --nsversion 0.1 \
+		--include GObject-2.0 \
+		--include Gtk-2.0 \
+                --include gphoto-2.0 \
+                --program=$(builddir)/capa \
+                --add-include-path=$(srcdir) \
+                --add-include-path=$(builddir) \
+                --output $@ \
+                -I$(srcdir)/backend \
+                -I$(srcdir)/frontend \
+		--verbose \
+                --pkg=glib-2.0 \
+                --pkg=gthread-2.0 \
+                --pkg=gdk-pixbuf-2.0 \
+                --pkg=gobject-2.0 \
+                --pkg=gtk+-2.0 \
+                --pkg=libgphoto2 \
+                --pkg=libglade-2.0 \
+                --pkg=hal \
+                --pkg=dbus-glib-1 \
+                $(libcapa_backend_la_SOURCES:%=$(srcdir)/%) \
+                $(libcapa_frontend_la_SOURCES:%=$(srcdir)/%) \
+                $(capa_SOURCES:%=$(srcdir)/%)
+
+girdir = $(datadir)/gir-1.0
+gir_DATA = gphoto-2.0.gir capa-0.1.gir
+
+typelibsdir = $(libdir)/girepository-1.0
+typelibs_DATA = gphoto-2.0.typelib capa-0.1.typelib
+
+%.typelib: %.gir
+	g-ir-compiler \
+		--includedir=$(srcdir) \
+		--includedir=$(builddir) \
+		-o $@ $<
+
+EXTRA_DIST += gphoto-2.0.gir
+CLEANFILES += capa-0.1.gir $(typelibs_DATA)
+
+endif # WITH_GOBJECT_INTROSPECTION
 
 -include $(top_srcdir)/git.mk

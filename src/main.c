@@ -23,10 +23,19 @@
 #include <stdio.h>
 
 #include <gtk/gtk.h>
+#if WITH_GOBJECT_INTROSPECTION
+#include <girepository.h>
+#endif
+
+#include "internal.h"
 #include "app-display.h"
 
 gboolean capa_debug_app = FALSE;
 gboolean capa_debug_gphoto = FALSE;
+
+#if WITH_GOBJECT_INTROSPECTION
+static gchar *ins = NULL;
+#endif
 
 int main(int argc, char **argv)
 {
@@ -37,6 +46,9 @@ int main(int argc, char **argv)
     static const GOptionEntry entries[] = {
         { "debug-capa", 'd', 0, G_OPTION_ARG_NONE, &capa_debug_app, "Enable debugging of application code", NULL },
         { "debug-gphoto", 'g', 0, G_OPTION_ARG_NONE, &capa_debug_gphoto, "Enable debugging of gphoto library", NULL },
+#if WITH_GOBJECT_INTROSPECTION
+        { "introspect-dump", 'i', 0, G_OPTION_ARG_STRING, &ins, "Dump introspection data", NULL },
+#endif
         { NULL, 0, 0, 0, NULL, NULL, NULL },
     };
     static const char *help_msg = "Run 'capa --help' to see full list of options";
@@ -52,7 +64,7 @@ int main(int argc, char **argv)
 
     /* Setup command line options */
     context = g_option_context_new("");
-    g_option_context_add_group(context, gtk_get_option_group (TRUE));
+    g_option_context_add_group(context, gtk_get_option_group(FALSE));
     g_option_context_add_group(context, group);
     g_option_context_parse(context, &argc, &argv, &error);
     if (error) {
@@ -60,6 +72,13 @@ int main(int argc, char **argv)
         g_error_free (error);
         return 1;
     }
+
+#if WITH_GOBJECT_INTROSPECTION
+    if (ins) {
+        g_irepository_dump(ins, NULL);
+        return 0;
+    }
+#endif
 
     gdk_threads_init();
     gtk_init(&argc, &argv);

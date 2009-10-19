@@ -1,5 +1,14 @@
 # -*- rpm-spec -*-
 
+%define with_introspection 0
+
+%if 0%{?fedora} >= 12
+%define with_introspection 1
+%endif
+%if 0%{?rhel} >= 6
+%define with_introspection 1
+%endif
+
 Summary: Tethered shooting & control of digital cameras
 Name: capa
 Version: @VERSION@
@@ -10,13 +19,17 @@ Source: http://capa-project.org/download/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://capa-project.org/
 
-BuildRequires: glib2 >= 2.10.0
-BuildRequires: gtk2 >= 2.12.0
-BuildRequires: libgphoto2 >= 2.4.7
-BuildRequires: libglade2 >= 2.6.0
-BuildRequires: hal-libs >= 0.5.10
-BuildRequires: dbus-glib >= 0.60
+BuildRequires: glib2-devel >= 2.10.0
+BuildRequires: gtk2-devel >= 2.12.0
+BuildRequires: libgphoto2-devel >= 2.4.7
+BuildRequires: libglade2-devel >= 2.6.0
+BuildRequires: hal-devel >= 0.5.10
+BuildRequires: dbus-glib-devel >= 0.60
 BuildRequires: /usr/bin/tpage
+%if %{with_introspection}
+BuildRequires: gobject-introspection-devel
+BuildRequires: gir-repository-devel
+%endif
 
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
@@ -33,7 +46,13 @@ and 'hands off' shooting directly from the controlling computer.
 
 %build
 
-%configure
+%if %{with_introspection}
+%define introspection_arg --enable-introspection
+%else
+%define introspection_arg --disable-introspection
+%endif
+
+%configure %{introspection_arg}
 make %{?_smp_mflags}
 
 %install
@@ -64,6 +83,12 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/%{name}/%{name}.svg
 %{_datadir}/applications/%{name}.desktop
 %doc %{_datadir}/%{name}/website/
+%if %{with_introspection}
+%{_datadir}/gir-1.0/capa-0.1.gir
+%{_datadir}/gir-1.0/gphoto-2.0.gir
+%{_libdir}/girepository-1.0/capa-0.1.typelib
+%{_libdir}/girepository-1.0/gphoto-2.0.typelib
+%endif
 
 %changelog
 * Wed Sep 30 2009 Daniel P. Berrange <berrange@redhat.com> - 0.0.1-1
