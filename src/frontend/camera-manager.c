@@ -134,9 +134,7 @@ static void do_camera_image(CapaCamera *cam G_GNUC_UNUSED, CapaImage *image, voi
 {
     CapaCameraManager *manager = data;
 
-    gdk_threads_enter();
     do_load_image(manager, image);
-    gdk_threads_leave();
 }
 
 static void do_camera_error(CapaCamera *cam G_GNUC_UNUSED, const char *err, void *data)
@@ -152,9 +150,7 @@ static void do_camera_op_begin(CapaCamera *cam G_GNUC_UNUSED, void *data)
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
 
-    gdk_threads_enter();
     capa_camera_progress_show(priv->progress, "Capturing image");
-    gdk_threads_leave();
 }
 
 static void do_camera_op_end(CapaCamera *cam G_GNUC_UNUSED, void *data)
@@ -162,11 +158,9 @@ static void do_camera_op_end(CapaCamera *cam G_GNUC_UNUSED, void *data)
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
 
-    gdk_threads_enter();
     capa_camera_progress_hide(priv->progress);
     priv->inOperation = FALSE;
     do_capture_widget_sensitivity(manager);
-    gdk_threads_leave();
 }
 
 static void do_remove_camera(CapaCameraManager *manager)
@@ -363,6 +357,9 @@ static void capa_camera_manager_class_init(CapaCameraManagerClass *klass)
                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(CapaCameraManagerPrivate));
+
+    capa_camera_set_thread_funcs(gdk_threads_enter,
+                                 gdk_threads_leave);
 }
 
 

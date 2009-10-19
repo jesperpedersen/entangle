@@ -73,6 +73,28 @@ enum {
     PROP_HAS_SETTINGS,
 };
 
+static void (*threads_enter_impl)(void) = NULL;
+static void (*threads_leave_impl)(void) = NULL;
+
+static void capa_camera_threads_enter(void)
+{
+    if (threads_enter_impl)
+        (threads_enter_impl)();
+}
+
+static void capa_camera_threads_leave(void)
+{
+    if (threads_leave_impl)
+        (threads_leave_impl)();
+}
+
+void capa_camera_set_thread_funcs(void (*threads_enter)(void),
+                                  void (*threads_leave)(void))
+{
+    threads_enter_impl = threads_enter;
+    threads_leave_impl = threads_leave;
+}
+
 static void capa_camera_get_property(GObject *object,
                                      guint prop_id,
                                      GValue *value,
@@ -516,43 +538,6 @@ char *capa_camera_driver(CapaCamera *cam)
 }
 
 
-typedef struct _CapaCameraDelayedImageAdd {
-    CapaSession *session;
-    CapaImage *image;
-} CapaCameraDelayedImageAdd;
-
-static gboolean do_delayed_session_add_cb(gpointer opaque)
-{
-    CapaCameraDelayedImageAdd *data = opaque;
-
-    CAPA_DEBUG("Delayed image add %p %p", data->session, data->image);
-    capa_session_add(data->session, data->image);
-    g_object_unref(G_OBJECT(data->session));
-    g_object_unref(G_OBJECT(data->image));
-    g_free(data);
-
-    return FALSE;
-}
-
-/* Need to run the 'capa_session_add' in the main
- * thread so the emitted signals don't end up coming
- * from a background thread which causes GDK thread
- * problems. So use a idle function todo this
- */
-static void do_delayed_session_add(CapaSession *session,
-                                   CapaImage *image)
-{
-    CapaCameraDelayedImageAdd *data = g_new0(CapaCameraDelayedImageAdd, 1);
-
-    data->session = session;
-    data->image = image;
-    CAPA_DEBUG("Schedule delayed image add %p %p", data->session, data->image);
-    g_object_ref(G_OBJECT(data->session));
-    g_object_ref(G_OBJECT(data->image));
-
-    g_idle_add(do_delayed_session_add_cb, data);
-}
-
 static void *do_camera_capture_thread(void *data)
 {
     CapaCamera *cam = data;
@@ -562,7 +547,9 @@ static void *do_camera_capture_thread(void *data)
     const char *localpath;
     CapaImage *image;
 
+    capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
+    capa_camera_threads_leave();
 
     CAPA_DEBUG("Starting capture");
     if (gp_camera_capture(priv->cam, GP_CAPTURE_IMAGE, &camerapath, priv->params->ctx) != GP_OK) {
@@ -597,14 +584,16 @@ static void *do_camera_capture_thread(void *data)
     image = capa_image_new(localpath);
     /* XXX don't do this here in future */
     capa_image_load(image);
-    do_delayed_session_add(priv->session, image);
 
+    capa_camera_threads_enter();
+    capa_session_add(priv->session, image);
     g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
 
     g_object_unref(image);
 
     priv->operation = NULL;
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
+    capa_camera_threads_leave();
 
     return NULL;
 
@@ -617,8 +606,10 @@ static void *do_camera_capture_thread(void *data)
     if (datafile)
         gp_file_unref(datafile);
     priv->operation = NULL;
+    capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to capture");
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
+    capa_camera_threads_leave();
     return NULL;
 }
 
@@ -648,7 +639,9 @@ static void *do_camera_preview_thread(void *data)
     const char *localpath;
     CapaImage *image;
 
+    capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
+    capa_camera_threads_leave();
     gp_file_new(&datafile);
 
     CAPA_DEBUG("Starting preview");
@@ -669,6 +662,7 @@ static void *do_camera_preview_thread(void *data)
     /* XXX don't do this here in future */
     capa_image_load(image);
 
+    capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
 
     g_object_unref(image);
@@ -677,6 +671,7 @@ static void *do_camera_preview_thread(void *data)
     CAPA_DEBUG("Done");
     priv->operation = NULL;
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
+    capa_camera_threads_leave();
     return NULL;
 
  error:
@@ -684,8 +679,10 @@ static void *do_camera_preview_thread(void *data)
     if (datafile)
         gp_file_unref(datafile);
     priv->operation = NULL;
+    capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to preview");
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
+    capa_camera_threads_leave();
     return NULL;
 }
 
@@ -744,9 +741,11 @@ static int do_camera_file_added(CapaCamera *cam,
     image = capa_image_new(localpath);
     /* XXX don't do this here in future */
     capa_image_load(image);
-    do_delayed_session_add(priv->session, image);
 
+    capa_camera_threads_enter();
+    capa_session_add(priv->session, image);
     g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
+    capa_camera_threads_leave();
 
     g_object_unref(image);
 
@@ -770,13 +769,17 @@ static void *do_camera_monitor_thread(void *data)
     CameraEventType eventType;
     void *eventData;
 
+    capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
+    capa_camera_threads_leave();
 
     CAPA_DEBUG("Starting monitor");
     while (!capa_progress_cancelled(priv->progress)) {
         if (gp_camera_wait_for_event(priv->cam, 500, &eventType, &eventData, priv->params->ctx) != GP_OK) {
             CAPA_DEBUG("Failed capture");
+            capa_camera_threads_enter();
             g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to wait for events");
+            capa_camera_threads_leave();
             goto cleanup;
         }
 
@@ -791,14 +794,18 @@ static void *do_camera_monitor_thread(void *data)
 
         case GP_EVENT_FILE_ADDED:
             if (do_camera_file_added(cam, eventData) < 0) {
+                capa_camera_threads_enter();
                 g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to process file");
+                capa_camera_threads_leave();
                 goto cleanup;
             }
             break;
 
         case GP_EVENT_UNKNOWN:
         default:
+            capa_camera_threads_enter();
             g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unexpected/unknown camera event");
+            capa_camera_threads_leave();
             CAPA_DEBUG("Unknown event type %d", eventType);
             goto cleanup;
         }
@@ -806,7 +813,9 @@ static void *do_camera_monitor_thread(void *data)
 
  cleanup:
     priv->operation = NULL;
+    capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
+    capa_camera_threads_leave();
 
     return NULL;
 }

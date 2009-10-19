@@ -60,6 +60,9 @@ struct _CapaCameraClass
 };
 
 
+void capa_camera_set_thread_funcs(void (*threads_enter)(void),
+                                  void (*threads_leave)(void));
+
 GType capa_camera_get_type(void) G_GNUC_CONST;
 
 CapaCamera *capa_camera_new(const char *model,

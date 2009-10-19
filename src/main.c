@@ -54,6 +54,7 @@ int main(int argc, char **argv)
     static const char *help_msg = "Run 'capa --help' to see full list of options";
 
     g_thread_init(NULL);
+    gdk_threads_init();
 
     group = g_option_group_new("capa",
                                "Capa application options",
@@ -80,8 +81,8 @@ int main(int argc, char **argv)
     }
 #endif
 
-    gdk_threads_init();
-    gtk_init(&argc, &argv);
+    if (!gtk_init_check(NULL, NULL))
+        return 1;
 
     display = capa_app_display_new();
 
@@ -89,7 +90,9 @@ int main(int argc, char **argv)
 
     capa_app_display_show(display);
 
+    gdk_threads_enter();
     gtk_main();
+    gdk_threads_leave();
 
     g_object_unref(display);
     return 0;
