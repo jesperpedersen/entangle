@@ -25,6 +25,7 @@ BuildRequires: libgphoto2-devel >= 2.4.7
 BuildRequires: libglade2-devel >= 2.6.0
 BuildRequires: hal-devel >= 0.5.10
 BuildRequires: dbus-glib-devel >= 0.60
+BuildRequires: lcms-devel >= 1.18
 BuildRequires: /usr/bin/tpage
 %if %{with_introspection}
 BuildRequires: gobject-introspection-devel

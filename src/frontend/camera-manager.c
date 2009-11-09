@@ -25,6 +25,7 @@
 #include <glade/glade.h>
 #include <unistd.h>
 #include <gdk/gdkx.h>
+#include <stdlib.h>
 
 #include "internal.h"
 #include "camera-manager.h"
@@ -36,6 +37,8 @@
 #include "help-about.h"
 #include "session-browser.h"
 #include "control-panel.h"
+#include "colour-profile.h"
+
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_MANAGER, CapaCameraManagerPrivate))
@@ -121,13 +124,33 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 static void do_load_image(CapaCameraManager *manager, CapaImage *image)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
-    GdkPixbuf *pixbuf;
-    pixbuf = gdk_pixbuf_new_from_file(capa_image_filename(image), NULL);
+    GdkPixbuf *srcpixbuf;
+    /* XXX make a preference */
+    char *srcproffile = getenv("CAPA_ICC_SRC");
+    char *dstproffile = getenv("CAPA_ICC_DST");
 
-    g_object_set(G_OBJECT(priv->imageDisplay),
-                 "pixbuf", pixbuf,
-                 NULL);
-    g_object_unref(pixbuf);
+    srcpixbuf = gdk_pixbuf_new_from_file(capa_image_filename(image), NULL);
+
+    if (access(srcproffile, R_OK) == 0 &&
+        access(dstproffile, R_OK) == 0) {
+        GdkPixbuf *dstpixbuf;
+        CapaColourProfile *srcprof;
+        CapaColourProfile *dstprof;
+        srcprof = capa_colour_profile_new(srcproffile);
+        dstprof = capa_colour_profile_new(dstproffile);
+
+        dstpixbuf = capa_colour_profile_convert(srcprof, dstprof, srcpixbuf);
+
+        g_object_set(G_OBJECT(priv->imageDisplay),
+                     "pixbuf", dstpixbuf,
+                     NULL);
+        g_object_unref(dstpixbuf);
+    } else {
+        g_object_set(G_OBJECT(priv->imageDisplay),
+                     "pixbuf", srcpixbuf,
+                     NULL);
+    }
+    gdk_pixbuf_unref(srcpixbuf);
 }
 
 static void do_camera_image(CapaCamera *cam G_GNUC_UNUSED, CapaImage *image, void *data)

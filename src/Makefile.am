@@ -20,6 +20,7 @@ libcapa_backend_la_SOURCES = \
 	backend/app.h backend/app.c \
 	backend/camera.h backend/camera.c \
 	backend/camera-list.h backend/camera-list.c \
+	backend/colour-profile.h backend/colour-profile.c \
 	backend/control.h backend/control.c \
 	backend/control-button.h backend/control-button.c \
 	backend/control-choice.h backend/control-choice.c \
@@ -39,6 +40,7 @@ libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(GDK_PIXBUF_LIBS) \
 	$(GPHOTO2_LIBS) \
+	$(LCMS_LIBS) \
 	$(HAL_LIBS) \
 	$(DBUS_GLIB_LIBS) \
 	$(WARNING_CFLAGS)
@@ -47,6 +49,7 @@ libcapa_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GDK_PIXBUF_CFLAGS) \
 	$(GPHOTO2_CFLAGS) \
+	$(LCMS_CFLAGS) \
 	$(HAL_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
 	$(WARNING_CFLAGS)
