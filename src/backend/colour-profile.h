@@ -62,7 +62,7 @@ typedef enum {
 } CapaColourProfileIntent;
 
 GType capa_colour_profile_get_type(void) G_GNUC_CONST;
-CapaColourProfile* capa_colour_profile_new(const char *filename);
+CapaColourProfile *capa_colour_profile_new(const char *filename);
 
 const char *capa_colour_profile_filename(CapaColourProfile *profile);
 
