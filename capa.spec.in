@@ -82,6 +82,11 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/%{name}/%{name}-128x128.png
 %{_datadir}/%{name}/%{name}-256x256.png
 %{_datadir}/%{name}/%{name}.svg
+%{_datadir}/%{name}/folders.png
+%{_datadir}/%{name}/folders-22.png
+%{_datadir}/%{name}/color-management.png
+%{_datadir}/%{name}/color-management-22.png
+%{_datadir}/%{name}/sRGB.icc
 %{_datadir}/applications/%{name}.desktop
 %doc %{_datadir}/%{name}/website/
 %if %{with_introspection}

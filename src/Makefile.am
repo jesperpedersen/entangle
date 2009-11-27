@@ -14,13 +14,17 @@ desktop_DATA = capa.desktop
 icondir = $(pkgdatadir)
 icon_DATA = $(PACKAGE).svg $(wildcard *.png)
 
-EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA)
+iccdir = $(pkgdatadir)
+icc_DATA = sRGB.icc
+
+EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
 
 libcapa_backend_la_SOURCES = \
 	backend/app.h backend/app.c \
 	backend/camera.h backend/camera.c \
 	backend/camera-list.h backend/camera-list.c \
 	backend/colour-profile.h backend/colour-profile.c \
+	backend/colour-profile-enums.h backend/colour-profile-enums.c \
 	backend/control.h backend/control.c \
 	backend/control-button.h backend/control-button.c \
 	backend/control-choice.h backend/control-choice.c \
@@ -52,7 +56,8 @@ libcapa_backend_la_CFLAGS = \
 	$(LCMS_CFLAGS) \
 	$(HAL_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
-	$(WARNING_CFLAGS)
+	$(WARNING_CFLAGS) \
+	-DPKGDATADIR="\"$(pkgdatadir)\""
 
 
 
@@ -66,6 +71,7 @@ libcapa_frontend_la_SOURCES = \
 	frontend/help-about.h frontend/help-about.c \
 	frontend/image-display.h frontend/image-display.c \
 	frontend/image-polaroid.h frontend/image-polaroid.c \
+	frontend/preferences-display.h frontend/preferences-display.c \
 	frontend/session-browser.h frontend/session-browser.c
 
 libcapa_frontend_la_LIBADD = libcapa_backend.la
@@ -108,8 +114,36 @@ capa_CFLAGS = \
 %.desktop: $(srcdir)/%.desktop.in
 	sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
+backend/colour-profile-enums.c: backend/colour-profile.h backend/colour-profile-enums.h
+	glib-mkenums    --fhead "#include <glib-object.h>\n" \
+                        --fhead "#include \"colour-profile-enums.h\"\n\n" \
+                        --fprod "\n/* enumerations from \"@filename@\" */" \
+                        --fprod "\n#include \"@filename@\"\n" \
+                        --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
+                        --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+                        --vtail "  { 0, NULL, NULL }\n};\n\n" \
+                        --vtail "GType\n@enum_name@_get_type (void)\n{\n" \
+                        --vtail "  static GType type = 0;\n\n" \
+                        --vtail "  if (!type)\n" \
+                        --vtail "    type = g_@type@_register_static (\"@EnumName@\", _@enum_name@_values);\n\n" \
+                        --vtail "  return type;\n}\n\n" \
+                $< > $@
 
-CLEANFILES = *~ $(desktop_DATA)
+backend/colour-profile-enums.h: backend/colour-profile.h
+	glib-mkenums    --fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
+                        --fhead "#define __CAPA_COLOUR_PROFILE_ENUMS_H__\n\n" \
+                        --fhead "G_BEGIN_DECLS\n\n" \
+                        --ftail "G_END_DECLS\n\n" \
+                        --ftail "#endif /* __CAPA_COLOUR_PROFILE_ENUMS_H__ */\n" \
+                        --fprod "\n/* --- @filename@ --- */" \
+                        --eprod "#define CAPA_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
+                        --eprod "GType @enum_name@_get_type (void);\n" \
+                $< >  $@
+
+CLEANFILES = *~ $(desktop_DATA) backend/colour-profile-enums.c backend/colour-profile-enums.h
+
+
+
 
 if WITH_GOBJECT_INTROSPECTION
 capa-0.1.gir: capa gphoto-2.0.typelib $(G_IR_SCANNER) Makefile.am

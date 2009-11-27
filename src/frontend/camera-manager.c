@@ -38,6 +38,7 @@
 #include "session-browser.h"
 #include "control-panel.h"
 #include "colour-profile.h"
+#include "preferences-display.h"
 
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj)                            \
@@ -59,6 +60,7 @@ struct _CapaCameraManagerPrivate {
     CapaImageDisplay *imageDisplay;
     CapaSessionBrowser *sessionBrowser;
     CapaControlPanel *controlPanel;
+    CapaPreferencesDisplay *prefsDisplay;
 
     GHashTable *polaroids;
 
@@ -321,6 +323,8 @@ static void capa_camera_manager_finalize (GObject *object)
         g_object_unref(G_OBJECT(priv->camera));
     if (priv->prefs)
         g_object_unref(G_OBJECT(priv->prefs));
+    if (priv->prefsDisplay)
+        g_object_unref(G_OBJECT(priv->prefsDisplay));
 
     g_hash_table_destroy(priv->polaroids);
 
@@ -817,6 +821,17 @@ static void do_menu_fullscreen(GtkCheckMenuItem *src,
 }
 
 
+static void do_menu_preferences_activate(GtkCheckMenuItem *src G_GNUC_UNUSED,
+                                         CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+    if (priv->prefsDisplay == NULL)
+        priv->prefsDisplay = capa_preferences_display_new(priv->prefs);
+
+    capa_preferences_display_show(priv->prefsDisplay);
+}
+
+
 static void do_app_quit(GtkMenuItem *src G_GNUC_UNUSED,
                         CapaCameraManager *manager G_GNUC_UNUSED)
 {
@@ -959,6 +974,8 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
     glade_xml_signal_connect_data(priv->glade, "menu_new_session_activate", G_CALLBACK(do_menu_new_session), manager);
     glade_xml_signal_connect_data(priv->glade, "menu_open_session_activate", G_CALLBACK(do_menu_open_session), manager);
+
+    glade_xml_signal_connect_data(priv->glade, "menu_preferences_activate", G_CALLBACK(do_menu_preferences_activate), manager);
 
     glade_xml_signal_connect_data(priv->glade, "menu_zoom_in_activate", G_CALLBACK(do_menu_zoom_in), manager);
     glade_xml_signal_connect_data(priv->glade, "menu_zoom_out_activate", G_CALLBACK(do_menu_zoom_out), manager);

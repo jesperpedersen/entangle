@@ -139,6 +139,13 @@ static void capa_colour_profile_init(CapaColourProfile *profile)
 }
 
 
+const char *capa_colour_profile_filename(CapaColourProfile *profile)
+{
+    CapaColourProfilePrivate *priv = profile->priv;
+    return priv->filename;
+}
+
+
 char *capa_colour_profile_product_name(CapaColourProfile *profile)
 {
     CapaColourProfilePrivate *priv = profile->priv;

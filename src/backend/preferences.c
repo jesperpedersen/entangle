@@ -37,6 +37,12 @@
 struct _CapaPreferencesPrivate {
     char *pictureDir;
     char *filenamePattern;
+
+    gboolean enableColourManagement;
+    CapaColourProfile *rgbProfile;
+    CapaColourProfile *monitorProfile;
+    gboolean detectSystemProfile;
+    CapaColourProfileIntent renderingIntent;
 };
 
 G_DEFINE_TYPE(CapaPreferences, capa_preferences, G_TYPE_OBJECT);
@@ -45,6 +51,11 @@ enum {
     PROP_0,
     PROP_PICTURE_DIR,
     PROP_FILENAME_PATTERN,
+    PROP_COLOUR_MANAGED_DISPLAY,
+    PROP_RGB_PROFILE,
+    PROP_MONITOR_PROFILE,
+    PROP_DETECT_SYSTEM_PROFILE,
+    PROP_PROFILE_RENDERING_INTENT,
 };
 
 
@@ -116,6 +127,26 @@ static void capa_preferences_get_property(GObject *object,
             g_value_set_string(value, priv->filenamePattern);
             break;
 
+        case PROP_COLOUR_MANAGED_DISPLAY:
+            g_value_set_boolean(value, priv->enableColourManagement);
+            break;
+
+        case PROP_RGB_PROFILE:
+            g_value_set_object(value, priv->rgbProfile);
+            break;
+
+        case PROP_MONITOR_PROFILE:
+            g_value_set_object(value, priv->monitorProfile);
+            break;
+
+        case PROP_DETECT_SYSTEM_PROFILE:
+            g_value_set_boolean(value, priv->detectSystemProfile);
+            break;
+
+        case PROP_PROFILE_RENDERING_INTENT:
+            g_value_set_enum(value, priv->renderingIntent);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -141,6 +172,28 @@ static void capa_preferences_set_property(GObject *object,
             priv->filenamePattern = g_value_dup_string(value);
             break;
 
+        case PROP_COLOUR_MANAGED_DISPLAY:
+            priv->enableColourManagement = g_value_get_boolean(value);
+            break;
+
+        case PROP_RGB_PROFILE:
+            if (priv->rgbProfile)
+                g_object_unref(G_OBJECT(priv->rgbProfile));
+            priv->rgbProfile = g_value_get_object(value);
+            g_object_ref(priv->rgbProfile);
+            break;
+
+        case PROP_MONITOR_PROFILE:
+            if (priv->monitorProfile)
+                g_object_unref(G_OBJECT(priv->monitorProfile));
+            priv->monitorProfile = g_value_get_object(value);
+            g_object_ref(priv->monitorProfile);
+            break;
+
+        case PROP_PROFILE_RENDERING_INTENT:
+            priv->renderingIntent = g_value_get_enum(value);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -156,6 +209,10 @@ static void capa_preferences_finalize(GObject *object)
 
     g_free(priv->pictureDir);
     g_free(priv->filenamePattern);
+    if (priv->rgbProfile)
+        g_object_unref(priv->rgbProfile);
+    if (priv->monitorProfile)
+        g_object_unref(priv->monitorProfile);
 
     G_OBJECT_CLASS (capa_preferences_parent_class)->finalize (object);
 }
@@ -191,6 +248,62 @@ static void capa_preferences_class_init(CapaPreferencesClass *klass)
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_COLOUR_MANAGED_DISPLAY,
+                                    g_param_spec_boolean("colour-managed-display",
+                                                         "Colour managed display",
+                                                         "Whether to enable colour management on display",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_RGB_PROFILE,
+                                    g_param_spec_object("rgb-profile",
+                                                        "RGB Profile",
+                                                        "Colour profile for workspace",
+                                                        CAPA_TYPE_COLOUR_PROFILE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_MONITOR_PROFILE,
+                                    g_param_spec_object("monitor-profile",
+                                                        "Monitor profile",
+                                                        "Colour profile for monitor",
+                                                        CAPA_TYPE_COLOUR_PROFILE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_DETECT_SYSTEM_PROFILE,
+                                    g_param_spec_boolean("detect-system-profile",
+                                                         "Detect system profile",
+                                                         "Detect the monitor colour profile",
+                                                         TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_PROFILE_RENDERING_INTENT,
+                                    g_param_spec_enum("profile-rendering-intent",
+                                                      "Profile rendering intent",
+                                                      "Rendering intent for images",
+                                                      CAPA_TYPE_COLOUR_PROFILE_INTENT,
+                                                      CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_STATIC_NAME |
+                                                      G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(CapaPreferencesPrivate));
 }
 
@@ -209,6 +322,14 @@ static void capa_preferences_init(CapaPreferences *picker)
 
     priv->pictureDir = capa_find_picture_dir();
     priv->filenamePattern = g_strdup("captureXXXXXX.jpeg");
+
+    priv->enableColourManagement = TRUE;
+    priv->detectSystemProfile = TRUE;
+    priv->renderingIntent = CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL;
+    if (access("./capa.glade", R_OK) == 0)
+        priv->rgbProfile = capa_colour_profile_new(g_strdup("./sRGB.icc"));
+    else
+        priv->rgbProfile = capa_colour_profile_new(g_strdup(PKGDATADIR "/sRGB.icc"));
 }
 
 
@@ -225,6 +346,45 @@ const char *capa_preferences_filename_pattern(CapaPreferences *prefs)
     CapaPreferencesPrivate *priv = prefs->priv;
 
     return priv->filenamePattern;
+}
+
+
+CapaColourProfile *capa_preferences_rgb_profile(CapaPreferences *prefs)
+{
+    CapaPreferencesPrivate *priv = prefs->priv;
+
+    return priv->rgbProfile;
+}
+
+
+CapaColourProfile *capa_preferences_monitor_profile(CapaPreferences *prefs)
+{
+    CapaPreferencesPrivate *priv = prefs->priv;
+
+    return priv->monitorProfile;
+}
+
+
+gboolean capa_preferences_enable_color_management(CapaPreferences *prefs)
+{
+    CapaPreferencesPrivate *priv = prefs->priv;
+
+    return priv->enableColourManagement;
+}
+
+gboolean capa_preferences_detect_monitor_profile(CapaPreferences *prefs)
+{
+    CapaPreferencesPrivate *priv = prefs->priv;
+
+    return priv->detectSystemProfile;
+}
+
+
+CapaColourProfileIntent capa_preferences_profile_rendering_intent(CapaPreferences *prefs)
+{
+    CapaPreferencesPrivate *priv = prefs->priv;
+
+    return priv->renderingIntent;
 }
 
 /*

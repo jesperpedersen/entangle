@@ -24,6 +24,8 @@
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#include "colour-profile-enums.h"
+
 G_BEGIN_DECLS
 
 #define CAPA_TYPE_COLOUR_PROFILE            (capa_colour_profile_get_type ())
@@ -52,8 +54,17 @@ struct _CapaColourProfileClass
 };
 
 
+typedef enum {
+    CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL,
+    CAPA_COLOUR_PROFILE_INTENT_REL_COLOURIMETRIC,
+    CAPA_COLOUR_PROFILE_INTENT_SATURATION,
+    CAPA_COLOUR_PROFILE_INTENT_ABS_COLOURIMETRIC,
+} CapaColourProfileIntent;
+
 GType capa_colour_profile_get_type(void) G_GNUC_CONST;
 CapaColourProfile* capa_colour_profile_new(const char *filename);
+
+const char *capa_colour_profile_filename(CapaColourProfile *profile);
 
 char *capa_colour_profile_product_name(CapaColourProfile *profile);
 char *capa_colour_profile_product_desc(CapaColourProfile *profile);

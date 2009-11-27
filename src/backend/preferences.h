@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include "control-group.h"
+#include "colour-profile.h"
 
 G_BEGIN_DECLS
 
@@ -59,6 +60,14 @@ CapaPreferences *capa_preferences_new(void);
 const char *capa_preferences_picture_dir(CapaPreferences *prefs);
 
 const char *capa_preferences_filename_pattern(CapaPreferences *prefs);
+
+CapaColourProfile *capa_preferences_rgb_profile(CapaPreferences *prefs);
+CapaColourProfile *capa_preferences_monitor_profile(CapaPreferences *prefs);
+gboolean capa_preferences_detect_monitor_profile(CapaPreferences *prefs);
+gboolean capa_preferences_enable_color_management(CapaPreferences *prefs);
+CapaColourProfileIntent capa_preferences_profile_rendering_intent(CapaPreferences *prefs);
+
+
 
 G_END_DECLS
 
