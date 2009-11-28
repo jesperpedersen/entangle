@@ -149,12 +149,14 @@ static void capa_colour_profile_transform_set_property(GObject *object,
             if (priv->srcProfile)
                 g_object_unref(G_OBJECT(priv->srcProfile));
             priv->srcProfile = g_value_get_object(value);
+            g_object_ref(G_OBJECT(priv->srcProfile));
             break;
 
         case PROP_DST_PROFILE:
             if (priv->dstProfile)
                 g_object_unref(G_OBJECT(priv->dstProfile));
             priv->dstProfile = g_value_get_object(value);
+            g_object_ref(G_OBJECT(priv->srcProfile));
             break;
 
         default:
