@@ -323,6 +323,7 @@ static void capa_preferences_init(CapaPreferences *picker)
     CapaPreferencesPrivate *priv;
 
     priv = picker->priv = CAPA_PREFERENCES_GET_PRIVATE(picker);
+    memset(priv, 0, sizeof(*priv));
 
     priv->pictureDir = capa_find_picture_dir();
     priv->filenamePattern = g_strdup("captureXXXXXX.jpeg");

@@ -37,6 +37,7 @@ libcapa_backend_la_SOURCES = \
 	backend/image.h backend/image.c \
 	backend/params.h backend/params.c \
 	backend/preferences.h backend/preferences.c \
+	backend/preferences-gconf.h backend/preferences-gconf.c \
 	backend/progress.h backend/progress.c \
 	backend/session.h backend/session.c
 
@@ -44,6 +45,7 @@ libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(GDK_PIXBUF_LIBS) \
 	$(GPHOTO2_LIBS) \
+	$(GCONF2_LIBS) \
 	$(LCMS_LIBS) \
 	$(HAL_LIBS) \
 	$(DBUS_GLIB_LIBS) \
@@ -53,6 +55,7 @@ libcapa_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GDK_PIXBUF_CFLAGS) \
 	$(GPHOTO2_CFLAGS) \
+	$(GCONF2_CFLAGS) \
 	$(LCMS_CFLAGS) \
 	$(HAL_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \

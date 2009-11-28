@@ -1666,6 +1666,7 @@ copy of the Program in return for a fee.
                                 <property name="visible">True</property>
                                 <property name="action">select-folder</property>
                                 <signal name="file_set" handler="picture_folder_file_set"/>
+                                <signal name="selection_changed" handler="picture_folder_file_set"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>

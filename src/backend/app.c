@@ -29,6 +29,7 @@
 #include "app.h"
 #include "params.h"
 #include "device-manager.h"
+#include "preferences-gconf.h"
 
 #define CAPA_APP_GET_PRIVATE(obj)                                       \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP, CapaAppPrivate))
@@ -282,7 +283,7 @@ static void capa_app_init(CapaApp *app)
 
     priv = app->priv = CAPA_APP_GET_PRIVATE(app);
 
-    priv->preferences = capa_preferences_new();
+    priv->preferences = capa_preferences_gconf_new();
     priv->params = capa_params_new();
     priv->cameras = capa_camera_list_new();
     priv->devManager = capa_device_manager_new();

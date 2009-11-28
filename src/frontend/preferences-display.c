@@ -39,6 +39,7 @@ struct _CapaPreferencesDisplayPrivate {
     GladeXML *glade;
 
     CapaPreferences *prefs;
+    gulong prefsID;
 };
 
 G_DEFINE_TYPE(CapaPreferencesDisplay, capa_preferences_display, G_TYPE_OBJECT);
@@ -67,6 +68,111 @@ static void capa_preferences_display_get_property(GObject *object,
         }
 }
 
+static void capa_preferences_display_notify(GObject *object, GParamSpec *spec, gpointer opaque)
+{
+    CapaPreferencesDisplay *preferences = CAPA_PREFERENCES_DISPLAY(opaque);
+    CapaPreferencesDisplayPrivate *priv = preferences->priv;
+    GtkWidget *tmp;
+
+    CAPA_DEBUG("Internal display Set %p %s", object, spec->name);
+    if (strcmp(spec->name, "colour-managed-display") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+        tmp = glade_xml_get_widget(priv->glade, "cms-enabled");
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "detect-system-profile") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+        tmp = glade_xml_get_widget(priv->glade, "cms-system-profile");
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "rgb-profile") == 0) {
+        CapaColourProfile *profile;
+        const gchar *oldvalue;
+        const gchar *newvalue;
+        tmp = glade_xml_get_widget(priv->glade, "cms-rgb-profile");
+
+        g_object_get(object, spec->name, &profile, NULL);
+
+        newvalue = profile ? capa_colour_profile_filename(profile) : NULL;
+        oldvalue = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(tmp));
+
+        if ((newvalue && !oldvalue) ||
+            (!newvalue && oldvalue) ||
+            strcmp(newvalue, oldvalue) != 0)
+            gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), newvalue);
+
+        if (profile)
+            g_object_unref(G_OBJECT(profile));
+    } else if (strcmp(spec->name, "monitor-profile") == 0) {
+        CapaColourProfile *profile;
+        const gchar *oldvalue;
+        const gchar *newvalue;
+        tmp = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
+
+        g_object_get(object, spec->name, &profile, NULL);
+
+        newvalue = profile ? capa_colour_profile_filename(profile) : NULL;
+        oldvalue = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(tmp));
+
+        if ((newvalue && !oldvalue) ||
+            (!newvalue && oldvalue) ||
+            strcmp(newvalue, oldvalue) != 0)
+            gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), newvalue);
+
+        if (profile)
+            g_object_unref(G_OBJECT(profile));
+    } else if (strcmp(spec->name, "picture-dir") == 0) {
+        gchar *newvalue;
+        const gchar *oldvalue;
+        tmp = glade_xml_get_widget(priv->glade, "picture-folder");
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+
+        oldvalue = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(tmp));
+        if ((newvalue && !oldvalue) ||
+            (!newvalue && oldvalue) ||
+            strcmp(newvalue, oldvalue) != 0)
+            gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), newvalue);
+
+        g_free(newvalue);
+    } else if (strcmp(spec->name, "filename-pattern") == 0) {
+        gchar *newvalue;
+        const gchar *oldvalue;
+        tmp = glade_xml_get_widget(priv->glade, "filename-pattern");
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+
+        oldvalue = gtk_entry_get_text(GTK_ENTRY(tmp));
+        if ((newvalue && !oldvalue) ||
+            (!newvalue && oldvalue) ||
+            strcmp(newvalue, oldvalue) != 0)
+            gtk_entry_set_text(GTK_ENTRY(tmp), newvalue);
+
+        g_free(newvalue);
+    } else if (strcmp(spec->name, "profile-rendering-intent") == 0) {
+        int newvalue;
+        int oldvalue;
+        tmp = glade_xml_get_widget(priv->glade, "cms-render-intent");
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_combo_box_get_active(GTK_COMBO_BOX(tmp));
+
+        if (oldvalue != newvalue)
+            gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), newvalue);
+    }
+}
+
+
 static void capa_preferences_display_set_property(GObject *object,
                                                   guint prop_id,
                                                   const GValue *value,
@@ -80,11 +186,17 @@ static void capa_preferences_display_set_property(GObject *object,
     switch (prop_id)
         {
         case PROP_PREFERENCES: {
-            if (priv->prefs)
+            if (priv->prefs) {
+                g_signal_handler_disconnect(G_OBJECT(priv->prefs), priv->prefsID);
                 g_object_unref(G_OBJECT(priv->prefs));
+            }
             priv->prefs = g_value_get_object(value);
             g_object_ref(G_OBJECT(priv->prefs));
             capa_preferences_display_refresh(display);
+            priv->prefsID = g_signal_connect(G_OBJECT(priv->prefs),
+                                             "notify",
+                                             G_CALLBACK(capa_preferences_display_notify),
+                                             object);
         } break;
 
         default:
@@ -134,6 +246,9 @@ static void capa_preferences_display_finalize (GObject *object)
     CapaPreferencesDisplayPrivate *priv = preferences->priv;
 
     CAPA_DEBUG("Finalize preferences");
+
+    g_signal_handler_disconnect(G_OBJECT(priv->prefs), priv->prefsID);
+    g_object_unref(G_OBJECT(priv->prefs));
 
     g_object_unref(G_OBJECT(priv->glade));
 }
@@ -225,6 +340,7 @@ static void do_cms_enabled_toggled(GtkToggleButton *src, CapaPreferencesDisplay 
     GtkWidget *monitorProfile = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
     GtkWidget *systemProfile = glade_xml_get_widget(priv->glade, "cms-system-profile");
     GtkWidget *renderIntent = glade_xml_get_widget(priv->glade, "cms-render-intent");
+
     g_object_set(G_OBJECT(priv->prefs), "colour-managed-display", enabled, NULL);
     gtk_widget_set_sensitive(rgbProfile, enabled);
     gtk_widget_set_sensitive(systemProfile, enabled);
@@ -322,8 +438,8 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     glade_xml_signal_connect_data(priv->glade, "cms_render_intent_changed", G_CALLBACK(do_cms_render_intent_changed), preferences);
     glade_xml_signal_connect_data(priv->glade, "cms_system_profile_toggled", G_CALLBACK(do_cms_system_profile_toggled), preferences);
 
-    glade_xml_signal_connect_data(priv->glade, "cms_filename_pattern_changed", G_CALLBACK(do_filename_pattern_changed), preferences);
-    glade_xml_signal_connect_data(priv->glade, "cms_picture_folder_file_set", G_CALLBACK(do_picture_folder_file_set), preferences);
+    glade_xml_signal_connect_data(priv->glade, "filename_pattern_changed", G_CALLBACK(do_filename_pattern_changed), preferences);
+    glade_xml_signal_connect_data(priv->glade, "picture_folder_file_set", G_CALLBACK(do_picture_folder_file_set), preferences);
 
     win = glade_xml_get_widget(priv->glade, "preferences");
     g_signal_connect(win, "delete-event", G_CALLBACK(do_preferences_delete), preferences);
