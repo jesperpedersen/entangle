@@ -327,9 +327,9 @@ static void capa_preferences_init(CapaPreferences *picker)
     priv->detectSystemProfile = TRUE;
     priv->renderingIntent = CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL;
     if (access("./capa.glade", R_OK) == 0)
-        priv->rgbProfile = capa_colour_profile_new(g_strdup("./sRGB.icc"));
+        priv->rgbProfile = capa_colour_profile_new_file(g_strdup("./sRGB.icc"));
     else
-        priv->rgbProfile = capa_colour_profile_new(g_strdup(PKGDATADIR "/sRGB.icc"));
+        priv->rgbProfile = capa_colour_profile_new_file(g_strdup(PKGDATADIR "/sRGB.icc"));
 }
 
 

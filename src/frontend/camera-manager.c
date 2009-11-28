@@ -84,6 +84,74 @@ enum {
     PROP_PREFERENCES,
 };
 
+
+static CapaColourProfile *capa_camera_manager_monitor_profile(GtkWindow *window)
+{
+    GdkScreen *screen;
+    GByteArray *profileData;
+    gchar *atom;
+    int monitor = 0;
+    GdkAtom type = GDK_NONE;
+    gint format = 0;
+    gint nitems = 0;
+    guint8 *data = NULL;
+    CapaColourProfile *profile = NULL;
+
+    gtk_widget_realize(GTK_WIDGET(window));
+
+    screen = gtk_widget_get_screen(GTK_WIDGET(window));
+    monitor = gdk_screen_get_monitor_at_window(screen,
+                                               gtk_widget_get_window(GTK_WIDGET(window)));
+
+    if (monitor == 0)
+        atom = g_strdup("_ICC_PROFILE");
+    else
+        atom = g_strdup_printf("_ICC_PROFILE_%d", monitor);
+
+    if (!gdk_property_get(gdk_screen_get_root_window(screen),
+                          gdk_atom_intern(atom, FALSE),
+                          GDK_NONE,
+                          0, 64 * 1024 * 1024, FALSE,
+                          &type, &format, &nitems, &data) || nitems <= 0)
+        goto cleanup;
+
+    profileData = g_byte_array_new();
+    g_byte_array_append(profileData, data, nitems);
+
+    profile = capa_colour_profile_new_data(profileData);
+    g_byte_array_unref(profileData);
+
+ cleanup:
+    g_free(data);
+    g_free(atom);
+
+    return profile;
+}
+
+
+static CapaColourProfileTransform *capa_camera_manager_colour_transform(CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+    CapaColourProfileTransform *transform = NULL;
+
+    if (capa_preferences_enable_color_management(priv->prefs)) {
+        CapaColourProfile *rgbProfile;
+        CapaColourProfile *monitorProfile;
+
+        rgbProfile = capa_preferences_rgb_profile(priv->prefs);
+        if (capa_preferences_detect_monitor_profile(priv->prefs)) {
+            GtkWidget *window = glade_xml_get_widget(priv->glade, "camera-manager");
+            monitorProfile = capa_camera_manager_monitor_profile(GTK_WINDOW(window));
+        } else {
+            monitorProfile = capa_preferences_monitor_profile(priv->prefs);
+        }
+
+        transform = capa_colour_profile_transform_new(rgbProfile, monitorProfile);
+    }
+
+    return transform;
+}
+
 static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
@@ -127,26 +195,20 @@ static void do_load_image(CapaCameraManager *manager, CapaImage *image)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
     GdkPixbuf *srcpixbuf;
-    /* XXX make a preference */
-    char *srcproffile = getenv("CAPA_ICC_SRC");
-    char *dstproffile = getenv("CAPA_ICC_DST");
+    CapaColourProfileTransform *transform;
 
+    transform = capa_camera_manager_colour_transform(manager);
     srcpixbuf = gdk_pixbuf_new_from_file(capa_image_filename(image), NULL);
 
-    if (access(srcproffile, R_OK) == 0 &&
-        access(dstproffile, R_OK) == 0) {
-        GdkPixbuf *dstpixbuf;
-        CapaColourProfile *srcprof;
-        CapaColourProfile *dstprof;
-        srcprof = capa_colour_profile_new(srcproffile);
-        dstprof = capa_colour_profile_new(dstproffile);
-
-        dstpixbuf = capa_colour_profile_convert(srcprof, dstprof, srcpixbuf);
+    if (transform) {
+        GdkPixbuf *dstpixbuf = capa_colour_profile_transform_apply(transform,
+                                                                   srcpixbuf);
 
         g_object_set(G_OBJECT(priv->imageDisplay),
                      "pixbuf", dstpixbuf,
                      NULL);
         g_object_unref(dstpixbuf);
+        g_object_unref(transform);
     } else {
         g_object_set(G_OBJECT(priv->imageDisplay),
                      "pixbuf", srcpixbuf,

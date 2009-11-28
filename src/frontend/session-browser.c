@@ -94,8 +94,6 @@ static void do_image_added(CapaSession *session G_GNUC_UNUSED,
     GtkTreePath *path = NULL;
     int mod = capa_image_last_modified(img);
 
-    fprintf(stderr, "Got new image for model %s %p\n", capa_image_filename(img), priv);
-
     gtk_list_store_append(priv->model, &iter);
 
     /* XXX what's our refcount policy going to be for pixbuf.... */

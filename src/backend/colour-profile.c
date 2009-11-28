@@ -25,25 +25,45 @@
 #include "internal.h"
 #include "colour-profile.h"
 
+#define DEBUG_CMS 1
+
 #define CAPA_COLOUR_PROFILE_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_COLOUR_PROFILE, CapaColourProfilePrivate))
+#define CAPA_COLOUR_PROFILE_TRANSFORM_GET_PRIVATE(obj)                            \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_COLOUR_PROFILE_TRANSFORM, CapaColourProfileTransformPrivate))
 
 struct _CapaColourProfilePrivate {
+    GByteArray *data;
     char *filename;
     cmsHPROFILE *profile;
+    gboolean dirty;
+};
+
+struct _CapaColourProfileTransformPrivate {
+    CapaColourProfile *srcProfile;
+    CapaColourProfile *dstProfile;
+    cmsHTRANSFORM transform;
 };
 
 G_DEFINE_TYPE(CapaColourProfile, capa_colour_profile, G_TYPE_OBJECT);
+G_DEFINE_TYPE(CapaColourProfileTransform, capa_colour_profile_transform, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
     PROP_FILENAME,
+    PROP_DATA,
 };
 
-static void capa_camera_get_property(GObject *object,
-                                     guint prop_id,
-                                     GValue *value,
-                                     GParamSpec *pspec)
+enum {
+    PROP_00,
+    PROP_SRC_PROFILE,
+    PROP_DST_PROFILE,
+};
+
+static void capa_colour_profile_get_property(GObject *object,
+                                             guint prop_id,
+                                             GValue *value,
+                                             GParamSpec *pspec)
 {
     CapaColourProfile *picker = CAPA_COLOUR_PROFILE(object);
     CapaColourProfilePrivate *priv = picker->priv;
@@ -54,15 +74,19 @@ static void capa_camera_get_property(GObject *object,
             g_value_set_string(value, priv->filename);
             break;
 
+        case PROP_DATA:
+            g_value_set_boxed(value, priv->data);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
 }
 
-static void capa_camera_set_property(GObject *object,
-                                     guint prop_id,
-                                     const GValue *value,
-                                     GParamSpec *pspec)
+static void capa_colour_profile_set_property(GObject *object,
+                                             guint prop_id,
+                                             const GValue *value,
+                                             GParamSpec *pspec)
 {
     CapaColourProfile *picker = CAPA_COLOUR_PROFILE(object);
     CapaColourProfilePrivate *priv = picker->priv;
@@ -72,10 +96,65 @@ static void capa_camera_set_property(GObject *object,
         case PROP_FILENAME:
             g_free(priv->filename);
             priv->filename = g_value_dup_string(value);
+            priv->dirty = TRUE;
+            break;
 
-            if (priv->profile)
-                cmsCloseProfile(priv->profile);
-            priv->profile = cmsOpenProfileFromFile(priv->filename, "r");
+        case PROP_DATA:
+            if (priv->data)
+                g_byte_array_unref(priv->data);
+            priv->data = g_value_dup_boxed(value);
+            priv->dirty = TRUE;
+            break;
+
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        }
+}
+
+
+static void capa_colour_profile_transform_get_property(GObject *object,
+                                                       guint prop_id,
+                                                       GValue *value,
+                                                       GParamSpec *pspec)
+{
+    CapaColourProfileTransform *picker = CAPA_COLOUR_PROFILE_TRANSFORM(object);
+    CapaColourProfileTransformPrivate *priv = picker->priv;
+
+    switch (prop_id)
+        {
+        case PROP_SRC_PROFILE:
+            g_value_set_object(value, priv->srcProfile);
+            break;
+
+        case PROP_DST_PROFILE:
+            g_value_set_object(value, priv->dstProfile);
+            break;
+
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        }
+}
+
+static void capa_colour_profile_transform_set_property(GObject *object,
+                                                       guint prop_id,
+                                                       const GValue *value,
+                                                       GParamSpec *pspec)
+{
+    CapaColourProfileTransform *picker = CAPA_COLOUR_PROFILE_TRANSFORM(object);
+    CapaColourProfileTransformPrivate *priv = picker->priv;
+
+    switch (prop_id)
+        {
+        case PROP_SRC_PROFILE:
+            if (priv->srcProfile)
+                g_object_unref(G_OBJECT(priv->srcProfile));
+            priv->srcProfile = g_value_get_object(value);
+            break;
+
+        case PROP_DST_PROFILE:
+            if (priv->dstProfile)
+                g_object_unref(G_OBJECT(priv->dstProfile));
+            priv->dstProfile = g_value_get_object(value);
             break;
 
         default:
@@ -90,6 +169,8 @@ static void capa_colour_profile_finalize (GObject *object)
     CapaColourProfilePrivate *priv = profile->priv;
     CAPA_DEBUG("Finalize profile");
 
+    if (priv->data)
+        g_byte_array_unref(priv->data);
     g_free(priv->filename);
     if (priv->profile)
         cmsCloseProfile(priv->profile);
@@ -98,13 +179,28 @@ static void capa_colour_profile_finalize (GObject *object)
 }
 
 
+static void capa_colour_profile_transform_finalize (GObject *object)
+{
+    CapaColourProfileTransform *profile = CAPA_COLOUR_PROFILE_TRANSFORM(object);
+    CapaColourProfileTransformPrivate *priv = profile->priv;
+    CAPA_DEBUG("Finalize profile transform");
+
+    if (priv->srcProfile)
+        g_object_unref(G_OBJECT(priv->srcProfile));
+    if (priv->dstProfile)
+        g_object_unref(G_OBJECT(priv->dstProfile));
+
+    G_OBJECT_CLASS (capa_colour_profile_transform_parent_class)->finalize (object);
+}
+
+
 static void capa_colour_profile_class_init(CapaColourProfileClass *klass)
 {
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
     object_class->finalize = capa_colour_profile_finalize;
-    object_class->get_property = capa_camera_get_property;
-    object_class->set_property = capa_camera_set_property;
+    object_class->get_property = capa_colour_profile_get_property;
+    object_class->set_property = capa_colour_profile_set_property;
 
     g_object_class_install_property(object_class,
                                     PROP_FILENAME,
@@ -117,13 +213,62 @@ static void capa_colour_profile_class_init(CapaColourProfileClass *klass)
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_DATA,
+                                    g_param_spec_boxed("data",
+                                                       "Profile data",
+                                                       "Raw data for the profile",
+                                                       G_TYPE_BYTE_ARRAY,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_CONSTRUCT_ONLY |
+                                                       G_PARAM_STATIC_NAME |
+                                                       G_PARAM_STATIC_NICK |
+                                                       G_PARAM_STATIC_BLURB));
 
 
     g_type_class_add_private(klass, sizeof(CapaColourProfilePrivate));
+
+    /* Stop lcms calling exit() */
+    cmsErrorAction(LCMS_ERROR_IGNORE);
+}
+
+static void capa_colour_profile_transform_class_init(CapaColourProfileTransformClass *klass)
+{
+    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+    object_class->finalize = capa_colour_profile_transform_finalize;
+    object_class->get_property = capa_colour_profile_transform_get_property;
+    object_class->set_property = capa_colour_profile_transform_set_property;
+
+    g_object_class_install_property(object_class,
+                                    PROP_SRC_PROFILE,
+                                    g_param_spec_object("src-profile",
+                                                        "Source profile",
+                                                        "Source profile",
+                                                        CAPA_TYPE_COLOUR_PROFILE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_DST_PROFILE,
+                                    g_param_spec_object("dst-profile",
+                                                        "Destination Profile",
+                                                        "Destination Profile",
+                                                        CAPA_TYPE_COLOUR_PROFILE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+
+    g_type_class_add_private(klass, sizeof(CapaColourProfileTransformPrivate));
 }
 
 
-CapaColourProfile *capa_colour_profile_new(const char *filename)
+CapaColourProfile *capa_colour_profile_new_file(const char *filename)
 {
     return CAPA_COLOUR_PROFILE(g_object_new(CAPA_TYPE_COLOUR_PROFILE,
                                             "filename", filename,
@@ -131,11 +276,53 @@ CapaColourProfile *capa_colour_profile_new(const char *filename)
 }
 
 
+CapaColourProfile *capa_colour_profile_new_data(GByteArray *data)
+{
+    return CAPA_COLOUR_PROFILE(g_object_new(CAPA_TYPE_COLOUR_PROFILE,
+                                            "data", data,
+                                            NULL));
+}
+
+
+static gboolean capa_colour_profile_load(CapaColourProfile *profile)
+{
+    CapaColourProfilePrivate *priv = profile->priv;
+
+    if (!priv->dirty)
+        return TRUE;
+
+    if (priv->profile) {
+        cmsCloseProfile(priv->profile);
+        priv->profile = NULL;
+    }
+    if (priv->filename) {
+        priv->profile = cmsOpenProfileFromFile(priv->filename, "r");
+    } else if (priv->data) {
+        priv->profile = cmsOpenProfileFromMem(priv->data->data, priv->data->len);
+    } else {
+        return FALSE;
+    }
+
+    priv->dirty = FALSE;
+    return TRUE;
+}
+
 static void capa_colour_profile_init(CapaColourProfile *profile)
 {
     CapaColourProfilePrivate *priv;
 
     priv = profile->priv = CAPA_COLOUR_PROFILE_GET_PRIVATE(profile);
+
+    memset(priv, 0, sizeof(*priv));
+}
+
+static void capa_colour_profile_transform_init(CapaColourProfileTransform *profile)
+{
+    CapaColourProfileTransformPrivate *priv;
+
+    priv = profile->priv = CAPA_COLOUR_PROFILE_TRANSFORM_GET_PRIVATE(profile);
+
+    memset(priv, 0, sizeof(*priv));
 }
 
 
@@ -151,7 +338,7 @@ char *capa_colour_profile_product_name(CapaColourProfile *profile)
     CapaColourProfilePrivate *priv = profile->priv;
     const char *data;
 
-    if (!priv->profile)
+    if (!capa_colour_profile_load(profile))
         return NULL;
 
     data = cmsTakeProductName(priv->profile);
@@ -164,7 +351,7 @@ char *capa_colour_profile_product_desc(CapaColourProfile *profile)
     CapaColourProfilePrivate *priv = profile->priv;
     const char *data;
 
-    if (!priv->profile)
+    if (!capa_colour_profile_load(profile))
         return NULL;
 
     data = cmsTakeProductDesc(priv->profile);
@@ -177,7 +364,7 @@ char *capa_colour_profile_product_info(CapaColourProfile *profile)
     CapaColourProfilePrivate *priv = profile->priv;
     const char *data;
 
-    if (!priv->profile)
+    if (!capa_colour_profile_load(profile))
         return NULL;
 
     data = cmsTakeProductInfo(priv->profile);
@@ -190,7 +377,7 @@ char *capa_colour_profile_manufacturer(CapaColourProfile *profile)
     CapaColourProfilePrivate *priv = profile->priv;
     const char *data;
 
-    if (!priv->profile)
+    if (!capa_colour_profile_load(profile))
         return NULL;
 
     data = cmsTakeManufacturer(priv->profile);
@@ -203,7 +390,7 @@ char *capa_colour_profile_model(CapaColourProfile *profile)
     CapaColourProfilePrivate *priv = profile->priv;
     const char *data;
 
-    if (!priv->profile)
+    if (!capa_colour_profile_load(profile))
         return NULL;
 
     data = cmsTakeModel(priv->profile);
@@ -216,7 +403,7 @@ char *capa_colour_profile_copyright(CapaColourProfile *profile)
     CapaColourProfilePrivate *priv = profile->priv;
     const char *data;
 
-    if (!priv->profile)
+    if (!capa_colour_profile_load(profile))
         return NULL;
 
     data = cmsTakeCopyright(priv->profile);
@@ -237,12 +424,22 @@ capa_colour_profile_pixel_type(GdkPixbuf *pixbuf)
     return type;
 }
 
-GdkPixbuf *capa_colour_profile_convert(CapaColourProfile *srcprof,
-				       CapaColourProfile *dstprof,
-				       GdkPixbuf *srcpixbuf)
+
+CapaColourProfileTransform *capa_colour_profile_transform_new(CapaColourProfile *src,
+                                                              CapaColourProfile *dst)
 {
-    CapaColourProfilePrivate *srcpriv = srcprof->priv;
-    CapaColourProfilePrivate *dstpriv = dstprof->priv;
+    return CAPA_COLOUR_PROFILE_TRANSFORM(g_object_new(CAPA_TYPE_COLOUR_PROFILE_TRANSFORM,
+                                                      "src-profile", src,
+                                                      "dst-profile", dst,
+                                                      NULL));
+}
+
+GdkPixbuf *capa_colour_profile_transform_apply(CapaColourProfileTransform *trans,
+                                               GdkPixbuf *srcpixbuf)
+{
+    CapaColourProfileTransformPrivate *priv = trans->priv;
+    CapaColourProfilePrivate *srcpriv = priv->srcProfile->priv;
+    CapaColourProfilePrivate *dstpriv = priv->dstProfile->priv;
     cmsHTRANSFORM transform;
     GdkPixbuf *dstpixbuf;
     guchar *srcpixels;
@@ -251,6 +448,10 @@ GdkPixbuf *capa_colour_profile_convert(CapaColourProfile *srcprof,
     int stride = gdk_pixbuf_get_rowstride(srcpixbuf);
     int height = gdk_pixbuf_get_height(srcpixbuf);
     int width = gdk_pixbuf_get_width(srcpixbuf);
+
+    if (!capa_colour_profile_load(priv->srcProfile) ||
+        !capa_colour_profile_load(priv->dstProfile))
+        return NULL;
 
     dstpixbuf = gdk_pixbuf_copy(srcpixbuf);
 
@@ -272,10 +473,15 @@ GdkPixbuf *capa_colour_profile_convert(CapaColourProfile *srcprof,
         cmsDoTransform(transform,
                        srcpixels + (row * stride),
                        dstpixels + (row * stride),
+#if DEBUG_CMS
+                       /* A crude hack which causes the colour transform
+                        * to be applied to only half the image in a diagonal */
+                       (int)((double)width * (1.0-(double)row/(double)height)));
+#else
                        width);
+#endif
 
     cmsDeleteTransform(transform);
-
     return dstpixbuf;
 }
 
