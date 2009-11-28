@@ -190,6 +190,10 @@ static void capa_preferences_set_property(GObject *object,
             g_object_ref(priv->monitorProfile);
             break;
 
+        case PROP_DETECT_SYSTEM_PROFILE:
+            priv->detectSystemProfile = g_value_get_boolean(value);
+            break;
+
         case PROP_PROFILE_RENDERING_INTENT:
             priv->renderingIntent = g_value_get_enum(value);
             break;

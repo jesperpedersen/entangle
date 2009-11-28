@@ -1664,6 +1664,8 @@ copy of the Program in return for a fee.
                             <child>
                               <widget class="GtkFileChooserButton" id="picture-folder">
                                 <property name="visible">True</property>
+                                <property name="action">select-folder</property>
+                                <signal name="file_set" handler="picture_folder_file_set"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1677,6 +1679,7 @@ copy of the Program in return for a fee.
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="invisible_char">&#x25CF;</property>
+                                <signal name="changed" handler="filename_pattern_changed"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1803,6 +1806,7 @@ copy of the Program in return for a fee.
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="cms_system_profile_toggled"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1818,6 +1822,7 @@ copy of the Program in return for a fee.
 Relative colourimetric
 Saturation
 Absolute colourimetric</property>
+                                <signal name="changed" handler="cms_render_intent_changed"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1830,6 +1835,7 @@ Absolute colourimetric</property>
                               <widget class="GtkFileChooserButton" id="cms-rgb-profile">
                                 <property name="visible">True</property>
                                 <property name="create_folders">False</property>
+                                <signal name="file_set" handler="cms_rgb_profile_file_set"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1842,6 +1848,7 @@ Absolute colourimetric</property>
                               <widget class="GtkFileChooserButton" id="cms-monitor-profile">
                                 <property name="visible">True</property>
                                 <property name="create_folders">False</property>
+                                <signal name="file_set" handler="cms_monitor_profile_file_set"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -1851,20 +1858,21 @@ Absolute colourimetric</property>
                               </packing>
                             </child>
                             <child>
-                              <placeholder/>
-                            </child>
-                            <child>
                               <widget class="GtkCheckButton" id="cms-enabled">
                                 <property name="label" translatable="yes">Colour managed display</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="cms_enabled_toggled"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
                               </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                           </widget>
                           <packing>

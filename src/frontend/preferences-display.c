@@ -217,6 +217,74 @@ static void do_page_changed(GtkTreeSelection *selection,
 }
 
 
+static void do_cms_enabled_toggled(GtkToggleButton *src, CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    gboolean enabled = gtk_toggle_button_get_active(src);
+    GtkWidget *rgbProfile = glade_xml_get_widget(priv->glade, "cms-rgb-profile");
+    GtkWidget *monitorProfile = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
+    GtkWidget *systemProfile = glade_xml_get_widget(priv->glade, "cms-system-profile");
+    GtkWidget *renderIntent = glade_xml_get_widget(priv->glade, "cms-render-intent");
+    g_object_set(G_OBJECT(priv->prefs), "colour-managed-display", enabled, NULL);
+    gtk_widget_set_sensitive(rgbProfile, enabled);
+    gtk_widget_set_sensitive(systemProfile, enabled);
+    gtk_widget_set_sensitive(renderIntent, enabled);
+    gtk_widget_set_sensitive(monitorProfile, !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(systemProfile)));
+}
+
+static void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
+    CapaColourProfile *profile = capa_colour_profile_new_file(filename);
+    g_object_set(G_OBJECT(priv->prefs), "rgb-profile", profile, NULL);
+    g_free(filename);
+    g_object_unref(profile);
+}
+
+static void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
+    CapaColourProfile *profile = capa_colour_profile_new_file(filename);
+    g_object_set(G_OBJECT(priv->prefs), "monitor-profile", profile, NULL);
+    g_free(filename);
+    g_object_unref(profile);
+}
+
+static void do_cms_system_profile_toggled(GtkToggleButton *src, CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    gboolean enabled = gtk_toggle_button_get_active(src);
+    GtkWidget *monitorProfile = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
+    g_object_set(G_OBJECT(priv->prefs), "detect-system-profile", enabled, NULL);
+    gtk_widget_set_sensitive(monitorProfile, !enabled);
+}
+
+static void do_cms_render_intent_changed(GtkComboBox *src, CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    int option = gtk_combo_box_get_active(src);
+    if (option < 0)
+        option = CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL;
+    g_object_set(G_OBJECT(priv->prefs), "profile-rendering-intent", option, NULL);
+}
+
+static void do_picture_folder_file_set(GtkFileChooserButton *src, CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
+    g_object_set(G_OBJECT(priv->prefs), "picture-dir", filename, NULL);
+    g_free(filename);
+}
+
+static void do_filename_pattern_changed(GtkEntry *src, CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    const char *text = gtk_entry_get_text(src);
+    g_object_set(G_OBJECT(priv->prefs), "filename-pattern", text, NULL);
+}
+
 static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
 {
     CapaPreferencesDisplayPrivate *priv;
@@ -233,6 +301,9 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     GtkTreeViewColumn *colImage;
     GtkTreeViewColumn *colText;
     GtkTreeSelection *selection;
+    GtkFileChooser *chooser;
+    GtkFileFilter *allFilter;
+    GtkFileFilter *iccFilter;
 
     priv = preferences->priv = CAPA_PREFERENCES_DISPLAY_GET_PRIVATE(preferences);
 
@@ -244,6 +315,15 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     }
 
     glade_xml_signal_connect_data(priv->glade, "preferences_close", G_CALLBACK(do_preferences_close), preferences);
+
+    glade_xml_signal_connect_data(priv->glade, "cms_enabled_toggled", G_CALLBACK(do_cms_enabled_toggled), preferences);
+    glade_xml_signal_connect_data(priv->glade, "cms_monitor_profile_file_set", G_CALLBACK(do_cms_monitor_profile_file_set), preferences);
+    glade_xml_signal_connect_data(priv->glade, "cms_rgb_profile_file_set", G_CALLBACK(do_cms_rgb_profile_file_set), preferences);
+    glade_xml_signal_connect_data(priv->glade, "cms_render_intent_changed", G_CALLBACK(do_cms_render_intent_changed), preferences);
+    glade_xml_signal_connect_data(priv->glade, "cms_system_profile_toggled", G_CALLBACK(do_cms_system_profile_toggled), preferences);
+
+    glade_xml_signal_connect_data(priv->glade, "cms_filename_pattern_changed", G_CALLBACK(do_filename_pattern_changed), preferences);
+    glade_xml_signal_connect_data(priv->glade, "cms_picture_folder_file_set", G_CALLBACK(do_picture_folder_file_set), preferences);
 
     win = glade_xml_get_widget(priv->glade, "preferences");
     g_signal_connect(win, "delete-event", G_CALLBACK(do_preferences_delete), preferences);
@@ -312,6 +392,32 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colText);
 
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree));
+
+    iccFilter = gtk_file_filter_new();
+    gtk_file_filter_set_name(iccFilter, "ICC profiles (*.icc, *.icm)");
+    gtk_file_filter_add_pattern(iccFilter, "*.[Ii][Cc][Cc]");
+    gtk_file_filter_add_pattern(iccFilter, "*.[Ii][Cc][Mm]");
+
+    allFilter = gtk_file_filter_new();
+    gtk_file_filter_set_name(allFilter, "All files (*.*)");
+    gtk_file_filter_add_pattern(allFilter, "*");
+
+    chooser = GTK_FILE_CHOOSER(glade_xml_get_widget(priv->glade, "cms-rgb-profile"));
+    g_object_ref(allFilter);
+    gtk_file_chooser_add_filter(chooser, allFilter);
+    g_object_ref(iccFilter);
+    gtk_file_chooser_add_filter(chooser, iccFilter);
+    gtk_file_chooser_set_filter(chooser, iccFilter);
+
+    chooser = GTK_FILE_CHOOSER(glade_xml_get_widget(priv->glade, "cms-monitor-profile"));
+    g_object_ref(allFilter);
+    gtk_file_chooser_add_filter(chooser, allFilter);
+    g_object_ref(iccFilter);
+    gtk_file_chooser_add_filter(chooser, iccFilter);
+    gtk_file_chooser_set_filter(chooser, iccFilter);
+
+    g_object_unref(iccFilter);
+    g_object_unref(allFilter);
 
     g_signal_connect(G_OBJECT(selection), "changed", G_CALLBACK(do_page_changed), preferences);
 }
