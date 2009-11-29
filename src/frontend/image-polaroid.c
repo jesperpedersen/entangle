@@ -30,11 +30,13 @@
 #include "image-polaroid.h"
 #include "image.h"
 #include "image-display.h"
+#include "image-loader.h"
 
 #define CAPA_IMAGE_POLAROID_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_IMAGE_POLAROID, CapaImagePolaroidPrivate))
 
 struct _CapaImagePolaroidPrivate {
+    CapaImageLoader *imageLoader;
     CapaImage *image;
     CapaImageDisplay *display;
     GladeXML *glade;
@@ -44,7 +46,8 @@ G_DEFINE_TYPE(CapaImagePolaroid, capa_image_polaroid, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
-    PROP_IMAGE
+    PROP_IMAGE,
+    PROP_IMAGE_LOADER,
 };
 
 static void capa_image_polaroid_get_property(GObject *object,
@@ -59,6 +62,10 @@ static void capa_image_polaroid_get_property(GObject *object,
         {
         case PROP_IMAGE:
             g_value_set_object(value, priv->image);
+            break;
+
+        case PROP_IMAGE_LOADER:
+            g_value_set_object(value, priv->imageLoader);
             break;
 
         default:
@@ -79,17 +86,25 @@ static void capa_image_polaroid_set_property(GObject *object,
     switch (prop_id)
         {
         case PROP_IMAGE: {
-            GdkPixbuf *pixbuf;
             if (priv->image)
                 g_object_unref(G_OBJECT(priv->image));
             priv->image = g_value_get_object(value);
             g_object_ref(G_OBJECT(priv->image));
-            pixbuf = gdk_pixbuf_new_from_file(capa_image_filename(priv->image), NULL);
 
             g_object_set(G_OBJECT(priv->display),
-                         "pixbuf", pixbuf,
+                         "filename", capa_image_filename(priv->image),
                          NULL);
-            g_object_unref(pixbuf);
+        } break;
+
+        case PROP_IMAGE_LOADER: {
+            if (priv->imageLoader)
+                g_object_unref(G_OBJECT(priv->imageLoader));
+            priv->imageLoader = g_value_get_object(value);
+            g_object_ref(G_OBJECT(priv->imageLoader));
+
+            g_object_set(G_OBJECT(priv->display),
+                         "image-loader", priv->imageLoader,
+                         NULL);
         } break;
 
         default:
@@ -182,6 +197,17 @@ static void capa_image_polaroid_class_init(CapaImagePolaroidClass *klass)
                                                         "Image",
                                                         "Image to be displayed",
                                                         CAPA_TYPE_IMAGE,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMAGE_LOADER,
+                                    g_param_spec_object("image-loader",
+                                                        "Image loader",
+                                                        "Image loader",
+                                                        CAPA_TYPE_IMAGE_LOADER,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |

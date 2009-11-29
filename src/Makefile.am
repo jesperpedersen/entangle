@@ -35,6 +35,7 @@ libcapa_backend_la_SOURCES = \
 	backend/control-toggle.h backend/control-toggle.c \
 	backend/device-manager.h backend/device-manager.c \
 	backend/image.h backend/image.c \
+	backend/image-loader.h backend/image-loader.c \
 	backend/params.h backend/params.c \
 	backend/preferences.h backend/preferences.c \
 	backend/preferences-gconf.h backend/preferences-gconf.c \

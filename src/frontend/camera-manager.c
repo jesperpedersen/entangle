@@ -33,6 +33,7 @@
 #include "camera-info.h"
 #include "camera-progress.h"
 #include "image-display.h"
+#include "image-loader.h"
 #include "image-polaroid.h"
 #include "help-about.h"
 #include "session-browser.h"
@@ -57,6 +58,8 @@ struct _CapaCameraManagerPrivate {
 
     CapaCameraProgress *progress;
 
+    CapaImageLoader *imageLoader;
+    CapaColourProfileTransform *colourTransform;
     CapaImageDisplay *imageDisplay;
     CapaSessionBrowser *sessionBrowser;
     CapaControlPanel *controlPanel;
@@ -152,6 +155,7 @@ static CapaColourProfileTransform *capa_camera_manager_colour_transform(CapaCame
     return transform;
 }
 
+
 static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
@@ -191,37 +195,14 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 }
 
 
-static void do_load_image(CapaCameraManager *manager, CapaImage *image)
-{
-    CapaCameraManagerPrivate *priv = manager->priv;
-    GdkPixbuf *srcpixbuf;
-    CapaColourProfileTransform *transform;
-
-    transform = capa_camera_manager_colour_transform(manager);
-    srcpixbuf = gdk_pixbuf_new_from_file(capa_image_filename(image), NULL);
-
-    if (transform) {
-        GdkPixbuf *dstpixbuf = capa_colour_profile_transform_apply(transform,
-                                                                   srcpixbuf);
-
-        g_object_set(G_OBJECT(priv->imageDisplay),
-                     "pixbuf", dstpixbuf,
-                     NULL);
-        g_object_unref(dstpixbuf);
-        g_object_unref(transform);
-    } else {
-        g_object_set(G_OBJECT(priv->imageDisplay),
-                     "pixbuf", srcpixbuf,
-                     NULL);
-    }
-    gdk_pixbuf_unref(srcpixbuf);
-}
-
 static void do_camera_image(CapaCamera *cam G_GNUC_UNUSED, CapaImage *image, void *data)
 {
     CapaCameraManager *manager = data;
+    CapaCameraManagerPrivate *priv = manager->priv;
 
-    do_load_image(manager, image);
+    g_object_set(G_OBJECT(priv->imageDisplay),
+                 "filename", capa_image_filename(image),
+                 NULL);
 }
 
 static void do_camera_error(CapaCamera *cam G_GNUC_UNUSED, const char *err, void *data)
@@ -367,6 +348,9 @@ static void capa_camera_manager_set_property(GObject *object,
                 g_object_unref(G_OBJECT(priv->prefs));
             priv->prefs = g_value_get_object(value);
             g_object_ref(G_OBJECT(priv->prefs));
+
+            priv->colourTransform = capa_camera_manager_colour_transform(manager);
+            g_object_set(G_OBJECT(priv->imageLoader), "colour-transform", priv->colourTransform, NULL);
             break;
 
         default:
@@ -381,6 +365,10 @@ static void capa_camera_manager_finalize (GObject *object)
 
     CAPA_DEBUG("Finalize manager");
 
+    if (priv->imageLoader)
+        g_object_unref(G_OBJECT(priv->imageLoader));
+    if (priv->colourTransform)
+        g_object_unref(G_OBJECT(priv->colourTransform));
     if (priv->camera)
         g_object_unref(G_OBJECT(priv->camera));
     if (priv->prefs)
@@ -947,7 +935,9 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
     CAPA_DEBUG("Image selection changed");
     if (img) {
         CAPA_DEBUG("Try load");
-        do_load_image(manager, img);
+        g_object_set(G_OBJECT(priv->imageDisplay),
+                     "filename", capa_image_filename(img),
+                     NULL);
         g_object_unref(G_OBJECT(img));
     }
 }
@@ -983,6 +973,7 @@ static void do_drag_failed(GtkWidget *widget,
             CapaImagePolaroid *pol;
             if (!(pol = g_hash_table_lookup(priv->polaroids, filename))) {
                 pol = capa_image_polaroid_new();
+                g_object_set(G_OBJECT(pol), "image-loader", priv->imageLoader, NULL);
                 g_object_set(G_OBJECT(pol), "image", img, NULL);
                 g_object_unref(G_OBJECT(img));
                 g_hash_table_insert(priv->polaroids, g_strdup(filename), pol);
@@ -1062,9 +1053,12 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
     viewport = glade_xml_get_widget(priv->glade, "image-viewport");
 
+    priv->imageLoader = capa_image_loader_new();
     priv->imageDisplay = capa_image_display_new();
     priv->sessionBrowser = capa_session_browser_new();
     priv->controlPanel = capa_control_panel_new();
+
+    g_object_set(G_OBJECT(priv->imageDisplay), "image-loader", priv->imageLoader, NULL);
 
     g_signal_connect(G_OBJECT(priv->sessionBrowser), "selection-changed",
                      G_CALLBACK(do_session_image_selected), manager);
