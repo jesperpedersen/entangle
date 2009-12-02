@@ -94,6 +94,7 @@ int main(int argc, char **argv)
         { NULL, 0, 0, 0, NULL, NULL, NULL },
     };
     static const char *help_msg = "Run 'capa --help' to see full list of options";
+    gboolean unique;
 
     g_thread_init(NULL);
     gdk_threads_init();
@@ -130,13 +131,15 @@ int main(int argc, char **argv)
 
     g_signal_connect(display, "app-closed", gtk_main_quit, NULL);
 
-    capa_app_display_show(display);
+    unique = capa_app_display_show(display);
 
     startup_notification_complete();
 
-    gdk_threads_enter();
-    gtk_main();
-    gdk_threads_leave();
+    if (unique) {
+        gdk_threads_enter();
+        gtk_main();
+        gdk_threads_leave();
+    }
 
     g_object_unref(display);
     return 0;

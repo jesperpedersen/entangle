@@ -24,6 +24,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
+#include <unique/unique.h>
 
 #include "internal.h"
 #include "app-display.h"
@@ -35,6 +36,7 @@
 
 struct _CapaAppDisplayPrivate {
     CapaApp *app;
+    UniqueApp *unique;
 
     CapaCameraPicker *picker;
     CapaCameraManager *manager;
@@ -51,7 +53,7 @@ static void capa_app_display_finalize (GObject *object)
     CAPA_DEBUG("Finalize display");
 
     g_object_unref(G_OBJECT(priv->app));
-
+    g_object_unref(G_OBJECT(priv->unique));
     g_object_unref(G_OBJECT(priv->picker));
 
     G_OBJECT_CLASS (capa_app_display_parent_class)->finalize (object);
@@ -157,6 +159,23 @@ static void do_set_icons(void)
     gtk_window_set_default_icon_list(icons);
 }
 
+static UniqueResponse
+do_unique_message(UniqueApp *app G_GNUC_UNUSED,
+                  UniqueCommand command,
+                  UniqueMessageData *message_data G_GNUC_UNUSED,
+                  guint time_ms G_GNUC_UNUSED,
+                  gpointer data)
+{
+    CapaAppDisplay *display = CAPA_APP_DISPLAY(data);
+    CapaAppDisplayPrivate *priv = display->priv;
+
+    if (command == UNIQUE_ACTIVATE) {
+        capa_camera_manager_show(priv->manager);
+    }
+    return UNIQUE_RESPONSE_OK;
+}
+
+
 static void capa_app_display_init(CapaAppDisplay *display)
 {
     CapaAppDisplayPrivate *priv;
@@ -176,13 +195,22 @@ static void capa_app_display_init(CapaAppDisplay *display)
     g_signal_connect(G_OBJECT(priv->manager), "manager-connect",
                      G_CALLBACK(do_manager_connect), display);
 
+    priv->unique = unique_app_new("org.capa_project.Display", NULL);
+    g_signal_connect(priv->unique, "message-received",
+                     G_CALLBACK(do_unique_message), display);
 }
 
-void capa_app_display_show(CapaAppDisplay *display)
+
+gboolean capa_app_display_show(CapaAppDisplay *display)
 {
     CapaAppDisplayPrivate *priv = display->priv;
     CapaCameraList *cameras;
     gboolean choose = TRUE;
+
+    if (unique_app_is_running(priv->unique)) {
+        unique_app_send_message(priv->unique, UNIQUE_ACTIVATE, NULL);
+        return FALSE;
+    }
 
     cameras = capa_app_cameras(priv->app);
 
@@ -198,6 +226,8 @@ void capa_app_display_show(CapaAppDisplay *display)
     capa_camera_manager_show(priv->manager);
     if (choose)
         capa_camera_picker_show(priv->picker);
+
+    return TRUE;
 }
 
 /*

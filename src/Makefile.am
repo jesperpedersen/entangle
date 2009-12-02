@@ -84,6 +84,7 @@ libcapa_frontend_la_LDFLAGS = \
 	$(GTHREAD_LIBS) \
 	$(GTK_LIBS) \
 	$(GLADE2_LIBS) \
+	$(UNIQUE_LIBS) \
 	$(WARNING_CFLAGS)
 
 libcapa_frontend_la_CFLAGS = \
@@ -91,6 +92,7 @@ libcapa_frontend_la_CFLAGS = \
 	$(GTHREAD_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(GLADE2_CFLAGS) \
+	$(UNIQUE_CFLAGS) \
 	$(WARNING_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\""
 

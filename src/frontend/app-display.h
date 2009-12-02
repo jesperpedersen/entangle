@@ -57,7 +57,7 @@ struct _CapaAppDisplayClass
 GType capa_app_display_get_type(void) G_GNUC_CONST;
 CapaAppDisplay* capa_app_display_new(void);
 
-void capa_app_display_show(CapaAppDisplay *display);
+gboolean capa_app_display_show(CapaAppDisplay *display);
 
 G_END_DECLS
 
