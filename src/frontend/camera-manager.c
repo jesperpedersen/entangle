@@ -976,10 +976,10 @@ static void do_manager_disconnect(GtkMenuItem *src G_GNUC_UNUSED,
 
 static gboolean do_manager_delete(GtkWidget *widget G_GNUC_UNUSED,
                                   GdkEvent *event G_GNUC_UNUSED,
-                                  CapaCameraManager *manager)
+                                  CapaCameraManager *manager G_GNUC_UNUSED)
 {
     CAPA_DEBUG("Got delete");
-    g_signal_emit_by_name(manager, "manager-disconnect", NULL);
+    gtk_main_quit();
     return TRUE;
 }
 

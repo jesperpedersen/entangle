@@ -27,6 +27,10 @@
 #include <girepository.h>
 #endif
 
+#define SN_API_NOT_YET_FROZEN
+#include <libsn/sn-launchee.h>
+#include <gdk/gdkx.h>
+
 #include "internal.h"
 #include "app-display.h"
 
@@ -36,6 +40,44 @@ gboolean capa_debug_gphoto = FALSE;
 #if WITH_GOBJECT_INTROSPECTION
 static gchar *ins = NULL;
 #endif
+
+static SnLauncheeContext *sn_context = NULL;
+static SnDisplay *sn_display = NULL;
+
+static void
+sn_error_trap_push(SnDisplay *display G_GNUC_UNUSED,
+                   Display *xdisplay G_GNUC_UNUSED)
+{
+    gdk_error_trap_push();
+}
+
+static void
+sn_error_trap_pop(SnDisplay *display G_GNUC_UNUSED,
+                  Display *xdisplay G_GNUC_UNUSED)
+{
+    gdk_error_trap_pop();
+}
+
+static void
+startup_notification_complete(void)
+{
+    Display *xdisplay;
+
+    xdisplay = GDK_DISPLAY();
+    sn_display = sn_display_new(xdisplay,
+                                sn_error_trap_push,
+                                sn_error_trap_pop);
+    sn_context =
+        sn_launchee_context_new_from_environment(sn_display,
+                                                 DefaultScreen(xdisplay));
+    if (sn_context != NULL) {
+        sn_launchee_context_complete(sn_context);
+        sn_launchee_context_unref(sn_context);
+
+        sn_display_unref(sn_display);
+    }
+}
+
 
 int main(int argc, char **argv)
 {
@@ -89,6 +131,8 @@ int main(int argc, char **argv)
     g_signal_connect(display, "app-closed", gtk_main_quit, NULL);
 
     capa_app_display_show(display);
+
+    startup_notification_complete();
 
     gdk_threads_enter();
     gtk_main();
