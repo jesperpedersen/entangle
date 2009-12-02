@@ -21,7 +21,7 @@
                   <widget class="GtkMenu" id="menu1">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkImageMenuItem" id="imagemenuitem1">
+                      <widget class="GtkImageMenuItem" id="menu-new">
                         <property name="label">New session</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
@@ -37,7 +37,7 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkImageMenuItem" id="imagemenuitem2">
+                      <widget class="GtkImageMenuItem" id="menu-open">
                         <property name="label">Open session</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
@@ -57,7 +57,7 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkImageMenuItem" id="imagemenuitem6">
+                      <widget class="GtkImageMenuItem" id="menu-connect">
                         <property name="label" translatable="yes">Connect camera</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
@@ -72,7 +72,7 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkImageMenuItem" id="gtk-close">
+                      <widget class="GtkImageMenuItem" id="menu-disconnect">
                         <property name="label">Disconnect camera</property>
                         <property name="visible">True</property>
                         <property name="use_stock">False</property>
@@ -206,7 +206,7 @@
                 <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child>
-                  <widget class="GtkMenu" id="menu3">
+                  <widget class="GtkMenu" id="menu-help">
                     <property name="visible">True</property>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem10">
@@ -223,7 +223,7 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkMenuItem" id="menuitem5">
+                      <widget class="GtkMenuItem" id="menu-help-camera">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Camera</property>
                         <property name="use_underline">True</property>
@@ -596,9 +596,11 @@ downloading new images as they are shot.</property>
   <widget class="GtkDialog" id="camera-picker">
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Select camera - Capa</property>
+    <property name="window_position">center-on-parent</property>
     <property name="default_width">450</property>
     <property name="default_height">200</property>
     <property name="type_hint">normal</property>
+    <property name="transient_for">camera-manager</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox1">
@@ -1414,6 +1416,7 @@ copy of the Program in return for a fee.
     <property name="default_height">400</property>
     <property name="type_hint">normal</property>
     <property name="skip_taskbar_hint">True</property>
+    <property name="transient_for">camera-manager</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox3">

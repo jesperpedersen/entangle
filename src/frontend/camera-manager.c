@@ -40,7 +40,7 @@
 #include "control-panel.h"
 #include "colour-profile.h"
 #include "preferences-display.h"
-
+#include "progress.h"
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_MANAGER, CapaCameraManagerPrivate))
@@ -164,10 +164,26 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
     GtkWidget *toolMonitor;
     GtkWidget *settingsScroll;
 
+    GtkWidget *toolNew;
+    GtkWidget *toolOpen;
+    GtkWidget *menuNew;
+    GtkWidget *menuOpen;
+    GtkWidget *menuConnect;
+    GtkWidget *menuDisconnect;
+    GtkWidget *menuHelp;
+
     toolCapture = glade_xml_get_widget(priv->glade, "toolbar-capture");
     toolPreview = glade_xml_get_widget(priv->glade, "toolbar-preview");
     toolMonitor = glade_xml_get_widget(priv->glade, "toolbar-monitor");
     settingsScroll = glade_xml_get_widget(priv->glade, "settings-scroll");
+
+    toolNew = glade_xml_get_widget(priv->glade, "toolbar-new");
+    toolOpen = glade_xml_get_widget(priv->glade, "toolbar-open");
+    menuNew = glade_xml_get_widget(priv->glade, "menu-new");
+    menuOpen = glade_xml_get_widget(priv->glade, "menu-open");
+    menuConnect = glade_xml_get_widget(priv->glade, "menu-connect");
+    menuDisconnect = glade_xml_get_widget(priv->glade, "menu-disconnect");
+    menuHelp = glade_xml_get_widget(priv->glade, "menu-help-camera");
 
     gtk_widget_set_sensitive(toolCapture,
                              priv->camera &&
@@ -181,6 +197,21 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
                              priv->camera &&
                              capa_camera_has_capture(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
+
+    gtk_widget_set_sensitive(toolNew,
+                             priv->camera ? TRUE : FALSE);
+    gtk_widget_set_sensitive(toolOpen,
+                             priv->camera ? TRUE : FALSE);
+    gtk_widget_set_sensitive(menuNew,
+                             priv->camera ? TRUE : FALSE);
+    gtk_widget_set_sensitive(menuOpen,
+                             priv->camera ? TRUE : FALSE);
+    gtk_widget_set_sensitive(menuConnect,
+                             priv->camera ? FALSE : TRUE);
+    gtk_widget_set_sensitive(menuDisconnect,
+                             priv->camera ? TRUE : FALSE);
+    gtk_widget_set_sensitive(menuHelp,
+                             priv->camera ? TRUE : FALSE);
 
     if (priv->camera && !capa_camera_has_capture(priv->camera)) {
         gtk_widget_set_tooltip_text(toolCapture, "This camera does not support image capture");
@@ -234,10 +265,29 @@ static void do_camera_op_end(CapaCamera *cam G_GNUC_UNUSED, void *data)
 static void do_remove_camera(CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
+    char *title;
+    GtkWidget *win;
 
+    title = g_strdup_printf("Camera Manager - Capa");
+    win = glade_xml_get_widget(priv->glade, "camera-manager");
+    gtk_window_set_title(GTK_WINDOW(win), title);
+    g_free(title);
+
+    g_object_set(G_OBJECT(priv->sessionBrowser),
+                 "session", NULL,
+                 NULL);
+
+    g_object_set(G_OBJECT(priv->controlPanel),
+                 "camera", NULL,
+                 NULL);
     g_object_set(G_OBJECT(priv->camera),
                  "progress", NULL,
                  "session", NULL, NULL);
+
+    g_object_set(G_OBJECT(priv->imageDisplay),
+                 "filename", NULL,
+                 "pixbuf", NULL,
+                 NULL);
 
     g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigImage);
     g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigError);
@@ -337,9 +387,11 @@ static void capa_camera_manager_set_property(GObject *object,
                 g_object_unref(G_OBJECT(priv->camera));
             }
             priv->camera = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->camera));
+            if (priv->camera) {
+                g_object_ref(G_OBJECT(priv->camera));
+                do_add_camera(manager);
+            }
 
-            do_add_camera(manager);
             do_capture_widget_sensitivity(manager);
         } break;
 
@@ -911,6 +963,13 @@ static void do_manager_connect(GtkMenuItem *src G_GNUC_UNUSED,
 static void do_manager_disconnect(GtkMenuItem *src G_GNUC_UNUSED,
                                   CapaCameraManager *manager)
 {
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    do_remove_camera(manager);
+    capa_camera_disconnect(priv->camera);
+    g_object_unref(G_OBJECT(priv->camera));
+    priv->camera = NULL;
+    do_capture_widget_sensitivity(manager);
     g_signal_emit_by_name(manager, "manager-disconnect", NULL);
 }
 

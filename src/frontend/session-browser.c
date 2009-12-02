@@ -164,10 +164,12 @@ static void capa_session_browser_set_property(GObject *object,
                 g_object_unref(G_OBJECT(priv->session));
             }
             priv->session = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->session));
+            if (priv->session) {
+                g_object_ref(G_OBJECT(priv->session));
 
-            priv->sigImageAdded = g_signal_connect(G_OBJECT(priv->session), "session-image-added",
-                                                   G_CALLBACK(do_image_added), browser);
+                priv->sigImageAdded = g_signal_connect(G_OBJECT(priv->session), "session-image-added",
+                                                       G_CALLBACK(do_image_added), browser);
+            }
 
             do_model_refresh(browser);
             break;

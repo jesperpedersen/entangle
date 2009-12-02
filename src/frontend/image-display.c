@@ -168,7 +168,7 @@ static void capa_image_display_set_property(GObject *object,
                 g_free(priv->filename);
             }
             priv->filename = g_value_dup_string(value);
-            if (priv->imageLoader)
+            if (priv->imageLoader && priv->filename)
                 capa_image_loader_load(priv->imageLoader, priv->filename);
             break;
 

@@ -162,14 +162,16 @@ static void capa_camera_set_property(GObject *object,
             if (priv->session)
                 g_object_unref(G_OBJECT(priv->session));
             priv->session = g_value_get_object(value);
-            g_object_ref(priv->session);
+            if (priv->session)
+                g_object_ref(priv->session);
             break;
 
         case PROP_PROGRESS:
             if (priv->progress)
                 g_object_unref(G_OBJECT(priv->progress));
             priv->progress = g_value_get_object(value);
-            g_object_ref(priv->progress);
+            if (priv->progress)
+                g_object_ref(priv->progress);
             break;
 
         case PROP_HAS_CAPTURE:
@@ -498,6 +500,37 @@ int capa_camera_connect(CapaCamera *cam)
         priv->hasSettings = TRUE;
 
     CAPA_DEBUG("ok");
+    return 0;
+}
+
+int capa_camera_disconnect(CapaCamera *cam)
+{
+    CapaCameraPrivate *priv = cam->priv;
+
+    CAPA_DEBUG("Disconnecting from cam");
+
+    if (priv->cam == NULL)
+        return 0;
+
+    gp_camera_exit(priv->cam, priv->params->ctx);
+
+    if (priv->widgets) {
+        gp_widget_unref(priv->widgets);
+        priv->widgets = NULL;
+    }
+    if (priv->controls) {
+        g_object_unref(priv->controls);
+        priv->controls = NULL;
+    }
+
+    capa_params_free(priv->params);
+    priv->params = NULL;
+
+    gp_camera_unref(priv->cam);
+    priv->cam = NULL;
+
+    priv->hasCapture = priv->hasPreview = priv->hasSettings = FALSE;
+
     return 0;
 }
 

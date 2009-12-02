@@ -249,8 +249,6 @@ static void do_setup_camera(CapaControlPanel *panel)
 
     do_setup_control_group(panel, GTK_VBOX(panel), grp);
     gtk_widget_show_all(GTK_WIDGET(panel));
-
-    g_object_unref(G_OBJECT(grp));
 }
 
 static void capa_control_panel_get_property(GObject *object,
@@ -288,7 +286,8 @@ static void capa_control_panel_set_property(GObject *object,
             if (priv->camera)
                 g_object_unref(G_OBJECT(priv->camera));
             priv->camera = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->camera));
+            if (priv->camera)
+                g_object_ref(G_OBJECT(priv->camera));
             do_setup_camera(panel);
             break;
 

@@ -75,6 +75,7 @@ const char *capa_camera_model(CapaCamera *cam);
 const char *capa_camera_port(CapaCamera *cam);
 
 int capa_camera_connect(CapaCamera *cap);
+int capa_camera_disconnect(CapaCamera *cap);
 
 char *capa_camera_summary(CapaCamera *cam);
 char *capa_camera_manual(CapaCamera *cam);
