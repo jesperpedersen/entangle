@@ -137,11 +137,32 @@ static void do_manager_disconnect(CapaCameraManager *manager, CapaAppDisplay *di
     }
 }
 
+static void do_camera_manager_show(CapaAppDisplay *app, CapaCamera *cam)
+{
+    CapaAppDisplayPrivate *priv = app->priv;
+    CapaCameraManager *man;
+
+    man = g_hash_table_lookup(priv->managers, capa_camera_model(cam));
+    if (!man) {
+        GValue camval;
+        memset(&camval, 0, sizeof camval);
+        g_value_init(&camval, G_TYPE_OBJECT);
+        g_value_set_object(&camval, cam);
+        man = capa_camera_manager_new(capa_app_preferences(priv->app));
+
+        g_signal_connect(G_OBJECT(man), "manager-disconnect", G_CALLBACK(do_manager_disconnect), app);
+        g_signal_connect(G_OBJECT(man), "manager-connect", G_CALLBACK(do_manager_connect), app);
+
+        g_object_set_property(G_OBJECT(man), "camera", &camval);
+        g_hash_table_insert(priv->managers, g_strdup(capa_camera_model(cam)), man);
+        g_value_unset(&camval);
+    }
+    capa_camera_manager_show(man);
+}
+
 static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaAppDisplay *display)
 {
-    CapaAppDisplayPrivate *priv = display->priv;
     CAPA_DEBUG("emit connect %p %s", cam, capa_camera_model(cam));
-    CapaCameraManager *man;
 
     while (capa_camera_connect(cam) < 0) {
         int response;
@@ -171,22 +192,7 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
             return;
     }
 
-    man = g_hash_table_lookup(priv->managers, capa_camera_model(cam));
-    if (!man) {
-        GValue camval;
-        memset(&camval, 0, sizeof camval);
-        g_value_init(&camval, G_TYPE_OBJECT);
-        g_value_set_object(&camval, cam);
-        man = capa_camera_manager_new(capa_app_preferences(priv->app));
-
-        g_signal_connect(G_OBJECT(man), "manager-disconnect", G_CALLBACK(do_manager_disconnect), display);
-        g_signal_connect(G_OBJECT(man), "manager-connect", G_CALLBACK(do_manager_connect), display);
-
-        g_object_set_property(G_OBJECT(man), "camera", &camval);
-        g_hash_table_insert(priv->managers, g_strdup(capa_camera_model(cam)), man);
-        g_value_unset(&camval);
-    }
-    capa_camera_manager_show(man);
+    do_camera_manager_show(display, cam);
     capa_camera_picker_hide(picker);
 }
 
@@ -231,6 +237,18 @@ static void capa_app_display_init(CapaAppDisplay *display)
 void capa_app_display_show(CapaAppDisplay *display)
 {
     CapaAppDisplayPrivate *priv = display->priv;
+    CapaCameraList *cameras;
+
+    cameras = capa_app_cameras(priv->app);
+
+    if (capa_camera_list_count(cameras) == 1) {
+        CapaCamera *cam = capa_camera_list_get(cameras, 0);
+
+        if (capa_camera_connect(cam) == 0) {
+            do_camera_manager_show(display, cam);
+            return;
+        }
+    }
 
     capa_camera_picker_show(priv->picker);
 }
