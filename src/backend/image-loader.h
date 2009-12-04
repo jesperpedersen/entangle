@@ -21,8 +21,7 @@
 #ifndef __CAPA_IMAGE_LOADER_H__
 #define __CAPA_IMAGE_LOADER_H__
 
-#include <glib-object.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
+#include "pixbuf-loader.h"
 
 G_BEGIN_DECLS
 
@@ -35,40 +34,22 @@ G_BEGIN_DECLS
 
 
 typedef struct _CapaImageLoader CapaImageLoader;
-typedef struct _CapaImageLoaderPrivate CapaImageLoaderPrivate;
 typedef struct _CapaImageLoaderClass CapaImageLoaderClass;
 
 struct _CapaImageLoader
 {
-    GObject parent;
-
-    CapaImageLoaderPrivate *priv;
+    CapaPixbufLoader parent;
 };
 
 struct _CapaImageLoaderClass
 {
-    GObjectClass parent_class;
-
-    void (*image_loaded)(CapaImageLoader *loader, const char *filename);
+    CapaPixbufLoaderClass parent_class;
 };
 
 
 GType capa_image_loader_get_type(void) G_GNUC_CONST;
 
 CapaImageLoader *capa_image_loader_new(void);
-
-
-gboolean capa_image_loader_is_ready(CapaImageLoader *loader,
-                                    const char *filename);
-
-GdkPixbuf *capa_image_loader_get_pixbuf(CapaImageLoader *loader,
-                                        const char *filename);
-
-gboolean capa_image_loader_load(CapaImageLoader *loader,
-                                const char *filename);
-
-gboolean capa_image_loader_unload(CapaImageLoader *loader,
-                                  const char *filename);
 
 
 G_END_DECLS

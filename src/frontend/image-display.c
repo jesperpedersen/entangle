@@ -116,7 +116,7 @@ static void capa_image_display_get_property(GObject *object,
         }
 }
 
-static void capa_image_display_image_loaded(CapaImageLoader *loader,
+static void capa_image_display_image_loaded(CapaPixbufLoader *loader,
                                             const char *filename,
                                             gpointer opaque)
 {
@@ -126,7 +126,7 @@ static void capa_image_display_image_loaded(CapaImageLoader *loader,
     if (strcmp(filename, priv->filename) != 0)
         return;
 
-    GdkPixbuf *pixbuf = capa_image_loader_get_pixbuf(loader, filename);
+    GdkPixbuf *pixbuf = capa_pixbuf_loader_get_pixbuf(loader, filename);
     g_object_set(G_OBJECT(display), "pixbuf", pixbuf, NULL);
 }
 
@@ -145,7 +145,7 @@ static void capa_image_display_set_property(GObject *object,
         case PROP_IMAGE_LOADER:
             if (priv->imageLoader) {
                 if (priv->filename)
-                    capa_image_loader_unload(priv->imageLoader, priv->filename);
+                    capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
                 g_signal_handler_disconnect(G_OBJECT(priv->imageLoader), priv->imageLoaderNotifyID);
                 g_object_unref(G_OBJECT(priv->imageLoader));
             }
@@ -153,23 +153,23 @@ static void capa_image_display_set_property(GObject *object,
             if (priv->imageLoader) {
                 g_object_ref(G_OBJECT(priv->imageLoader));
                 priv->imageLoaderNotifyID = g_signal_connect(G_OBJECT(priv->imageLoader),
-                                                        "image-loaded",
+                                                        "pixbuf-loaded",
                                                         G_CALLBACK(capa_image_display_image_loaded),
                                                         object);
                 if (priv->filename)
-                    capa_image_loader_load(priv->imageLoader, priv->filename);
+                    capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
             }
             break;
 
         case PROP_FILENAME:
             if (priv->filename) {
                 if (priv->imageLoader)
-                    capa_image_loader_unload(priv->imageLoader, priv->filename);
+                    capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
                 g_free(priv->filename);
             }
             priv->filename = g_value_dup_string(value);
             if (priv->imageLoader && priv->filename)
-                capa_image_loader_load(priv->imageLoader, priv->filename);
+                capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
             break;
 
         case PROP_PIXBUF:
@@ -208,7 +208,7 @@ static void capa_image_display_finalize (GObject *object)
     CapaImageDisplayPrivate *priv = display->priv;
 
     if (priv->filename && priv->imageLoader)
-        capa_image_loader_unload(priv->imageLoader, priv->filename);
+        capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
     if (priv->imageLoader)
         g_object_unref(G_OBJECT(priv->imageLoader));
     if (priv->pixbuf)
