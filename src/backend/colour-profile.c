@@ -42,7 +42,6 @@ struct _CapaColourProfilePrivate {
 struct _CapaColourProfileTransformPrivate {
     CapaColourProfile *srcProfile;
     CapaColourProfile *dstProfile;
-    cmsHTRANSFORM transform;
 };
 
 G_DEFINE_TYPE(CapaColourProfile, capa_colour_profile, G_TYPE_OBJECT);
@@ -460,8 +459,6 @@ GdkPixbuf *capa_colour_profile_transform_apply(CapaColourProfileTransform *trans
 
     dstpixbuf = gdk_pixbuf_copy(srcpixbuf);
 
-    /* XXX any benefit in caching this transform by adding
-     * a separate  GObject  CapaColourTransform ? */
     transform = cmsCreateTransform(srcpriv->profile,
                                    type,
                                    dstpriv->profile,
