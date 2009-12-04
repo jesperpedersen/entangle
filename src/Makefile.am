@@ -20,11 +20,11 @@ icc_DATA = sRGB.icc
 EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
 
 libcapa_backend_la_SOURCES = \
+	backend/colour-profile-enums.h backend/colour-profile-enums.c \
 	backend/app.h backend/app.c \
 	backend/camera.h backend/camera.c \
 	backend/camera-list.h backend/camera-list.c \
 	backend/colour-profile.h backend/colour-profile.c \
-	backend/colour-profile-enums.h backend/colour-profile-enums.c \
 	backend/control.h backend/control.c \
 	backend/control-button.h backend/control-button.c \
 	backend/control-choice.h backend/control-choice.c \
