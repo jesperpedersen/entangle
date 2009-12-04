@@ -389,7 +389,7 @@ gboolean capa_pixbuf_loader_load(CapaPixbufLoader *loader,
     CapaPixbufLoaderPrivate *priv = loader->priv;
     CapaPixbufLoaderEntry *entry;
 
-    CAPA_DEBUG("load %p %s", loader, filename);
+    CAPA_DEBUG("Queue load %p %s", loader, filename);
     g_mutex_lock(priv->lock);
     entry = g_hash_table_lookup(priv->pixbufs, filename);
     if (entry) {
@@ -412,7 +412,7 @@ gboolean capa_pixbuf_loader_unload(CapaPixbufLoader *loader,
     CapaPixbufLoaderPrivate *priv = loader->priv;
     CapaPixbufLoaderEntry *entry;
 
-    CAPA_DEBUG("unload %p %s", loader, filename);
+    CAPA_DEBUG("Unqueue load %p %s", loader, filename);
     g_mutex_lock(priv->lock);
     entry = g_hash_table_lookup(priv->pixbufs, filename);
     if (!entry)

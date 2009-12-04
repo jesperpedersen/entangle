@@ -24,6 +24,7 @@
 
 #include "internal.h"
 #include "session-browser.h"
+#include "thumbnail-loader.h"
 #include "session.h"
 
 #define CAPA_SESSION_BROWSER_GET_PRIVATE(obj)                           \
@@ -31,8 +32,12 @@
 
 struct _CapaSessionBrowserPrivate {
     CapaSession *session;
+    CapaThumbnailLoader *loader;
 
     gulong sigImageAdded;
+    gulong sigThumbReady;
+
+    GdkPixbuf *blank;
 
     GtkListStore *model;
 };
@@ -42,32 +47,128 @@ G_DEFINE_TYPE(CapaSessionBrowser, capa_session_browser, GTK_TYPE_ICON_VIEW);
 enum {
     PROP_O,
     PROP_SESSION,
+    PROP_LOADER,
 };
 
 
-static void do_model_refresh(CapaSessionBrowser *browser)
+static void do_thumb_loaded(CapaPixbufLoader *loader,
+                            const char *filename,
+                            gpointer data)
+{
+    CapaSessionBrowser *browser = data;
+    CapaSessionBrowserPrivate *priv = browser->priv;
+    GdkPixbuf *pixbuf = capa_pixbuf_loader_get_pixbuf(loader, filename);
+    GtkTreeIter iter;
+
+    CAPA_DEBUG("Got pixbuf update on %s", filename);
+
+    if (!pixbuf)
+        return;
+
+    if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(priv->model), &iter))
+        return;
+
+    do {
+        CapaImage *img;
+        gtk_tree_model_get(GTK_TREE_MODEL(priv->model), &iter, 0, &img, -1);
+
+        if (strcmp(capa_image_filename(img), filename) == 0) {
+            gtk_list_store_set(priv->model, &iter, 1, pixbuf, -1);
+            break;
+        }
+
+    } while (gtk_tree_model_iter_next(GTK_TREE_MODEL(priv->model), &iter));
+}
+
+static void do_image_added(CapaSession *session G_GNUC_UNUSED,
+                           CapaImage *img,
+                           gpointer data)
+{
+    CapaSessionBrowser *browser = data;
+    CapaSessionBrowserPrivate *priv = browser->priv;
+    GtkTreeIter iter;
+    GtkTreePath *path = NULL;
+    int mod = capa_image_last_modified(img);
+
+    CAPA_DEBUG("Request image %s for new image", capa_image_filename(img));
+    capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->loader),
+                            capa_image_filename(img));
+
+    gtk_list_store_append(priv->model, &iter);
+
+    /* XXX what's our refcount policy going to be for pixbuf.... */
+    gtk_list_store_set(priv->model, &iter, 0, img, 1, priv->blank, 2, mod, -1);
+    CAPA_DEBUG("ADD IMAGE EXTRA %p", img);
+    path = gtk_tree_model_get_path(GTK_TREE_MODEL(priv->model), &iter);
+
+    gtk_icon_view_select_path(GTK_ICON_VIEW(browser), path);
+    gtk_icon_view_scroll_to_path(GTK_ICON_VIEW(browser), path, FALSE, 0, 0);
+
+    gtk_tree_path_free(path);
+
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
+}
+
+
+
+static void do_model_unload(CapaSessionBrowser *browser)
 {
     CapaSessionBrowserPrivate *priv = browser->priv;
     int count;
-    CAPA_DEBUG("Refresh model");
-    gtk_list_store_clear(priv->model);
 
-    if (!priv->session) {
-        return;
-    }
+    CAPA_DEBUG("Unload model");
+
+    g_signal_handler_disconnect(G_OBJECT(priv->session),
+                                priv->sigImageAdded);
+    g_signal_handler_disconnect(G_OBJECT(priv->loader),
+                                priv->sigThumbReady);
 
     count = capa_session_image_count(priv->session);
     for (int i = 0 ; i < count ; i++) {
         CapaImage *img = capa_session_image_get(priv->session, i);
-        GdkPixbuf *pixbuf = capa_image_thumbnail(img);
+        capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->loader),
+                                  capa_image_filename(img));
+    }
+
+    g_object_unref(priv->blank);
+    gtk_list_store_clear(priv->model);
+}
+
+static void do_model_load(CapaSessionBrowser *browser)
+{
+    CapaSessionBrowserPrivate *priv = browser->priv;
+    int count;
+    int width;
+    int height;
+
+    CAPA_DEBUG("Load model");
+
+    g_object_get(G_OBJECT(priv->loader),
+                 "width", &width,
+                 "height", &height,
+                 NULL);
+
+    priv->blank = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
+    gdk_pixbuf_fill(priv->blank, 0x000000FF);
+
+    priv->sigImageAdded = g_signal_connect(G_OBJECT(priv->session), "session-image-added",
+                                           G_CALLBACK(do_image_added), browser);
+    priv->sigThumbReady = g_signal_connect(G_OBJECT(priv->loader), "pixbuf-loaded",
+                                           G_CALLBACK(do_thumb_loaded), browser);
+
+    count = capa_session_image_count(priv->session);
+    for (int i = 0 ; i < count ; i++) {
+        CapaImage *img = capa_session_image_get(priv->session, i);
         int mod = capa_image_last_modified(img);
         GtkTreeIter iter;
 
         gtk_list_store_append(priv->model, &iter);
         CAPA_DEBUG("ADD IMAGE FIRST %p", img);
         /* XXX what's our refcount policy going to be for pixbuf.... */
-        gtk_list_store_set(priv->model, &iter, 0, img, 1, pixbuf, 2, mod, -1);
+        gtk_list_store_set(priv->model, &iter, 0, img, 1, priv->blank, 2, mod, -1);
 
+        capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->loader),
+                                capa_image_filename(img));
         //g_object_unref(cam);
     }
 
@@ -80,33 +181,6 @@ static void do_model_refresh(CapaSessionBrowser *browser)
 
         gtk_tree_path_free(path);
     }
-}
-
-
-static void do_image_added(CapaSession *session G_GNUC_UNUSED,
-                           CapaImage *img,
-                           gpointer data)
-{
-    CapaSessionBrowser *browser = data;
-    CapaSessionBrowserPrivate *priv = browser->priv;
-    GdkPixbuf *pixbuf = capa_image_thumbnail(img);
-    GtkTreeIter iter;
-    GtkTreePath *path = NULL;
-    int mod = capa_image_last_modified(img);
-
-    gtk_list_store_append(priv->model, &iter);
-
-    /* XXX what's our refcount policy going to be for pixbuf.... */
-    gtk_list_store_set(priv->model, &iter, 0, img, 1, pixbuf, 2, mod, -1);
-    CAPA_DEBUG("ADD IMAGE EXTRA %p", img);
-    path = gtk_tree_model_get_path(GTK_TREE_MODEL(priv->model), &iter);
-
-    gtk_icon_view_select_path(GTK_ICON_VIEW(browser), path);
-    gtk_icon_view_scroll_to_path(GTK_ICON_VIEW(browser), path, FALSE, 0, 0);
-
-    gtk_tree_path_free(path);
-
-    gtk_widget_queue_resize(GTK_WIDGET(browser));
 }
 
 
@@ -140,6 +214,10 @@ static void capa_session_browser_get_property(GObject *object,
             g_value_set_object(value, priv->session);
             break;
 
+        case PROP_LOADER:
+            g_value_set_object(value, priv->loader);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -159,19 +237,35 @@ static void capa_session_browser_set_property(GObject *object,
         {
         case PROP_SESSION:
             if (priv->session) {
-                g_signal_handler_disconnect(G_OBJECT(priv->session),
-                                            priv->sigImageAdded);
+                if (priv->loader)
+                    do_model_unload(browser);
+
                 g_object_unref(G_OBJECT(priv->session));
             }
             priv->session = g_value_get_object(value);
             if (priv->session) {
                 g_object_ref(G_OBJECT(priv->session));
 
-                priv->sigImageAdded = g_signal_connect(G_OBJECT(priv->session), "session-image-added",
-                                                       G_CALLBACK(do_image_added), browser);
+                if (priv->loader)
+                    do_model_load(browser);
             }
 
-            do_model_refresh(browser);
+            break;
+
+        case PROP_LOADER:
+            if (priv->loader) {
+                if (priv->session)
+                    do_model_unload(browser);
+
+                g_object_unref(G_OBJECT(priv->loader));
+            }
+            priv->loader = g_value_get_object(value);
+            if (priv->loader) {
+                g_object_ref(G_OBJECT(priv->loader));
+
+                if (priv->session)
+                    do_model_load(browser);
+            }
             break;
 
         default:
@@ -184,9 +278,13 @@ static void capa_session_browser_finalize (GObject *object)
     CapaSessionBrowser *browser = CAPA_SESSION_BROWSER(object);
     CapaSessionBrowserPrivate *priv = browser->priv;
 
-    gtk_list_store_clear(priv->model);
+    if (priv->session && priv->loader)
+        do_model_unload(browser);
+
     if (priv->session)
         g_object_unref(G_OBJECT(priv->session));
+    if (priv->loader)
+        g_object_unref(G_OBJECT(priv->loader));
 
     G_OBJECT_CLASS (capa_session_browser_parent_class)->finalize (object);
 }
@@ -206,6 +304,17 @@ static void capa_session_browser_class_init(CapaSessionBrowserClass *klass)
                                                         "Session",
                                                         "Session to be displayed",
                                                         CAPA_TYPE_SESSION,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_LOADER,
+                                    g_param_spec_object("thumbnail-loader",
+                                                        "Thumbnail loader",
+                                                        "Thumbnail loader",
+                                                        CAPA_TYPE_THUMBNAIL_LOADER,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |

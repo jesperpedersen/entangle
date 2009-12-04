@@ -41,7 +41,8 @@ libcapa_backend_la_SOURCES = \
 	backend/preferences.h backend/preferences.c \
 	backend/preferences-gconf.h backend/preferences-gconf.c \
 	backend/progress.h backend/progress.c \
-	backend/session.h backend/session.c
+	backend/session.h backend/session.c \
+	backend/thumbnail-loader.h backend/thumbnail-loader.c
 
 libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \

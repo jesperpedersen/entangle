@@ -34,6 +34,7 @@
 #include "camera-progress.h"
 #include "image-display.h"
 #include "image-loader.h"
+#include "thumbnail-loader.h"
 #include "image-polaroid.h"
 #include "help-about.h"
 #include "session-browser.h"
@@ -59,6 +60,7 @@ struct _CapaCameraManagerPrivate {
     CapaCameraProgress *progress;
 
     CapaImageLoader *imageLoader;
+    CapaThumbnailLoader *thumbLoader;
     CapaColourProfileTransform *colourTransform;
     CapaImageDisplay *imageDisplay;
     CapaSessionBrowser *sessionBrowser;
@@ -403,6 +405,7 @@ static void capa_camera_manager_set_property(GObject *object,
 
             priv->colourTransform = capa_camera_manager_colour_transform(manager);
             g_object_set(G_OBJECT(priv->imageLoader), "colour-transform", priv->colourTransform, NULL);
+            g_object_set(G_OBJECT(priv->thumbLoader), "colour-transform", priv->colourTransform, NULL);
             break;
 
         default:
@@ -419,6 +422,8 @@ static void capa_camera_manager_finalize (GObject *object)
 
     if (priv->imageLoader)
         g_object_unref(G_OBJECT(priv->imageLoader));
+    if (priv->thumbLoader)
+        g_object_unref(G_OBJECT(priv->thumbLoader));
     if (priv->colourTransform)
         g_object_unref(G_OBJECT(priv->colourTransform));
     if (priv->camera)
@@ -1113,11 +1118,14 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
     viewport = glade_xml_get_widget(priv->glade, "image-viewport");
 
     priv->imageLoader = capa_image_loader_new();
+    priv->thumbLoader = capa_thumbnail_loader_new(96, 96);
+
     priv->imageDisplay = capa_image_display_new();
     priv->sessionBrowser = capa_session_browser_new();
     priv->controlPanel = capa_control_panel_new();
 
     g_object_set(G_OBJECT(priv->imageDisplay), "image-loader", priv->imageLoader, NULL);
+    g_object_set(G_OBJECT(priv->sessionBrowser), "thumbnail-loader", priv->thumbLoader, NULL);
 
     g_signal_connect(G_OBJECT(priv->sessionBrowser), "selection-changed",
                      G_CALLBACK(do_session_image_selected), manager);

@@ -615,8 +615,6 @@ static void *do_camera_capture_thread(void *data)
     CAPA_DEBUG("Done");
 
     image = capa_image_new(localpath);
-    /* XXX don't do this here in future */
-    capa_image_load(image);
 
     capa_camera_threads_enter();
     capa_session_add(priv->session, image);
@@ -692,8 +690,6 @@ static void *do_camera_preview_thread(void *data)
     gp_file_unref(datafile);
 
     image = capa_image_new(localpath);
-    /* XXX don't do this here in future */
-    capa_image_load(image);
 
     capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-image", image);
@@ -772,8 +768,6 @@ static int do_camera_file_added(CapaCamera *cam,
     CAPA_DEBUG("Done");
 
     image = capa_image_new(localpath);
-    /* XXX don't do this here in future */
-    capa_image_load(image);
 
     capa_camera_threads_enter();
     capa_session_add(priv->session, image);

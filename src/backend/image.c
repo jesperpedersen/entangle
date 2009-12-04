@@ -33,9 +33,7 @@
 struct _CapaImagePrivate {
     char *filename;
 
-    GdkPixbuf *thumbnail;
-
-    gboolean hasStat;
+    gboolean dirty;
     struct stat st;
 };
 
@@ -78,6 +76,7 @@ static void capa_image_set_property(GObject *object,
         case PROP_FILENAME:
             g_free(priv->filename);
             priv->filename = g_value_dup_string(value);
+            priv->dirty = TRUE;
             break;
 
         default:
@@ -92,9 +91,6 @@ static void capa_image_finalize(GObject *object)
     CapaImagePrivate *priv = image->priv;
 
     CAPA_DEBUG("Finalize image %p", object);
-
-    if (priv->thumbnail)
-        g_object_unref(G_OBJECT(priv->thumbnail));
 
     g_free(priv->filename);
 
@@ -140,8 +136,7 @@ static void capa_image_init(CapaImage *picker)
 
     priv = picker->priv = CAPA_IMAGE_GET_PRIVATE(picker);
 
-    priv->thumbnail = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 96, 96);
-    gdk_pixbuf_fill(priv->thumbnail, 0x000000FF);
+    priv->dirty = TRUE;
 }
 
 
@@ -151,42 +146,28 @@ const char *capa_image_filename(CapaImage *image)
     return priv->filename;
 }
 
-gboolean capa_image_load(CapaImage *image)
+static gboolean capa_image_load(CapaImage *image)
 {
     CapaImagePrivate *priv = image->priv;
-    GdkPixbuf *thumb;
-    int tw, th;
+
+    if (!priv->dirty)
+        return TRUE;
 
     if (stat(priv->filename, &priv->st) < 0) {
         memset(&priv->st, 0, sizeof priv->st);
         return FALSE;
     }
 
-    /* XXX stupidly inefficient to load it here, or in this way.
-     * Switch to a background thread + cached thumbnails as
-     * per fd.o spec */
-    thumb = gdk_pixbuf_new_from_file_at_size(priv->filename,
-                                             96, 96, NULL);
-    CAPA_DEBUG("Generated thumbnail %p\n", thumb);
-
-    tw = gdk_pixbuf_get_width(thumb);
-    th = gdk_pixbuf_get_height(thumb);
-
-    if (thumb) {
-        gdk_pixbuf_copy_area(thumb,
-                             0, 0,
-                             tw, th,
-                             priv->thumbnail,
-                             (96-tw)/2, (96-th)/2);
-    }
-    g_object_unref(thumb);
-
+    priv->dirty = FALSE;
     return TRUE;
 }
 
 time_t capa_image_last_modified(CapaImage *image)
 {
     CapaImagePrivate *priv = image->priv;
+
+    if (!capa_image_load(image))
+        return 0;
 
     return priv->st.st_mtime;
 }
@@ -195,16 +176,12 @@ off_t capa_image_file_size(CapaImage *image)
 {
     CapaImagePrivate *priv = image->priv;
 
+    if (!capa_image_load(image))
+        return 0;
+
     return priv->st.st_mtime;
 }
 
-
-GdkPixbuf *capa_image_thumbnail(CapaImage *image)
-{
-    CapaImagePrivate *priv = image->priv;
-
-    return priv->thumbnail;
-}
 
 /*
  * Local variables:

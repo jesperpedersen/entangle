@@ -418,9 +418,12 @@ capa_colour_profile_pixel_type(GdkPixbuf *pixbuf)
 {
     int type = COLORSPACE_SH(PT_RGB); /* GdkPixbuf only supports RGB for now */
 
-    /* XXX does n_channels already include the alpha channel ? */
-    type |= CHANNELS_SH(gdk_pixbuf_get_n_channels(pixbuf) +
-                        (gdk_pixbuf_get_has_alpha(pixbuf) ? 1 : 0));
+    if (gdk_pixbuf_get_has_alpha(pixbuf)) {
+        type |= CHANNELS_SH(gdk_pixbuf_get_n_channels(pixbuf)-1);
+        type |= EXTRA_SH(1);
+    } else {
+        type |= CHANNELS_SH(gdk_pixbuf_get_n_channels(pixbuf));
+    }
     type |= BYTES_SH(gdk_pixbuf_get_bits_per_sample(pixbuf) / 8);
 
     return type;

@@ -22,7 +22,6 @@
 #define __CAPA_IMAGE_H__
 
 #include <glib-object.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -61,12 +60,8 @@ CapaImage *capa_image_new(const char *filename);
 
 const char *capa_image_filename(CapaImage *image);
 
-gboolean capa_image_load(CapaImage *image);
-
 time_t capa_image_last_modified(CapaImage *image);
 off_t capa_image_file_size(CapaImage *image);
-
-GdkPixbuf *capa_image_thumbnail(CapaImage *image);
 
 G_END_DECLS
 

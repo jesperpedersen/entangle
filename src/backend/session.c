@@ -317,10 +317,8 @@ gboolean capa_session_load(CapaSession *session)
         char *filename = g_strdup_printf("%s/%s", priv->directory, ent->d_name);
         CapaImage *image = capa_image_new(filename);
 
-        CAPA_DEBUG("Loading '%s'", filename);
-
-        if (capa_image_load(image))
-            capa_session_add(session, image);
+        CAPA_DEBUG("Adding '%s'", filename);
+        capa_session_add(session, image);
 
         g_object_unref(G_OBJECT(image));
     }
