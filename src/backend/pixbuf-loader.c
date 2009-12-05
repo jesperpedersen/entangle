@@ -231,7 +231,8 @@ static void capa_pixbuf_loader_worker(gpointer data,
     entry->processing = TRUE;
 
     transform = priv->colourTransform;
-    g_object_ref(G_OBJECT(transform));
+    if (transform)
+        g_object_ref(G_OBJECT(transform));
     g_mutex_unlock(priv->lock);
 
     pixbuf = capa_pixbuf_load(loader, filename);
@@ -251,7 +252,8 @@ static void capa_pixbuf_loader_worker(gpointer data,
     g_idle_add(capa_pixbuf_loader_result, result);
 
     g_mutex_lock(priv->lock);
-    g_object_unref(G_OBJECT(transform));
+    if (transform)
+        g_object_unref(G_OBJECT(transform));
 
  cleanup:
     g_mutex_unlock(priv->lock);

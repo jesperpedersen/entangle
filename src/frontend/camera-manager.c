@@ -75,6 +75,7 @@ struct _CapaCameraManagerPrivate {
     gulong sigError;
     gulong sigOpBegin;
     gulong sigOpEnd;
+    gulong sigPrefsNotify;
 
     gboolean inOperation;
 
@@ -142,8 +143,10 @@ static CapaColourProfileTransform *capa_camera_manager_colour_transform(CapaCame
     if (capa_preferences_enable_color_management(priv->prefs)) {
         CapaColourProfile *rgbProfile;
         CapaColourProfile *monitorProfile;
+        CapaColourProfileIntent intent;
 
         rgbProfile = capa_preferences_rgb_profile(priv->prefs);
+        intent = capa_preferences_profile_rendering_intent(priv->prefs);
         if (capa_preferences_detect_monitor_profile(priv->prefs)) {
             GtkWidget *window = glade_xml_get_widget(priv->glade, "camera-manager");
             monitorProfile = capa_camera_manager_monitor_profile(GTK_WINDOW(window));
@@ -151,10 +154,46 @@ static CapaColourProfileTransform *capa_camera_manager_colour_transform(CapaCame
             monitorProfile = capa_preferences_monitor_profile(priv->prefs);
         }
 
-        transform = capa_colour_profile_transform_new(rgbProfile, monitorProfile);
+        if (monitorProfile)
+            transform = capa_colour_profile_transform_new(rgbProfile, monitorProfile, intent);
     }
 
     return transform;
+}
+
+
+static void capa_camera_manager_update_colour_transform(CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->colourTransform)
+        g_object_unref(priv->colourTransform);
+
+    priv->colourTransform = capa_camera_manager_colour_transform(manager);
+    if (priv->imageLoader)
+        g_object_set(G_OBJECT(priv->imageLoader),
+                     "colour-transform", priv->colourTransform,
+                     NULL);
+    if (priv->thumbLoader)
+        g_object_set(G_OBJECT(priv->thumbLoader),
+                     "colour-transform", priv->colourTransform,
+                     NULL);
+}
+
+
+static void capa_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
+                                              GParamSpec *spec,
+                                              gpointer opaque)
+{
+    CapaCameraManager *manager = CAPA_CAMERA_MANAGER(opaque);
+
+    if (strcmp(spec->name, "colour-managed-display") == 0 ||
+        strcmp(spec->name, "rgb-profile") == 0 ||
+        strcmp(spec->name, "monitor-profile") == 0 ||
+        strcmp(spec->name, "detect-system-profile") == 0 ||
+        strcmp(spec->name, "profile-rendering-intent") == 0) {
+        capa_camera_manager_update_colour_transform(manager);
+    }
 }
 
 
@@ -398,14 +437,20 @@ static void capa_camera_manager_set_property(GObject *object,
         } break;
 
         case PROP_PREFERENCES:
-            if (priv->prefs)
+            if (priv->prefs) {
+                g_signal_handler_disconnect(priv->prefs, priv->sigPrefsNotify);
                 g_object_unref(G_OBJECT(priv->prefs));
+            }
             priv->prefs = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->prefs));
+            if (priv->prefs) {
+                g_object_ref(G_OBJECT(priv->prefs));
+                priv->sigPrefsNotify = g_signal_connect(G_OBJECT(priv->prefs),
+                                                        "notify",
+                                                        G_CALLBACK(capa_camera_manager_prefs_changed),
+                                                        manager);
+            }
 
-            priv->colourTransform = capa_camera_manager_colour_transform(manager);
-            g_object_set(G_OBJECT(priv->imageLoader), "colour-transform", priv->colourTransform, NULL);
-            g_object_set(G_OBJECT(priv->thumbLoader), "colour-transform", priv->colourTransform, NULL);
+            capa_camera_manager_update_colour_transform(manager);
             break;
 
         default:

@@ -42,6 +42,7 @@ struct _CapaColourProfilePrivate {
 struct _CapaColourProfileTransformPrivate {
     CapaColourProfile *srcProfile;
     CapaColourProfile *dstProfile;
+    CapaColourProfileIntent renderIntent;
 };
 
 G_DEFINE_TYPE(CapaColourProfile, capa_colour_profile, G_TYPE_OBJECT);
@@ -57,6 +58,7 @@ enum {
     PROP_00,
     PROP_SRC_PROFILE,
     PROP_DST_PROFILE,
+    PROP_RENDERING_INTENT,
 };
 
 static void capa_colour_profile_get_property(GObject *object,
@@ -148,14 +150,20 @@ static void capa_colour_profile_transform_set_property(GObject *object,
             if (priv->srcProfile)
                 g_object_unref(G_OBJECT(priv->srcProfile));
             priv->srcProfile = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->srcProfile));
+            if (priv->srcProfile)
+                g_object_ref(G_OBJECT(priv->srcProfile));
             break;
 
         case PROP_DST_PROFILE:
             if (priv->dstProfile)
                 g_object_unref(G_OBJECT(priv->dstProfile));
             priv->dstProfile = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->srcProfile));
+            if (priv->dstProfile)
+                g_object_ref(G_OBJECT(priv->dstProfile));
+            break;
+
+        case PROP_RENDERING_INTENT:
+            priv->renderIntent = g_value_get_enum(value);
             break;
 
         default:
@@ -264,6 +272,18 @@ static void capa_colour_profile_transform_class_init(CapaColourProfileTransformC
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_RENDERING_INTENT,
+                                    g_param_spec_enum("rendering-intent",
+                                                      "Rendering intent",
+                                                      "Profile rendering intent",
+                                                      CAPA_TYPE_COLOUR_PROFILE_INTENT,
+                                                      CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_CONSTRUCT_ONLY |
+                                                      G_PARAM_STATIC_NAME |
+                                                      G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(CapaColourProfileTransformPrivate));
 }
@@ -430,11 +450,13 @@ capa_colour_profile_pixel_type(GdkPixbuf *pixbuf)
 
 
 CapaColourProfileTransform *capa_colour_profile_transform_new(CapaColourProfile *src,
-                                                              CapaColourProfile *dst)
+                                                              CapaColourProfile *dst,
+                                                              CapaColourProfileIntent intent)
 {
     return CAPA_COLOUR_PROFILE_TRANSFORM(g_object_new(CAPA_TYPE_COLOUR_PROFILE_TRANSFORM,
                                                       "src-profile", src,
                                                       "dst-profile", dst,
+                                                      "rendering-intent", intent,
                                                       NULL));
 }
 
@@ -452,18 +474,42 @@ GdkPixbuf *capa_colour_profile_transform_apply(CapaColourProfileTransform *trans
     int stride = gdk_pixbuf_get_rowstride(srcpixbuf);
     int height = gdk_pixbuf_get_height(srcpixbuf);
     int width = gdk_pixbuf_get_width(srcpixbuf);
+    int intent = INTENT_PERCEPTUAL;
+
+    if (!priv->srcProfile ||
+        !priv->dstProfile) {
+        g_object_ref(srcpixbuf);
+        return srcpixbuf;
+    }
 
     if (!capa_colour_profile_load(priv->srcProfile) ||
-        !capa_colour_profile_load(priv->dstProfile))
-        return NULL;
+        !capa_colour_profile_load(priv->dstProfile)) {
+        g_object_ref(srcpixbuf);
+        return srcpixbuf;
+    }
 
     dstpixbuf = gdk_pixbuf_copy(srcpixbuf);
+
+    switch (priv->renderIntent) {
+    case CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL:
+        intent = INTENT_PERCEPTUAL;
+        break;
+    case CAPA_COLOUR_PROFILE_INTENT_REL_COLOURIMETRIC:
+        intent = INTENT_RELATIVE_COLORIMETRIC;
+        break;
+    case CAPA_COLOUR_PROFILE_INTENT_SATURATION:
+        intent = INTENT_SATURATION;
+        break;
+    case CAPA_COLOUR_PROFILE_INTENT_ABS_COLOURIMETRIC:
+        intent = INTENT_ABSOLUTE_COLORIMETRIC;
+        break;
+    }
 
     transform = cmsCreateTransform(srcpriv->profile,
                                    type,
                                    dstpriv->profile,
                                    type,
-                                   INTENT_PERCEPTUAL,
+                                   intent,
                                    0);
 
     srcpixels = gdk_pixbuf_get_pixels(srcpixbuf);

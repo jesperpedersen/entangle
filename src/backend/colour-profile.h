@@ -101,7 +101,8 @@ char *capa_colour_profile_model(CapaColourProfile *profile);
 char *capa_colour_profile_copyright(CapaColourProfile *profile);
 
 CapaColourProfileTransform *capa_colour_profile_transform_new(CapaColourProfile *src,
-                                                              CapaColourProfile *dst);
+                                                              CapaColourProfile *dst,
+                                                              CapaColourProfileIntent intent);
 
 GdkPixbuf *capa_colour_profile_transform_apply(CapaColourProfileTransform *trans,
                                                GdkPixbuf *pixbuf);
