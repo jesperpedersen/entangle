@@ -29,7 +29,17 @@ G_DEFINE_TYPE(CapaImageLoader, capa_image_loader, CAPA_TYPE_PIXBUF_LOADER);
 static GdkPixbuf *capa_image_loader_pixbuf_load(CapaPixbufLoader *loader G_GNUC_UNUSED,
                                                 const char *filename)
 {
-    return gdk_pixbuf_new_from_file(filename, NULL);
+    GdkPixbuf *master = gdk_pixbuf_new_from_file(filename, NULL);
+    GdkPixbuf *result;
+
+    if (!master)
+        return NULL;
+
+    result = gdk_pixbuf_apply_embedded_orientation(master);
+
+    g_object_unref(G_OBJECT(master));
+
+    return result;
 }
 
 

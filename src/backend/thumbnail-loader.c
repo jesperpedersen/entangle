@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "internal.h"
 #include "thumbnail-loader.h"
@@ -142,6 +143,7 @@ static GdkPixbuf *capa_thumbnail_loader_generate(const char *filename,
     char widthStr[21];
     char heightStr[21];
     char *thumbnametmp;
+    const char *orientationstr;
 
     master = gdk_pixbuf_new_from_file(filename, NULL);
 
@@ -165,8 +167,6 @@ static GdkPixbuf *capa_thumbnail_loader_generate(const char *filename,
 
     thumb = gdk_pixbuf_scale_simple(master, tw, th, GDK_INTERP_BILINEAR);
 
-    g_object_unref(G_OBJECT(master));
-
     g_snprintf(widthStr, sizeof(widthStr), "%d", iw);
     g_snprintf(heightStr, sizeof(heightStr), "%d", ih);
     g_snprintf(mtimeStr, sizeof(mtimeStr), "%ld", mtime);
@@ -175,6 +175,8 @@ static GdkPixbuf *capa_thumbnail_loader_generate(const char *filename,
 
     thumbnametmp = g_strdup_printf("%s.capa-tmp", thumbname);
 
+    orientationstr = gdk_pixbuf_get_option (master, "orientation");
+
     if (gdk_pixbuf_save(thumb, thumbnametmp,
                         "png", NULL,
                         "tEXt::Thumb::Image::Width", widthStr,
@@ -182,6 +184,7 @@ static GdkPixbuf *capa_thumbnail_loader_generate(const char *filename,
                         "tEXt::Thumb::URI", uri,
                         "tEXt::Thumb::MTime", mtimeStr,
                         "tEXt::Software", "Capa",
+                        "tEXt::Capa::Orientation", orientationstr ? orientationstr : "0",
                         NULL)) {
         chmod(thumbnametmp, 0600);
         if (rename(thumbnametmp, thumbname) < 0)
@@ -189,9 +192,71 @@ static GdkPixbuf *capa_thumbnail_loader_generate(const char *filename,
     }
     g_free(thumbnametmp);
 
+    g_object_unref(G_OBJECT(master));
+
     return thumb;
 }
 
+
+static GdkPixbuf *capa_thumbnail_loader_auto_rotate(GdkPixbuf *src)
+{
+    GdkPixbuf *dest = gdk_pixbuf_apply_embedded_orientation(src);
+    GdkPixbuf *temp;
+
+    g_object_unref(G_OBJECT(src));
+
+    if (dest == src) {
+        const char *orientationstr;
+        int transform = 0;
+        orientationstr = gdk_pixbuf_get_option(src, "tEXt::Capa::Orientation");
+
+        if (orientationstr)
+            transform = (int)g_ascii_strtoll(orientationstr, NULL, 10);
+
+        /* Apply the actual transforms, which involve rotations and flips.
+           The meaning of orientation values 1-8 and the required transforms
+           are defined by the TIFF and EXIF (for JPEGs) standards. */
+        switch (transform) {
+        case 1:
+                dest = src;
+                g_object_ref(dest);
+                break;
+        case 2:
+                dest = gdk_pixbuf_flip(src, TRUE);
+                break;
+        case 3:
+                dest = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+                break;
+        case 4:
+                dest = gdk_pixbuf_flip(src, FALSE);
+                break;
+        case 5:
+                temp = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_CLOCKWISE);
+                dest = gdk_pixbuf_flip(temp,TRUE);
+                g_object_unref(temp);
+                break;
+        case 6:
+                dest = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_CLOCKWISE);
+                break;
+        case 7:
+                temp = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_CLOCKWISE);
+                dest = gdk_pixbuf_flip(temp, FALSE);
+                g_object_unref(temp);
+                break;
+        case 8:
+                dest = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE);
+                break;
+        default:
+                /* if no orientation tag was present */
+                dest = src;
+                g_object_ref(dest);
+                break;
+        }
+
+    }
+
+    return dest;
+}
 
 static GdkPixbuf *capa_thumbnail_loader_pixbuf_load(CapaPixbufLoader *loader,
                                                     const char *filename)
@@ -237,6 +302,12 @@ static GdkPixbuf *capa_thumbnail_loader_pixbuf_load(CapaPixbufLoader *loader,
                    thumbname, uri, sb.st_mtime);
         thumb = capa_thumbnail_loader_generate(filename, uri, thumbname,
                                                sb.st_mtime);
+    }
+
+    if (thumb) {
+        GdkPixbuf *tmp = capa_thumbnail_loader_auto_rotate(thumb);
+        g_object_unref(G_OBJECT(thumb));
+        thumb = tmp;
     }
 
     if (thumb) {
