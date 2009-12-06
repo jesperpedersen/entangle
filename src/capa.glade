@@ -337,96 +337,6 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="toolbar-zoom-out">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Shrink the display of the image
-by one factor</property>
-                <property name="label" translatable="yes">Zoom Out</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-out</property>
-                <signal name="clicked" handler="toolbar_zoom_out_click"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkToolButton" id="toolbar-zoom-normal">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Display the image with its
-native pixel size</property>
-                <property name="label" translatable="yes">Normal</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-100</property>
-                <signal name="clicked" handler="toolbar_zoom_normal_click"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkToolButton" id="toolbar-zoom-in">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Enlarge the display of the image
-by one factor</property>
-                <property name="label" translatable="yes">Zoom In</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-in</property>
-                <signal name="clicked" handler="toolbar_zoom_in_click"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkToolButton" id="toolbar-zoom-best">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Resize the image to automatically
-fit the available window real estate</property>
-                <property name="label" translatable="yes">Best Fit</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-fit</property>
-                <signal name="clicked" handler="toolbar_zoom_best_click"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkSeparatorToolItem" id="separatortoolitem3">
-                <property name="visible">True</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkToggleToolButton" id="toolbar-fullscreen">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Switch to fullscreen display mode</property>
-                <property name="label" translatable="yes">Full Screen</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-fullscreen</property>
-                <signal name="toggled" handler="toolbar_fullscreen_toggle"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkSeparatorToolItem" id="separatortoolitem1">
-                <property name="visible">True</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="GtkToggleToolButton" id="toolbar-settings">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">View the full list of camera settings</property>
@@ -435,15 +345,6 @@ fit the available window real estate</property>
                 <property name="stock_id">gtk-properties</property>
                 <property name="active">True</property>
                 <signal name="toggled" handler="toolbar_settings_toggled"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkSeparatorToolItem" id="toolbutton4">
-                <property name="visible">True</property>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -501,6 +402,96 @@ executing camera operation</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-ok</property>
                 <signal name="clicked" handler="toolbar_confirm_clicked"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkSeparatorToolItem" id="separatortoolitem1">
+                <property name="visible">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="toolbar-zoom-out">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Shrink the display of the image
+by one factor</property>
+                <property name="label" translatable="yes">Zoom Out</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-zoom-out</property>
+                <signal name="clicked" handler="toolbar_zoom_out_click"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="toolbar-zoom-in">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Enlarge the display of the image
+by one factor</property>
+                <property name="label" translatable="yes">Zoom In</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-zoom-in</property>
+                <signal name="clicked" handler="toolbar_zoom_in_click"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="toolbar-zoom-best">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Resize the image to automatically
+fit the available window real estate</property>
+                <property name="label" translatable="yes">Best Fit</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-zoom-fit</property>
+                <signal name="clicked" handler="toolbar_zoom_best_click"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="toolbar-zoom-normal">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Display the image with its
+native pixel size</property>
+                <property name="label" translatable="yes">Normal</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-zoom-100</property>
+                <signal name="clicked" handler="toolbar_zoom_normal_click"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkSeparatorToolItem" id="separatortoolitem3">
+                <property name="visible">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToggleToolButton" id="toolbar-fullscreen">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Switch to fullscreen display mode</property>
+                <property name="label" translatable="yes">Full Screen</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-fullscreen</property>
+                <signal name="toggled" handler="toolbar_fullscreen_toggle"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
