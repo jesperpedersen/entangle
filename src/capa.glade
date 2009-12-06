@@ -494,6 +494,38 @@ downloading new images as they are shot.</property>
                 <property name="homogeneous">True</property>
               </packing>
             </child>
+            <child>
+              <widget class="GtkToolItem" id="toolbar-operation">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkProgressBar" id="toolbar-progress">
+                    <property name="width_request">200</property>
+                    <property name="visible">True</property>
+                    <property name="text_xalign">0</property>
+                    <property name="ellipsize">end</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="toolbar-cancel">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Attempt to cancel the currently
+executing camera operation</property>
+                <property name="label" translatable="yes">Cancel</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-cancel</property>
+                <signal name="clicked" handler="toolbar_cancel_clicked"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="expand">False</property>

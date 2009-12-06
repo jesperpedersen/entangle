@@ -31,7 +31,6 @@
 #include "camera-manager.h"
 #include "camera-list.h"
 #include "camera-info.h"
-#include "camera-progress.h"
 #include "image-display.h"
 #include "image-loader.h"
 #include "thumbnail-loader.h"
@@ -57,8 +56,6 @@ struct _CapaCameraManagerPrivate {
     CapaCameraInfo *driver;
     CapaCameraInfo *supported;
 
-    CapaCameraProgress *progress;
-
     CapaImageLoader *imageLoader;
     CapaThumbnailLoader *thumbLoader;
     CapaColourProfileTransform *colourTransform;
@@ -78,11 +75,18 @@ struct _CapaCameraManagerPrivate {
     gulong sigPrefsNotify;
 
     gboolean inOperation;
+    gboolean operationCancel;
+    float operationTarget;
 
     GladeXML *glade;
 };
 
-G_DEFINE_TYPE(CapaCameraManager, capa_camera_manager, G_TYPE_OBJECT);
+static void capa_camera_progress_interface_init (gpointer g_iface,
+                                                 gpointer iface_data);
+
+//G_DEFINE_TYPE(CapaCameraManager, capa_camera_manager, G_TYPE_OBJECT);
+G_DEFINE_TYPE_EXTENDED(CapaCameraManager, capa_camera_manager, G_TYPE_OBJECT, 0,
+                       G_IMPLEMENT_INTERFACE(CAPA_TYPE_PROGRESS, capa_camera_progress_interface_init));
 
 enum {
     PROP_O,
@@ -204,6 +208,7 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
     GtkWidget *toolPreview;
     GtkWidget *toolMonitor;
     GtkWidget *settingsScroll;
+    GtkWidget *iconScroll;
 
     GtkWidget *toolNew;
     GtkWidget *toolOpen;
@@ -213,10 +218,14 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
     GtkWidget *menuDisconnect;
     GtkWidget *menuHelp;
 
+    GtkWidget *cancel;
+    GtkWidget *operation;
+
     toolCapture = glade_xml_get_widget(priv->glade, "toolbar-capture");
     toolPreview = glade_xml_get_widget(priv->glade, "toolbar-preview");
     toolMonitor = glade_xml_get_widget(priv->glade, "toolbar-monitor");
     settingsScroll = glade_xml_get_widget(priv->glade, "settings-scroll");
+    iconScroll = glade_xml_get_widget(priv->glade, "icon-scroll");
 
     toolNew = glade_xml_get_widget(priv->glade, "toolbar-new");
     toolOpen = glade_xml_get_widget(priv->glade, "toolbar-open");
@@ -225,6 +234,10 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
     menuConnect = glade_xml_get_widget(priv->glade, "menu-connect");
     menuDisconnect = glade_xml_get_widget(priv->glade, "menu-disconnect");
     menuHelp = glade_xml_get_widget(priv->glade, "menu-help-camera");
+
+    cancel = glade_xml_get_widget(priv->glade, "toolbar-cancel");
+    operation = glade_xml_get_widget(priv->glade, "toolbar-operation");
+
 
     gtk_widget_set_sensitive(toolCapture,
                              priv->camera &&
@@ -262,8 +275,21 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
     if (priv->camera && !capa_camera_has_preview(priv->camera))
         gtk_widget_set_tooltip_text(toolPreview, "This camera does not support image preview");
 
-    if (priv->camera && !capa_camera_has_settings(priv->camera))
+    if (priv->camera && capa_camera_has_settings(priv->camera))
+        gtk_widget_show(settingsScroll);
+    else
         gtk_widget_hide(settingsScroll);
+
+    gtk_widget_set_sensitive(settingsScroll, !priv->inOperation);
+    /*gtk_widget_set_sensitive(iconScroll, !priv->inOperation);*/
+
+    if (priv->inOperation) {
+        gtk_widget_show(cancel);
+        gtk_widget_show(operation);
+    } else {
+        gtk_widget_hide(cancel);
+        gtk_widget_hide(operation);
+    }
 }
 
 
@@ -290,7 +316,7 @@ static void do_camera_op_begin(CapaCamera *cam G_GNUC_UNUSED, void *data)
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
 
-    capa_camera_progress_show(priv->progress, "Capturing image");
+    priv->operationCancel = FALSE;
 }
 
 static void do_camera_op_end(CapaCamera *cam G_GNUC_UNUSED, void *data)
@@ -298,9 +324,84 @@ static void do_camera_op_end(CapaCamera *cam G_GNUC_UNUSED, void *data)
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
 
-    capa_camera_progress_hide(priv->progress);
     priv->inOperation = FALSE;
+    priv->operationCancel = FALSE;
     do_capture_widget_sensitivity(manager);
+}
+
+static void do_capa_camera_progress_start(CapaProgress *iface, float target, const char *format, va_list args)
+{
+    CapaCameraManager *manager = CAPA_CAMERA_MANAGER(iface);
+    CapaCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *mtr;
+    char *txt;
+
+    gdk_threads_enter();
+
+    priv->operationTarget = target;
+    mtr = glade_xml_get_widget(priv->glade, "toolbar-progress");
+
+    txt = g_strdup_vprintf(format, args);
+
+    gtk_widget_set_tooltip_text(mtr, txt);
+    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), txt);
+    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
+
+    g_free(txt);
+
+    gdk_threads_leave();
+}
+
+static void do_capa_camera_progress_update(CapaProgress *iface, float current)
+{
+    CapaCameraManager *manager = CAPA_CAMERA_MANAGER(iface);
+    CapaCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *mtr;
+
+    gdk_threads_enter();
+
+    mtr = glade_xml_get_widget(priv->glade, "toolbar-progress");
+
+    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), current / priv->operationTarget);
+
+    gdk_threads_leave();
+}
+
+static void do_capa_camera_progress_stop(CapaProgress *iface)
+{
+    CapaCameraManager *manager = CAPA_CAMERA_MANAGER(iface);
+    CapaCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *mtr;
+
+    gdk_threads_enter();
+
+    mtr = glade_xml_get_widget(priv->glade, "toolbar-progress");
+
+    gtk_widget_set_tooltip_text(mtr, "");
+    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), "");
+    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
+
+    gdk_threads_leave();
+}
+
+static gboolean do_capa_camera_progress_cancelled(CapaProgress *iface)
+{
+    CapaCameraManager *manager = CAPA_CAMERA_MANAGER(iface);
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    CAPA_DEBUG("Cancel called");
+
+    return priv->operationCancel;
+}
+
+static void capa_camera_progress_interface_init (gpointer g_iface,
+                                                 gpointer iface_data G_GNUC_UNUSED)
+{
+    CapaProgressInterface *iface = g_iface;
+    iface->start = do_capa_camera_progress_start;
+    iface->update = do_capa_camera_progress_update;
+    iface->stop = do_capa_camera_progress_stop;
+    iface->cancelled = do_capa_camera_progress_cancelled;
 }
 
 static void do_remove_camera(CapaCameraManager *manager)
@@ -369,7 +470,7 @@ static void do_add_camera(CapaCameraManager *manager)
     capa_session_load(session);
 
     g_object_set(G_OBJECT(priv->camera),
-                 "progress", priv->progress,
+                 "progress", manager,
                  "session", session,
                  NULL);
 
@@ -480,7 +581,6 @@ static void capa_camera_manager_finalize (GObject *object)
 
     g_hash_table_destroy(priv->polaroids);
 
-    g_object_unref(G_OBJECT(priv->progress));
     g_object_unref(priv->glade);
 
     G_OBJECT_CLASS (capa_camera_manager_parent_class)->finalize (object);
@@ -748,6 +848,15 @@ static void do_toolbar_settings_toggled(GtkToggleToolButton *src,
         gtk_widget_show(settings);
     else
         gtk_widget_hide(settings);
+}
+
+
+static void do_toolbar_cancel_clicked(GtkToolButton *src G_GNUC_UNUSED,
+                                      CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    priv->operationCancel = TRUE;
 }
 
 
@@ -1154,11 +1263,10 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
     glade_xml_signal_connect_data(priv->glade, "menu_settings_toggled", G_CALLBACK(do_menu_settings_toggled), manager);
     glade_xml_signal_connect_data(priv->glade, "toolbar_settings_toggled", G_CALLBACK(do_toolbar_settings_toggled), manager);
+    glade_xml_signal_connect_data(priv->glade, "toolbar_cancel_clicked", G_CALLBACK(do_toolbar_cancel_clicked), manager);
 
     win = glade_xml_get_widget(priv->glade, "camera-manager");
     g_signal_connect(win, "delete-event", G_CALLBACK(do_manager_delete), manager);
-
-    priv->progress = capa_camera_progress_new();
 
     viewport = glade_xml_get_widget(priv->glade, "image-viewport");
 

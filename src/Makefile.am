@@ -71,7 +71,6 @@ libcapa_frontend_la_SOURCES = \
 	frontend/app-display.h frontend/app-display.c \
 	frontend/camera-info.h frontend/camera-info.c \
 	frontend/camera-manager.h frontend/camera-manager.c \
-	frontend/camera-progress.h frontend/camera-progress.c \
 	frontend/camera-picker.h frontend/camera-picker.c \
 	frontend/control-panel.h frontend/control-panel.c \
 	frontend/help-about.h frontend/help-about.c \
@@ -124,9 +123,8 @@ capa_CFLAGS = \
 %.desktop: $(srcdir)/%.desktop.in
 	sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
-backend/colour-profile-enums.c: backend/colour-profile.h backend/colour-profile-enums.h
-	glib-mkenums    --fhead "#include <glib-object.h>\n" \
-                        --fhead "#include \"colour-profile-enums.h\"\n\n" \
+backend/colour-profile-enums.c: backend/colour-profile.h backend/colour-profile-enums.h Makefile.am
+	glib-mkenums    --fhead "#include \"colour-profile-enums.h\"\n\n" \
                         --fprod "\n/* enumerations from \"@filename@\" */" \
                         --fprod "\n#include \"@filename@\"\n" \
                         --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
@@ -139,9 +137,10 @@ backend/colour-profile-enums.c: backend/colour-profile.h backend/colour-profile-
                         --vtail "  return type;\n}\n\n" \
                 $< > $@
 
-backend/colour-profile-enums.h: backend/colour-profile.h
+backend/colour-profile-enums.h: backend/colour-profile.h Makefile.am
 	glib-mkenums    --fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
                         --fhead "#define __CAPA_COLOUR_PROFILE_ENUMS_H__\n\n" \
+                        --fhead "#include <glib-object.h>\n" \
                         --fhead "G_BEGIN_DECLS\n\n" \
                         --ftail "G_END_DECLS\n\n" \
                         --ftail "#endif /* __CAPA_COLOUR_PROFILE_ENUMS_H__ */\n" \
