@@ -66,6 +66,11 @@ struct _CapaCameraManagerPrivate {
 
     GHashTable *polaroids;
 
+    GtkWidget *menuCapture;
+    GtkWidget *menuItemCapture;
+    GtkWidget *menuItemPreview;
+    GtkWidget *menuItemMonitor;
+
     int zoomLevel;
 
     gulong sigImage;
@@ -205,8 +210,6 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
     GtkWidget *toolCapture;
-    GtkWidget *toolPreview;
-    GtkWidget *toolMonitor;
     GtkWidget *settingsScroll;
     GtkWidget *iconScroll;
 
@@ -220,10 +223,9 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 
     GtkWidget *cancel;
     GtkWidget *operation;
+    GtkWidget *confirm;
 
     toolCapture = glade_xml_get_widget(priv->glade, "toolbar-capture");
-    toolPreview = glade_xml_get_widget(priv->glade, "toolbar-preview");
-    toolMonitor = glade_xml_get_widget(priv->glade, "toolbar-monitor");
     settingsScroll = glade_xml_get_widget(priv->glade, "settings-scroll");
     iconScroll = glade_xml_get_widget(priv->glade, "icon-scroll");
 
@@ -237,43 +239,56 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 
     cancel = glade_xml_get_widget(priv->glade, "toolbar-cancel");
     operation = glade_xml_get_widget(priv->glade, "toolbar-operation");
+    confirm = glade_xml_get_widget(priv->glade, "toolbar-confirm");
 
 
     gtk_widget_set_sensitive(toolCapture,
                              priv->camera &&
                              capa_camera_has_capture(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
-    gtk_widget_set_sensitive(toolPreview,
+    gtk_widget_set_sensitive(priv->menuItemCapture,
+                             priv->camera &&
+                             capa_camera_has_capture(priv->camera) &&
+                             !priv->inOperation ? TRUE : FALSE);
+    gtk_widget_set_sensitive(priv->menuItemPreview,
                              priv->camera &&
                              capa_camera_has_preview(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
-    gtk_widget_set_sensitive(toolMonitor,
+    gtk_widget_set_sensitive(priv->menuItemMonitor,
                              priv->camera &&
                              capa_camera_has_capture(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
 
     gtk_widget_set_sensitive(toolNew,
-                             priv->camera ? TRUE : FALSE);
+                             priv->camera && !priv->inOperation ?
+                             TRUE : FALSE);
     gtk_widget_set_sensitive(toolOpen,
-                             priv->camera ? TRUE : FALSE);
+                             priv->camera && !priv->inOperation ?
+                             TRUE : FALSE);
     gtk_widget_set_sensitive(menuNew,
-                             priv->camera ? TRUE : FALSE);
+                             priv->camera && !priv->inOperation ?
+                             TRUE : FALSE);
     gtk_widget_set_sensitive(menuOpen,
-                             priv->camera ? TRUE : FALSE);
+                             priv->camera && !priv->inOperation ?
+                             TRUE : FALSE);
     gtk_widget_set_sensitive(menuConnect,
                              priv->camera ? FALSE : TRUE);
     gtk_widget_set_sensitive(menuDisconnect,
-                             priv->camera ? TRUE : FALSE);
+                             priv->camera && !priv->inOperation ?
+                             TRUE : FALSE);
     gtk_widget_set_sensitive(menuHelp,
-                             priv->camera ? TRUE : FALSE);
+                             priv->camera && !priv->inOperation ?
+                             TRUE : FALSE);
 
     if (priv->camera && !capa_camera_has_capture(priv->camera)) {
         gtk_widget_set_tooltip_text(toolCapture, "This camera does not support image capture");
-        /* XXX is this check correct ? unclear */
-        gtk_widget_set_tooltip_text(toolMonitor, "This camera does not support image capture");
+        gtk_widget_set_tooltip_text(priv->menuItemCapture, "This camera does not support image capture");
+        /* XXX is this check correct ? unclear if some cameras can support wait-for-downloads
+         * mode, but not be able to trigger the shutter for immediate capture */
+        gtk_widget_set_tooltip_text(priv->menuItemMonitor, "This camera does not support image capture");
     }
     if (priv->camera && !capa_camera_has_preview(priv->camera))
-        gtk_widget_set_tooltip_text(toolPreview, "This camera does not support image preview");
+        gtk_widget_set_tooltip_text(priv->menuItemPreview, "This camera does not support image preview");
 
     if (priv->camera && capa_camera_has_settings(priv->camera))
         gtk_widget_show(settingsScroll);
@@ -289,6 +304,7 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
     } else {
         gtk_widget_hide(cancel);
         gtk_widget_hide(operation);
+        gtk_widget_hide(confirm);
     }
 }
 
@@ -875,8 +891,23 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
     capa_camera_capture(priv->camera);
 }
 
-static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
-                               CapaCameraManager *manager)
+static void do_menu_capture(GtkMenuItem *src G_GNUC_UNUSED,
+                            CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    CAPA_DEBUG("starting Capture thread");
+
+    if (priv->inOperation)
+        return;
+
+    priv->inOperation = TRUE;
+    do_capture_widget_sensitivity(manager);
+    capa_camera_capture(priv->camera);
+}
+
+static void do_menu_preview(GtkMenuItem *src G_GNUC_UNUSED,
+                            CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
 
@@ -889,8 +920,8 @@ static void do_toolbar_preview(GtkToolButton *src G_GNUC_UNUSED,
     capa_camera_preview(priv->camera);
 }
 
-static void do_toolbar_monitor(GtkToolButton *src G_GNUC_UNUSED,
-                               CapaCameraManager *manager)
+static void do_menu_monitor(GtkMenuItem *src G_GNUC_UNUSED,
+                            CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
 
@@ -903,6 +934,36 @@ static void do_toolbar_monitor(GtkToolButton *src G_GNUC_UNUSED,
     do_capture_widget_sensitivity(manager);
     capa_camera_monitor(priv->camera);
 }
+
+static void capa_camera_manager_setup_capture_menu(CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *toolbarMenu;
+
+    toolbarMenu = glade_xml_get_widget(priv->glade, "toolbar-capture");
+
+    priv->menuCapture = gtk_menu_new();
+    priv->menuItemCapture = gtk_menu_item_new_with_label("Capture immediately");
+    priv->menuItemPreview = gtk_menu_item_new_with_label("Preview capture");
+    priv->menuItemMonitor = gtk_menu_item_new_with_label("Watch for captured images");
+
+    gtk_container_add(GTK_CONTAINER(priv->menuCapture), priv->menuItemCapture);
+    gtk_container_add(GTK_CONTAINER(priv->menuCapture), priv->menuItemPreview);
+    gtk_container_add(GTK_CONTAINER(priv->menuCapture), priv->menuItemMonitor);
+
+    gtk_menu_tool_button_set_menu(GTK_MENU_TOOL_BUTTON(toolbarMenu),
+                                  priv->menuCapture);
+
+    g_signal_connect(priv->menuItemCapture, "activate",
+                     G_CALLBACK(do_menu_capture), manager);
+    g_signal_connect(priv->menuItemPreview, "activate",
+                     G_CALLBACK(do_menu_preview), manager);
+    g_signal_connect(priv->menuItemMonitor, "activate",
+                     G_CALLBACK(do_menu_monitor), manager);
+
+    gtk_widget_show_all(priv->menuCapture);
+}
+
 
 static void do_zoom_widget_sensitivity(CapaCameraManager *manager)
 {
@@ -1220,10 +1281,11 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
 
     priv = manager->priv = CAPA_CAMERA_MANAGER_GET_PRIVATE(manager);
 
-    if (access("./capa.glade", R_OK) == 0)
+    if (access("./capa.glade", R_OK) == 0) {
         priv->glade = glade_xml_new("capa.glade", "camera-manager", "capa");
-    else
+    } else {
         priv->glade = glade_xml_new(PKGDATADIR "/capa.glade", "camera-manager", "capa");
+    }
 
     glade_xml_signal_connect_data(priv->glade, "camera_menu_help_summary", G_CALLBACK(do_manager_help_summary), manager);
     glade_xml_signal_connect_data(priv->glade, "camera_menu_help_manual", G_CALLBACK(do_manager_help_manual), manager);
@@ -1233,8 +1295,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
     glade_xml_signal_connect_data(priv->glade, "toolbar_open_click", G_CALLBACK(do_toolbar_open_session), manager);
 
     glade_xml_signal_connect_data(priv->glade, "toolbar_capture_click", G_CALLBACK(do_toolbar_capture), manager);
-    glade_xml_signal_connect_data(priv->glade, "toolbar_preview_click", G_CALLBACK(do_toolbar_preview), manager);
-    glade_xml_signal_connect_data(priv->glade, "toolbar_monitor_click", G_CALLBACK(do_toolbar_monitor), manager);
+    glade_xml_signal_connect_data(priv->glade, "menu_capture_activate", G_CALLBACK(do_menu_capture), manager);
+    glade_xml_signal_connect_data(priv->glade, "menu_preview_activate", G_CALLBACK(do_menu_preview), manager);
+    glade_xml_signal_connect_data(priv->glade, "menu_monitor_activate", G_CALLBACK(do_menu_monitor), manager);
 
     glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_in_click", G_CALLBACK(do_toolbar_zoom_in), manager);
     glade_xml_signal_connect_data(priv->glade, "toolbar_zoom_out_click", G_CALLBACK(do_toolbar_zoom_out), manager);
@@ -1324,6 +1387,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
     gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
     gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));
+
+    capa_camera_manager_setup_capture_menu(manager);
+
     do_zoom_widget_sensitivity(manager);
     do_capture_widget_sensitivity(manager);
 }

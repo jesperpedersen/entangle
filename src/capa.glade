@@ -451,47 +451,15 @@ fit the available window real estate</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="toolbar-preview">
+              <widget class="GtkMenuToolButton" id="toolbar-capture">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Trigger the camera shutter to capture a
-quick image preview</property>
-                <property name="label" translatable="yes">Preview</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-find</property>
-                <signal name="clicked" handler="toolbar_preview_click"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkToolButton" id="toolbar-capture">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Trigger the camera shutter to capture and
-download a new photograph</property>
                 <property name="label" translatable="yes">Capture</property>
-                <property name="stock_id">gtk-media-record</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-execute</property>
                 <signal name="clicked" handler="toolbar_capture_click"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkToolButton" id="toolbar-monitor">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Monitor the camera for changes, automatically
-downloading new images as they are shot.</property>
-                <property name="label" translatable="yes">Monitor</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-jump-to</property>
-                <signal name="clicked" handler="toolbar_monitor_click"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -520,6 +488,19 @@ executing camera operation</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-cancel</property>
                 <signal name="clicked" handler="toolbar_cancel_clicked"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="toolbar-confirm">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Confirm</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-ok</property>
+                <signal name="clicked" handler="toolbar_confirm_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
