@@ -1,4 +1,4 @@
-[% SET
+g[% SET
    title = "Bug and feature tracking" %]
 
 [% WRAPPER page.html %]
@@ -6,8 +6,13 @@
 <h2>Viewing bug and feature reports</h2>
 
 <p>
-  There will be a bug tracker a
+  There will be a bug tracker at [.... some place...] Until that
+  place is determined, email the author directly
 </p>
+
+<pre>
+  Daniel P. Berrange &lt;dan-at-berrange-dot-com&gt;
+</pre>
 
 <h2>Reporting new bugs</h2>
 

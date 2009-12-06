@@ -212,3 +212,33 @@ div.screenshot p img {
     border-top: 1px solid #7d6621;
 }
 
+table.data {
+    background: #dfb63b;
+    padding: 0px;
+    border-spacing: 1px;
+    border: 1px solid #332a0d;
+}
+
+table.data td, table.data th {
+    padding: 3px;
+}
+
+table.data tbody tr td {
+    background: #eee url(panel-bg.png) repeat top left;
+}
+
+table.data thead th {
+    background: #33436a;
+    color: white;
+}
+
+
+#content pre {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    background: url(panel-bg.png) repeat top left;
+    border: 1px dotted #332a0d;
+    padding: 1em;
+    margin-top: 0px;
+}

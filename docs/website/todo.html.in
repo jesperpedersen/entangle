@@ -3,32 +3,43 @@
 
 [% WRAPPER page.html %]
 
-<h2>Core planned, but missing functionality</h2>
+<h2>Important core functionality</h2>
 
 <ul>
-  <li>New/open/close of sessions</li>
+  <li><strike>New/open/close of sessions</strike>. Done</li>
   <li>Custimizable camera setting control layouts</li>
   <li>Handle disconnect &amp; re-connect of camera while manager is open</li>
   <li>Automatic refresh of settings from camera to track changes</li>
-  <li>Preferences dialog w/ gconf(?) backend</li>
-  <li>Track camera based off serial number + model</li>
+  <li><strike>Preferences dialog w/ gconf backend</strike>. Done</li>
+  <li>JavaScript plugin capability using GJS/Seed</li>
+  <li><strike>Colour management to apply profiles to images</strike>. Done</li>
 </ul>
 
 <h2>Important scalability work</h2>
 
 <ul>
-  <li>Load all images in background threads</li>
-  <li>Use the freedesktop thumbnail spec for caching thumbnails</li>
+  <li><strike>Load all images in background threads</strike>. Done</li>
+  <li><strike>Use the freedesktop thumbnail spec for caching thumbnails</strike>. Done</li>
 </ul>
 
-<h2>Ideas for future "cool stuff"</h2>
+<h2>Misc other core functionality</h2>
 
 <ul>
-  <li>Ability to configure camera settings from image EXIF tags</li>
+  <li>Ability to load camera settings based on image EXIF data</li>
   <li>Add support for libgudev as option instead of HAL</li>
   <li>Automatically unmount gvfs volumes to allow camera use</li>
-  <li>Allow tear-off windows for thumbnails to allow larger comparisons</li>
-  <li>Real fullscreen mode where menus, settings, thumbnails &amp; toolbar are hidden</li>
+  <li><strike>Allow tear-off windows for thumbnails to allow larger comparisons</strike>. Done</li>
+  <li>Presentation mode where menus, settings, thumbnails &amp; toolbar are hidden</li>
+  <li>Track camera based off CCD serial number + model</li>
+  <li>Detect changes to system monitor profile by monitory property changes on root window</li>
+  <li>Provide a GIMP plugin for capturing images</li>
+</ul>
+
+<h2>Scripting/plugin ideas</h2>
+
+<ul>
+  <li>Time lapse photo shooting</li>
+  <li>Super bracketing controlling aperture, shutter speed, flash power</li>
 </ul>
 
 [% END %]

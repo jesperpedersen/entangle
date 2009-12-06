@@ -4,7 +4,14 @@
 [% WRAPPER page.html %]
 
 <p>
-  There will be mailing lists....
+  There will be mailing lists at [....some place....].  Until that
+  place is determined, email the author directly
+</p>
+
+<pre>
+  Daniel P. Berrange &lt;dan-at-berrange-dot-com&gt;
+</pre>
+
 </p>
 
 [% END %]

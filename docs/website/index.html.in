@@ -25,7 +25,7 @@
 
 <ul class="styled">
   <li class="shoot">Trigger the shutter from the computer</li>
-  <li class="preview">Preview of shots using a "LiveView" capability</li>
+  <li class="preview">Live preview of scene before shooting</li>
   <li class="download">Automatic download and display of photos as they are shot</li>
   <li class="settings">Control of all camera settings from computer</li>
 </ul>
@@ -33,10 +33,10 @@
 <p>
   Capa is <a href="http://opensource.org">Open Source</a> software licensed under
   the <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL v3+</a>. It is built
-  on top of <a href="http://gphoto.org/">gPhoto<sup>2</sup></a> using
-  <a href="http://gtk.org">GTK-2</a> for its interface and
-  <a href="http://freedesktop.org/wiki/Software/hal">HAL</a>
-  for device detection.
+  on top of <a href="http://gphoto.org/">libgphoto</a> using
+  <a href="http://gtk.org">GTK-2</a> for its interface. It is fully colour managed,
+  auto-detecting system monitor profile and applying the neccessary transforms
+  when displaying images.
 </p>
 
 [% END %]

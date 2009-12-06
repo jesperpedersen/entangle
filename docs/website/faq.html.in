@@ -10,31 +10,17 @@
     <ul>
       <li>Recursive acronym</li>
       <li>Easily typed short format</li>
-      <li>No clashes with existing projects on <a href="http://freshmeat.net">freshmeat</a></li>
-      <li>No clashes with other photography apps <a href="http://google.com">on google</a></li>
+      <li>No clashes with existing open source projects</li>
       <li>Derived from / related to the word 'capture'</li>
     </ul>
     <p>
       After a little brainstorming the result was <code>Capa: Capa Assists Photograph Acquisition</code>.
     </p>
   </dd>
-  <dt>What license is the code under?</dt>
-  <dd><p>The <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL v3+</a></p></dd>
-  <dt>What does the build process depend on?</dt>
-  <dd>
-    <p>At the time of writing the required build depedancies are:</p>
-    <ul>
-      <li><a href="http://gphoto.org/">libgphoto >= 2.4.7</a></li>
-      <li><a href="http://gtk.org">glib >= 2.10.0</a></li>
-      <li><a href="http://gtk.org">gtk >= 2.12.0</a></li>
-      <li><a href="http://gtk.org">glade >= 2.6.0</a></li>
-      <li><a href="http://freedesktop.org/wiki/Software/hal">HAL >= 0.5.0</a></li>
-      <li><a href="http://freedesktop.org/wiki/Software/hal">dbus-glib >= 0.60</a></li>
-    </ul>
-  </dd>
   <dt>Why was this application created?</dt>
   <dd>
-    <p>During a presentation at the local photography club, the speaker
+    <p>
+      During a presentation with a local photography club, the speaker
       was using tethered shooting during practical demonstrations to
       quickly display shots on a projector screen. This seemed like quite
       a useful thing to be able todo, but while many Linux apps use
@@ -42,6 +28,168 @@
       exposed its remote shooting and configuration capabilities.
       This was a gap in the open source application suite just crying out
       to be filled.
+    </p>
+    <p>
+      NB, since starting the project, it was discovered that gphoto SVN has
+      an app called <code>gtkam</code> that does in fact allow ue of gphoto's
+      tethered shooting capabilities. The interface for that application
+      is focused around camera file management, with shooting hidden away
+      in a popup menu. The GVFS gphoto plugin already provides integration
+      with nautilus and the wider ghome stack, so there is no compelling
+      reason to duplicate file management capabilities in a standalone
+      application. Thus Capa focuses exclusively on providing an effective
+      interface for tethered shooting.
+    </p>
+  </dd>
+  <dt>What license is the code under?</dt>
+  <dd>
+    <p>
+      The code is all made available under the terms of the
+      <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL v3+</a>
+    </p>
+  </dd>
+  <dt>What does the build process depend on?</dt>
+  <dd>
+    <p>At the time of writing the build dependancies are:</p>
+    <table class="data">
+      <thead>
+	<tr>
+	  <th>Library</th>
+	  <th>Min version</th>
+	  <th>License</th>
+	  <th>Optional</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td><a href="http://gphoto.org/">libgphoto</a></td>
+	  <td>2.4.7</td>
+	  <td>LGPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://gtk.org">glib</a></td>
+	  <td>2.10.0</td>
+	  <td>LGPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://gtk.org">gtk</a></td>
+	  <td>2.12.0</td>
+	  <td>LGPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://gtk.org">libglade</a></td>
+	  <td>2.6.0</td>
+	  <td>LGPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://projects.gnome.org/gconf/">gconf</a></td>
+	  <td>2.12.0</td>
+	  <td>LGPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://freedesktop.org/wiki/Software/hal">HAL</a></td>
+	  <td>0.5.0</td>
+	  <td>AFL or GPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://freedesktop.org/wiki/Software/Dbus">dbus-glib</a></td>
+	  <td>0.60</td>
+	  <td>AFL or GPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://live.gnome.org/GObjectIntrospection">gobject-introspection</a></td>
+	  <td>0.6.2</td>
+	  <td>GPLv2+, LGPLv2+, MIT</td>
+	  <td>Y</td>
+	</tr>
+	<tr>
+	  <td><a href="http://www.littlecms.com/">lcms</a></td>
+	  <td>1.18</td>
+	  <td>MIT</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://www.freedesktop.org/software/startup-notification/">startup-notification</a></td>
+	  <td>0.5</td>
+	  <td>X11, LGPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+	<tr>
+	  <td><a href="http://www.gnome.org/~ebassi/source/">unique</a></td>
+	  <td>1.0.0</td>
+	  <td>LGPLv2+</td>
+	  <td>&nbsp;</td>
+	</tr>
+      </tbody>
+    </table>
+    <p>
+      Unless otherwise stated, these dependancies are all currently mandatory.
+      It may be possible to build with earlier versions by relaxing the
+      version number checks in the <code>configure.ac</code> script. The
+      current versions were picked conservatively based on what's been tested
+      to work
+    </p>
+  </dd>
+  <dt>Where can I get the source code?</dt>
+  <dd>
+    <p>
+      If you are a end user then you probably want to download a official
+      released source archive on the <a href="download.html">download page</a>.
+      If you are a developer wanting to contribute, then goto the
+      <a href="http://gitorious.org/capa/capa">master GIT repository</a>
+    </p>
+  </dd>
+  <dt>How do I build from source?</dt>
+  <dd>
+    <p>
+      If you got a released source archive, then follow the normal autotools
+      build process
+    </p>
+    <pre>
+./configure --prefix=$HOME/usr
+make
+make install
+</pre>
+    <p>
+      If you are building straight from the GIT repository, then instead of
+      configure, use autogen.sh which will ensure all the autoconf/automake
+      files are re-generated correctly
+    </p>
+    <pre>
+./autogen.sh --prefix=$HOME/usr
+make
+make install
+</pre>
+  </dd>
+  <dt>How do I contribute to development?</dt>
+  <dd>
+    <p>
+      Read about the <a href="todo.html">TODO items</a>, checkout
+      <a href="bugs.html">known bugs</a> and get hold of the <a href="download.html">source code</a>.
+      Patches are welcomed <a href="communicate.html">via email</a>, preferably
+      sent using <code>git-send-email</code>.
+    </p>
+  </dd>
+  <dt>What's this I hear about javascript plugins?</dt>
+  <dd>
+    <p>
+      The Capa codebase is designed to be friendly to development of plugins,
+      with a strict split between the application object model and the graphical
+      user interface. In cases where a 3rd party library is used, that library's
+      APIs are first mapped to GObject derived classes. The recently added
+      <a href="http://live.gnome.org/GObjectIntrospection">GObject introspection</a>
+      capabilities can thus be leveraged to expose the entire application backend
+      to scripting languages. It is planned to use this in combination with either
+      <a href="http://live.gnome.org/Seed">Seed</a> or
+      <a href="http://live.gnome.org/Gjs">Gjs</a> to provide a javascript plugin
+      system for extending the application
     </p>
   </dd>
 </dl>
