@@ -25,6 +25,7 @@
 
 #include "preferences.h"
 #include "camera-list.h"
+#include "plugin-manager.h"
 
 G_BEGIN_DECLS
 
@@ -60,6 +61,7 @@ void capa_app_refresh_cameras(CapaApp *app);
 
 CapaCameraList *capa_app_cameras(CapaApp *app);
 CapaPreferences *capa_app_preferences(CapaApp *app);
+CapaPluginManager *capa_app_plugin_manager(CapaApp *app);
 
 G_END_DECLS
 

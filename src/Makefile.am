@@ -38,6 +38,10 @@ libcapa_backend_la_SOURCES = \
 	backend/image-loader.h backend/image-loader.c \
 	backend/params.h backend/params.c \
 	backend/pixbuf-loader.h backend/pixbuf-loader.c \
+	backend/plugin.h backend/plugin.c \
+	backend/plugin-base.h backend/plugin-base.c \
+	backend/plugin-native.h backend/plugin-native.c \
+	backend/plugin-manager.h backend/plugin-manager.c \
 	backend/preferences.h backend/preferences.c \
 	backend/preferences-gconf.h backend/preferences-gconf.c \
 	backend/progress.h backend/progress.c \
@@ -63,7 +67,8 @@ libcapa_backend_la_CFLAGS = \
 	$(HAL_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
 	$(WARNING_CFLAGS) \
-	-DPKGDATADIR="\"$(pkgdatadir)\""
+	-DPKGDATADIR="\"$(pkgdatadir)\"" \
+	-DLIBDIR="\"$(libdir)/$(PACKAGE)\""
 
 
 

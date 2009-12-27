@@ -30,6 +30,7 @@
 #include "params.h"
 #include "device-manager.h"
 #include "preferences-gconf.h"
+#include "plugin-native.h"
 
 #define CAPA_APP_GET_PRIVATE(obj)                                       \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP, CapaAppPrivate))
@@ -41,6 +42,8 @@ struct _CapaAppPrivate {
     CapaCameraList *cameras;
 
     CapaPreferences *preferences;
+
+    CapaPluginManager *pluginManager;
 };
 
 G_DEFINE_TYPE(CapaApp, capa_app, G_TYPE_OBJECT);
@@ -130,6 +133,8 @@ static void capa_app_finalize(GObject *object)
         g_object_unref(priv->preferences);
     if (priv->devManager)
         g_object_unref(priv->devManager);
+    if (priv->pluginManager)
+        g_object_unref(priv->pluginManager);
 
     capa_params_free(priv->params);
 
@@ -280,6 +285,7 @@ CapaApp *capa_app_new(void)
 static void capa_app_init(CapaApp *app)
 {
     CapaAppPrivate *priv;
+    gint newmodules;
 
     priv = app->priv = CAPA_APP_GET_PRIVATE(app);
 
@@ -287,11 +293,23 @@ static void capa_app_init(CapaApp *app)
     priv->params = capa_params_new();
     priv->cameras = capa_camera_list_new();
     priv->devManager = capa_device_manager_new();
+    priv->pluginManager = capa_plugin_manager_new();
 
     g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), app);
     g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), app);
 
     do_refresh_cameras(app);
+
+    capa_plugin_manager_register_type(priv->pluginManager, "native",
+                                      CAPA_TYPE_PLUGIN_NATIVE);
+    /* Scan repeatedly because each new plugin may register
+     * new plugin types, requiring a repeat scan
+     */
+    do {
+        newmodules = capa_plugin_manager_scan(priv->pluginManager);
+        capa_plugin_manager_activate(priv->pluginManager, G_OBJECT(app));
+        CAPA_DEBUG("Activated %d plugins", newmodules);
+    } while (newmodules > 0);
 }
 
 
@@ -311,6 +329,13 @@ CapaPreferences *capa_app_preferences(CapaApp *app)
     CapaAppPrivate *priv = app->priv;
     return priv->preferences;
 }
+
+CapaPluginManager *capa_app_plugin_manager(CapaApp *app)
+{
+    CapaAppPrivate *priv = app->priv;
+    return priv->pluginManager;
+}
+
 
 /*
  * Local variables:
