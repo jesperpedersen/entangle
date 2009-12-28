@@ -44,6 +44,8 @@ STARTUP_REQUIRED=0.5
 AC_SUBST(STARTUP_REQUIRED)
 UNIQUE_REQUIRED=1.0.0
 AC_SUBST(UNIQUE_REQUIRED)
+GJS_REQUIRED=0.4
+AC_SUBST(GJS_REQUIRED)
 
 dnl *******************************************************************************
 dnl Setup core compilers / build helpers
@@ -58,6 +60,10 @@ AM_PROG_LIBTOOL
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
+
+PKG_CHECK_MODULES(GMODULE, gmodule-2.0 >= $GLIB_REQUIRED)
+AC_SUBST(GMODULE_CFLAGS)
+AC_SUBST(GMODULE_LIBS)
 
 PKG_CHECK_MODULES(GTHREAD, gthread-2.0 >= $GTHREAD_REQUIRED)
 AC_SUBST(GTHREAD_CFLAGS)
@@ -103,15 +109,6 @@ PKG_CHECK_MODULES(UNIQUE, unique-1.0 >= $UNIQUE_REQUIRED)
 AC_SUBST(UNIQUE_CFLAGS)
 AC_SUBST(UNIQUE_LIBS)
 
-CAPA_COMPILE_WARNINGS
-
-AC_PATH_PROG([TPAGE], [tpage])
-
-if test -z "$TPAGE" ; then
-   AC_MSG_ERROR([The 'tpage' command from Template-Toolkit is required to build the website])
-fi
-
-
 AC_ARG_ENABLE([introspection],
         AS_HELP_STRING([--enable-introspection], [enable GObject introspection]),
         [], [enable_introspection=check])
@@ -136,6 +133,39 @@ if test "x$enable_introspection" != "xno" ; then
         fi
 fi
 AM_CONDITIONAL([WITH_GOBJECT_INTROSPECTION], [test "x$enable_introspection" = "xyes"])
+
+AC_ARG_WITH([javascript],
+      AS_HELP_STRING([--with-javascript],[enable JavaScript plugins]),
+      [], [with_javascript=check])
+
+if test "x$with_javascript" != "xno" ; then
+  if test "x$enable_introspection" = "xno" ; then
+    if test "x$with_javascript" = "xyes"; then
+      AC_MSG_ERROR([gobject-introspection is requird for javascript plugins])
+    fi
+  fi
+
+  PKG_CHECK_MODULES(GJS, gjs-1.0 >= $GJS_REQUIRED)
+  AC_SUBST(GJS_CFLAGS)
+  AC_SUBST(GJS_LIBS)
+
+  PKG_CHECK_MODULES(GJS_GI, gjs-gi-1.0 >= $GJS_REQUIRED)
+  AC_SUBST(GJS_GI_CFLAGS)
+  AC_SUBST(GJS_GI_LIBS)
+
+  with_javascript=yes
+  AC_DEFINE([WITH_JAVASCRIPT], [1], [enable JavaScript plugins])
+fi
+AM_CONDITIONAL([WITH_JAVASCRIPT], [test "x$with_javascript" = "xyes"])
+
+
+CAPA_COMPILE_WARNINGS
+
+AC_PATH_PROG([TPAGE], [tpage])
+
+if test -z "$TPAGE" ; then
+   AC_MSG_ERROR([The 'tpage' command from Template-Toolkit is required to build the website])
+fi
 
 
 AC_CONFIG_FILES(

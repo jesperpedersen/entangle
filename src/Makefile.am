@@ -2,6 +2,11 @@
 
 noinst_LTLIBRARIES = libcapa_backend.la libcapa_frontend.la
 
+if WITH_JAVASCRIPT
+plugin_LTLIBRARIES = javascript.la
+plugindir = $(libdir)/capa/plugins
+endif # WITH_JAVASCRIPT
+
 bin_PROGRAMS = capa
 
 gladedir = $(pkgdatadir)
@@ -50,6 +55,8 @@ libcapa_backend_la_SOURCES = \
 
 libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
+	$(GMODULE_LIBS) \
+	$(GTHREAD_LIBS) \
 	$(GDK_PIXBUF_LIBS) \
 	$(GPHOTO2_LIBS) \
 	$(GCONF2_LIBS) \
@@ -60,6 +67,8 @@ libcapa_backend_la_LDFLAGS = \
 
 libcapa_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
+	$(GMODULE_CFLAGS) \
+	$(GTHREAD_CFLAGS) \
 	$(GDK_PIXBUF_CFLAGS) \
 	$(GPHOTO2_CFLAGS) \
 	$(GCONF2_CFLAGS) \
@@ -68,9 +77,41 @@ libcapa_backend_la_CFLAGS = \
 	$(DBUS_GLIB_CFLAGS) \
 	$(WARNING_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
-	-DLIBDIR="\"$(libdir)/$(PACKAGE)\""
+	-DLIBDIR="\"$(libdir)\""
 
+if WITH_JAVASCRIPT
+javascript_la_SOURCES = \
+	backend/plugin-javascript.h backend/plugin-javascript.c \
+	backend/plugin-javascript-module.c
 
+javascript_la_LDFLAGS = \
+	-avoid-version -module \
+	$(GJS_LIBS) \
+	$(GJS_GI_LIBS) \
+	$(WARNING_CFLAGS)
+
+javascript_la_CFLAGS = \
+	$(GLIB_CFLAGS) \
+	$(GDK_PIXBUF_CFLAGS) \
+	$(GJS_CFLAGS) \
+	$(GJS_GI_CFLAGS) \
+	$(WARNING_CFLAGS)
+
+EXTRA_DIST += javascript.cfg
+
+install-data-local:
+	install -d $(pkgdatadir)/plugins
+	install -d $(pkgdatadir)/plugins/javascript
+	install $(srcdir)/javascript.cfg $(pkgdatadir)/plugins/javascript/plugin.cfg
+
+uninstall-local:
+	rm -f $(pkgdatadir)/plugins/javascript/plugin.cfg
+else # WITH_JAVASCRIPT
+EXTRA_DIST += \
+	javascript.cfg \
+	backend/plugin-javascript.h backend/plugin-javascript.c \
+	backend/plugin-javascript-module.c
+endif # WITH_JAVASCRIPT
 
 libcapa_frontend_la_SOURCES = \
 	frontend/app-display.h frontend/app-display.c \
@@ -88,6 +129,7 @@ libcapa_frontend_la_LIBADD = libcapa_backend.la
 
 libcapa_frontend_la_LDFLAGS = \
 	$(GTHREAD_LIBS) \
+	$(GMODULE_LIBS) \
 	$(GTK_LIBS) \
 	$(GLADE2_LIBS) \
 	$(UNIQUE_LIBS) \
@@ -96,6 +138,7 @@ libcapa_frontend_la_LDFLAGS = \
 libcapa_frontend_la_CFLAGS = \
 	-I$(srcdir)/backend \
 	$(GTHREAD_CFLAGS) \
+	$(GMODULE_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(GLADE2_CFLAGS) \
 	$(UNIQUE_CFLAGS) \
@@ -110,6 +153,7 @@ capa_LDADD = libcapa_frontend.la
 
 capa_LDFLAGS = \
 	$(GTHREAD_LIBS) \
+	$(GMODULE_LIBS) \
 	$(GTK_LIBS) \
 	$(GOBJECT_INTROSPECTION_LIBS) \
 	$(STARTUP_LIBS) \
@@ -118,7 +162,8 @@ capa_LDFLAGS = \
 capa_CFLAGS = \
 	-I$(srcdir)/backend \
 	-I$(srcdir)/frontend \
-	$(GTHREAD_FLAGSS) \
+	$(GTHREAD_FLAGS) \
+	$(GMODULE_FLAGS) \
 	$(GTK_CFLAGS) \
 	$(GOBJECT_INTROSPECTION_CFLAGS) \
 	$(STARTUP_CFLAGS) \

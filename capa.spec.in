@@ -31,6 +31,7 @@ BuildRequires: /usr/bin/tpage
 %if %{with_introspection}
 BuildRequires: gobject-introspection-devel
 BuildRequires: gir-repository-devel
+BuildRequires: gjs-devel
 %endif
 BuildRequires: startup-notification-devel >= 0.5
 BuildRequires: unique-devel >= 1.0.0
@@ -51,9 +52,9 @@ and 'hands off' shooting directly from the controlling computer.
 %build
 
 %if %{with_introspection}
-%define introspection_arg --enable-introspection
+%define introspection_arg --enable-introspection --with-javascript
 %else
-%define introspection_arg --disable-introspection
+%define introspection_arg --disable-introspection --without-javascript
 %endif
 
 %configure %{introspection_arg}
@@ -63,6 +64,9 @@ make %{?_smp_mflags}
 rm -fr %{buildroot}
 
 %makeinstall
+
+rm -f %{buildroot}%{_libdir}/capa/plugins/*.a
+rm -f %{buildroot}%{_libdir}/capa/plugins/*.la
 
 %clean
 rm -fr %{buildroot}
@@ -97,6 +101,12 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/gir-1.0/GPhoto-2.0.gir
 %{_libdir}/girepository-1.0/Capa-0.1.typelib
 %{_libdir}/girepository-1.0/GPhoto-2.0.typelib
+%dir %{_libdir}/capa
+%dir %{_libdir}/capa/plugins
+%{_libdir}/capa/plugins/javascript.so
+%dir %{_datadir}/%{name}/plugins
+%dir %{_datadir}/%{name}/plugins/javascript
+%{_datadir}/%{name}/plugins/javascript/plugin.cfg
 %endif
 
 %changelog

@@ -31,6 +31,7 @@
 #include "device-manager.h"
 #include "preferences-gconf.h"
 #include "plugin-native.h"
+#include "plugin-javascript.h"
 
 #define CAPA_APP_GET_PRIVATE(obj)                                       \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP, CapaAppPrivate))
