@@ -93,10 +93,10 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/applications/%{name}.desktop
 %doc %{_datadir}/%{name}/website/
 %if %{with_introspection}
-%{_datadir}/gir-1.0/capa-0.1.gir
-%{_datadir}/gir-1.0/gphoto-2.0.gir
-%{_libdir}/girepository-1.0/capa-0.1.typelib
-%{_libdir}/girepository-1.0/gphoto-2.0.typelib
+%{_datadir}/gir-1.0/Capa-0.1.gir
+%{_datadir}/gir-1.0/GPhoto-2.0.gir
+%{_libdir}/girepository-1.0/Capa-0.1.typelib
+%{_libdir}/girepository-1.0/GPhoto-2.0.typelib
 %endif
 
 %changelog

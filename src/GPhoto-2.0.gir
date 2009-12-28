@@ -9,7 +9,7 @@
 <repository version="1.0"
             xmlns="http://www.gtk.org/introspection/core/1.0"
             xmlns:c="http://www.gtk.org/introspection/c/1.0">
-  <namespace name="gphoto" version="2.0">
+  <namespace name="GPhoto" version="2.0">
     <record name="Context" c:type="GPContext"/>
     <record name="PortInfoList" c:type="GPPortInfoList"/>
     <record name="Camera" c:type="Camera"/>

@@ -160,13 +160,13 @@ CLEANFILES = *~ $(desktop_DATA) backend/colour-profile-enums.c backend/colour-pr
 
 
 if WITH_GOBJECT_INTROSPECTION
-capa-0.1.gir: capa gphoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
+Capa-0.1.gir: capa GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
 	$(G_IR_SCANNER) -v \
-                --namespace capa \
+                --namespace Capa \
                 --nsversion 0.1 \
 		--include GObject-2.0 \
 		--include Gtk-2.0 \
-                --include gphoto-2.0 \
+                --include GPhoto-2.0 \
                 --program=$(builddir)/capa \
                 --add-include-path=$(srcdir) \
                 --add-include-path=$(builddir) \
@@ -188,10 +188,10 @@ capa-0.1.gir: capa gphoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
                 $(capa_SOURCES:%=$(srcdir)/%)
 
 girdir = $(datadir)/gir-1.0
-gir_DATA = gphoto-2.0.gir capa-0.1.gir
+gir_DATA = GPhoto-2.0.gir Capa-0.1.gir
 
 typelibsdir = $(libdir)/girepository-1.0
-typelibs_DATA = gphoto-2.0.typelib capa-0.1.typelib
+typelibs_DATA = GPhoto-2.0.typelib Capa-0.1.typelib
 
 %.typelib: %.gir
 	g-ir-compiler \
@@ -199,8 +199,8 @@ typelibs_DATA = gphoto-2.0.typelib capa-0.1.typelib
 		--includedir=$(builddir) \
 		-o $@ $<
 
-EXTRA_DIST += gphoto-2.0.gir
-CLEANFILES += capa-0.1.gir $(typelibs_DATA)
+EXTRA_DIST += GPhoto-2.0.gir
+CLEANFILES += Capa-0.1.gir $(typelibs_DATA)
 
 endif # WITH_GOBJECT_INTROSPECTION
 
