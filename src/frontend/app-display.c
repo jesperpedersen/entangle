@@ -186,7 +186,8 @@ static void capa_app_display_init(CapaAppDisplay *display)
 
     priv->app = capa_app_new();
     priv->picker = capa_camera_picker_new(capa_app_cameras(priv->app));
-    priv->manager = capa_camera_manager_new(capa_app_preferences(priv->app));
+    priv->manager = capa_camera_manager_new(capa_app_preferences(priv->app),
+                                            capa_app_plugin_manager(priv->app));
 
     g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
     g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);

@@ -249,6 +249,14 @@ void capa_plugin_manager_deactivate(CapaPluginManager *manager, GObject *app)
     }
 }
 
+
+GList *capa_plugin_manager_get_all(CapaPluginManager *manager)
+{
+    CapaPluginManagerPrivate *priv = manager->priv;
+    return g_hash_table_get_values(priv->plugins);
+}
+
+
 /*
  * Local variables:
  *  c-indent-level: 4

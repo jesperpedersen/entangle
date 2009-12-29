@@ -59,6 +59,8 @@ void capa_plugin_manager_register_type(CapaPluginManager *manager,
 void capa_plugin_manager_activate(CapaPluginManager *manager, GObject *app);
 void capa_plugin_manager_deactivate(CapaPluginManager *manager, GObject *app);
 
+GList *capa_plugin_manager_get_all(CapaPluginManager *manager);
+
 G_END_DECLS
 
 #endif /* __CAPA_PLUGIN_MANAGER_H__ */

@@ -25,6 +25,7 @@
 
 #include "app.h"
 #include "preferences.h"
+#include "plugin-manager.h"
 
 G_BEGIN_DECLS
 
@@ -55,7 +56,8 @@ struct _CapaPreferencesDisplayClass
 
 
 GType capa_preferences_display_get_type(void) G_GNUC_CONST;
-CapaPreferencesDisplay* capa_preferences_display_new(CapaPreferences *prefs);
+CapaPreferencesDisplay* capa_preferences_display_new(CapaPreferences *prefs,
+                                                     CapaPluginManager *pluginManager);
 
 void capa_preferences_display_show(CapaPreferencesDisplay *preferences);
 

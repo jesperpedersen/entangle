@@ -48,6 +48,7 @@
 struct _CapaCameraManagerPrivate {
     CapaCamera *camera;
     CapaPreferences *prefs;
+    CapaPluginManager *pluginManager;
 
     CapaHelpAbout *about;
 
@@ -97,6 +98,7 @@ enum {
     PROP_O,
     PROP_CAMERA,
     PROP_PREFERENCES,
+    PROP_PLUGIN_MANAGER,
 };
 
 
@@ -521,6 +523,10 @@ static void capa_camera_manager_get_property(GObject *object,
             g_value_set_object(value, priv->prefs);
             break;
 
+        case PROP_PLUGIN_MANAGER:
+            g_value_set_object(value, priv->pluginManager);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -570,6 +576,19 @@ static void capa_camera_manager_set_property(GObject *object,
             capa_camera_manager_update_colour_transform(manager);
             break;
 
+        case PROP_PLUGIN_MANAGER:
+            if (priv->pluginManager)
+                g_object_unref(G_OBJECT(priv->pluginManager));
+            priv->pluginManager = g_value_get_object(value);
+            if (priv->pluginManager)
+                g_object_ref(G_OBJECT(priv->pluginManager));
+
+            if (priv->prefsDisplay)
+                g_object_set(G_OBJECT(priv->prefsDisplay), "plugin-manager", priv->pluginManager, NULL);
+
+            capa_camera_manager_update_colour_transform(manager);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -590,6 +609,8 @@ static void capa_camera_manager_finalize (GObject *object)
         g_object_unref(G_OBJECT(priv->colourTransform));
     if (priv->camera)
         g_object_unref(G_OBJECT(priv->camera));
+    if (priv->pluginManager)
+        g_object_unref(G_OBJECT(priv->pluginManager));
     if (priv->prefs)
         g_object_unref(G_OBJECT(priv->prefs));
     if (priv->prefsDisplay)
@@ -651,6 +672,17 @@ static void capa_camera_manager_class_init(CapaCameraManagerClass *klass)
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_PLUGIN_MANAGER,
+                                    g_param_spec_object("plugin-manager",
+                                                        "Plugin manager",
+                                                        "Plugin manager",
+                                                        CAPA_TYPE_PLUGIN_MANAGER,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(CapaCameraManagerPrivate));
 
     capa_camera_set_thread_funcs(gdk_threads_enter,
@@ -658,10 +690,12 @@ static void capa_camera_manager_class_init(CapaCameraManagerClass *klass)
 }
 
 
-CapaCameraManager *capa_camera_manager_new(CapaPreferences *prefs)
+CapaCameraManager *capa_camera_manager_new(CapaPreferences *prefs,
+                                           CapaPluginManager *pluginManager)
 {
     return CAPA_CAMERA_MANAGER(g_object_new(CAPA_TYPE_CAMERA_MANAGER,
                                             "preferences", prefs,
+                                            "plugin-manager", pluginManager,
                                             NULL));
 }
 
@@ -1148,7 +1182,8 @@ static void do_menu_preferences_activate(GtkCheckMenuItem *src G_GNUC_UNUSED,
 {
     CapaCameraManagerPrivate *priv = manager->priv;
     if (priv->prefsDisplay == NULL)
-        priv->prefsDisplay = capa_preferences_display_new(priv->prefs);
+        priv->prefsDisplay = capa_preferences_display_new(priv->prefs,
+                                                          priv->pluginManager);
 
     capa_preferences_display_show(priv->prefsDisplay);
 }

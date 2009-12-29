@@ -29,6 +29,7 @@
 #include "preferences-display.h"
 #include "camera-picker.h"
 #include "camera-manager.h"
+#include "plugin.h"
 
 #define CAPA_PREFERENCES_DISPLAY_GET_PRIVATE(obj)                               \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_PREFERENCES_DISPLAY, CapaPreferencesDisplayPrivate))
@@ -38,6 +39,8 @@ static void capa_preferences_display_refresh(CapaPreferencesDisplay *preferences
 struct _CapaPreferencesDisplayPrivate {
     GladeXML *glade;
 
+    GtkListStore *plugins;
+    CapaPluginManager *pluginManager;
     CapaPreferences *prefs;
     gulong prefsID;
 };
@@ -47,6 +50,7 @@ G_DEFINE_TYPE(CapaPreferencesDisplay, capa_preferences_display, G_TYPE_OBJECT);
 enum {
     PROP_0,
     PROP_PREFERENCES,
+    PROP_PLUGIN_MANAGER,
 };
 
 static void capa_preferences_display_get_property(GObject *object,
@@ -63,9 +67,95 @@ static void capa_preferences_display_get_property(GObject *object,
             g_value_set_object(value, priv->prefs);
             break;
 
+        case PROP_PLUGIN_MANAGER:
+            g_value_set_object(value, priv->pluginManager);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
+}
+
+static void capa_preferences_display_setup_plugins(CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    GtkWidget *tree;
+    GtkCellRenderer *cellText;
+    GtkCellRenderer *cellImage;
+    GtkCellRenderer *cellEnabled;
+    GtkTreeViewColumn *colText;
+    GtkTreeViewColumn *colImage;
+    GtkTreeViewColumn *colEnabled;
+
+    priv->plugins = gtk_list_store_new(5, CAPA_TYPE_PLUGIN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_STRING, -1);
+
+    cellText = gtk_cell_renderer_text_new();
+    cellImage = gtk_cell_renderer_pixbuf_new();
+    cellEnabled = gtk_cell_renderer_toggle_new();
+
+    colText = gtk_tree_view_column_new_with_attributes("Description", cellText, "text", 1, NULL);
+    colImage = gtk_tree_view_column_new_with_attributes("", cellImage, "pixbuf", 2, NULL);
+    colEnabled = gtk_tree_view_column_new_with_attributes("Enabled", cellEnabled, "active", 3, NULL);
+
+    g_object_set(G_OBJECT(colText), "expand", TRUE, NULL);
+    g_object_set(G_OBJECT(colImage), "expand", FALSE, NULL);
+    g_object_set(G_OBJECT(colEnabled), "expand", FALSE, NULL);
+
+    tree = glade_xml_get_widget(priv->glade, "plugins-list");
+    gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(priv->plugins));
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colEnabled);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colImage);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colText);
+    gtk_tree_view_set_tooltip_column(GTK_TREE_VIEW(tree), 4);
+}
+
+
+static gchar *capa_preferences_display_plugin_tooltip(CapaPlugin *plugin)
+{
+    gchar *tip = g_strdup_printf("Name: %s\n"
+                                 "Version: %s\n"
+                                 "URI: %s\n"
+                                 "Email: %s",
+                                 capa_plugin_get_name(plugin),
+                                 capa_plugin_get_version(plugin),
+                                 capa_plugin_get_uri(plugin),
+                                 capa_plugin_get_email(plugin));
+
+    return tip;
+}
+
+static void capa_preferences_display_populate_plugins(CapaPreferencesDisplay *display)
+{
+    CapaPreferencesDisplayPrivate *priv = display->priv;
+    GList *plugins;
+    GList *tmp;
+
+    gtk_list_store_clear(priv->plugins);
+
+    if (!priv->pluginManager)
+        return;
+
+    plugins = capa_plugin_manager_get_all(priv->pluginManager);
+
+    tmp = plugins;
+    while (tmp) {
+        CapaPlugin *plugin = CAPA_PLUGIN(tmp->data);
+        GtkTreeIter iter;
+        gchar *tip = capa_preferences_display_plugin_tooltip(plugin);
+
+        gtk_list_store_append(priv->plugins, &iter);
+        gtk_list_store_set(priv->plugins, &iter,
+                           0, plugin,
+                           1, capa_plugin_get_description(plugin),
+                           2, NULL,
+                           3, TRUE,
+                           4, tip,
+                           -1);
+
+        tmp = tmp->next;
+    }
+
+    g_list_free(plugins);
 }
 
 static void capa_preferences_display_notify(GObject *object, GParamSpec *spec, gpointer opaque)
@@ -199,6 +289,17 @@ static void capa_preferences_display_set_property(GObject *object,
                                              object);
         } break;
 
+        case PROP_PLUGIN_MANAGER: {
+            if (priv->pluginManager) {
+                g_object_unref(G_OBJECT(priv->pluginManager));
+            }
+            priv->pluginManager = g_value_get_object(value);
+            if (priv->pluginManager)
+                g_object_ref(G_OBJECT(priv->pluginManager));
+
+            capa_preferences_display_populate_plugins(display);
+        } break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -249,6 +350,7 @@ static void capa_preferences_display_finalize (GObject *object)
 
     g_signal_handler_disconnect(G_OBJECT(priv->prefs), priv->prefsID);
     g_object_unref(G_OBJECT(priv->prefs));
+    g_object_unref(G_OBJECT(priv->pluginManager));
 
     g_object_unref(G_OBJECT(priv->glade));
 }
@@ -273,14 +375,28 @@ static void capa_preferences_display_class_init(CapaPreferencesDisplayClass *kla
                                                         G_PARAM_STATIC_BLURB));
 
 
+    g_object_class_install_property(object_class,
+                                    PROP_PLUGIN_MANAGER,
+                                    g_param_spec_object("plugin-manager",
+                                                        "Plugin manager",
+                                                        "Plugin manager",
+                                                        CAPA_TYPE_PLUGIN_MANAGER,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+
     g_type_class_add_private(klass, sizeof(CapaPreferencesDisplayPrivate));
 }
 
 
-CapaPreferencesDisplay *capa_preferences_display_new(CapaPreferences *preferences)
+CapaPreferencesDisplay *capa_preferences_display_new(CapaPreferences *preferences,
+                                                     CapaPluginManager *pluginManager)
 {
     return CAPA_PREFERENCES_DISPLAY(g_object_new(CAPA_TYPE_PREFERENCES_DISPLAY,
                                                  "preferences", preferences,
+                                                 "plugin-manager", pluginManager,
                                                  NULL));
 }
 
@@ -463,6 +579,14 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/folders.png");
 
+    box = glade_xml_get_widget(priv->glade, "plugins-box");
+    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    image = glade_xml_get_widget(priv->glade, "plugins-image");
+    if (local)
+        gtk_image_set_from_file(GTK_IMAGE(image), "./plugins.png");
+    else
+        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/plugins.png");
+
     list = gtk_list_store_new(3, G_TYPE_INT, G_TYPE_STRING, GDK_TYPE_PIXBUF, -1);
 
     gtk_list_store_append(list, &iter);
@@ -491,6 +615,20 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
                            0, 1,
                            1, "Color Management",
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/color-management-22.png", NULL),
+                           -1);
+
+    gtk_list_store_append(list, &iter);
+    if (local)
+        gtk_list_store_set(list, &iter,
+                           0, 2,
+                           1, "Plugins",
+                           2, gdk_pixbuf_new_from_file("./plugins-22.png", NULL),
+                           -1);
+    else
+        gtk_list_store_set(list, &iter,
+                           0, 2,
+                           1, "Plugins",
+                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/plugins-22.png", NULL),
                            -1);
 
     cellText = gtk_cell_renderer_text_new();
@@ -536,6 +674,8 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     g_object_unref(allFilter);
 
     g_signal_connect(G_OBJECT(selection), "changed", G_CALLBACK(do_page_changed), preferences);
+
+    capa_preferences_display_setup_plugins(preferences);
 }
 
 
