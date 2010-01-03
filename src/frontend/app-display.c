@@ -172,10 +172,28 @@ do_unique_message(UniqueApp *app G_GNUC_UNUSED,
     return UNIQUE_RESPONSE_OK;
 }
 
+static void do_camera_removed(CapaCameraList *cameras G_GNUC_UNUSED,
+                              CapaCamera *camera,
+                              gpointer data)
+{
+    CapaAppDisplay *display = CAPA_APP_DISPLAY(data);
+    CapaAppDisplayPrivate *priv = display->priv;
+    CapaCamera *current;
+
+    g_object_get(priv->manager, "camera", &current, NULL);
+
+    CAPA_DEBUG("Check removed camera '%s' %p, against '%s' %p",
+               capa_camera_model(camera), camera,
+               current ? capa_camera_model(current) : "<none>", current);
+
+    if (current == camera)
+        g_object_set(priv->manager, "camera", NULL, NULL);
+}
 
 static void capa_app_display_init(CapaAppDisplay *display)
 {
     CapaAppDisplayPrivate *priv;
+    CapaCameraList *cameras;
 
     priv = display->priv = CAPA_APP_DISPLAY_GET_PRIVATE(display);
 
@@ -185,10 +203,13 @@ static void capa_app_display_init(CapaAppDisplay *display)
     priv->manager = capa_camera_manager_new(capa_app_preferences(CAPA_APP(display)),
                                             capa_app_plugin_manager(CAPA_APP(display)));
 
+    cameras = capa_app_cameras(CAPA_APP(display));
+
     g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
     g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
     g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), display);
 
+    g_signal_connect(G_OBJECT(cameras), "camera-removed", G_CALLBACK(do_camera_removed), display);
     g_signal_connect(G_OBJECT(priv->manager), "manager-connect",
                      G_CALLBACK(do_manager_connect), display);
 
