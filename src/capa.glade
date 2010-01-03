@@ -680,7 +680,7 @@ native pixel size</property>
   - the camera is a &lt;b&gt;supported&lt;/b&gt; model
 
 USB cameras are automatically detected
-plugged in, for others try a refresh</property>
+when plugged in, for others try a refresh</property>
                     <property name="use_markup">True</property>
                   </widget>
                   <packing>
