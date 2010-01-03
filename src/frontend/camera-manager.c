@@ -549,6 +549,7 @@ static void capa_camera_manager_set_property(GObject *object,
             if (priv->camera) {
                 do_remove_camera(manager);
                 g_object_unref(G_OBJECT(priv->camera));
+                priv->inOperation = FALSE;
             }
             priv->camera = g_value_get_object(value);
             if (priv->camera) {
