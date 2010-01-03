@@ -439,8 +439,10 @@ static GPContextFeedback do_capa_camera_progress_cancelled(GPContext *ctx G_GNUC
 
     CAPA_DEBUG("Cancel check");
 
-    if (priv->progress &&
-        capa_progress_cancelled(priv->progress)) {
+    if (!priv->progress)
+        return GP_CONTEXT_FEEDBACK_CANCEL;
+
+    if (capa_progress_cancelled(priv->progress)) {
         CAPA_DEBUG("yes");
         return GP_CONTEXT_FEEDBACK_CANCEL;
     }
@@ -801,7 +803,7 @@ static void *do_camera_monitor_thread(void *data)
     capa_camera_threads_leave();
 
     CAPA_DEBUG("Starting monitor");
-    while (!capa_progress_cancelled(priv->progress)) {
+    while (priv->progress && !capa_progress_cancelled(priv->progress)) {
         if (gp_camera_wait_for_event(priv->cam, 500, &eventType, &eventData, priv->params->ctx) != GP_OK) {
             CAPA_DEBUG("Failed capture");
             capa_camera_threads_enter();
@@ -809,7 +811,7 @@ static void *do_camera_monitor_thread(void *data)
             capa_camera_threads_leave();
             goto cleanup;
         }
-
+        CAPA_DEBUG("Foo %d '%s'", eventType, (char *)eventData);
         switch (eventType) {
         case GP_EVENT_TIMEOUT:
             /* We just use timeouts to check progress cancellation */
