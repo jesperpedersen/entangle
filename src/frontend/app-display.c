@@ -35,14 +35,13 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP_DISPLAY, CapaAppDisplayPrivate))
 
 struct _CapaAppDisplayPrivate {
-    CapaApp *app;
     UniqueApp *unique;
 
     CapaCameraPicker *picker;
     CapaCameraManager *manager;
 };
 
-G_DEFINE_TYPE(CapaAppDisplay, capa_app_display, G_TYPE_OBJECT);
+G_DEFINE_TYPE(CapaAppDisplay, capa_app_display, CAPA_TYPE_APP);
 
 
 static void capa_app_display_finalize (GObject *object)
@@ -52,7 +51,6 @@ static void capa_app_display_finalize (GObject *object)
 
     CAPA_DEBUG("Finalize display");
 
-    g_object_unref(G_OBJECT(priv->app));
     g_object_unref(G_OBJECT(priv->unique));
     g_object_unref(G_OBJECT(priv->picker));
 
@@ -92,8 +90,7 @@ static void do_picker_close(CapaCameraPicker *picker, CapaAppDisplay *display G_
 
 static void do_picker_refresh(CapaCameraPicker *picker G_GNUC_UNUSED, CapaAppDisplay *display)
 {
-    CapaAppDisplayPrivate *priv = display->priv;
-    capa_app_refresh_cameras(priv->app);
+    capa_app_refresh_cameras(CAPA_APP(display));
 }
 
 static void do_manager_connect(CapaCameraManager *manager G_GNUC_UNUSED,
@@ -184,10 +181,9 @@ static void capa_app_display_init(CapaAppDisplay *display)
 
     do_set_icons();
 
-    priv->app = capa_app_new();
-    priv->picker = capa_camera_picker_new(capa_app_cameras(priv->app));
-    priv->manager = capa_camera_manager_new(capa_app_preferences(priv->app),
-                                            capa_app_plugin_manager(priv->app));
+    priv->picker = capa_camera_picker_new(capa_app_cameras(CAPA_APP(display)));
+    priv->manager = capa_camera_manager_new(capa_app_preferences(CAPA_APP(display)),
+                                            capa_app_plugin_manager(CAPA_APP(display)));
 
     g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
     g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
@@ -213,7 +209,7 @@ gboolean capa_app_display_show(CapaAppDisplay *display)
         return FALSE;
     }
 
-    cameras = capa_app_cameras(priv->app);
+    cameras = capa_app_cameras(CAPA_APP(display));
 
     if (capa_camera_list_count(cameras) == 1) {
         CapaCamera *cam = capa_camera_list_get(cameras, 0);

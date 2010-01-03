@@ -41,16 +41,16 @@ typedef struct _CapaAppDisplayClass CapaAppDisplayClass;
 
 struct _CapaAppDisplay
 {
-    GObject parent;
+    CapaApp parent;
 
     CapaAppDisplayPrivate *priv;
 };
 
 struct _CapaAppDisplayClass
 {
-    GObjectClass parent_class;
+    CapaAppClass parent_class;
 
-    void (*app_closed)(CapaAppDisplay *picker);
+    void (*app_closed)(CapaAppDisplay *app);
 };
 
 
