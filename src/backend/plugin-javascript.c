@@ -48,6 +48,32 @@ G_DEFINE_TYPE_EXTENDED(CapaPluginJavascript, capa_plugin_javascript, CAPA_TYPE_P
  */
 JSContext* gjs_context_get_context(GjsContext *js_context);
 
+static void
+capa_plugin_javascript_set_global(CapaPluginJavascript *plugin,
+                                  const char *name,
+                                  GObject *value)
+{
+    CapaPluginJavascriptPrivate *priv = plugin->priv;
+    JSContext *jscontext;
+    JSObject *jsglobal;
+    JSObject *jsvalue;
+
+    /* XXX
+     * Evil hack. GJS ought to provide a official public API
+     * for defining a global variable from a GObject.
+     */
+    jscontext = gjs_context_get_context(priv->context);
+    jsglobal = JS_GetGlobalObject(jscontext);
+    JS_EnterLocalRootScope(jscontext);
+    jsvalue = gjs_object_from_g_object(jscontext, value);
+    JS_DefineProperty(jscontext, jsglobal,
+                      name, OBJECT_TO_JSVAL(jsvalue),
+                      NULL, NULL,
+                      JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_LeaveLocalRootScope(jscontext);
+}
+
+
 static gboolean
 capa_plugin_javascript_eval(CapaPluginJavascript *plugin,
                             GObject *app,
@@ -57,9 +83,6 @@ capa_plugin_javascript_eval(CapaPluginJavascript *plugin,
     gchar *file;
     int status;
     const gchar *searchpath[2];
-    JSContext *jscontext;
-    JSObject *jsapp;
-    JSObject *jsglobal;
 
     file = g_strdup_printf("%s/main.js", capa_plugin_get_dir(CAPA_PLUGIN(plugin)));
 
@@ -79,20 +102,8 @@ capa_plugin_javascript_eval(CapaPluginJavascript *plugin,
                          NULL);
     }
 
-
-    /* XXX
-     * Evil hack. GJS ought to provide a official public API
-     * for defining a global variable from a GObject.
-     */
-    jscontext = gjs_context_get_context(priv->context);
-    jsglobal = JS_GetGlobalObject(jscontext);
-    JS_EnterLocalRootScope(jscontext);
-    jsapp = gjs_object_from_g_object(jscontext, G_OBJECT(app));
-    JS_DefineProperty(jscontext, jsglobal,
-                      "app", OBJECT_TO_JSVAL(jsapp),
-                      NULL, NULL,
-                      JSPROP_READONLY | JSPROP_PERMANENT);
-    JS_LeaveLocalRootScope(jscontext);
+    capa_plugin_javascript_set_global(plugin, "plugin", G_OBJECT(plugin));
+    capa_plugin_javascript_set_global(plugin, "app", app);
 
     CAPA_DEBUG("Eval javascript '%s' in '%s'\n", script, file);
     gjs_context_eval(priv->context,
@@ -118,7 +129,7 @@ capa_plugin_javascript_activate(CapaPlugin *iface, GObject *app)
     priv->active = TRUE;
 
     return capa_plugin_javascript_eval(plugin, app,
-                                       "const Main = imports.main; Main.activate(app);");
+                                       "const Main = imports.main; Main.activate(plugin, app);");
 }
 
 static gboolean
@@ -133,7 +144,7 @@ capa_plugin_javascript_deactivate(CapaPlugin *iface, GObject *app)
     priv->active = FALSE;
 
     return capa_plugin_javascript_eval(plugin, app,
-                                       "const Main = imports.main; Main.deactivate(app);");
+                                       "const Main = imports.main; Main.deactivate(plugin, app);");
 }
 
 static gboolean

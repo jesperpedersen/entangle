@@ -33,8 +33,8 @@
 struct _CapaPluginNativePrivate {
     GModule *module;
 
-    gboolean (*activate)(GObject *app);
-    gboolean (*deactivate)(GObject *app);
+    gboolean (*activate)(CapaPlugin *plugin, GObject *app);
+    gboolean (*deactivate)(CapaPlugin *plugin, GObject *app);
 };
 
 static void capa_plugin_interface_init(gpointer g_iface,
@@ -89,7 +89,7 @@ capa_plugin_native_activate(CapaPlugin *iface, GObject *app)
     }
 
     g_free(path);
-    return (priv->activate)(app);
+    return (priv->activate)(iface, app);
 
  error:
     if (priv->module)
@@ -109,7 +109,7 @@ capa_plugin_native_deactivate(CapaPlugin *iface, GObject *app)
     if (!priv->module)
         return FALSE;
 
-    return (priv->deactivate)(app);
+    return (priv->deactivate)(iface, app);
 }
 
 static gboolean

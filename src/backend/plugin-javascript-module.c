@@ -27,18 +27,20 @@
 
 #include <stdio.h>
 
-gboolean plugin_activate(GObject *app);
-gboolean plugin_deactivate(GObject *app);
+gboolean plugin_activate(CapaPlugin *plugin, GObject *app);
+gboolean plugin_deactivate(CapaPlugin *plugin, GObject *app);
 
 
-gboolean plugin_activate(GObject *app) {
+gboolean plugin_activate(CapaPlugin *plugin G_GNUC_UNUSED,
+                         GObject *app) {
     CAPA_DEBUG("Register javascript plugin type");
     capa_plugin_manager_register_type(capa_app_plugin_manager(CAPA_APP(app)), "javascript",
                                       CAPA_TYPE_PLUGIN_JAVASCRIPT);
     return TRUE;
 }
 
-gboolean plugin_deactivate(GObject *app G_GNUC_UNUSED) {
+gboolean plugin_deactivate(CapaPlugin *plugin G_GNUC_UNUSED,
+                           GObject *app G_GNUC_UNUSED) {
     return TRUE;
 }
 
