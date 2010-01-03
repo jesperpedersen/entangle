@@ -122,7 +122,7 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
                                                    "Check that the camera is not\n\n"
                                                    " - opened by another photo <b>application</b>\n"
                                                    " - mounted as a <b>filesystem</b> on the desktop\n"
-                                                   " - <b>turned off</b> to save battery power\n");
+                                                   " - in <b>sleep mode</b> to save battery power\n");
 
         gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
         gtk_dialog_add_button(GTK_DIALOG(msg), "Retry", GTK_RESPONSE_ACCEPT);
