@@ -25,7 +25,7 @@
 #include "internal.h"
 #include "colour-profile.h"
 
-#define DEBUG_CMS 1
+#define DEBUG_CMS 0
 
 #define CAPA_COLOUR_PROFILE_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_COLOUR_PROFILE, CapaColourProfilePrivate))
