@@ -68,6 +68,9 @@ rm -fr %{buildroot}
 rm -f %{buildroot}%{_libdir}/capa/plugins/*.a
 rm -f %{buildroot}%{_libdir}/capa/plugins/*.la
 
+cd %{buildroot}%{_datadir}/%{name}/website
+ln -s ../../gtk-doc/html/Capa api
+
 %clean
 rm -fr %{buildroot}
 
@@ -89,11 +92,14 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/%{name}/%{name}-128x128.png
 %{_datadir}/%{name}/%{name}-256x256.png
 %{_datadir}/%{name}/%{name}.svg
+%{_datadir}/%{name}/plugins.png
+%{_datadir}/%{name}/plugins-22.png
 %{_datadir}/%{name}/folders.png
 %{_datadir}/%{name}/folders-22.png
 %{_datadir}/%{name}/color-management.png
 %{_datadir}/%{name}/color-management-22.png
 %{_datadir}/%{name}/sRGB.icc
+%{_datadir}/gtk-doc/html/Capa
 %{_datadir}/applications/%{name}.desktop
 %doc %{_datadir}/%{name}/website/
 %if %{with_introspection}

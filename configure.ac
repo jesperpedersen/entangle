@@ -109,6 +109,10 @@ PKG_CHECK_MODULES(UNIQUE, unique-1.0 >= $UNIQUE_REQUIRED)
 AC_SUBST(UNIQUE_CFLAGS)
 AC_SUBST(UNIQUE_LIBS)
 
+
+GTK_DOC_CHECK(1.9)
+
+
 AC_ARG_ENABLE([introspection],
         AS_HELP_STRING([--enable-introspection], [enable GObject introspection]),
         [], [enable_introspection=check])
@@ -173,6 +177,7 @@ AC_CONFIG_FILES(
   capa.spec
   src/Makefile
   docs/Makefile
+  docs/reference/Makefile
   docs/website/Makefile
   )
 

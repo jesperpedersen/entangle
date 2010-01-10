@@ -37,6 +37,8 @@ if test -z "$*"; then
 fi
 
 mkdir -p m4
+
+gtkdocize || exit 1
 autoreconf -if
 
 cd $THEDIR
