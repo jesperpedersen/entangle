@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "control-range.h"
 
 #define CAPA_CONTROL_RANGE_GET_PRIVATE(obj)                             \

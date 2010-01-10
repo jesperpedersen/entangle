@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "pixbuf-loader.h"
 #include "colour-profile.h"
 

@@ -31,12 +31,9 @@
 #include <libsn/sn-launchee.h>
 #include <gdk/gdkx.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "app-display.h"
 
-gboolean capa_debug_app = FALSE;
-gboolean capa_debug_gphoto = FALSE;
-gint64 capa_debug_startms = 0;
 #if WITH_GOBJECT_INTROSPECTION
 static gchar *ins = NULL;
 #endif

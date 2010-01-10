@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "camera-list.h"
 
 #define CAPA_CAMERA_LIST_GET_PRIVATE(obj)                               \

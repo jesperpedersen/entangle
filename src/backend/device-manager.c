@@ -25,7 +25,7 @@
 #include <libhal.h>
 #include <dbus/dbus-glib-lowlevel.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "device-manager.h"
 
 #define CAPA_DEVICE_MANAGER_GET_PRIVATE(obj)                            \

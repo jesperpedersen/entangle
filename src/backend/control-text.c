@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "control-text.h"
 
 #define CAPA_CONTROL_TEXT_GET_PRIVATE(obj)                              \

@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "image-loader.h"
 
 G_DEFINE_TYPE(CapaImageLoader, capa_image_loader, CAPA_TYPE_PIXBUF_LOADER);

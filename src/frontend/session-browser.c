@@ -22,7 +22,7 @@
 
 #include <string.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "session-browser.h"
 #include "thumbnail-loader.h"
 #include "session.h"

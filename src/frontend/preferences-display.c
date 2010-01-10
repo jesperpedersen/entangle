@@ -25,7 +25,7 @@
 #include <glade/glade.h>
 #include <unistd.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "preferences-display.h"
 #include "camera-picker.h"
 #include "camera-manager.h"

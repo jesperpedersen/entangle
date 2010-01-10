@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "params.h"
 
 static void do_capa_log(GPLogLevel level G_GNUC_UNUSED,

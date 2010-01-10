@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "control-date.h"
 
 #define CAPA_CONTROL_DATE_GET_PRIVATE(obj)                              \

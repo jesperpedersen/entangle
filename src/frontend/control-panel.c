@@ -22,7 +22,7 @@
 
 #include <string.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "control-panel.h"
 #include "control-button.h"
 #include "control-choice.h"

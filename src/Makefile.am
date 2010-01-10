@@ -38,6 +38,7 @@ libcapa_backend_la_SOURCES = \
 	backend/control-range.h backend/control-range.c \
 	backend/control-text.h backend/control-text.c \
 	backend/control-toggle.h backend/control-toggle.c \
+	backend/debug.h backend/debug.c \
 	backend/device-manager.h backend/device-manager.c \
 	backend/image.h backend/image.c \
 	backend/image-loader.h backend/image-loader.c \
@@ -147,7 +148,7 @@ libcapa_frontend_la_CFLAGS = \
 
 
 
-capa_SOURCES = main.c internal.h
+capa_SOURCES = main.c
 
 capa_LDADD = libcapa_frontend.la
 

@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "camera.h"
 #include "params.h"
 #include "progress.h"

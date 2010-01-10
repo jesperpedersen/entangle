@@ -26,7 +26,7 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "image-polaroid.h"
 #include "image.h"
 #include "image-display.h"

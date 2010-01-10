@@ -26,7 +26,7 @@
 #include <string.h>
 #include <errno.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "preferences.h"
 #include "params.h"
 #include "progress.h"

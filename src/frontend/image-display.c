@@ -22,7 +22,7 @@
 
 #include <string.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "image-display.h"
 #include "image-loader.h"
 

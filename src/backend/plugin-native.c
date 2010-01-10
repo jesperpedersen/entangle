@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "plugin-native.h"
 
 #include <gmodule.h>

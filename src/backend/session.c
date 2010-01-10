@@ -28,7 +28,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "session.h"
 #include "image.h"
 

@@ -23,7 +23,7 @@
 #include <string.h>
 #include <gconf/gconf-client.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "preferences-gconf.h"
 
 #define CAPA_GCONF_DIRECTORY "/apps/capa"

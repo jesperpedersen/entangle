@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "control-choice.h"
 
 #define CAPA_CONTROL_CHOICE_GET_PRIVATE(obj)                            \

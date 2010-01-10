@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "thumbnail-loader.h"
 #include "colour-profile.h"
 

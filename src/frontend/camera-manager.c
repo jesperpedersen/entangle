@@ -27,7 +27,7 @@
 #include <gdk/gdkx.h>
 #include <stdlib.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "camera-manager.h"
 #include "camera-list.h"
 #include "camera-info.h"

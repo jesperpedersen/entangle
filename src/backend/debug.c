@@ -18,29 +18,8 @@
  *
  */
 
+#include "debug.h"
 
-#ifndef __CAPA_INTERNAL_H__
-#define __CAPA_INTERNAL_H__
-
-#include <glib.h>
-#include <sys/time.h>
-
-extern gboolean capa_debug_app;
-extern gboolean capa_debug_gphoto;
-extern gint64 capa_debug_startms;
-
-#define CAPA_DEBUG(fmt, ...)						\
-  do {									\
-    if (G_UNLIKELY(capa_debug_app)) {					\
-      struct timeval now;						\
-      gint64 nowms;							\
-      gettimeofday(&now, NULL);						\
-      nowms = (now.tv_sec * 1000ll) + (now.tv_usec / 1000ll);		\
-      if (capa_debug_startms == 0)					\
-	capa_debug_startms = nowms;					\
-      nowms -= capa_debug_startms;					\
-      g_debug("[%08llu %s:%s:%d] " fmt, nowms, __FILE__, __func__, __LINE__, ## __VA_ARGS__); \
-    }									\
-  } while (0)
-
-#endif /* __CAPA_INTERNAL_H__ */
+gboolean capa_debug_app = FALSE;
+gboolean capa_debug_gphoto = FALSE;
+gint64 capa_debug_startms = 0;

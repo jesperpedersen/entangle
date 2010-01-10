@@ -26,7 +26,7 @@
 #include <gtk/gtk.h>
 #include <unique/unique.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "app-display.h"
 #include "camera-picker.h"
 #include "camera-manager.h"

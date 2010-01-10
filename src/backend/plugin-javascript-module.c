@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "plugin-manager.h"
 #include "plugin-javascript.h"
 #include "app.h"

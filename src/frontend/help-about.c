@@ -24,7 +24,7 @@
 #include <string.h>
 #include <glade/glade.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "help-about.h"
 
 #define CAPA_HELP_ABOUT_GET_PRIVATE(obj)                                \

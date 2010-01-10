@@ -24,7 +24,7 @@
 #include <glade/glade.h>
 #include <unistd.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "camera-info.h"
 #include "camera.h"
 

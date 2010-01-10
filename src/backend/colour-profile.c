@@ -22,7 +22,7 @@
 
 #include <lcms.h>
 
-#include "internal.h"
+#include "debug.h"
 #include "colour-profile.h"
 
 #define DEBUG_CMS 0
