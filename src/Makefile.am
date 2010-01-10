@@ -25,34 +25,34 @@ icc_DATA = sRGB.icc
 EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
 
 libcapa_backend_la_SOURCES = \
-	backend/colour-profile-enums.h backend/colour-profile-enums.c \
-	backend/app.h backend/app.c \
-	backend/camera.h backend/camera.c \
-	backend/camera-list.h backend/camera-list.c \
-	backend/colour-profile.h backend/colour-profile.c \
-	backend/control.h backend/control.c \
-	backend/control-button.h backend/control-button.c \
-	backend/control-choice.h backend/control-choice.c \
-	backend/control-date.h backend/control-date.c \
-	backend/control-group.h backend/control-group.c \
-	backend/control-range.h backend/control-range.c \
-	backend/control-text.h backend/control-text.c \
-	backend/control-toggle.h backend/control-toggle.c \
-	backend/debug.h backend/debug.c \
-	backend/device-manager.h backend/device-manager.c \
-	backend/image.h backend/image.c \
-	backend/image-loader.h backend/image-loader.c \
-	backend/params.h backend/params.c \
-	backend/pixbuf-loader.h backend/pixbuf-loader.c \
-	backend/plugin.h backend/plugin.c \
-	backend/plugin-base.h backend/plugin-base.c \
-	backend/plugin-native.h backend/plugin-native.c \
-	backend/plugin-manager.h backend/plugin-manager.c \
-	backend/preferences.h backend/preferences.c \
-	backend/preferences-gconf.h backend/preferences-gconf.c \
-	backend/progress.h backend/progress.c \
-	backend/session.h backend/session.c \
-	backend/thumbnail-loader.h backend/thumbnail-loader.c
+	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c \
+	backend/capa-app.h backend/capa-app.c \
+	backend/capa-camera.h backend/capa-camera.c \
+	backend/capa-camera-list.h backend/capa-camera-list.c \
+	backend/capa-colour-profile.h backend/capa-colour-profile.c \
+	backend/capa-control.h backend/capa-control.c \
+	backend/capa-control-button.h backend/capa-control-button.c \
+	backend/capa-control-choice.h backend/capa-control-choice.c \
+	backend/capa-control-date.h backend/capa-control-date.c \
+	backend/capa-control-group.h backend/capa-control-group.c \
+	backend/capa-control-range.h backend/capa-control-range.c \
+	backend/capa-control-text.h backend/capa-control-text.c \
+	backend/capa-control-toggle.h backend/capa-control-toggle.c \
+	backend/capa-debug.h backend/capa-debug.c \
+	backend/capa-device-manager.h backend/capa-device-manager.c \
+	backend/capa-image.h backend/capa-image.c \
+	backend/capa-image-loader.h backend/capa-image-loader.c \
+	backend/capa-params.h backend/capa-params.c \
+	backend/capa-pixbuf-loader.h backend/capa-pixbuf-loader.c \
+	backend/capa-plugin.h backend/capa-plugin.c \
+	backend/capa-plugin-base.h backend/capa-plugin-base.c \
+	backend/capa-plugin-native.h backend/capa-plugin-native.c \
+	backend/capa-plugin-manager.h backend/capa-plugin-manager.c \
+	backend/capa-preferences.h backend/capa-preferences.c \
+	backend/capa-preferences-gconf.h backend/capa-preferences-gconf.c \
+	backend/capa-progress.h backend/capa-progress.c \
+	backend/capa-session.h backend/capa-session.c \
+	backend/capa-thumbnail-loader.h backend/capa-thumbnail-loader.c
 
 libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
@@ -82,8 +82,8 @@ libcapa_backend_la_CFLAGS = \
 
 if WITH_JAVASCRIPT
 javascript_la_SOURCES = \
-	backend/plugin-javascript.h backend/plugin-javascript.c \
-	backend/plugin-javascript-module.c
+	backend/capa-plugin-javascript.h backend/capa-plugin-javascript.c \
+	backend/capa-plugin-javascript-module.c
 
 javascript_la_LDFLAGS = \
 	-avoid-version -module \
@@ -110,21 +110,21 @@ uninstall-local:
 else # WITH_JAVASCRIPT
 EXTRA_DIST += \
 	javascript.cfg \
-	backend/plugin-javascript.h backend/plugin-javascript.c \
-	backend/plugin-javascript-module.c
+	backend/capa-plugin-javascript.h backend/capa-plugin-javascript.c \
+	backend/capa-plugin-javascript-module.c
 endif # WITH_JAVASCRIPT
 
 libcapa_frontend_la_SOURCES = \
-	frontend/app-display.h frontend/app-display.c \
-	frontend/camera-info.h frontend/camera-info.c \
-	frontend/camera-manager.h frontend/camera-manager.c \
-	frontend/camera-picker.h frontend/camera-picker.c \
-	frontend/control-panel.h frontend/control-panel.c \
-	frontend/help-about.h frontend/help-about.c \
-	frontend/image-display.h frontend/image-display.c \
-	frontend/image-polaroid.h frontend/image-polaroid.c \
-	frontend/preferences-display.h frontend/preferences-display.c \
-	frontend/session-browser.h frontend/session-browser.c
+	frontend/capa-app-display.h frontend/capa-app-display.c \
+	frontend/capa-camera-info.h frontend/capa-camera-info.c \
+	frontend/capa-camera-manager.h frontend/capa-camera-manager.c \
+	frontend/capa-camera-picker.h frontend/capa-camera-picker.c \
+	frontend/capa-control-panel.h frontend/capa-control-panel.c \
+	frontend/capa-help-about.h frontend/capa-help-about.c \
+	frontend/capa-image-display.h frontend/capa-image-display.c \
+	frontend/capa-image-polaroid.h frontend/capa-image-polaroid.c \
+	frontend/capa-preferences-display.h frontend/capa-preferences-display.c \
+	frontend/capa-session-browser.h frontend/capa-session-browser.c
 
 libcapa_frontend_la_LIBADD = libcapa_backend.la
 
@@ -148,7 +148,7 @@ libcapa_frontend_la_CFLAGS = \
 
 
 
-capa_SOURCES = main.c
+capa_SOURCES = capa-main.c
 
 capa_LDADD = libcapa_frontend.la
 
@@ -174,8 +174,8 @@ capa_CFLAGS = \
 %.desktop: $(srcdir)/%.desktop.in
 	sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
-backend/colour-profile-enums.c: backend/colour-profile.h backend/colour-profile-enums.h Makefile.am
-	glib-mkenums    --fhead "#include \"colour-profile-enums.h\"\n\n" \
+backend/capa-colour-profile-enums.c: backend/capa-colour-profile.h backend/capa-colour-profile-enums.h Makefile.am
+	$(AM_V_GEN)glib-mkenums    --fhead "#include \"capa-colour-profile-enums.h\"\n\n" \
                         --fprod "\n/* enumerations from \"@filename@\" */" \
                         --fprod "\n#include \"@filename@\"\n" \
                         --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
@@ -188,8 +188,8 @@ backend/colour-profile-enums.c: backend/colour-profile.h backend/colour-profile-
                         --vtail "  return type;\n}\n\n" \
                 $< > $@
 
-backend/colour-profile-enums.h: backend/colour-profile.h Makefile.am
-	glib-mkenums    --fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
+backend/capa-colour-profile-enums.h: backend/capa-colour-profile.h Makefile.am
+	$(AM_V_GEN)glib-mkenums    --fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
                         --fhead "#define __CAPA_COLOUR_PROFILE_ENUMS_H__\n\n" \
                         --fhead "#include <glib-object.h>\n" \
                         --fhead "G_BEGIN_DECLS\n\n" \
@@ -200,7 +200,7 @@ backend/colour-profile-enums.h: backend/colour-profile.h Makefile.am
                         --eprod "GType @enum_name@_get_type (void);\n" \
                 $< >  $@
 
-CLEANFILES = *~ $(desktop_DATA) backend/colour-profile-enums.c backend/colour-profile-enums.h
+CLEANFILES = *~ $(desktop_DATA) backend/capa-colour-profile-enums.c backend/capa-colour-profile-enums.h
 
 
 
