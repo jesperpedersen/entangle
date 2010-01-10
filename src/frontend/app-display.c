@@ -199,11 +199,11 @@ static void capa_app_display_init(CapaAppDisplay *display)
 
     do_set_icons();
 
-    priv->picker = capa_camera_picker_new(capa_app_cameras(CAPA_APP(display)));
-    priv->manager = capa_camera_manager_new(capa_app_preferences(CAPA_APP(display)),
-                                            capa_app_plugin_manager(CAPA_APP(display)));
+    priv->picker = capa_camera_picker_new(capa_app_get_cameras(CAPA_APP(display)));
+    priv->manager = capa_camera_manager_new(capa_app_get_preferences(CAPA_APP(display)),
+                                            capa_app_get_plugin_manager(CAPA_APP(display)));
 
-    cameras = capa_app_cameras(CAPA_APP(display));
+    cameras = capa_app_get_cameras(CAPA_APP(display));
 
     g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), display);
     g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
@@ -230,7 +230,7 @@ gboolean capa_app_display_show(CapaAppDisplay *display)
         return FALSE;
     }
 
-    cameras = capa_app_cameras(CAPA_APP(display));
+    cameras = capa_app_get_cameras(CAPA_APP(display));
 
     if (capa_camera_list_count(cameras) == 1) {
         CapaCamera *cam = capa_camera_list_get(cameras, 0);

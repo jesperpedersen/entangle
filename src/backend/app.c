@@ -33,6 +33,23 @@
 #include "plugin-native.h"
 #include "plugin-javascript.h"
 
+/**
+ * @Short_description: Global application state base class
+ * @Title: CapaApp
+ *
+ * <para>
+ * CapaApp maintains some global application state. At this time,
+ * the list of currently attached cameras, the application preferences
+ * and the plugin manager.
+ * </para>
+ *
+ * <para>
+ * This class will normally be sub-classed when creating a Capa based
+ * application, typically in order to add in UI state.
+ * </para>
+ */
+
+
 #define CAPA_APP_GET_PRIVATE(obj)                                       \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_APP, CapaAppPrivate))
 
@@ -314,24 +331,49 @@ static void capa_app_init(CapaApp *app)
 }
 
 
+/*
+ * capa_app_refresh_cameras: Refresh the camera list
+ *
+ * Rescans all attached devices to look for new cameras.
+ * This method is unneccessary if only interested in USB
+ * cameras, since those are automatically detected via the
+ * device manager when plugged in.
+ */
 void capa_app_refresh_cameras(CapaApp *app)
 {
     do_refresh_cameras(app);
 }
 
-CapaCameraList *capa_app_cameras(CapaApp *app)
+/**
+ * capa_app_get_cameras: Retrieve the camera list
+ *
+ * Returns: (transfer none): the camera list
+ */
+CapaCameraList *capa_app_get_cameras(CapaApp *app)
 {
     CapaAppPrivate *priv = app->priv;
     return priv->cameras;
 }
 
-CapaPreferences *capa_app_preferences(CapaApp *app)
+
+/**
+ * capa_app_get_preferences: Retrieve the application preferences object
+ *
+ * Returns: (transfer none): the application preferences
+ */
+CapaPreferences *capa_app_get_preferences(CapaApp *app)
 {
     CapaAppPrivate *priv = app->priv;
     return priv->preferences;
 }
 
-CapaPluginManager *capa_app_plugin_manager(CapaApp *app)
+
+/**
+ * capa_app_get_plugin_manager: Retrieve the plugin manager
+ *
+ * Returns: (transfer none): the plugin manager
+ */
+CapaPluginManager *capa_app_get_plugin_manager(CapaApp *app)
 {
     CapaAppPrivate *priv = app->priv;
     return priv->pluginManager;

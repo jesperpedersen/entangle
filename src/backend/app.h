@@ -59,9 +59,9 @@ CapaApp *capa_app_new(void);
 
 void capa_app_refresh_cameras(CapaApp *app);
 
-CapaCameraList *capa_app_cameras(CapaApp *app);
-CapaPreferences *capa_app_preferences(CapaApp *app);
-CapaPluginManager *capa_app_plugin_manager(CapaApp *app);
+CapaCameraList *capa_app_get_cameras(CapaApp *app);
+CapaPreferences *capa_app_get_preferences(CapaApp *app);
+CapaPluginManager *capa_app_get_plugin_manager(CapaApp *app);
 
 G_END_DECLS
 

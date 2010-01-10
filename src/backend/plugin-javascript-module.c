@@ -34,7 +34,7 @@ gboolean plugin_deactivate(CapaPlugin *plugin, GObject *app);
 gboolean plugin_activate(CapaPlugin *plugin G_GNUC_UNUSED,
                          GObject *app) {
     CAPA_DEBUG("Register javascript plugin type");
-    capa_plugin_manager_register_type(capa_app_plugin_manager(CAPA_APP(app)), "javascript",
+    capa_plugin_manager_register_type(capa_app_get_plugin_manager(CAPA_APP(app)), "javascript",
                                       CAPA_TYPE_PLUGIN_JAVASCRIPT);
     return TRUE;
 }
