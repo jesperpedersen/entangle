@@ -45,7 +45,6 @@ libcapa_backend_la_SOURCES = \
 	backend/capa-params.h backend/capa-params.c \
 	backend/capa-pixbuf-loader.h backend/capa-pixbuf-loader.c \
 	backend/capa-plugin.h backend/capa-plugin.c \
-	backend/capa-plugin-base.h backend/capa-plugin-base.c \
 	backend/capa-plugin-native.h backend/capa-plugin-native.c \
 	backend/capa-plugin-manager.h backend/capa-plugin-manager.c \
 	backend/capa-preferences.h backend/capa-preferences.c \

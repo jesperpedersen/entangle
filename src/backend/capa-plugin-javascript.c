@@ -35,11 +35,7 @@ struct _CapaPluginJavascriptPrivate {
     gboolean active;
 };
 
-static void capa_plugin_interface_init(gpointer g_iface,
-                                       gpointer iface_data);
-
-G_DEFINE_TYPE_EXTENDED(CapaPluginJavascript, capa_plugin_javascript, CAPA_TYPE_PLUGIN_BASE, 0,
-                       G_IMPLEMENT_INTERFACE(CAPA_TYPE_PLUGIN, capa_plugin_interface_init));
+G_DEFINE_TYPE(CapaPluginJavascript, capa_plugin_javascript, CAPA_TYPE_PLUGIN);
 
 /* XXX
  * Evil hack. THis method is defined in the .so, but not in the
@@ -157,21 +153,6 @@ capa_plugin_javascript_is_active(CapaPlugin *iface)
 }
 
 
-static void capa_plugin_interface_init(gpointer g_iface,
-                                       gpointer iface_data G_GNUC_UNUSED)
-{
-    CapaPluginInterface *iface = g_iface;
-    iface->activate = capa_plugin_javascript_activate;
-    iface->deactivate = capa_plugin_javascript_deactivate;
-    iface->is_active = capa_plugin_javascript_is_active;
-    iface->get_dir = capa_plugin_base_get_dir;
-    iface->get_name = capa_plugin_base_get_name;
-    iface->get_description = capa_plugin_base_get_description;
-    iface->get_version = capa_plugin_base_get_version;
-    iface->get_uri = capa_plugin_base_get_uri;
-    iface->get_email = capa_plugin_base_get_email;
-}
-
 static void capa_plugin_javascript_finalize(GObject *object)
 {
     CapaPluginJavascript *plugin = CAPA_PLUGIN_JAVASCRIPT(object);
@@ -185,8 +166,13 @@ static void capa_plugin_javascript_finalize(GObject *object)
 static void capa_plugin_javascript_class_init(CapaPluginJavascriptClass *klass)
 {
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    CapaPluginClass *plugin_class = CAPA_PLUGIN_CLASS (klass);
 
     object_class->finalize = capa_plugin_javascript_finalize;
+
+    plugin_class->activate = capa_plugin_javascript_activate;
+    plugin_class->deactivate = capa_plugin_javascript_deactivate;
+    plugin_class->is_active = capa_plugin_javascript_is_active;
 
     g_type_class_add_private(klass, sizeof(CapaPluginJavascriptPrivate));
 }

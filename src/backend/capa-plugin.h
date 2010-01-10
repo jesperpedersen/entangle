@@ -27,27 +27,29 @@ G_BEGIN_DECLS
 
 #define CAPA_TYPE_PLUGIN            (capa_plugin_get_type ())
 #define CAPA_PLUGIN(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_TYPE_PLUGIN, CapaPlugin))
+#define CAPA_PLUGIN_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), CAPA_TYPE_PLUGIN, CapaPluginClass))
 #define CAPA_IS_PLUGIN(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_TYPE_PLUGIN))
-#define CAPA_PLUGIN_GET_INTERFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), CAPA_TYPE_PLUGIN, CapaPluginInterface))
+#define CAPA_IS_PLUGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CAPA_TYPE_PLUGIN))
+#define CAPA_PLUGIN_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), CAPA_TYPE_PLUGIN, CapaPluginClass))
 
-typedef struct _CapaPlugin CapaPlugin; /* dummy object */
-typedef struct _CapaPluginInterface CapaPluginInterface;
+typedef struct _CapaPlugin CapaPlugin;
+typedef struct _CapaPluginPrivate CapaPluginPrivate;
+typedef struct _CapaPluginClass CapaPluginClass;
 
-struct _CapaPluginInterface
+struct _CapaPlugin
 {
-    GTypeInterface *parent;
+    GObject parent;
+
+    CapaPluginPrivate *priv;
+};
+
+struct _CapaPluginClass
+{
+    GObjectClass parent;
 
     gboolean (*activate)(CapaPlugin *plugin, GObject *app);
     gboolean (*deactivate)(CapaPlugin *plugin, GObject *app);
-
     gboolean (*is_active)(CapaPlugin *plugin);
-
-    const gchar * (*get_dir)(CapaPlugin *plugin);
-    const gchar * (*get_name)(CapaPlugin *plugin);
-    const gchar * (*get_description)(CapaPlugin *plugin);
-    const gchar * (*get_version)(CapaPlugin *plugin);
-    const gchar * (*get_uri)(CapaPlugin *plugin);
-    const gchar * (*get_email)(CapaPlugin *plugin);
 };
 
 GType capa_plugin_get_type(void);

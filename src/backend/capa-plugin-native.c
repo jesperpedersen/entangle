@@ -37,11 +37,8 @@ struct _CapaPluginNativePrivate {
     gboolean (*deactivate)(CapaPlugin *plugin, GObject *app);
 };
 
-static void capa_plugin_interface_init(gpointer g_iface,
-                                       gpointer iface_data);
 
-G_DEFINE_TYPE_EXTENDED(CapaPluginNative, capa_plugin_native, CAPA_TYPE_PLUGIN_BASE, 0,
-                       G_IMPLEMENT_INTERFACE(CAPA_TYPE_PLUGIN, capa_plugin_interface_init));
+G_DEFINE_TYPE(CapaPluginNative, capa_plugin_native, CAPA_TYPE_PLUGIN);
 
 static gboolean
 capa_plugin_native_activate(CapaPlugin *iface, GObject *app)
@@ -121,20 +118,6 @@ capa_plugin_native_is_active(CapaPlugin *iface)
     return priv->module ? TRUE : FALSE;
 }
 
-static void capa_plugin_interface_init(gpointer g_iface,
-                                       gpointer iface_data G_GNUC_UNUSED)
-{
-    CapaPluginInterface *iface = g_iface;
-    iface->activate = capa_plugin_native_activate;
-    iface->deactivate = capa_plugin_native_deactivate;
-    iface->is_active = capa_plugin_native_is_active;
-    iface->get_dir = capa_plugin_base_get_dir;
-    iface->get_name = capa_plugin_base_get_name;
-    iface->get_description = capa_plugin_base_get_description;
-    iface->get_version = capa_plugin_base_get_version;
-    iface->get_uri = capa_plugin_base_get_uri;
-    iface->get_email = capa_plugin_base_get_email;
-}
 
 static void capa_plugin_native_finalize(GObject *object)
 {
@@ -149,8 +132,13 @@ static void capa_plugin_native_finalize(GObject *object)
 static void capa_plugin_native_class_init(CapaPluginNativeClass *klass)
 {
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    CapaPluginClass *plugin_class = CAPA_PLUGIN_CLASS (klass);
 
     object_class->finalize = capa_plugin_native_finalize;
+
+    plugin_class->activate = capa_plugin_native_activate;
+    plugin_class->deactivate = capa_plugin_native_deactivate;
+    plugin_class->is_active = capa_plugin_native_is_active;
 
     g_type_class_add_private(klass, sizeof(CapaPluginNativePrivate));
 }

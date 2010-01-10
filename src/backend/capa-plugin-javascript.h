@@ -23,14 +23,17 @@
 
 #include <glib-object.h>
 
-#include "capa-plugin-base.h"
+#include "capa-plugin.h"
 
 G_BEGIN_DECLS
 
 #define CAPA_TYPE_PLUGIN_JAVASCRIPT            (capa_plugin_javascript_get_type ())
 #define CAPA_PLUGIN_JAVASCRIPT(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_TYPE_PLUGIN_JAVASCRIPT, CapaPluginJavascript))
+#define CAPA_PLUGIN_JAVASCRIPT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), CAPA_TYPE_PLUGIN_JAVASCRIPT, CapaPluginJavaScriptClass))
 #define CAPA_IS_PLUGIN_JAVASCRIPT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_TYPE_PLUGIN_JAVASCRIPT))
-#define CAPA_PLUGIN_JAVASCRIPT_GET_INTERFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), CAPA_TYPE_PLUGIN_JAVASCRIPT, CapaPluginJavascriptInterface))
+#define CAPA_IS_PLUGIN_JAVASCRIPT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CAPA_TYPE_PLUGIN_JAVASCRIPT))
+#define CAPA_PLUGIN_JAVASCRIPT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), CAPA_TYPE_PLUGIN_JAVASCRIPT, CapaPluginJavascriptClass))
+
 
 typedef struct _CapaPluginJavascript CapaPluginJavascript;
 typedef struct _CapaPluginJavascriptPrivate CapaPluginJavascriptPrivate;
@@ -38,14 +41,14 @@ typedef struct _CapaPluginJavascriptClass CapaPluginJavascriptClass;
 
 struct _CapaPluginJavascript
 {
-    CapaPluginBase parent;
+    CapaPlugin parent;
 
     CapaPluginJavascriptPrivate *priv;
 };
 
 struct _CapaPluginJavascriptClass
 {
-    CapaPluginBaseClass parent_class;
+    CapaPluginClass parent_class;
 };
 
 GType capa_plugin_javascript_get_type(void);

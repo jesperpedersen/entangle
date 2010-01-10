@@ -23,14 +23,16 @@
 
 #include <glib-object.h>
 
-#include "capa-plugin-base.h"
+#include "capa-plugin.h"
 
 G_BEGIN_DECLS
 
 #define CAPA_TYPE_PLUGIN_NATIVE            (capa_plugin_native_get_type ())
 #define CAPA_PLUGIN_NATIVE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), CAPA_TYPE_PLUGIN_NATIVE, CapaPluginNative))
+#define CAPA_PLUGIN_NATIVE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), CAPA_TYPE_PLUGIN_NATIVE, CapaPluginNativeClass))
 #define CAPA_IS_PLUGIN_NATIVE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CAPA_TYPE_PLUGIN_NATIVE))
-#define CAPA_PLUGIN_NATIVE_GET_INTERFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), CAPA_TYPE_PLUGIN_NATIVE, CapaPluginNativeInterface))
+#define CAPA_IS_PLUGIN_NATIVE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CAPA_TYPE_PLUGIN_NATIVE))
+#define CAPA_PLUGIN_NATIVE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), CAPA_TYPE_PLUGIN_NATIVE, CapaPluginNativeClass))
 
 typedef struct _CapaPluginNative CapaPluginNative;
 typedef struct _CapaPluginNativePrivate CapaPluginNativePrivate;
@@ -38,14 +40,14 @@ typedef struct _CapaPluginNativeClass CapaPluginNativeClass;
 
 struct _CapaPluginNative
 {
-    CapaPluginBase parent;
+    CapaPlugin parent;
 
     CapaPluginNativePrivate *priv;
 };
 
 struct _CapaPluginNativeClass
 {
-    CapaPluginBaseClass parent_class;
+    CapaPluginClass parent_class;
 };
 
 GType capa_plugin_native_get_type(void);
