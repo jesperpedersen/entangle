@@ -39,7 +39,7 @@ extern gint64 capa_debug_startms;
       if (capa_debug_startms == 0)					\
 	capa_debug_startms = nowms;					\
       nowms -= capa_debug_startms;					\
-      g_debug("[%08llu %s:%s:%d] " fmt, nowms, __FILE__, __func__, __LINE__, ## __VA_ARGS__); \
+      g_debug("[%08" G_GINT64_FORMAT " %s:%s:%d] " fmt, nowms, __FILE__, __func__, __LINE__, ## __VA_ARGS__); \
     }									\
   } while (0)
 
