@@ -811,17 +811,19 @@ static void *do_camera_monitor_thread(void *data)
             capa_camera_threads_leave();
             goto cleanup;
         }
-        CAPA_DEBUG("Foo %d '%s'", eventType, (char *)eventData);
+
         switch (eventType) {
         case GP_EVENT_TIMEOUT:
             /* We just use timeouts to check progress cancellation */
             break;
 
         case GP_EVENT_FOLDER_ADDED:
+            CAPA_DEBUG("Folder added '%s'", (char *)eventData);
             /* Don't care about this */
             break;
 
         case GP_EVENT_FILE_ADDED:
+            CAPA_DEBUG("File added '%s'", (char *)eventData);
             if (do_camera_file_added(cam, eventData) < 0) {
                 capa_camera_threads_enter();
                 g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to process file");
@@ -832,11 +834,9 @@ static void *do_camera_monitor_thread(void *data)
 
         case GP_EVENT_UNKNOWN:
         default:
-            capa_camera_threads_enter();
-            g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unexpected/unknown camera event");
-            capa_camera_threads_leave();
-            CAPA_DEBUG("Unknown event type %d", eventType);
-            goto cleanup;
+            CAPA_DEBUG("Unexpected event %d '%s'", eventType, (char *)eventData);
+            /* Ignore & carry on */
+            break;
         }
     }
 
