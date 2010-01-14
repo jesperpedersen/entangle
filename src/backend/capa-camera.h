@@ -26,6 +26,7 @@
 #include "capa-control-group.h"
 #include "capa-image.h"
 #include "capa-session.h"
+#include "capa-camera-file.h"
 
 G_BEGIN_DECLS
 
@@ -57,6 +58,12 @@ struct _CapaCameraClass
 
     void (*camera_op_begin)(CapaCamera *cam);
     void (*camera_op_end)(CapaCamera *cam);
+
+    void (*camera_file_added)(CapaCamera *cam, CapaCameraFile *file);
+    void (*camera_file_captured)(CapaCamera *cam, CapaCameraFile *file);
+    void (*camera_file_previewed)(CapaCamera *cam, CapaCameraFile *file);
+    void (*camera_file_downloaded)(CapaCamera *cam, CapaCameraFile *file);
+    void (*camera_file_deleted)(CapaCamera *cam, CapaCameraFile *file);
 };
 
 
@@ -85,6 +92,19 @@ int capa_camera_capture(CapaCamera *cam);
 int capa_camera_preview(CapaCamera *cam);
 int capa_camera_monitor(CapaCamera *cam);
 
+CapaCameraFile *capa_camera_capture_image(CapaCamera *cam);
+
+CapaCameraFile *capa_camera_preview_image(CapaCamera *cam);
+
+gboolean capa_camera_download_file(CapaCamera *cam,
+                                   CapaCameraFile *file);
+
+gboolean capa_camera_delete_file(CapaCamera *cam,
+                                 CapaCameraFile *file);
+
+gboolean capa_camera_event_flush(CapaCamera *cam);
+gboolean capa_camera_event_wait(CapaCamera *cam,
+                                int waitms);
 
 gboolean capa_camera_has_capture(CapaCamera *cam);
 gboolean capa_camera_has_preview(CapaCamera *cam);

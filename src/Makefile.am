@@ -28,6 +28,7 @@ libcapa_backend_la_SOURCES = \
 	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c \
 	backend/capa-app.h backend/capa-app.c \
 	backend/capa-camera.h backend/capa-camera.c \
+	backend/capa-camera-file.h backend/capa-camera-file.c \
 	backend/capa-camera-list.h backend/capa-camera-list.c \
 	backend/capa-colour-profile.h backend/capa-colour-profile.c \
 	backend/capa-control.h backend/capa-control.c \
@@ -55,6 +56,7 @@ libcapa_backend_la_SOURCES = \
 
 libcapa_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
+	$(GIO_LIBS) \
 	$(GMODULE_LIBS) \
 	$(GTHREAD_LIBS) \
 	$(GDK_PIXBUF_LIBS) \
@@ -67,6 +69,7 @@ libcapa_backend_la_LDFLAGS = \
 
 libcapa_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
+	$(GIO_CFLAGS) \
 	$(GMODULE_CFLAGS) \
 	$(GTHREAD_CFLAGS) \
 	$(GDK_PIXBUF_CFLAGS) \

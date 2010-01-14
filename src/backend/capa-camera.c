@@ -271,6 +271,57 @@ static void capa_camera_class_init(CapaCameraClass *klass)
                  0);
 
 
+    g_signal_new("camera-file-added",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaCameraClass, camera_file_added),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 CAPA_TYPE_CAMERA_FILE);
+
+    g_signal_new("camera-file-captured",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaCameraClass, camera_file_captured),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 CAPA_TYPE_CAMERA_FILE);
+
+    g_signal_new("camera-file-previewed",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaCameraClass, camera_file_previewed),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 CAPA_TYPE_CAMERA_FILE);
+
+    g_signal_new("camera-file-downloaded",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaCameraClass, camera_file_downloaded),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 CAPA_TYPE_CAMERA_FILE);
+
+    g_signal_new("camera-file-deleted",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(CapaCameraClass, camera_file_deleted),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 CAPA_TYPE_CAMERA_FILE);
+
+
     g_object_class_install_property(object_class,
                                     PROP_MODEL,
                                     g_param_spec_string("model",
@@ -577,8 +628,7 @@ static void *do_camera_capture_thread(void *data)
 {
     CapaCamera *cam = data;
     CapaCameraPrivate *priv = cam->priv;
-    CameraFilePath camerapath;
-    CameraFile *datafile = NULL;
+    CapaCameraFile *file;
     const char *localpath;
     CapaImage *image;
 
@@ -587,34 +637,28 @@ static void *do_camera_capture_thread(void *data)
     capa_camera_threads_leave();
 
     CAPA_DEBUG("Starting capture");
-    if (gp_camera_capture(priv->cam, GP_CAPTURE_IMAGE, &camerapath, priv->params->ctx) != GP_OK) {
+    if (!(file = capa_camera_capture_image(cam))) {
         CAPA_DEBUG("Failed capture");
         goto error;
     }
 
-    CAPA_DEBUG("captured '%s' '%s'", camerapath.folder, camerapath.name);
-
-    gp_file_new(&datafile);
-
-    CAPA_DEBUG("Getting file");
-    if (gp_camera_file_get(priv->cam, camerapath.folder, camerapath.name,
-                           GP_FILE_TYPE_NORMAL, datafile, priv->params->ctx) != GP_OK)
+    if (!capa_camera_download_file(cam, file)) {
+        CAPA_DEBUG("Failed download");
         goto error_delete;
+    }
 
 
     localpath = capa_session_next_filename(priv->session);
 
-    CAPA_DEBUG("Saving local file '%s'", localpath);
-    if (gp_file_save(datafile, localpath) != GP_OK)
+    if (!capa_camera_file_save_path(file, localpath, NULL)) {
+        CAPA_DEBUG("Failed save path");
         goto error_delete;
+    }
 
-    gp_file_unref(datafile);
-
-    CAPA_DEBUG("Deleting camera file");
-    if (gp_camera_file_delete(priv->cam, camerapath.folder, camerapath.name, priv->params->ctx) != GP_OK)
+    if (!capa_camera_delete_file(cam, file)) {
+        CAPA_DEBUG("Failed delete file");
         goto error;
-
-    CAPA_DEBUG("Done");
+    }
 
     image = capa_image_new(localpath);
 
@@ -628,16 +672,17 @@ static void *do_camera_capture_thread(void *data)
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-end");
     capa_camera_threads_leave();
 
+    g_object_unref(file);
+
     return NULL;
 
  error_delete:
-    CAPA_DEBUG("Error, try delete camera file");
-    gp_camera_file_delete(priv->cam, camerapath.folder, camerapath.name, priv->params->ctx);
+    if (!capa_camera_delete_file(cam, file)) {
+        goto error;
+    }
 
  error:
-    CAPA_DEBUG("Error");
-    if (datafile)
-        gp_file_unref(datafile);
+    g_object_unref(file);
     priv->operation = NULL;
     capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to capture");
@@ -668,28 +713,27 @@ static void *do_camera_preview_thread(void *data)
 {
     CapaCamera *cam = data;
     CapaCameraPrivate *priv = cam->priv;
-    CameraFile *datafile = NULL;
+    CapaCameraFile *file = NULL;
     const char *localpath;
     CapaImage *image;
 
     capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-op-begin");
     capa_camera_threads_leave();
-    gp_file_new(&datafile);
 
     CAPA_DEBUG("Starting preview");
-    if (gp_camera_capture_preview(priv->cam, datafile, priv->params->ctx) != GP_OK) {
-        CAPA_DEBUG("Failed capture");
+    if (!(file = capa_camera_preview_image(cam))) {
+        CAPA_DEBUG("Failed preview");
         goto error;
     }
 
     localpath = capa_session_temp_filename(priv->session);
 
     CAPA_DEBUG("Saving file '%s'", localpath);
-    if (gp_file_save(datafile, localpath) != GP_OK)
+    if (!capa_camera_file_save_path(file, localpath, NULL))
         goto error;
 
-    gp_file_unref(datafile);
+    g_object_unref(file);
 
     image = capa_image_new(localpath);
 
@@ -707,8 +751,8 @@ static void *do_camera_preview_thread(void *data)
 
  error:
     CAPA_DEBUG("Error");
-    if (datafile)
-        gp_file_unref(datafile);
+    if (file)
+        g_object_unref(file);
     priv->operation = NULL;
     capa_camera_threads_enter();
     g_signal_emit_by_name(G_OBJECT(cam), "camera-error", "Unable to preview");
@@ -737,37 +781,26 @@ int capa_camera_preview(CapaCamera *cam)
 }
 
 
-static int do_camera_file_added(CapaCamera *cam,
-                                CameraFilePath *camerapath)
+static gboolean
+do_camera_file_added(CapaCamera *cam,
+                     CameraFilePath *camerapath)
 {
     CapaCameraPrivate *priv = cam->priv;
-    CameraFile *datafile = NULL;
-    const char *localpath;
-    CapaImage *image;
+    CapaCameraFile *file;
+    gboolean ret = FALSE;
+    char *localpath;
+    CapaImage *image = NULL;
 
-    CAPA_DEBUG("captured '%s' '%s'", camerapath->folder, camerapath->name);
+    file = capa_camera_file_new(camerapath->folder,
+                                camerapath->name);
 
-    gp_file_new(&datafile);
-
-    CAPA_DEBUG("Getting file");
-    if (gp_camera_file_get(priv->cam, camerapath->folder, camerapath->name,
-                           GP_FILE_TYPE_NORMAL, datafile, priv->params->ctx) != GP_OK)
-        goto error_delete;
+    if (!capa_camera_download_file(cam, file))
+        goto cleanup;
 
     localpath = capa_session_next_filename(priv->session);
 
-    CAPA_DEBUG("Saving local file '%s'", localpath);
-    if (gp_file_save(datafile, localpath) != GP_OK)
-        goto error_delete;
-
-    gp_file_unref(datafile);
-
-    CAPA_DEBUG("Deleting camera file");
-    /* XXX should we really do this TBD ? */
-    if (gp_camera_file_delete(priv->cam, camerapath->folder, camerapath->name, priv->params->ctx) != GP_OK)
-        goto error;
-
-    CAPA_DEBUG("Done");
+    if (!(capa_camera_file_save_path(file, localpath, NULL)))
+        goto cleanup;
 
     image = capa_image_new(localpath);
 
@@ -778,17 +811,14 @@ static int do_camera_file_added(CapaCamera *cam,
 
     g_object_unref(image);
 
-    return 0;
+    ret = TRUE;
 
- error_delete:
-    CAPA_DEBUG("Error, try delete camera file");
-    gp_camera_file_delete(priv->cam, camerapath->folder, camerapath->name, priv->params->ctx);
+ cleanup:
+    if (!capa_camera_delete_file(cam, file))
+        ret = FALSE;
 
- error:
-    CAPA_DEBUG("Error");
-    if (datafile)
-        gp_file_unref(datafile);
-    return -1;
+    g_object_unref(file);
+    return ret;
 }
 
 static void *do_camera_monitor_thread(void *data)
@@ -871,6 +901,224 @@ int capa_camera_monitor(CapaCamera *cam)
 
     return 0;
 }
+
+
+CapaCameraFile *capa_camera_capture_image(CapaCamera *cam)
+{
+    CapaCameraPrivate *priv = cam->priv;
+    CameraFilePath camerapath;
+    CapaCameraFile *file;
+
+    CAPA_DEBUG("Starting capture");
+    if (gp_camera_capture(priv->cam,
+                          GP_CAPTURE_IMAGE,
+                          &camerapath,
+                          priv->params->ctx) != GP_OK)
+        return NULL;
+
+    file = capa_camera_file_new(camerapath.folder,
+                                camerapath.name);
+
+    g_signal_emit_by_name(cam, "camera-file-captured", file);
+
+    return file;
+}
+
+
+CapaCameraFile *capa_camera_preview_image(CapaCamera *cam)
+{
+    CapaCameraPrivate *priv = cam->priv;
+    CapaCameraFile *file;
+    CameraFile *datafile = NULL;
+    const char *mimetype = NULL;
+    GByteArray *data = NULL;
+    const char *rawdata;
+    unsigned long int rawdatalen;
+    const char *name;
+
+    gp_file_new(&datafile);
+
+    CAPA_DEBUG("Starting preview");
+    if (gp_camera_capture_preview(priv->cam,
+                                  datafile,
+                                  priv->params->ctx) != GP_OK) {
+        CAPA_DEBUG("Failed capture");
+        goto error;
+    }
+
+    if (gp_file_get_data_and_size(datafile, &rawdata, &rawdatalen) != GP_OK)
+        goto error;
+
+    if (gp_file_get_name(datafile, &name) != GP_OK)
+        goto error;
+
+    file = capa_camera_file_new("/", name);
+
+    if (gp_file_get_mime_type(datafile, &mimetype) == GP_OK)
+        g_object_set(file, "mimetype", mimetype, NULL);
+
+    data = g_byte_array_new();
+    g_byte_array_append(data, (const guint8 *)rawdata, rawdatalen);
+
+    g_object_set(file, "data", data, NULL);
+    g_byte_array_unref(data);
+
+    gp_file_unref(datafile);
+
+    g_signal_emit_by_name(cam, "camera-file-previewed", file);
+
+    return file;
+
+ error:
+    if (datafile)
+        gp_file_unref(datafile);
+    return NULL;
+}
+
+
+gboolean capa_camera_download_file(CapaCamera *cam,
+                                   CapaCameraFile *file)
+{
+    CapaCameraPrivate *priv = cam->priv;
+    CameraFile *datafile = NULL;
+    const char *data;
+    unsigned long int datalen;
+    GByteArray *filedata;
+
+    CAPA_DEBUG("Downloading '%s' from '%s'",
+               capa_camera_file_get_name(file),
+               capa_camera_file_get_folder(file));
+
+    gp_file_new(&datafile);
+
+    CAPA_DEBUG("Getting file data");
+    if (gp_camera_file_get(priv->cam,
+                           capa_camera_file_get_folder(file),
+                           capa_camera_file_get_name(file),
+                           GP_FILE_TYPE_NORMAL,
+                           datafile,
+                           priv->params->ctx) != GP_OK)
+        goto error;
+
+    CAPA_DEBUG("Fetching data");
+    if (gp_file_get_data_and_size(datafile, &data, &datalen) != GP_OK)
+        goto error;
+
+    filedata = g_byte_array_new();
+    g_byte_array_append(filedata, (const guint8*)data, datalen);
+    gp_file_unref(datafile);
+
+
+    g_object_set(file, "data", filedata, NULL);
+    g_byte_array_unref(filedata);
+
+    g_signal_emit_by_name(cam, "camera-file-downloaded", file);
+
+    return TRUE;
+
+ error:
+    CAPA_DEBUG("Error");
+    if (datafile)
+        gp_file_unref(datafile);
+    return FALSE;
+}
+
+
+gboolean capa_camera_delete_file(CapaCamera *cam,
+                                 CapaCameraFile *file)
+{
+    CapaCameraPrivate *priv = cam->priv;
+
+    CAPA_DEBUG("Deleting '%s' from '%s'",
+               capa_camera_file_get_name(file),
+               capa_camera_file_get_folder(file));
+
+    if (gp_camera_file_delete(priv->cam,
+                              capa_camera_file_get_folder(file),
+                              capa_camera_file_get_name(file),
+                              priv->params->ctx) != GP_OK)
+        return FALSE;
+
+    g_signal_emit_by_name(cam, "camera-file-deleted", file);
+
+    return TRUE;
+}
+
+
+gboolean capa_camera_event_flush(CapaCamera *cam)
+{
+    CapaCameraPrivate *priv = cam->priv;
+    CameraEventType eventType;
+    void *eventData;
+
+    CAPA_DEBUG("Flushing events");
+
+    do {
+        if (gp_camera_wait_for_event(priv->cam, 10, &eventType, &eventData, priv->params->ctx) != GP_OK) {
+            CAPA_DEBUG("Failed event wait");
+            return FALSE;
+        }
+
+    } while (eventType != GP_EVENT_TIMEOUT);
+
+    return TRUE;
+}
+
+
+gboolean capa_camera_event_wait(CapaCamera *cam,
+                                int waitms)
+{
+    CapaCameraPrivate *priv = cam->priv;
+    CameraEventType eventType;
+    void *eventData;
+    gboolean ret = TRUE;
+
+    CAPA_DEBUG("Waiting for events");
+
+    do {
+        if (gp_camera_wait_for_event(priv->cam, waitms, &eventType, &eventData, priv->params->ctx) != GP_OK) {
+            CAPA_DEBUG("Failed event wait");
+            return FALSE;
+        }
+
+        switch (eventType) {
+        case GP_EVENT_UNKNOWN:
+            CAPA_DEBUG("Unknown event '%s'", (char *)eventData);
+            break;
+
+        case GP_EVENT_TIMEOUT:
+            break;
+
+        case GP_EVENT_FILE_ADDED: {
+            CameraFilePath *camerapath = eventData;
+            CapaCameraFile *file;
+
+            CAPA_DEBUG("File added '%s' in '%s'", camerapath->name, camerapath->folder);
+
+            file = capa_camera_file_new(camerapath->folder,
+                                        camerapath->name);
+
+            g_signal_emit_by_name(cam, "camera-file-added", file);
+
+            g_object_unref(file);
+        }   break;
+
+        case GP_EVENT_FOLDER_ADDED: {
+            CameraFilePath *camerapath = eventData;
+
+            CAPA_DEBUG("Folder added '%s' in '%s'", camerapath->name, camerapath->folder);
+        }   break;
+
+        default:
+            CAPA_DEBUG("Unexpected event received %d", eventType);
+            ret = FALSE;
+            break;
+        }
+    } while (ret && eventType != GP_EVENT_TIMEOUT);
+
+    return ret;
+}
+
 
 static void do_update_control_text(GObject *object,
                                    GParamSpec *param G_GNUC_UNUSED,
