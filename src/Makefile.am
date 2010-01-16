@@ -22,15 +22,23 @@ icon_DATA = $(PACKAGE).svg $(wildcard *.png)
 iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
 
+BUILT_SOURCES = \
+	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c
+
 EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
 
 libcapa_backend_la_SOURCES = \
-	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c \
 	backend/capa-app.h backend/capa-app.c \
 	backend/capa-camera.h backend/capa-camera.c \
 	backend/capa-camera-file.h backend/capa-camera-file.c \
+	backend/capa-camera-task.h backend/capa-camera-task.c \
+	backend/capa-camera-task-capture.h backend/capa-camera-task-capture.c \
+	backend/capa-camera-task-preview.h backend/capa-camera-task-preview.c \
+	backend/capa-camera-task-monitor.h backend/capa-camera-task-monitor.c \
+	backend/capa-camera-scheduler.h backend/capa-camera-scheduler.c \
 	backend/capa-camera-list.h backend/capa-camera-list.c \
 	backend/capa-colour-profile.h backend/capa-colour-profile.c \
+	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c \
 	backend/capa-control.h backend/capa-control.c \
 	backend/capa-control-button.h backend/capa-control-button.c \
 	backend/capa-control-choice.h backend/capa-control-choice.c \
@@ -174,7 +182,7 @@ capa_CFLAGS = \
 
 
 %.desktop: $(srcdir)/%.desktop.in
-	sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
+	$(AM_V_GEN)sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
 backend/capa-colour-profile-enums.c: backend/capa-colour-profile.h backend/capa-colour-profile-enums.h Makefile.am
 	$(AM_V_GEN)glib-mkenums    --fhead "#include \"capa-colour-profile-enums.h\"\n\n" \
@@ -202,9 +210,7 @@ backend/capa-colour-profile-enums.h: backend/capa-colour-profile.h Makefile.am
                         --eprod "GType @enum_name@_get_type (void);\n" \
                 $< >  $@
 
-CLEANFILES = *~ $(desktop_DATA) backend/capa-colour-profile-enums.c backend/capa-colour-profile-enums.h
-
-
+CLEANFILES = *~ $(desktop_DATA) $(BUILT_SOURCES)
 
 
 if WITH_GOBJECT_INTROSPECTION
