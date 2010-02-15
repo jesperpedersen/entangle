@@ -112,6 +112,10 @@ static void do_setup_control_group(CapaControlPanel *panel,
     for (i = 0 ; i < capa_control_group_count(grp) ; i++) {
         CapaControl *control = capa_control_group_get(grp, i);
 
+        CAPA_DEBUG("Build control %d %s",
+                   capa_control_id(control),
+                   capa_control_label(control));
+
         if (CAPA_IS_CONTROL_GROUP(control)) {
             GtkWidget *frame = gtk_expander_new(capa_control_label(control));
             //GtkWidget *frame = gtk_frame_new(capa_control_label(control));
