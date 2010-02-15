@@ -25,7 +25,6 @@
 
 #include "capa-control-group.h"
 #include "capa-image.h"
-#include "capa-session.h"
 #include "capa-camera-file.h"
 
 G_BEGIN_DECLS
@@ -53,12 +52,6 @@ struct _CapaCameraClass
 {
     GObjectClass parent_class;
 
-    void (*camera_image)(CapaCamera *cam, CapaImage *image);
-    void (*camera_error)(CapaCamera *cam, const char *err);
-
-    void (*camera_op_begin)(CapaCamera *cam);
-    void (*camera_op_end)(CapaCamera *cam);
-
     void (*camera_file_added)(CapaCamera *cam, CapaCameraFile *file);
     void (*camera_file_captured)(CapaCamera *cam, CapaCameraFile *file);
     void (*camera_file_previewed)(CapaCamera *cam, CapaCameraFile *file);
@@ -66,9 +59,6 @@ struct _CapaCameraClass
     void (*camera_file_deleted)(CapaCamera *cam, CapaCameraFile *file);
 };
 
-
-void capa_camera_set_thread_funcs(void (*threads_enter)(void),
-                                  void (*threads_leave)(void));
 
 GType capa_camera_get_type(void) G_GNUC_CONST;
 
@@ -88,10 +78,6 @@ char *capa_camera_summary(CapaCamera *cam);
 char *capa_camera_manual(CapaCamera *cam);
 char *capa_camera_driver(CapaCamera *cam);
 
-int capa_camera_capture(CapaCamera *cam);
-int capa_camera_preview(CapaCamera *cam);
-int capa_camera_monitor(CapaCamera *cam);
-
 CapaCameraFile *capa_camera_capture_image(CapaCamera *cam);
 
 CapaCameraFile *capa_camera_preview_image(CapaCamera *cam);
@@ -110,7 +96,6 @@ gboolean capa_camera_has_capture(CapaCamera *cam);
 gboolean capa_camera_has_preview(CapaCamera *cam);
 gboolean capa_camera_has_settings(CapaCamera *cam);
 
-CapaSession *capa_camera_session(CapaCamera *cam);
 CapaControlGroup *capa_camera_controls(CapaCamera *cam);
 
 G_END_DECLS

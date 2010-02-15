@@ -29,8 +29,10 @@
 
 #include "capa-debug.h"
 #include "capa-camera-manager.h"
+#include "capa-camera-scheduler.h"
 #include "capa-camera-list.h"
 #include "capa-camera-info.h"
+#include "capa-session.h"
 #include "capa-image-display.h"
 #include "capa-image-loader.h"
 #include "capa-thumbnail-loader.h"
@@ -41,12 +43,18 @@
 #include "capa-colour-profile.h"
 #include "capa-preferences-display.h"
 #include "capa-progress.h"
+#include "capa-camera-task-capture.h"
+#include "capa-camera-task-preview.h"
+#include "capa-camera-task-monitor.h"
 
 #define CAPA_CAMERA_MANAGER_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_CAMERA_MANAGER, CapaCameraManagerPrivate))
 
 struct _CapaCameraManagerPrivate {
     CapaCamera *camera;
+    CapaCameraScheduler *scheduler;
+    CapaSession *session;
+
     CapaPreferences *prefs;
     CapaPluginManager *pluginManager;
 
@@ -74,10 +82,12 @@ struct _CapaCameraManagerPrivate {
 
     int zoomLevel;
 
-    gulong sigImage;
-    gulong sigError;
-    gulong sigOpBegin;
-    gulong sigOpEnd;
+    gulong sigFileDownload;
+    gulong sigFilePreview;
+
+    gulong sigTaskBegin;
+    gulong sigTaskEnd;
+
     gulong sigPrefsNotify;
 
     gboolean inOperation;
@@ -311,25 +321,66 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 }
 
 
-static void do_camera_image(CapaCamera *cam G_GNUC_UNUSED, CapaImage *image, void *data)
+static void do_camera_file_download(CapaCamera *cam G_GNUC_UNUSED, CapaCameraFile *file, void *data)
 {
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
+    CapaImage *image;
+    gchar *localpath;
+
+    CAPA_DEBUG("File download %p %p %p", cam, file, data);
+
+    localpath = capa_session_next_filename(priv->session);
+
+    if (!capa_camera_file_save_path(file, localpath, NULL)) {
+        CAPA_DEBUG("Failed save path");
+        goto cleanup;
+    }
+    CAPA_DEBUG("Saved to %s", localpath);
+    image = capa_image_new(localpath);
+
+    gdk_threads_enter();
+    capa_session_add(priv->session, image);
 
     g_object_set(G_OBJECT(priv->imageDisplay),
                  "filename", capa_image_filename(image),
                  NULL);
+    gdk_threads_leave();
+
+    g_object_unref(image);
+
+ cleanup:
+    g_free(localpath);
 }
 
-static void do_camera_error(CapaCamera *cam G_GNUC_UNUSED, const char *err, void *data)
+
+static void do_camera_file_preview(CapaCamera *cam G_GNUC_UNUSED, CapaCameraFile *file, void *data)
 {
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
+    GdkPixbuf *pixbuf;
+    GByteArray *bytes;
+    GInputStream *is;
 
-    CAPA_DEBUG("Something went wrong '%s' %p", err, priv);
+    CAPA_DEBUG("File preview %p %p %p", cam, file, data);
+
+    bytes = capa_camera_file_get_data(file);
+    is = g_memory_input_stream_new_from_data(bytes->data, bytes->len, NULL);
+
+    pixbuf = gdk_pixbuf_new_from_stream(is, NULL, NULL);
+
+    gdk_threads_enter();
+    g_object_set(G_OBJECT(priv->imageDisplay),
+                 "pixbuf", pixbuf,
+                 NULL);
+    gdk_threads_leave();
+
+    g_object_unref(pixbuf);
+    g_object_unref(is);
 }
 
-static void do_camera_op_begin(CapaCamera *cam G_GNUC_UNUSED, void *data)
+
+static void do_camera_task_begin(CapaCamera *cam G_GNUC_UNUSED, CapaCameraTask *task G_GNUC_UNUSED, void *data)
 {
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
@@ -337,7 +388,7 @@ static void do_camera_op_begin(CapaCamera *cam G_GNUC_UNUSED, void *data)
     priv->operationCancel = FALSE;
 }
 
-static void do_camera_op_end(CapaCamera *cam G_GNUC_UNUSED, void *data)
+static void do_camera_task_end(CapaCamera *cam G_GNUC_UNUSED, CapaCameraTask *task G_GNUC_UNUSED, void *data)
 {
     CapaCameraManager *manager = data;
     CapaCameraManagerPrivate *priv = manager->priv;
@@ -442,17 +493,23 @@ static void do_remove_camera(CapaCameraManager *manager)
                  NULL);
     g_object_set(G_OBJECT(priv->camera),
                  "progress", NULL,
-                 "session", NULL, NULL);
+                 NULL);
 
     g_object_set(G_OBJECT(priv->imageDisplay),
                  "filename", NULL,
                  "pixbuf", NULL,
                  NULL);
 
-    g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigImage);
-    g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigError);
-    g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigOpBegin);
-    g_signal_handler_disconnect(G_OBJECT(priv->camera), priv->sigOpEnd);
+    g_signal_handler_disconnect(priv->camera, priv->sigFilePreview);
+    g_signal_handler_disconnect(priv->camera, priv->sigFileDownload);
+    g_signal_handler_disconnect(priv->scheduler, priv->sigTaskBegin);
+    g_signal_handler_disconnect(priv->scheduler, priv->sigTaskEnd);
+
+    capa_camera_scheduler_end(priv->scheduler);
+    g_object_unref(priv->scheduler);
+    g_object_unref(priv->session);
+    priv->scheduler = NULL;
+    priv->session = NULL;
 }
 
 static void do_add_camera(CapaCameraManager *manager)
@@ -460,8 +517,9 @@ static void do_add_camera(CapaCameraManager *manager)
     CapaCameraManagerPrivate *priv = manager->priv;
     char *title;
     GtkWidget *win;
-    CapaSession *session;
     char *directory;
+
+    priv->scheduler = capa_camera_scheduler_new(priv->camera);
 
     title = g_strdup_printf("%s Camera Manager - Capa",
                             capa_camera_model(priv->camera));
@@ -470,38 +528,39 @@ static void do_add_camera(CapaCameraManager *manager)
     gtk_window_set_title(GTK_WINDOW(win), title);
     g_free(title);
 
-    priv->sigImage = g_signal_connect(G_OBJECT(priv->camera), "camera-image",
-                                      G_CALLBACK(do_camera_image), manager);
-    priv->sigError = g_signal_connect(G_OBJECT(priv->camera), "camera-error",
-                                      G_CALLBACK(do_camera_error), manager);
-    priv->sigOpBegin = g_signal_connect(G_OBJECT(priv->camera), "camera-op-begin",
-                                        G_CALLBACK(do_camera_op_begin), manager);
-    priv->sigOpEnd = g_signal_connect(G_OBJECT(priv->camera), "camera-op-end",
-                                      G_CALLBACK(do_camera_op_end), manager);
+    priv->sigFilePreview = g_signal_connect(priv->camera, "camera-file-previewed",
+                                            G_CALLBACK(do_camera_file_preview), manager);
+    priv->sigFileDownload = g_signal_connect(priv->camera, "camera-file-downloaded",
+                                             G_CALLBACK(do_camera_file_download), manager);
+
+    priv->sigTaskBegin = g_signal_connect(priv->scheduler, "camera-scheduler-task-begin",
+                                          G_CALLBACK(do_camera_task_begin), manager);
+    priv->sigTaskEnd = g_signal_connect(priv->scheduler, "camera-scheduler-task-end",
+                                        G_CALLBACK(do_camera_task_end), manager);
 
     directory = g_strdup_printf("%s/%s/Default Session",
                                 capa_preferences_picture_dir(priv->prefs),
                                 capa_camera_model(priv->camera));
 
-    session = capa_session_new(directory,
-                               capa_preferences_filename_pattern(priv->prefs));
-    capa_session_load(session);
+    priv->session = capa_session_new(directory,
+                                     capa_preferences_filename_pattern(priv->prefs));
+    capa_session_load(priv->session);
 
     g_object_set(G_OBJECT(priv->camera),
                  "progress", manager,
-                 "session", session,
                  NULL);
 
     g_object_set(G_OBJECT(priv->sessionBrowser),
-                 "session", session,
+                 "session", priv->session,
                  NULL);
 
     g_object_set(G_OBJECT(priv->controlPanel),
                  "camera", priv->camera,
                  NULL);
 
-    g_object_unref(G_OBJECT(session));
     g_free(directory);
+
+    capa_camera_scheduler_start(priv->scheduler);
 }
 
 
@@ -608,6 +667,8 @@ static void capa_camera_manager_finalize (GObject *object)
         g_object_unref(G_OBJECT(priv->thumbLoader));
     if (priv->colourTransform)
         g_object_unref(G_OBJECT(priv->colourTransform));
+    if (priv->scheduler)
+        g_object_unref(G_OBJECT(priv->scheduler));
     if (priv->camera)
         g_object_unref(G_OBJECT(priv->camera));
     if (priv->pluginManager)
@@ -685,9 +746,6 @@ static void capa_camera_manager_class_init(CapaCameraManagerClass *klass)
                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(CapaCameraManagerPrivate));
-
-    capa_camera_set_thread_funcs(gdk_threads_enter,
-                                 gdk_threads_leave);
 }
 
 
@@ -915,6 +973,7 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
                                CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
+    CapaCameraTask *task;
 
     CAPA_DEBUG("starting Capture thread");
 
@@ -923,13 +982,17 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
 
     priv->inOperation = TRUE;
     do_capture_widget_sensitivity(manager);
-    capa_camera_capture(priv->camera);
+
+    task = CAPA_CAMERA_TASK(capa_camera_task_capture_new());
+    capa_camera_scheduler_queue(priv->scheduler, task);
+    g_object_unref(task);
 }
 
 static void do_menu_capture(GtkMenuItem *src G_GNUC_UNUSED,
                             CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
+    CapaCameraTask *task;
 
     CAPA_DEBUG("starting Capture thread");
 
@@ -938,13 +1001,17 @@ static void do_menu_capture(GtkMenuItem *src G_GNUC_UNUSED,
 
     priv->inOperation = TRUE;
     do_capture_widget_sensitivity(manager);
-    capa_camera_capture(priv->camera);
+
+    task = CAPA_CAMERA_TASK(capa_camera_task_capture_new());
+    capa_camera_scheduler_queue(priv->scheduler, task);
+    g_object_unref(task);
 }
 
 static void do_menu_preview(GtkMenuItem *src G_GNUC_UNUSED,
                             CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
+    CapaCameraTask *task;
 
     CAPA_DEBUG("starting Preview thread");
     if (priv->inOperation)
@@ -952,13 +1019,17 @@ static void do_menu_preview(GtkMenuItem *src G_GNUC_UNUSED,
 
     priv->inOperation = TRUE;
     do_capture_widget_sensitivity(manager);
-    capa_camera_preview(priv->camera);
+
+    task = CAPA_CAMERA_TASK(capa_camera_task_preview_new());
+    capa_camera_scheduler_queue(priv->scheduler, task);
+    g_object_unref(task);
 }
 
 static void do_menu_monitor(GtkMenuItem *src G_GNUC_UNUSED,
                             CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
+    CapaCameraTask *task;
 
     CAPA_DEBUG("starting monitor thread");
 
@@ -967,7 +1038,10 @@ static void do_menu_monitor(GtkMenuItem *src G_GNUC_UNUSED,
 
     priv->inOperation = TRUE;
     do_capture_widget_sensitivity(manager);
-    capa_camera_monitor(priv->camera);
+
+    task = CAPA_CAMERA_TASK(capa_camera_task_monitor_new());
+    capa_camera_scheduler_queue(priv->scheduler, task);
+    g_object_unref(task);
 }
 
 static void capa_camera_manager_setup_capture_menu(CapaCameraManager *manager)
