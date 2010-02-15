@@ -195,7 +195,7 @@ static void capa_app_class_init(CapaAppClass *klass)
                                     g_param_spec_object("device-manager",
                                                         "Device manager",
                                                         "Device manager for detecting cameras",
-                                                        CAPA_TYPE_SESSION,
+                                                        CAPA_TYPE_DEVICE_MANAGER,
                                                         G_PARAM_READABLE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
