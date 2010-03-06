@@ -23,7 +23,8 @@ iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
 
 BUILT_SOURCES = \
-	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c
+	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c \
+	backend/capa-config-entry-enums.h backend/capa-config-entry-enums.c
 
 EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
 
@@ -47,6 +48,10 @@ libcapa_backend_la_SOURCES = \
 	backend/capa-control-range.h backend/capa-control-range.c \
 	backend/capa-control-text.h backend/capa-control-text.c \
 	backend/capa-control-toggle.h backend/capa-control-toggle.c \
+	backend/capa-config-entry.h backend/capa-config-entry.c \
+	backend/capa-config-entry-enums.h backend/capa-config-entry-enums.c \
+	backend/capa-config-set.h backend/capa-config-set.c \
+	backend/capa-config-store.h backend/capa-config-store.c \
 	backend/capa-debug.h backend/capa-debug.c \
 	backend/capa-device-manager.h backend/capa-device-manager.c \
 	backend/capa-image.h backend/capa-image.c \
@@ -185,7 +190,8 @@ capa_CFLAGS = \
 	$(AM_V_GEN)sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
 backend/capa-colour-profile-enums.c: backend/capa-colour-profile.h backend/capa-colour-profile-enums.h Makefile.am
-	$(AM_V_GEN)glib-mkenums    --fhead "#include \"capa-colour-profile-enums.h\"\n\n" \
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#include \"capa-colour-profile-enums.h\"\n\n" \
                         --fprod "\n/* enumerations from \"@filename@\" */" \
                         --fprod "\n#include \"@filename@\"\n" \
                         --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
@@ -199,7 +205,36 @@ backend/capa-colour-profile-enums.c: backend/capa-colour-profile.h backend/capa-
                 $< > $@
 
 backend/capa-colour-profile-enums.h: backend/capa-colour-profile.h Makefile.am
-	$(AM_V_GEN)glib-mkenums    --fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
+                        --fhead "#define __CAPA_COLOUR_PROFILE_ENUMS_H__\n\n" \
+                        --fhead "#include <glib-object.h>\n" \
+                        --fhead "G_BEGIN_DECLS\n\n" \
+                        --ftail "G_END_DECLS\n\n" \
+                        --ftail "#endif /* __CAPA_COLOUR_PROFILE_ENUMS_H__ */\n" \
+                        --fprod "\n/* --- @filename@ --- */" \
+                        --eprod "#define CAPA_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
+                        --eprod "GType @enum_name@_get_type (void);\n" \
+                $< >  $@
+
+backend/capa-config-entry-enums.c: backend/capa-config-entry.h backend/capa-config-entry-enums.h Makefile.am
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#include \"capa-config-entry-enums.h\"\n\n" \
+                        --fprod "\n/* enumerations from \"@filename@\" */" \
+                        --fprod "\n#include \"@filename@\"\n" \
+                        --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
+                        --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+                        --vtail "  { 0, NULL, NULL }\n};\n\n" \
+                        --vtail "GType\n@enum_name@_get_type (void)\n{\n" \
+                        --vtail "  static GType type = 0;\n\n" \
+                        --vtail "  if (!type)\n" \
+                        --vtail "    type = g_@type@_register_static (\"@EnumName@\", _@enum_name@_values);\n\n" \
+                        --vtail "  return type;\n}\n\n" \
+                $< > $@
+
+backend/capa-config-entry-enums.h: backend/capa-config-entry.h Makefile.am
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
                         --fhead "#define __CAPA_COLOUR_PROFILE_ENUMS_H__\n\n" \
                         --fhead "#include <glib-object.h>\n" \
                         --fhead "G_BEGIN_DECLS\n\n" \
