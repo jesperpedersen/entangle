@@ -191,7 +191,7 @@ static gpointer capa_camera_scheduler_worker(gpointer data)
             g_signal_emit_by_name(scheduler, "camera-scheduler-task-end", task);
             CAPA_DEBUG("Finished task %p on camera %p", task, priv->camera);
             capa_camera_event_flush(priv->camera);
-            CAPA_DEBUG("Flush events", priv->camera);
+            CAPA_DEBUG("Flush events %p", priv->camera);
             g_object_unref(task);
         }
 
