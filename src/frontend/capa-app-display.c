@@ -51,8 +51,8 @@ static void capa_app_display_finalize (GObject *object)
 
     CAPA_DEBUG("Finalize display");
 
-    g_object_unref(G_OBJECT(priv->unique));
-    g_object_unref(G_OBJECT(priv->picker));
+    g_object_unref(priv->unique);
+    g_object_unref(priv->picker);
 
     G_OBJECT_CLASS (capa_app_display_parent_class)->finalize (object);
 }
@@ -127,13 +127,13 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
         response = gtk_dialog_run(GTK_DIALOG(msg));
 
         gtk_widget_hide(msg);
-        //g_object_unref(G_OBJECT(msg));
+        //g_object_unref(msg);
 
         if (response == GTK_RESPONSE_CANCEL)
             return;
     }
 
-    g_object_set(G_OBJECT(priv->manager), "camera", cam, NULL);
+    g_object_set(priv->manager, "camera", cam, NULL);
     capa_camera_picker_hide(picker);
 }
 
@@ -209,8 +209,8 @@ static void capa_app_display_init(CapaAppDisplay *display)
     g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), display);
     g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), display);
 
-    g_signal_connect(G_OBJECT(cameras), "camera-removed", G_CALLBACK(do_camera_removed), display);
-    g_signal_connect(G_OBJECT(priv->manager), "manager-connect",
+    g_signal_connect(cameras, "camera-removed", G_CALLBACK(do_camera_removed), display);
+    g_signal_connect(priv->manager, "manager-connect",
                      G_CALLBACK(do_manager_connect), display);
 
     priv->unique = unique_app_new("org.capa_project.Display", NULL);
@@ -236,7 +236,7 @@ gboolean capa_app_display_show(CapaAppDisplay *display)
         CapaCamera *cam = capa_camera_list_get(cameras, 0);
 
         if (capa_camera_connect(cam)) {
-            g_object_set(G_OBJECT(priv->manager), "camera", cam, NULL);
+            g_object_set(priv->manager, "camera", cam, NULL);
             choose = FALSE;
         }
     }

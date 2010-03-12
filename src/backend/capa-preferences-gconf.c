@@ -45,7 +45,7 @@ static void capa_preferences_gconf_finalize(GObject *object)
 
     CAPA_DEBUG("Finalize preferences %p", object);
 
-    g_object_unref(G_OBJECT(priv->gconf));
+    g_object_unref(priv->gconf);
 
     G_OBJECT_CLASS (capa_preferences_gconf_parent_class)->finalize (object);
 }
@@ -70,50 +70,50 @@ static void capa_preferences_gconf_notify_external(GConfClient *client G_GNUC_UN
         gboolean newvalue;
         gboolean oldvalue;
         newvalue = gconf_value_get_bool(entry->value);
-        g_object_get(G_OBJECT(preferences), name, &oldvalue, NULL);
+        g_object_get(preferences, name, &oldvalue, NULL);
 
         if (newvalue != oldvalue)
-            g_object_set(G_OBJECT(preferences), name, newvalue, NULL);
+            g_object_set(preferences, name, newvalue, NULL);
     } else if (strcmp(name, "rgb-profile") == 0 ||
                strcmp(name, "monitor-profile") == 0) {
         CapaColourProfile *oldprofile;
         const gchar *oldvalue;
         const gchar *newvalue;
         newvalue = gconf_value_get_string(entry->value);
-        g_object_get(G_OBJECT(preferences), name, &oldprofile, NULL);
+        g_object_get(preferences, name, &oldprofile, NULL);
         oldvalue = oldprofile ? capa_colour_profile_filename(oldprofile) : NULL;
 
         if (!oldvalue || !newvalue ||
             (strcmp(oldvalue, newvalue) != 0)) {
             CapaColourProfile *newprofile = newvalue ?
                 capa_colour_profile_new_file(newvalue) : NULL;
-            g_object_set(G_OBJECT(preferences), name, newprofile, NULL);
+            g_object_set(preferences, name, newprofile, NULL);
             if (newprofile)
                 g_object_unref(newprofile);
         }
         if (oldprofile)
-            g_object_unref(G_OBJECT(oldprofile));
+            g_object_unref(oldprofile);
     } else if (strcmp(name, "picture-dir") == 0 ||
                strcmp(name, "filename-pattern") == 0) {
         const gchar *newvalue;
         gchar *oldvalue;
         newvalue = gconf_value_get_string(entry->value);
-        g_object_get(G_OBJECT(preferences), name, &oldvalue, NULL);
+        g_object_get(preferences, name, &oldvalue, NULL);
 
         if (!oldvalue || !newvalue ||
             (strcmp(oldvalue, newvalue) != 0))
-            g_object_set(G_OBJECT(preferences), name, newvalue, NULL);
+            g_object_set(preferences, name, newvalue, NULL);
 
         g_free(oldvalue);
     } else if (strcmp(name, "profile-rendering-intent") == 0) {
         int newvalue;
         int oldvalue;
         newvalue = gconf_value_get_int(entry->value);
-        g_object_get(G_OBJECT(preferences), name, &oldvalue, NULL);
+        g_object_get(preferences, name, &oldvalue, NULL);
 
         if (!oldvalue || !newvalue ||
             (oldvalue != newvalue))
-            g_object_set(G_OBJECT(preferences), name, newvalue, NULL);
+            g_object_set(preferences, name, newvalue, NULL);
     }
 }
 
@@ -148,7 +148,7 @@ static void capa_preferences_gconf_notify_internal(GObject *object, GParamSpec *
 
         g_free(oldvalue);
         if (profile)
-            g_object_unref(G_OBJECT(profile));
+            g_object_unref(profile);
     } else if (strcmp(spec->name, "picture-dir") == 0 ||
                strcmp(spec->name, "filename-pattern") == 0) {
         gchar *newvalue;

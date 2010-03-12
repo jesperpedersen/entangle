@@ -148,18 +148,18 @@ static void capa_colour_profile_transform_set_property(GObject *object,
         {
         case PROP_SRC_PROFILE:
             if (priv->srcProfile)
-                g_object_unref(G_OBJECT(priv->srcProfile));
+                g_object_unref(priv->srcProfile);
             priv->srcProfile = g_value_get_object(value);
             if (priv->srcProfile)
-                g_object_ref(G_OBJECT(priv->srcProfile));
+                g_object_ref(priv->srcProfile);
             break;
 
         case PROP_DST_PROFILE:
             if (priv->dstProfile)
-                g_object_unref(G_OBJECT(priv->dstProfile));
+                g_object_unref(priv->dstProfile);
             priv->dstProfile = g_value_get_object(value);
             if (priv->dstProfile)
-                g_object_ref(G_OBJECT(priv->dstProfile));
+                g_object_ref(priv->dstProfile);
             break;
 
         case PROP_RENDERING_INTENT:
@@ -195,9 +195,9 @@ static void capa_colour_profile_transform_finalize (GObject *object)
     CAPA_DEBUG("Finalize profile transform");
 
     if (priv->srcProfile)
-        g_object_unref(G_OBJECT(priv->srcProfile));
+        g_object_unref(priv->srcProfile);
     if (priv->dstProfile)
-        g_object_unref(G_OBJECT(priv->dstProfile));
+        g_object_unref(priv->dstProfile);
 
     G_OBJECT_CLASS (capa_colour_profile_transform_parent_class)->finalize (object);
 }

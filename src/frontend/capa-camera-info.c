@@ -102,7 +102,7 @@ static void capa_camera_info_finalize (GObject *object)
     CapaCameraInfoPrivate *priv = info->priv;
 
     if (priv->camera)
-        g_object_unref(G_OBJECT(priv->camera));
+        g_object_unref(priv->camera);
     g_object_unref(priv->glade);
 
     G_OBJECT_CLASS (capa_camera_info_parent_class)->finalize (object);
@@ -307,7 +307,7 @@ void capa_camera_info_set_camera(CapaCameraInfo *info,
         g_object_unref(priv->camera);
     priv->camera = camera;
     if (priv->camera) {
-        g_object_ref(G_OBJECT(priv->camera));
+        g_object_ref(priv->camera);
         title = g_strdup_printf("%s Camera Info - Capa",
                                 capa_camera_get_model(priv->camera));
     } else {

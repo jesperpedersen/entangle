@@ -238,15 +238,15 @@ static void capa_camera_picker_set_property(GObject *object,
         {
         case PROP_CAMERAS:
             if (priv->cameras) {
-                g_signal_handler_disconnect(G_OBJECT(priv->cameras), priv->addSignal);
-                g_signal_handler_disconnect(G_OBJECT(priv->cameras), priv->removeSignal);
-                g_object_unref(G_OBJECT(priv->cameras));
+                g_signal_handler_disconnect(priv->cameras, priv->addSignal);
+                g_signal_handler_disconnect(priv->cameras, priv->removeSignal);
+                g_object_unref(priv->cameras);
             }
             priv->cameras = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->cameras));
-            priv->addSignal = g_signal_connect(G_OBJECT(priv->cameras), "camera-added",
+            g_object_ref(priv->cameras);
+            priv->addSignal = g_signal_connect(priv->cameras, "camera-added",
                                                G_CALLBACK(do_camera_list_add), picker);
-            priv->removeSignal = g_signal_connect(G_OBJECT(priv->cameras), "camera-removed",
+            priv->removeSignal = g_signal_connect(priv->cameras, "camera-removed",
                                                   G_CALLBACK(do_camera_list_remove), picker);
             do_model_refresh(picker);
             break;
@@ -265,7 +265,7 @@ static void capa_camera_picker_finalize (GObject *object)
 
     gtk_list_store_clear(priv->model);
     if (priv->cameras)
-        g_object_unref(G_OBJECT(priv->cameras));
+        g_object_unref(priv->cameras);
     g_object_unref(priv->model);
     g_object_unref(priv->glade);
 
@@ -469,9 +469,9 @@ static void capa_camera_picker_init(CapaCameraPicker *picker)
     portCol = gtk_tree_view_column_new_with_attributes("Port", port, NULL);
     captureCol = gtk_tree_view_column_new_with_attributes("Capture", capture, NULL);
 
-    g_object_set(G_OBJECT(modelCol), "expand", TRUE, NULL);
-    g_object_set(G_OBJECT(portCol), "expand", FALSE, NULL);
-    g_object_set(G_OBJECT(captureCol), "expand", FALSE, NULL);
+    g_object_set(modelCol, "expand", TRUE, NULL);
+    g_object_set(portCol, "expand", FALSE, NULL);
+    g_object_set(captureCol, "expand", FALSE, NULL);
 
     gtk_tree_view_append_column(GTK_TREE_VIEW(list), modelCol);
     gtk_tree_view_append_column(GTK_TREE_VIEW(list), portCol);

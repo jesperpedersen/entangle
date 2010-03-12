@@ -178,14 +178,14 @@ static void capa_preferences_set_property(GObject *object,
 
         case PROP_RGB_PROFILE:
             if (priv->rgbProfile)
-                g_object_unref(G_OBJECT(priv->rgbProfile));
+                g_object_unref(priv->rgbProfile);
             priv->rgbProfile = g_value_get_object(value);
             g_object_ref(priv->rgbProfile);
             break;
 
         case PROP_MONITOR_PROFILE:
             if (priv->monitorProfile)
-                g_object_unref(G_OBJECT(priv->monitorProfile));
+                g_object_unref(priv->monitorProfile);
             priv->monitorProfile = g_value_get_object(value);
             g_object_ref(priv->monitorProfile);
             break;

@@ -97,9 +97,9 @@ static void capa_preferences_display_setup_plugins(CapaPreferencesDisplay *displ
     colImage = gtk_tree_view_column_new_with_attributes("", cellImage, "pixbuf", 2, NULL);
     colEnabled = gtk_tree_view_column_new_with_attributes("Enabled", cellEnabled, "active", 3, NULL);
 
-    g_object_set(G_OBJECT(colText), "expand", TRUE, NULL);
-    g_object_set(G_OBJECT(colImage), "expand", FALSE, NULL);
-    g_object_set(G_OBJECT(colEnabled), "expand", FALSE, NULL);
+    g_object_set(colText, "expand", TRUE, NULL);
+    g_object_set(colImage, "expand", FALSE, NULL);
+    g_object_set(colEnabled, "expand", FALSE, NULL);
 
     tree = glade_xml_get_widget(priv->glade, "plugins-list");
     gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(priv->plugins));
@@ -202,7 +202,7 @@ static void capa_preferences_display_notify(GObject *object, GParamSpec *spec, g
             gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), newvalue);
 
         if (profile)
-            g_object_unref(G_OBJECT(profile));
+            g_object_unref(profile);
     } else if (strcmp(spec->name, "monitor-profile") == 0) {
         CapaColourProfile *profile;
         const gchar *oldvalue;
@@ -220,7 +220,7 @@ static void capa_preferences_display_notify(GObject *object, GParamSpec *spec, g
             gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), newvalue);
 
         if (profile)
-            g_object_unref(G_OBJECT(profile));
+            g_object_unref(profile);
     } else if (strcmp(spec->name, "picture-dir") == 0) {
         gchar *newvalue;
         const gchar *oldvalue;
@@ -277,13 +277,13 @@ static void capa_preferences_display_set_property(GObject *object,
         {
         case PROP_PREFERENCES: {
             if (priv->prefs) {
-                g_signal_handler_disconnect(G_OBJECT(priv->prefs), priv->prefsID);
-                g_object_unref(G_OBJECT(priv->prefs));
+                g_signal_handler_disconnect(priv->prefs, priv->prefsID);
+                g_object_unref(priv->prefs);
             }
             priv->prefs = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->prefs));
+            g_object_ref(priv->prefs);
             capa_preferences_display_refresh(display);
-            priv->prefsID = g_signal_connect(G_OBJECT(priv->prefs),
+            priv->prefsID = g_signal_connect(priv->prefs,
                                              "notify",
                                              G_CALLBACK(capa_preferences_display_notify),
                                              object);
@@ -291,11 +291,11 @@ static void capa_preferences_display_set_property(GObject *object,
 
         case PROP_PLUGIN_MANAGER: {
             if (priv->pluginManager) {
-                g_object_unref(G_OBJECT(priv->pluginManager));
+                g_object_unref(priv->pluginManager);
             }
             priv->pluginManager = g_value_get_object(value);
             if (priv->pluginManager)
-                g_object_ref(G_OBJECT(priv->pluginManager));
+                g_object_ref(priv->pluginManager);
 
             capa_preferences_display_populate_plugins(display);
         } break;
@@ -348,11 +348,10 @@ static void capa_preferences_display_finalize (GObject *object)
 
     CAPA_DEBUG("Finalize preferences");
 
-    g_signal_handler_disconnect(G_OBJECT(priv->prefs), priv->prefsID);
-    g_object_unref(G_OBJECT(priv->prefs));
-    g_object_unref(G_OBJECT(priv->pluginManager));
-
-    g_object_unref(G_OBJECT(priv->glade));
+    g_signal_handler_disconnect(priv->prefs, priv->prefsID);
+    g_object_unref(priv->prefs);
+    g_object_unref(priv->pluginManager);
+    g_object_unref(priv->glade);
 }
 
 static void capa_preferences_display_class_init(CapaPreferencesDisplayClass *klass)
@@ -457,7 +456,7 @@ static void do_cms_enabled_toggled(GtkToggleButton *src, CapaPreferencesDisplay 
     GtkWidget *systemProfile = glade_xml_get_widget(priv->glade, "cms-system-profile");
     GtkWidget *renderIntent = glade_xml_get_widget(priv->glade, "cms-render-intent");
 
-    g_object_set(G_OBJECT(priv->prefs), "colour-managed-display", enabled, NULL);
+    g_object_set(priv->prefs, "colour-managed-display", enabled, NULL);
     gtk_widget_set_sensitive(rgbProfile, enabled);
     gtk_widget_set_sensitive(systemProfile, enabled);
     gtk_widget_set_sensitive(renderIntent, enabled);
@@ -469,7 +468,7 @@ static void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, CapaPreferenc
     CapaPreferencesDisplayPrivate *priv = display->priv;
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     CapaColourProfile *profile = capa_colour_profile_new_file(filename);
-    g_object_set(G_OBJECT(priv->prefs), "rgb-profile", profile, NULL);
+    g_object_set(priv->prefs, "rgb-profile", profile, NULL);
     g_free(filename);
     g_object_unref(profile);
 }
@@ -479,7 +478,7 @@ static void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, CapaPrefe
     CapaPreferencesDisplayPrivate *priv = display->priv;
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     CapaColourProfile *profile = capa_colour_profile_new_file(filename);
-    g_object_set(G_OBJECT(priv->prefs), "monitor-profile", profile, NULL);
+    g_object_set(priv->prefs, "monitor-profile", profile, NULL);
     g_free(filename);
     g_object_unref(profile);
 }
@@ -489,7 +488,7 @@ static void do_cms_system_profile_toggled(GtkToggleButton *src, CapaPreferencesD
     CapaPreferencesDisplayPrivate *priv = display->priv;
     gboolean enabled = gtk_toggle_button_get_active(src);
     GtkWidget *monitorProfile = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
-    g_object_set(G_OBJECT(priv->prefs), "detect-system-profile", enabled, NULL);
+    g_object_set(priv->prefs, "detect-system-profile", enabled, NULL);
     gtk_widget_set_sensitive(monitorProfile, !enabled);
 }
 
@@ -499,14 +498,14 @@ static void do_cms_render_intent_changed(GtkComboBox *src, CapaPreferencesDispla
     int option = gtk_combo_box_get_active(src);
     if (option < 0)
         option = CAPA_COLOUR_PROFILE_INTENT_PERCEPTUAL;
-    g_object_set(G_OBJECT(priv->prefs), "profile-rendering-intent", option, NULL);
+    g_object_set(priv->prefs, "profile-rendering-intent", option, NULL);
 }
 
 static void do_picture_folder_file_set(GtkFileChooserButton *src, CapaPreferencesDisplay *display)
 {
     CapaPreferencesDisplayPrivate *priv = display->priv;
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
-    g_object_set(G_OBJECT(priv->prefs), "picture-dir", filename, NULL);
+    g_object_set(priv->prefs, "picture-dir", filename, NULL);
     g_free(filename);
 }
 
@@ -514,7 +513,7 @@ static void do_filename_pattern_changed(GtkEntry *src, CapaPreferencesDisplay *d
 {
     CapaPreferencesDisplayPrivate *priv = display->priv;
     const char *text = gtk_entry_get_text(src);
-    g_object_set(G_OBJECT(priv->prefs), "filename-pattern", text, NULL);
+    g_object_set(priv->prefs, "filename-pattern", text, NULL);
 }
 
 static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
@@ -637,8 +636,8 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     colText = gtk_tree_view_column_new_with_attributes("Label", cellText, "text", 1, NULL);
     colImage = gtk_tree_view_column_new_with_attributes("Icon", cellImage, "pixbuf", 2, NULL);
 
-    g_object_set(G_OBJECT(colText), "expand", TRUE, NULL);
-    g_object_set(G_OBJECT(colImage), "expand", FALSE, NULL);
+    g_object_set(colText, "expand", TRUE, NULL);
+    g_object_set(colImage, "expand", FALSE, NULL);
 
     tree = glade_xml_get_widget(priv->glade, "preferences-switch");
     gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(list));
@@ -673,7 +672,7 @@ static void capa_preferences_display_init(CapaPreferencesDisplay *preferences)
     g_object_unref(iccFilter);
     g_object_unref(allFilter);
 
-    g_signal_connect(G_OBJECT(selection), "changed", G_CALLBACK(do_page_changed), preferences);
+    g_signal_connect(selection, "changed", G_CALLBACK(do_page_changed), preferences);
 
     capa_preferences_display_setup_plugins(preferences);
 }

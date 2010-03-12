@@ -37,7 +37,7 @@ static GdkPixbuf *capa_image_loader_pixbuf_load(CapaPixbufLoader *loader G_GNUC_
 
     result = gdk_pixbuf_apply_embedded_orientation(master);
 
-    g_object_unref(G_OBJECT(master));
+    g_object_unref(master);
 
     return result;
 }

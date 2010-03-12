@@ -87,9 +87,9 @@ static void capa_image_polaroid_set_property(GObject *object,
         {
         case PROP_IMAGE: {
             if (priv->image)
-                g_object_unref(G_OBJECT(priv->image));
+                g_object_unref(priv->image);
             priv->image = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->image));
+            g_object_ref(priv->image);
 
             capa_image_display_set_filename(priv->display,
                                             capa_image_filename(priv->image));
@@ -97,9 +97,9 @@ static void capa_image_polaroid_set_property(GObject *object,
 
         case PROP_IMAGE_LOADER: {
             if (priv->imageLoader)
-                g_object_unref(G_OBJECT(priv->imageLoader));
+                g_object_unref(priv->imageLoader);
             priv->imageLoader = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->imageLoader));
+            g_object_ref(priv->imageLoader);
 
             capa_image_display_set_image_loader(priv->display,
                                                 priv->imageLoader);
@@ -120,7 +120,7 @@ static void capa_image_polaroid_finalize (GObject *object)
     g_object_unref(priv->glade);
 
     if (priv->image)
-        g_object_unref(G_OBJECT(priv->image));
+        g_object_unref(priv->image);
 
     G_OBJECT_CLASS (capa_image_polaroid_parent_class)->finalize (object);
 }
@@ -245,15 +245,15 @@ static void capa_image_polaroid_init(CapaImagePolaroid *polaroid)
 
     win = glade_xml_get_widget(priv->glade, "image-polaroid");
 
-    g_signal_connect(G_OBJECT(win), "button-press-event",
+    g_signal_connect(win, "button-press-event",
                      G_CALLBACK(capa_image_polaroid_button_press), polaroid);
-    g_signal_connect(G_OBJECT(win), "key-release-event",
+    g_signal_connect(win, "key-release-event",
                      G_CALLBACK(capa_image_polaroid_key_release), polaroid);
 
     priv->display = capa_image_display_new();
     gtk_container_add(GTK_CONTAINER(win), GTK_WIDGET(priv->display));
 
-    g_signal_connect(G_OBJECT(win), "delete-event", G_CALLBACK(do_polaroid_delete), polaroid);
+    g_signal_connect(win, "delete-event", G_CALLBACK(do_polaroid_delete), polaroid);
 }
 
 void capa_image_polaroid_show(CapaImagePolaroid *polaroid,

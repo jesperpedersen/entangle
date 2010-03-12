@@ -87,7 +87,7 @@ void capa_control_group_add(CapaControlGroup *group,
 
     priv->controls = g_renew(CapaControl *, priv->controls, priv->ncontrol+1);
     priv->controls[priv->ncontrol++] = control;
-    g_object_ref(G_OBJECT(control));
+    g_object_ref(control);
 }
 
 

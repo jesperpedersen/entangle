@@ -160,11 +160,11 @@ static void capa_image_display_finalize (GObject *object)
     if (priv->filename && priv->imageLoader)
         capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
     if (priv->imageLoader)
-        g_object_unref(G_OBJECT(priv->imageLoader));
+        g_object_unref(priv->imageLoader);
     if (priv->pixbuf)
-        g_object_unref(G_OBJECT(priv->pixbuf));
+        g_object_unref(priv->pixbuf);
     if (priv->pixmap)
-        g_object_unref(G_OBJECT(priv->pixmap));
+        g_object_unref(priv->pixmap);
 
     G_OBJECT_CLASS (capa_image_display_parent_class)->finalize (object);
 }
@@ -405,7 +405,7 @@ static void capa_image_display_image_loaded(CapaPixbufLoader *loader,
         return;
 
     GdkPixbuf *pixbuf = capa_pixbuf_loader_get_pixbuf(loader, filename);
-    g_object_set(G_OBJECT(display), "pixbuf", pixbuf, NULL);
+    g_object_set(display, "pixbuf", pixbuf, NULL);
 }
 
 

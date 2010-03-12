@@ -118,9 +118,9 @@ static void do_model_unload(CapaSessionBrowser *browser)
 
     CAPA_DEBUG("Unload model");
 
-    g_signal_handler_disconnect(G_OBJECT(priv->session),
+    g_signal_handler_disconnect(priv->session,
                                 priv->sigImageAdded);
-    g_signal_handler_disconnect(G_OBJECT(priv->loader),
+    g_signal_handler_disconnect(priv->loader,
                                 priv->sigThumbReady);
 
     count = capa_session_image_count(priv->session);
@@ -143,7 +143,7 @@ static void do_model_load(CapaSessionBrowser *browser)
 
     CAPA_DEBUG("Load model");
 
-    g_object_get(G_OBJECT(priv->loader),
+    g_object_get(priv->loader,
                  "width", &width,
                  "height", &height,
                  NULL);
@@ -151,9 +151,9 @@ static void do_model_load(CapaSessionBrowser *browser)
     priv->blank = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height);
     gdk_pixbuf_fill(priv->blank, 0x000000FF);
 
-    priv->sigImageAdded = g_signal_connect(G_OBJECT(priv->session), "session-image-added",
+    priv->sigImageAdded = g_signal_connect(priv->session, "session-image-added",
                                            G_CALLBACK(do_image_added), browser);
-    priv->sigThumbReady = g_signal_connect(G_OBJECT(priv->loader), "pixbuf-loaded",
+    priv->sigThumbReady = g_signal_connect(priv->loader, "pixbuf-loaded",
                                            G_CALLBACK(do_thumb_loaded), browser);
 
     count = capa_session_image_count(priv->session);
@@ -240,11 +240,11 @@ static void capa_session_browser_set_property(GObject *object,
                 if (priv->loader)
                     do_model_unload(browser);
 
-                g_object_unref(G_OBJECT(priv->session));
+                g_object_unref(priv->session);
             }
             priv->session = g_value_get_object(value);
             if (priv->session) {
-                g_object_ref(G_OBJECT(priv->session));
+                g_object_ref(priv->session);
 
                 if (priv->loader)
                     do_model_load(browser);
@@ -257,11 +257,11 @@ static void capa_session_browser_set_property(GObject *object,
                 if (priv->session)
                     do_model_unload(browser);
 
-                g_object_unref(G_OBJECT(priv->loader));
+                g_object_unref(priv->loader);
             }
             priv->loader = g_value_get_object(value);
             if (priv->loader) {
-                g_object_ref(G_OBJECT(priv->loader));
+                g_object_ref(priv->loader);
 
                 if (priv->session)
                     do_model_load(browser);
@@ -282,9 +282,9 @@ static void capa_session_browser_finalize (GObject *object)
         do_model_unload(browser);
 
     if (priv->session)
-        g_object_unref(G_OBJECT(priv->session));
+        g_object_unref(priv->session);
     if (priv->loader)
-        g_object_unref(G_OBJECT(priv->loader));
+        g_object_unref(priv->loader);
 
     G_OBJECT_CLASS (capa_session_browser_parent_class)->finalize (object);
 }

@@ -113,21 +113,21 @@ static void capa_app_set_property(GObject *object,
         case PROP_CAMERAS:
             CAPA_DEBUG("DAMN");
             if (priv->cameras)
-                g_object_unref(G_OBJECT(priv->cameras));
+                g_object_unref(priv->cameras);
             priv->cameras = g_value_get_object(value);
             g_object_ref(priv->cameras);
             break;
 
         case PROP_PREFERENCES:
             if (priv->preferences)
-                g_object_unref(G_OBJECT(priv->preferences));
+                g_object_unref(priv->preferences);
             priv->preferences = g_value_get_object(value);
             g_object_ref(priv->preferences);
             break;
 
         case PROP_DEVMANAGER:
             if (priv->devManager)
-                g_object_unref(G_OBJECT(priv->devManager));
+                g_object_unref(priv->devManager);
             priv->devManager = g_value_get_object(value);
             g_object_ref(priv->devManager);
             break;
@@ -253,7 +253,7 @@ static void do_refresh_cameras(CapaApp *app)
                               cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
                               cap.operations & GP_OPERATION_CONFIG ? TRUE : FALSE);
         capa_camera_list_add(priv->cameras, cam);
-        g_object_unref(G_OBJECT(cam));
+        g_object_unref(cam);
     }
 
     toRemove = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);

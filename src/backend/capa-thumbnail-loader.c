@@ -192,7 +192,7 @@ static GdkPixbuf *capa_thumbnail_loader_generate(const char *filename,
     }
     g_free(thumbnametmp);
 
-    g_object_unref(G_OBJECT(master));
+    g_object_unref(master);
 
     return thumb;
 }
@@ -203,7 +203,7 @@ static GdkPixbuf *capa_thumbnail_loader_auto_rotate(GdkPixbuf *src)
     GdkPixbuf *dest = gdk_pixbuf_apply_embedded_orientation(src);
     GdkPixbuf *temp;
 
-    g_object_unref(G_OBJECT(src));
+    g_object_unref(src);
 
     if (dest == src) {
         const char *orientationstr;
@@ -306,7 +306,7 @@ static GdkPixbuf *capa_thumbnail_loader_pixbuf_load(CapaPixbufLoader *loader,
 
     if (thumb) {
         GdkPixbuf *tmp = capa_thumbnail_loader_auto_rotate(thumb);
-        g_object_unref(G_OBJECT(thumb));
+        g_object_unref(thumb);
         thumb = tmp;
     }
 
@@ -347,7 +347,7 @@ static GdkPixbuf *capa_thumbnail_loader_pixbuf_load(CapaPixbufLoader *loader,
                              (priv->height - rh) / 2,
                              sw, sh,
                              GDK_INTERP_BILINEAR);
-            g_object_unref(G_OBJECT(thumb));
+            g_object_unref(thumb);
         } else {
             result = thumb;
         }

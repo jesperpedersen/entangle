@@ -99,8 +99,8 @@ static void capa_help_about_init(CapaHelpAbout *about)
 
     win = glade_xml_get_widget(priv->glade, "help-about");
 
-    g_signal_connect(G_OBJECT(win), "delete-event", G_CALLBACK(do_about_delete), about);
-    g_signal_connect(G_OBJECT(win), "response", G_CALLBACK(do_about_response), about);
+    g_signal_connect(win, "delete-event", G_CALLBACK(do_about_delete), about);
+    g_signal_connect(win, "response", G_CALLBACK(do_about_response), about);
 
     if (access("./capa-256x256.png", R_OK) < 0)
         buf = gdk_pixbuf_new_from_file(PKGDATADIR "/capa-256x256.png", NULL);

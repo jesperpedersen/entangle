@@ -119,7 +119,7 @@ static void do_device_added(LibHalContext *ctx, const char *udi)
 
     g_hash_table_insert(priv->ports, g_strdup(udi), port);
 
-    g_signal_emit_by_name(G_OBJECT(manager), "device-added", port);
+    g_signal_emit_by_name(manager, "device-added", port);
 
  cleanup:
     g_free(type);
@@ -137,7 +137,7 @@ static void do_device_removed(LibHalContext *ctx, const char *udi)
 
     if (port) {
         CAPA_DEBUG("Remove device '%s' '%s'", udi, port);
-        g_signal_emit_by_name(G_OBJECT(manager), "device-added", port);
+        g_signal_emit_by_name(manager, "device-added", port);
         g_hash_table_remove(priv->ports, udi);
     }
 }

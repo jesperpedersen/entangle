@@ -115,7 +115,7 @@ static void capa_pixbuf_loader_entry_free(gpointer opaque)
     CAPA_DEBUG("free entry %p %s", entry, entry->filename);
     g_free(entry->filename);
     if (entry->pixbuf)
-        g_object_unref(G_OBJECT(entry->pixbuf));
+        g_object_unref(entry->pixbuf);
     g_free(entry);
 }
 
@@ -169,7 +169,7 @@ static gboolean capa_pixbuf_loader_result(gpointer data)
     if (!entry) {
         g_mutex_unlock(priv->lock);
         if (result->pixbuf)
-            g_object_unref(G_OBJECT(result->pixbuf));
+            g_object_unref(result->pixbuf);
         g_free(result);
         return FALSE;
     }
@@ -182,7 +182,7 @@ static gboolean capa_pixbuf_loader_result(gpointer data)
 
     if (entry->refs) {
         g_mutex_unlock(priv->lock);
-        g_signal_emit_by_name(G_OBJECT(loader), "pixbuf-loaded", filename);
+        g_signal_emit_by_name(loader, "pixbuf-loaded", filename);
     } else if (!entry->pending) {
         g_hash_table_remove(priv->pixbufs, entry->filename);
         g_mutex_unlock(priv->lock);
@@ -226,7 +226,7 @@ static void capa_pixbuf_loader_worker(gpointer data,
 
     transform = priv->colourTransform;
     if (transform)
-        g_object_ref(G_OBJECT(transform));
+        g_object_ref(transform);
     g_mutex_unlock(priv->lock);
 
     pixbuf = capa_pixbuf_load(loader, filename);
@@ -234,7 +234,7 @@ static void capa_pixbuf_loader_worker(gpointer data,
         if (transform) {
             result->pixbuf = capa_colour_profile_transform_apply(transform,
                                                                  pixbuf);
-            g_object_unref(G_OBJECT(pixbuf));
+            g_object_unref(pixbuf);
         } else {
             result->pixbuf = pixbuf;
         }
@@ -247,7 +247,7 @@ static void capa_pixbuf_loader_worker(gpointer data,
 
     g_mutex_lock(priv->lock);
     if (transform)
-        g_object_unref(G_OBJECT(transform));
+        g_object_unref(transform);
 
  cleanup:
     g_mutex_unlock(priv->lock);
@@ -263,7 +263,7 @@ static void capa_pixbuf_loader_finalize(GObject *object)
     g_thread_pool_free(priv->workers, TRUE, TRUE);
 
     if (priv->colourTransform)
-        g_object_unref(G_OBJECT(priv->colourTransform));
+        g_object_unref(priv->colourTransform);
 
     g_hash_table_unref(priv->pixbufs);
     g_mutex_free(priv->lock);
@@ -391,7 +391,7 @@ gboolean capa_pixbuf_loader_load(CapaPixbufLoader *loader,
     if (entry) {
         entry->refs++;
         g_mutex_unlock(priv->lock);
-        g_signal_emit_by_name(G_OBJECT(loader), "pixbuf-loaded", entry->filename);
+        g_signal_emit_by_name(loader, "pixbuf-loaded", entry->filename);
         return TRUE;
     }
     entry = capa_pixbuf_loader_entry_new(filename);

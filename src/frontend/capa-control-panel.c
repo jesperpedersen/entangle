@@ -65,7 +65,7 @@ static void do_update_control_entry(GtkWidget *widget,
     text = gtk_entry_get_text(GTK_ENTRY(widget));
 
     CAPA_DEBUG("entry [%s]", text);
-    g_object_set(G_OBJECT(control), "value", text, NULL);
+    g_object_set(control, "value", text, NULL);
 }
 
 static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
@@ -76,7 +76,7 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
     CapaControlText *control = data;
 
     CAPA_DEBUG("range [%lf]", value);
-    g_object_set(G_OBJECT(control), "value", (float)value, NULL);
+    g_object_set(control, "value", (float)value, NULL);
 }
 
 static void do_update_control_combo(GtkComboBox *widget,
@@ -87,7 +87,7 @@ static void do_update_control_combo(GtkComboBox *widget,
 
     text = gtk_combo_box_get_active_text(widget);
     CAPA_DEBUG("combo [%s]", text);
-    g_object_set(G_OBJECT(control), "value", text, NULL);
+    g_object_set(control, "value", text, NULL);
 
     g_free(text);
 }
@@ -100,7 +100,7 @@ static void do_update_control_toggle(GtkToggleButton *widget,
 
     active = gtk_toggle_button_get_active(widget);
     CAPA_DEBUG("toggle [%d]", active);
-    g_object_set(G_OBJECT(control), "value", active, NULL);
+    g_object_set(control, "value", active, NULL);
 }
 
 static void do_setup_control_group(CapaControlPanel *panel,
@@ -125,10 +125,10 @@ static void do_setup_control_group(CapaControlPanel *panel,
             //gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_ETCHED_IN);
             gtk_expander_set_expanded(GTK_EXPANDER(frame), TRUE);
             gtk_container_set_border_width(GTK_CONTAINER(subbox), 6);
-            //g_object_unref(G_OBJECT(frame));
+            //g_object_unref(frame);
 
             gtk_container_add(GTK_CONTAINER(frame), subbox);
-            //g_object_unref(G_OBJECT(subbox));
+            //g_object_unref(subbox);
 
             do_setup_control_group(panel, GTK_VBOX(subbox), CAPA_CONTROL_GROUP(control));
         } else if (CAPA_IS_CONTROL_BUTTON(control)) {
@@ -162,7 +162,7 @@ static void do_setup_control_group(CapaControlPanel *panel,
             gtk_container_add(GTK_CONTAINER(box), label);
 
             value = gtk_combo_box_new_text();
-            g_object_get(G_OBJECT(control), "value", &text, NULL);
+            g_object_get(control, "value", &text, NULL);
             for (int n = 0 ; n < capa_control_choice_entry_count(CAPA_CONTROL_CHOICE(control)) ; n++) {
                 if (strcmp(text, capa_control_choice_entry_get(CAPA_CONTROL_CHOICE(control), n)) == 0)
                     active = n;
@@ -171,7 +171,7 @@ static void do_setup_control_group(CapaControlPanel *panel,
             }
 
             gtk_combo_box_set_active(GTK_COMBO_BOX(value), active);
-            g_signal_connect(G_OBJECT(value), "changed",
+            g_signal_connect(value, "changed",
                              G_CALLBACK(do_update_control_combo), control);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (CAPA_IS_CONTROL_DATE(control)) {
@@ -186,7 +186,7 @@ static void do_setup_control_group(CapaControlPanel *panel,
             gtk_container_add(GTK_CONTAINER(box), label);
 
             value = gtk_entry_new();
-            g_object_get(G_OBJECT(control), "value", &date, NULL);
+            g_object_get(control, "value", &date, NULL);
             //gtk_entry_set_text(GTK_ENTRY(value), text);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (CAPA_IS_CONTROL_RANGE(control)) {
@@ -203,9 +203,9 @@ static void do_setup_control_group(CapaControlPanel *panel,
             value = gtk_hscale_new_with_range(capa_control_range_get_min(CAPA_CONTROL_RANGE(control)),
                                               capa_control_range_get_max(CAPA_CONTROL_RANGE(control)),
                                               capa_control_range_get_step(CAPA_CONTROL_RANGE(control)));
-            g_object_get(G_OBJECT(control), "value", &offset, NULL);
+            g_object_get(control, "value", &offset, NULL);
             gtk_range_set_value(GTK_RANGE(value), offset);
-            g_signal_connect(G_OBJECT(value), "change-value",
+            g_signal_connect(value, "change-value",
                              G_CALLBACK(do_update_control_range), control);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (CAPA_IS_CONTROL_TEXT(control)) {
@@ -220,9 +220,9 @@ static void do_setup_control_group(CapaControlPanel *panel,
             gtk_container_add(GTK_CONTAINER(box), label);
 
             value = gtk_entry_new();
-            g_object_get(G_OBJECT(control), "value", &text, NULL);
+            g_object_get(control, "value", &text, NULL);
             gtk_entry_set_text(GTK_ENTRY(value), text);
-            g_signal_connect(G_OBJECT(value), "focus-out-event",
+            g_signal_connect(value, "focus-out-event",
                              G_CALLBACK(do_update_control_entry), control);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (CAPA_IS_CONTROL_TOGGLE(control)) {
@@ -230,9 +230,9 @@ static void do_setup_control_group(CapaControlPanel *panel,
             gboolean active;
 
             value = gtk_check_button_new_with_label(capa_control_label(control));
-            g_object_get(G_OBJECT(control), "value", &active, NULL);
+            g_object_get(control, "value", &active, NULL);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
-            g_signal_connect(G_OBJECT(value), "toggled",
+            g_signal_connect(value, "toggled",
                              G_CALLBACK(do_update_control_toggle), control);
             gtk_container_add(GTK_CONTAINER(box), value);
         }
@@ -288,10 +288,10 @@ static void capa_control_panel_set_property(GObject *object,
         {
         case PROP_CAMERA:
             if (priv->camera)
-                g_object_unref(G_OBJECT(priv->camera));
+                g_object_unref(priv->camera);
             priv->camera = g_value_get_object(value);
             if (priv->camera)
-                g_object_ref(G_OBJECT(priv->camera));
+                g_object_ref(priv->camera);
             do_setup_camera(panel);
             break;
 
@@ -306,7 +306,7 @@ static void capa_control_panel_finalize (GObject *object)
     CapaControlPanelPrivate *priv = panel->priv;
 
     if (priv->camera)
-        g_object_unref(G_OBJECT(priv->camera));
+        g_object_unref(priv->camera);
 
     G_OBJECT_CLASS (capa_control_panel_parent_class)->finalize (object);
 }

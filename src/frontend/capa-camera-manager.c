@@ -478,11 +478,11 @@ static void do_remove_camera(CapaCameraManager *manager)
     gtk_window_set_title(GTK_WINDOW(win), title);
     g_free(title);
 
-    g_object_set(G_OBJECT(priv->sessionBrowser),
+    g_object_set(priv->sessionBrowser,
                  "session", NULL,
                  NULL);
 
-    g_object_set(G_OBJECT(priv->controlPanel),
+    g_object_set(priv->controlPanel,
                  "camera", NULL,
                  NULL);
     capa_camera_set_progress(priv->camera, NULL);
@@ -538,11 +538,11 @@ static void do_add_camera(CapaCameraManager *manager)
 
     capa_camera_set_progress(priv->camera, CAPA_PROGRESS(manager));
 
-    g_object_set(G_OBJECT(priv->sessionBrowser),
+    g_object_set(priv->sessionBrowser,
                  "session", priv->session,
                  NULL);
 
-    g_object_set(G_OBJECT(priv->controlPanel),
+    g_object_set(priv->controlPanel,
                  "camera", priv->camera,
                  NULL);
 
@@ -595,12 +595,12 @@ static void capa_camera_manager_set_property(GObject *object,
         case PROP_CAMERA: {
             if (priv->camera) {
                 do_remove_camera(manager);
-                g_object_unref(G_OBJECT(priv->camera));
+                g_object_unref(priv->camera);
                 priv->inOperation = FALSE;
             }
             priv->camera = g_value_get_object(value);
             if (priv->camera) {
-                g_object_ref(G_OBJECT(priv->camera));
+                g_object_ref(priv->camera);
                 do_add_camera(manager);
             }
 
@@ -610,12 +610,12 @@ static void capa_camera_manager_set_property(GObject *object,
         case PROP_PREFERENCES:
             if (priv->prefs) {
                 g_signal_handler_disconnect(priv->prefs, priv->sigPrefsNotify);
-                g_object_unref(G_OBJECT(priv->prefs));
+                g_object_unref(priv->prefs);
             }
             priv->prefs = g_value_get_object(value);
             if (priv->prefs) {
-                g_object_ref(G_OBJECT(priv->prefs));
-                priv->sigPrefsNotify = g_signal_connect(G_OBJECT(priv->prefs),
+                g_object_ref(priv->prefs);
+                priv->sigPrefsNotify = g_signal_connect(priv->prefs,
                                                         "notify",
                                                         G_CALLBACK(capa_camera_manager_prefs_changed),
                                                         manager);
@@ -626,13 +626,13 @@ static void capa_camera_manager_set_property(GObject *object,
 
         case PROP_PLUGIN_MANAGER:
             if (priv->pluginManager)
-                g_object_unref(G_OBJECT(priv->pluginManager));
+                g_object_unref(priv->pluginManager);
             priv->pluginManager = g_value_get_object(value);
             if (priv->pluginManager)
-                g_object_ref(G_OBJECT(priv->pluginManager));
+                g_object_ref(priv->pluginManager);
 
             if (priv->prefsDisplay)
-                g_object_set(G_OBJECT(priv->prefsDisplay), "plugin-manager", priv->pluginManager, NULL);
+                g_object_set(priv->prefsDisplay, "plugin-manager", priv->pluginManager, NULL);
 
             capa_camera_manager_update_colour_transform(manager);
             break;
@@ -650,21 +650,21 @@ static void capa_camera_manager_finalize (GObject *object)
     CAPA_DEBUG("Finalize manager");
 
     if (priv->imageLoader)
-        g_object_unref(G_OBJECT(priv->imageLoader));
+        g_object_unref(priv->imageLoader);
     if (priv->thumbLoader)
-        g_object_unref(G_OBJECT(priv->thumbLoader));
+        g_object_unref(priv->thumbLoader);
     if (priv->colourTransform)
-        g_object_unref(G_OBJECT(priv->colourTransform));
+        g_object_unref(priv->colourTransform);
     if (priv->scheduler)
-        g_object_unref(G_OBJECT(priv->scheduler));
+        g_object_unref(priv->scheduler);
     if (priv->camera)
-        g_object_unref(G_OBJECT(priv->camera));
+        g_object_unref(priv->camera);
     if (priv->pluginManager)
-        g_object_unref(G_OBJECT(priv->pluginManager));
+        g_object_unref(priv->pluginManager);
     if (priv->prefs)
-        g_object_unref(G_OBJECT(priv->prefs));
+        g_object_unref(priv->prefs);
     if (priv->prefsDisplay)
-        g_object_unref(G_OBJECT(priv->prefsDisplay));
+        g_object_unref(priv->prefsDisplay);
 
     g_hash_table_destroy(priv->polaroids);
 
@@ -819,7 +819,7 @@ static void capa_camera_manager_new_session(CapaCameraManager *manager)
         if (priv->session)
             g_object_unref(priv->session);
         priv->session = session;
-        g_object_set(G_OBJECT(priv->sessionBrowser),
+        g_object_set(priv->sessionBrowser,
                      "session", session,
                      NULL);
     }
@@ -866,7 +866,7 @@ static void capa_camera_manager_open_session(CapaCameraManager *manager)
             g_object_unref(priv->session);
         priv->session = session;
 
-        g_object_set(G_OBJECT(priv->sessionBrowser),
+        g_object_set(priv->sessionBrowser,
                      "session", session,
                      NULL);
     }
@@ -1277,7 +1277,7 @@ static void do_manager_disconnect(GtkMenuItem *src G_GNUC_UNUSED,
 
     do_remove_camera(manager);
     capa_camera_disconnect(priv->camera);
-    g_object_unref(G_OBJECT(priv->camera));
+    g_object_unref(priv->camera);
     priv->camera = NULL;
     do_capture_widget_sensitivity(manager);
     g_signal_emit_by_name(manager, "manager-disconnect", NULL);
@@ -1305,7 +1305,7 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
     if (img) {
         CAPA_DEBUG("Try load");
         capa_image_display_set_filename(priv->imageDisplay, capa_image_filename(img));
-        g_object_unref(G_OBJECT(img));
+        g_object_unref(img);
     }
 }
 
@@ -1315,7 +1315,7 @@ static void do_polaroid_remove(gpointer data)
     CapaImagePolaroid *pol = data;
 
     capa_image_polaroid_hide(pol);
-    g_object_unref(G_OBJECT(pol));
+    g_object_unref(pol);
 }
 
 
@@ -1340,9 +1340,9 @@ static void do_drag_failed(GtkWidget *widget,
             CapaImagePolaroid *pol;
             if (!(pol = g_hash_table_lookup(priv->polaroids, filename))) {
                 pol = capa_image_polaroid_new();
-                g_object_set(G_OBJECT(pol), "image-loader", priv->imageLoader, NULL);
-                g_object_set(G_OBJECT(pol), "image", img, NULL);
-                g_object_unref(G_OBJECT(img));
+                g_object_set(pol, "image-loader", priv->imageLoader, NULL);
+                g_object_set(pol, "image", img, NULL);
+                g_object_unref(img);
                 g_hash_table_insert(priv->polaroids, g_strdup(filename), pol);
             }
             CAPA_DEBUG("Polaroid %p for %s", pol, filename);
@@ -1429,9 +1429,9 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
     priv->controlPanel = capa_control_panel_new();
 
     capa_image_display_set_image_loader(priv->imageDisplay, priv->imageLoader);
-    g_object_set(G_OBJECT(priv->sessionBrowser), "thumbnail-loader", priv->thumbLoader, NULL);
+    g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
 
-    g_signal_connect(G_OBJECT(priv->sessionBrowser), "selection-changed",
+    g_signal_connect(priv->sessionBrowser, "selection-changed",
                      G_CALLBACK(do_session_image_selected), manager);
 
     imageScroll = glade_xml_get_widget(priv->glade, "image-scroll");
@@ -1453,7 +1453,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
                                 protocol, TRUE);
 
 
-    g_signal_connect(G_OBJECT(priv->sessionBrowser), "drag-failed", G_CALLBACK(do_drag_failed), manager);
+    g_signal_connect(priv->sessionBrowser, "drag-failed", G_CALLBACK(do_drag_failed), manager);
 
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(iconScroll),
                                    GTK_POLICY_AUTOMATIC,

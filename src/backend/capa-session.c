@@ -107,7 +107,7 @@ static void do_image_unref(gpointer object,
 {
     CapaImage *image = object;
 
-    g_object_unref(G_OBJECT(image));
+    g_object_unref(image);
 }
 
 static void capa_session_finalize(GObject *object)
@@ -294,10 +294,10 @@ void capa_session_add(CapaSession *session, CapaImage *image)
 {
     CapaSessionPrivate *priv = session->priv;
 
-    g_object_ref(G_OBJECT(image));
+    g_object_ref(image);
     priv->images = g_list_prepend(priv->images, image);
 
-    g_signal_emit_by_name(G_OBJECT(session), "session-image-added", image);
+    g_signal_emit_by_name(session, "session-image-added", image);
 }
 
 gboolean capa_session_load(CapaSession *session)
@@ -320,7 +320,7 @@ gboolean capa_session_load(CapaSession *session)
         CAPA_DEBUG("Adding '%s'", filename);
         capa_session_add(session, image);
 
-        g_object_unref(G_OBJECT(image));
+        g_object_unref(image);
     }
     closedir(dh);
 

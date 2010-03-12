@@ -911,11 +911,11 @@ static CapaControl *do_build_controls(CapaCamera *cam,
                 CameraWidget *child;
                 CapaControl *subctl;
                 if (gp_widget_get_child(widget, i, &child) != GP_OK) {
-                    g_object_unref(G_OBJECT(grp));
+                    g_object_unref(grp);
                     goto error;
                 }
                 if (!(subctl = do_build_controls(cam, fullpath, child))) {
-                    g_object_unref(G_OBJECT(grp));
+                    g_object_unref(grp);
                     goto error;
                 }
 
@@ -946,8 +946,8 @@ static CapaControl *do_build_controls(CapaCamera *cam,
             }
 
             gp_widget_get_value(widget, &value);
-            g_object_set(G_OBJECT(ret), "value", value, NULL);
-            g_signal_connect(G_OBJECT(ret), "notify::value",
+            g_object_set(ret, "value", value, NULL);
+            g_signal_connect(ret, "notify::value",
                              G_CALLBACK(do_update_control_text), cam);
         } break;
 
@@ -956,7 +956,7 @@ static CapaControl *do_build_controls(CapaCamera *cam,
             int value = 0;
             CAPA_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = CAPA_CONTROL(capa_control_date_new(fullpath, id, label, info));
-            g_object_set(G_OBJECT(ret), "value", value, NULL);
+            g_object_set(ret, "value", value, NULL);
         } break;
 
     case GP_WIDGET_RANGE:
@@ -969,8 +969,8 @@ static CapaControl *do_build_controls(CapaCamera *cam,
                                                       min, max, step));
 
             gp_widget_get_value(widget, &value);
-            g_object_set(G_OBJECT(ret), "value", value, NULL);
-            g_signal_connect(G_OBJECT(ret), "notify::value",
+            g_object_set(ret, "value", value, NULL);
+            g_signal_connect(ret, "notify::value",
                              G_CALLBACK(do_update_control_float), cam);
         } break;
 
@@ -981,8 +981,8 @@ static CapaControl *do_build_controls(CapaCamera *cam,
             ret = CAPA_CONTROL(capa_control_text_new(fullpath, id, label, info));
 
             gp_widget_get_value(widget, &value);
-            g_object_set(G_OBJECT(ret), "value", value, NULL);
-            g_signal_connect(G_OBJECT(ret), "notify::value",
+            g_object_set(ret, "value", value, NULL);
+            g_signal_connect(ret, "notify::value",
                              G_CALLBACK(do_update_control_text), cam);
         } break;
 
@@ -993,8 +993,8 @@ static CapaControl *do_build_controls(CapaCamera *cam,
             ret = CAPA_CONTROL(capa_control_toggle_new(fullpath, id, label, info));
 
             gp_widget_get_value(widget, &value);
-            g_object_set(G_OBJECT(ret), "value", (gboolean)value, NULL);
-            g_signal_connect(G_OBJECT(ret), "notify::value",
+            g_object_set(ret, "value", (gboolean)value, NULL);
+            g_signal_connect(ret, "notify::value",
                              G_CALLBACK(do_update_control_boolean), cam);
         } break;
     }

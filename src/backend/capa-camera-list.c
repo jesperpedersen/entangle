@@ -46,7 +46,7 @@ static void capa_camera_list_finalize (GObject *object)
 
     for (int i = 0 ; i < priv->ncamera ; i++) {
         CAPA_DEBUG("Unref camera in list %p", priv->cameras[i]);
-        g_object_unref(G_OBJECT(priv->cameras[i]));
+        g_object_unref(priv->cameras[i]);
     }
     g_free(priv->cameras);
 
@@ -113,9 +113,9 @@ void capa_camera_list_add(CapaCameraList *list,
 
     priv->cameras = g_renew(CapaCamera *, priv->cameras, priv->ncamera+1);
     priv->cameras[priv->ncamera++] = cam;
-    g_object_ref(G_OBJECT(cam));
+    g_object_ref(cam);
 
-    g_signal_emit_by_name(G_OBJECT(list), "camera-added", cam);
+    g_signal_emit_by_name(list, "camera-added", cam);
     CAPA_DEBUG("Added camera %p", cam);
 }
 
@@ -137,7 +137,7 @@ void capa_camera_list_remove(CapaCameraList *list,
     }
 
     CAPA_DEBUG("Removed camera %p from list", cam);
-    g_signal_emit_by_name(G_OBJECT(list), "camera-removed", cam);
+    g_signal_emit_by_name(list, "camera-removed", cam);
 
     g_object_unref(cam);
 }

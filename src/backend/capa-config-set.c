@@ -107,7 +107,7 @@ static void capa_config_set_finalize(GObject *object)
 
     tmp = priv->entries;
     while (tmp) {
-        g_object_unref(G_OBJECT(tmp->data));
+        g_object_unref(tmp->data);
         tmp = g_list_next(tmp);
     }
 
