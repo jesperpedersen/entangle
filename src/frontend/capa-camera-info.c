@@ -46,35 +46,6 @@ enum {
     PROP_DATA,
 };
 
-static void do_info_refresh(CapaCameraInfo *info)
-{
-    CapaCameraInfoPrivate *priv = info->priv;
-    GtkWidget *text = glade_xml_get_widget(priv->glade, "info-text");
-    GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
-
-
-    if (priv->camera) {
-        switch (priv->data) {
-        case CAPA_CAMERA_INFO_DATA_SUMMARY:
-            gtk_text_buffer_set_text(buf, capa_camera_get_summary(priv->camera), -1);
-            break;
-        case CAPA_CAMERA_INFO_DATA_MANUAL:
-            gtk_text_buffer_set_text(buf, capa_camera_get_manual(priv->camera), -1);
-            break;
-        case CAPA_CAMERA_INFO_DATA_DRIVER:
-            gtk_text_buffer_set_text(buf, capa_camera_get_driver(priv->camera), -1);
-            break;
-        case CAPA_CAMERA_INFO_DATA_SUPPORTED:
-            gtk_text_buffer_set_text(buf, "supported", -1);
-            break;
-        default:
-            gtk_text_buffer_set_text(buf, "unknown", -1);
-            break;
-        }
-    } else {
-        gtk_text_buffer_set_text(buf, "", -1);
-    }
-}
 
 static void capa_camera_info_get_property(GObject *object,
                                           guint prop_id,
@@ -99,44 +70,31 @@ static void capa_camera_info_get_property(GObject *object,
         }
 }
 
+
 static void capa_camera_info_set_property(GObject *object,
                                           guint prop_id,
                                           const GValue *value,
                                           GParamSpec *pspec)
 {
     CapaCameraInfo *info = CAPA_CAMERA_INFO(object);
-    CapaCameraInfoPrivate *priv = info->priv;
 
     CAPA_DEBUG("Set prop %d", prop_id);
 
     switch (prop_id)
         {
-        case PROP_CAMERA: {
-            char *title;
-            GtkWidget *win;
-            if (priv->camera)
-                g_object_unref(G_OBJECT(priv->camera));
-            priv->camera = g_value_get_object(value);
-            g_object_ref(G_OBJECT(priv->camera));
-
-            title = g_strdup_printf("%s Camera Info - Capa",
-                                    capa_camera_get_model(priv->camera));
-
-            win = glade_xml_get_widget(priv->glade, "camera-info");
-            gtk_window_set_title(GTK_WINDOW(win), title);
-            g_free(title);
-            do_info_refresh(info);
-        } break;
+        case PROP_CAMERA:
+            capa_camera_info_set_camera(info, g_value_get_object(value));
+            break;
 
         case PROP_DATA:
-            priv->data = g_value_get_enum(value);
-            do_info_refresh(info);
+            capa_camera_info_set_data(info, g_value_get_enum(value));
             break;
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
 }
+
 
 static void capa_camera_info_finalize (GObject *object)
 {
@@ -149,6 +107,7 @@ static void capa_camera_info_finalize (GObject *object)
 
     G_OBJECT_CLASS (capa_camera_info_parent_class)->finalize (object);
 }
+
 
 static void capa_camera_info_class_init(CapaCameraInfoClass *klass)
 {
@@ -192,6 +151,7 @@ static void capa_camera_info_class_init(CapaCameraInfoClass *klass)
     g_type_class_add_private(klass, sizeof(CapaCameraInfoPrivate));
 }
 
+
 GType capa_camera_info_data_get_type(void)
 {
     static GType etype = 0;
@@ -210,10 +170,16 @@ GType capa_camera_info_data_get_type(void)
     return etype;
 }
 
-CapaCameraInfo *capa_camera_info_new(void)
+
+CapaCameraInfo *capa_camera_info_new(CapaCamera *camera,
+                                     CapaCameraInfoData data)
 {
-    return CAPA_CAMERA_INFO(g_object_new(CAPA_TYPE_CAMERA_INFO, NULL));
+    return CAPA_CAMERA_INFO(g_object_new(CAPA_TYPE_CAMERA_INFO,
+                                         "camera", camera,
+                                         "data", data,
+                                         NULL));
 }
+
 
 static gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
                               CapaCameraInfo *info)
@@ -226,6 +192,7 @@ static gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
     return TRUE;
 }
 
+
 static gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
                                GdkEvent *ev G_GNUC_UNUSED,
                                CapaCameraInfo *info)
@@ -237,6 +204,7 @@ static gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
     gtk_widget_hide(win);
     return FALSE;
 }
+
 
 static void capa_camera_info_init(CapaCameraInfo *info)
 {
@@ -258,6 +226,7 @@ static void capa_camera_info_init(CapaCameraInfo *info)
     gtk_widget_set_sensitive(txt, FALSE);
 }
 
+
 void capa_camera_info_show(CapaCameraInfo *info)
 {
     CapaCameraInfoPrivate *priv = info->priv;
@@ -267,12 +236,97 @@ void capa_camera_info_show(CapaCameraInfo *info)
     gtk_window_present(GTK_WINDOW(win));
 }
 
+
 void capa_camera_info_hide(CapaCameraInfo *info)
 {
     CapaCameraInfoPrivate *priv = info->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
 
     gtk_widget_hide(win);
+}
+
+
+static void do_info_refresh(CapaCameraInfo *info)
+{
+    CapaCameraInfoPrivate *priv = info->priv;
+    GtkWidget *text = glade_xml_get_widget(priv->glade, "info-text");
+    GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+
+
+    if (priv->camera) {
+        switch (priv->data) {
+        case CAPA_CAMERA_INFO_DATA_SUMMARY:
+            gtk_text_buffer_set_text(buf, capa_camera_get_summary(priv->camera), -1);
+            break;
+        case CAPA_CAMERA_INFO_DATA_MANUAL:
+            gtk_text_buffer_set_text(buf, capa_camera_get_manual(priv->camera), -1);
+            break;
+        case CAPA_CAMERA_INFO_DATA_DRIVER:
+            gtk_text_buffer_set_text(buf, capa_camera_get_driver(priv->camera), -1);
+            break;
+        case CAPA_CAMERA_INFO_DATA_SUPPORTED:
+            gtk_text_buffer_set_text(buf, "supported", -1);
+            break;
+        default:
+            gtk_text_buffer_set_text(buf, "unknown", -1);
+            break;
+        }
+    } else {
+        gtk_text_buffer_set_text(buf, "", -1);
+    }
+}
+
+
+void capa_camera_info_set_data(CapaCameraInfo *info,
+                               CapaCameraInfoData data)
+{
+    CapaCameraInfoPrivate *priv = info->priv;
+
+    priv->data = data;
+
+    do_info_refresh(info);
+}
+
+
+CapaCameraInfoData capa_camera_info_get_data(CapaCameraInfo *info)
+{
+    CapaCameraInfoPrivate *priv = info->priv;
+
+    return priv->data;
+}
+
+
+void capa_camera_info_set_camera(CapaCameraInfo *info,
+                                 CapaCamera *camera)
+{
+    CapaCameraInfoPrivate *priv = info->priv;
+    char *title;
+    GtkWidget *win;
+
+    if (priv->camera)
+        g_object_unref(priv->camera);
+    priv->camera = camera;
+    if (priv->camera) {
+        g_object_ref(G_OBJECT(priv->camera));
+        title = g_strdup_printf("%s Camera Info - Capa",
+                                capa_camera_get_model(priv->camera));
+    } else {
+        title = g_strdup("Camera Info - Capa");
+    }
+
+    win = glade_xml_get_widget(priv->glade, "camera-info");
+    gtk_window_set_title(GTK_WINDOW(win), title);
+    g_free(title);
+
+    do_info_refresh(info);
+}
+
+
+CapaCamera *capa_camera_info_get_camera(CapaCameraInfo *info)
+{
+    CapaCameraInfoPrivate *priv = info->priv;
+
+    return priv->camera;
 }
 
 

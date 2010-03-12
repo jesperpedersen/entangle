@@ -757,13 +757,10 @@ static void do_manager_help_summary(GtkMenuItem *src G_GNUC_UNUSED,
 {
     CapaCameraManagerPrivate *priv = manager->priv;
 
-    if (!priv->summary) {
-        priv->summary = capa_camera_info_new();
-        g_object_set(G_OBJECT(priv->summary),
-                     "data", CAPA_CAMERA_INFO_DATA_SUMMARY,
-                     "camera", priv->camera,
-                     NULL);
-    }
+    if (!priv->summary)
+        priv->summary = capa_camera_info_new(priv->camera,
+                                             CAPA_CAMERA_INFO_DATA_SUMMARY);
+
     capa_camera_info_show(priv->summary);
 }
 
@@ -772,13 +769,10 @@ static void do_manager_help_manual(GtkMenuItem *src G_GNUC_UNUSED,
 {
     CapaCameraManagerPrivate *priv = manager->priv;
 
-    if (!priv->manual) {
-        priv->manual = capa_camera_info_new();
-        g_object_set(G_OBJECT(priv->manual),
-                     "data", CAPA_CAMERA_INFO_DATA_MANUAL,
-                     "camera", priv->camera,
-                     NULL);
-    }
+    if (!priv->manual)
+        priv->manual = capa_camera_info_new(priv->camera,
+                                            CAPA_CAMERA_INFO_DATA_MANUAL);
+
     capa_camera_info_show(priv->manual);
 }
 
@@ -787,13 +781,10 @@ static void do_manager_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
 {
     CapaCameraManagerPrivate *priv = manager->priv;
 
-    if (!priv->driver) {
-        priv->driver = capa_camera_info_new();
-        g_object_set(G_OBJECT(priv->driver),
-                     "data", CAPA_CAMERA_INFO_DATA_DRIVER,
-                     "camera", priv->camera,
-                     NULL);
-    }
+    if (!priv->driver)
+        priv->driver = capa_camera_info_new(priv->camera,
+                                            CAPA_CAMERA_INFO_DATA_DRIVER);
+
     capa_camera_info_show(priv->driver);
 }
 

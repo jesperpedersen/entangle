@@ -64,10 +64,22 @@ typedef enum {
 GType capa_camera_info_get_type(void) G_GNUC_CONST;
 GType capa_camera_info_data_get_type(void) G_GNUC_CONST;
 
-CapaCameraInfo* capa_camera_info_new(void);
+CapaCameraInfo* capa_camera_info_new(CapaCamera *camera,
+                                     CapaCameraInfoData data);
 
 void capa_camera_info_show(CapaCameraInfo *info);
 void capa_camera_info_hide(CapaCameraInfo *info);
+
+
+void capa_camera_info_set_data(CapaCameraInfo *info,
+                               CapaCameraInfoData data);
+
+CapaCameraInfoData capa_camera_info_get_data(CapaCameraInfo *info);
+
+void capa_camera_info_set_camera(CapaCameraInfo *info,
+                                 CapaCamera *camera);
+
+CapaCamera *capa_camera_info_get_camera(CapaCameraInfo *info);
 
 G_END_DECLS
 
