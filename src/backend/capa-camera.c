@@ -27,7 +27,6 @@
 #include "capa-debug.h"
 #include "capa-camera.h"
 #include "capa-params.h"
-#include "capa-progress.h"
 #include "capa-control-button.h"
 #include "capa-control-choice.h"
 #include "capa-control-date.h"
@@ -81,8 +80,8 @@ static void capa_camera_get_property(GObject *object,
                                      GValue *value,
                                      GParamSpec *pspec)
 {
-    CapaCamera *picker = CAPA_CAMERA(object);
-    CapaCameraPrivate *priv = picker->priv;
+    CapaCamera *cam = CAPA_CAMERA(object);
+    CapaCameraPrivate *priv = cam->priv;
 
     switch (prop_id)
         {
@@ -132,8 +131,8 @@ static void capa_camera_set_property(GObject *object,
                                      const GValue *value,
                                      GParamSpec *pspec)
 {
-    CapaCamera *picker = CAPA_CAMERA(object);
-    CapaCameraPrivate *priv = picker->priv;
+    CapaCamera *cam = CAPA_CAMERA(object);
+    CapaCameraPrivate *priv = cam->priv;
 
     switch (prop_id)
         {
@@ -148,11 +147,7 @@ static void capa_camera_set_property(GObject *object,
             break;
 
         case PROP_PROGRESS:
-            if (priv->progress)
-                g_object_unref(G_OBJECT(priv->progress));
-            priv->progress = g_value_get_object(value);
-            if (priv->progress)
-                g_object_ref(priv->progress);
+            capa_camera_set_progress(cam, g_value_get_object(value));
             break;
 
         case PROP_HAS_CAPTURE:
@@ -1048,6 +1043,25 @@ gboolean capa_camera_get_has_settings(CapaCamera *cam)
     return priv->hasSettings;
 }
 
+
+void capa_camera_set_progress(CapaCamera *cam, CapaProgress *prog)
+{
+    CapaCameraPrivate *priv = cam->priv;
+
+    if (priv->progress)
+        g_object_unref(priv->progress);
+    priv->progress = prog;
+    if (priv->progress)
+        g_object_ref(priv->progress);
+}
+
+
+CapaProgress *capa_camera_get_progress(CapaCamera *cam)
+{
+    CapaCameraPrivate *priv = cam->priv;
+
+    return priv->progress;
+}
 
 /*
  * Local variables:

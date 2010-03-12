@@ -24,8 +24,8 @@
 #include <glib-object.h>
 
 #include "capa-control-group.h"
-#include "capa-image.h"
 #include "capa-camera-file.h"
+#include "capa-progress.h"
 
 G_BEGIN_DECLS
 
@@ -97,6 +97,9 @@ gboolean capa_camera_get_has_preview(CapaCamera *cam);
 gboolean capa_camera_get_has_settings(CapaCamera *cam);
 
 CapaControlGroup *capa_camera_get_controls(CapaCamera *cam);
+
+void capa_camera_set_progress(CapaCamera *cam, CapaProgress *prog);
+CapaProgress *capa_camera_get_progress(CapaCamera *cam);
 
 G_END_DECLS
 

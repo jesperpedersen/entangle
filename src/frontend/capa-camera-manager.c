@@ -491,9 +491,7 @@ static void do_remove_camera(CapaCameraManager *manager)
     g_object_set(G_OBJECT(priv->controlPanel),
                  "camera", NULL,
                  NULL);
-    g_object_set(G_OBJECT(priv->camera),
-                 "progress", NULL,
-                 NULL);
+    capa_camera_set_progress(priv->camera, NULL);
 
     g_object_set(G_OBJECT(priv->imageDisplay),
                  "filename", NULL,
@@ -546,9 +544,7 @@ static void do_add_camera(CapaCameraManager *manager)
                                      capa_preferences_filename_pattern(priv->prefs));
     capa_session_load(priv->session);
 
-    g_object_set(G_OBJECT(priv->camera),
-                 "progress", manager,
-                 NULL);
+    capa_camera_set_progress(priv->camera, CAPA_PROGRESS(manager));
 
     g_object_set(G_OBJECT(priv->sessionBrowser),
                  "session", priv->session,
