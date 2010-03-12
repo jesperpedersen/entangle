@@ -51,6 +51,10 @@ struct _CapaCameraPrivate {
     char *model;
     char *port;
 
+    char *manual;
+    char *summary;
+    char *driver;
+
     gboolean hasCapture;
     gboolean hasPreview;
     gboolean hasSettings;
@@ -62,6 +66,9 @@ enum {
     PROP_0,
     PROP_MODEL,
     PROP_PORT,
+    PROP_MANUAL,
+    PROP_SUMMARY,
+    PROP_DRIVER,
     PROP_PROGRESS,
     PROP_HAS_CAPTURE,
     PROP_HAS_PREVIEW,
@@ -85,6 +92,18 @@ static void capa_camera_get_property(GObject *object,
 
         case PROP_PORT:
             g_value_set_string(value, priv->port);
+            break;
+
+        case PROP_MANUAL:
+            g_value_set_string(value, priv->manual);
+            break;
+
+        case PROP_SUMMARY:
+            g_value_set_string(value, priv->summary);
+            break;
+
+        case PROP_DRIVER:
+            g_value_set_string(value, priv->driver);
             break;
 
         case PROP_PROGRESS:
@@ -175,6 +194,9 @@ static void capa_camera_finalize(GObject *object)
     if (priv->controls)
         g_object_unref(priv->controls);
     capa_params_free(priv->params);
+    g_free(priv->driver);
+    g_free(priv->summary);
+    g_free(priv->manual);
     g_free(priv->model);
     g_free(priv->port);
 
@@ -255,13 +277,34 @@ static void capa_camera_class_init(CapaCameraClass *klass)
                                                         G_PARAM_STATIC_BLURB));
 
     g_object_class_install_property(object_class,
-                                    PROP_PORT,
-                                    g_param_spec_string("port",
-                                                        "Camera port",
-                                                        "Device port of the camera",
+                                    PROP_SUMMARY,
+                                    g_param_spec_string("summary",
+                                                        "Camera summary",
+                                                        "Camera summary",
                                                         NULL,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
+                                                        G_PARAM_READABLE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_MANUAL,
+                                    g_param_spec_string("manual",
+                                                        "Camera manual",
+                                                        "Camera manual",
+                                                        NULL,
+                                                        G_PARAM_READABLE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_DRIVER,
+                                    g_param_spec_string("driver",
+                                                        "Camera driver info",
+                                                        "Camera driver information",
+                                                        NULL,
+                                                        G_PARAM_READABLE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
@@ -417,6 +460,7 @@ int capa_camera_connect(CapaCamera *cam)
     int i;
     GPPortInfo port;
     CameraAbilities cap;
+    CameraText txt;
 
     CAPA_DEBUG("Conencting to cam");
 
@@ -461,6 +505,15 @@ int capa_camera_connect(CapaCamera *cam)
     if (cap.operations & GP_OPERATION_CONFIG)
         priv->hasSettings = TRUE;
 
+    gp_camera_get_summary(priv->cam, &txt, priv->params->ctx);
+    priv->summary = g_strdup(txt.text);
+
+    gp_camera_get_manual(priv->cam, &txt, priv->params->ctx);
+    priv->manual = g_strdup(txt.text);
+
+    gp_camera_get_about(priv->cam, &txt, priv->params->ctx);
+    priv->driver = g_strdup(txt.text);
+
     CAPA_DEBUG("ok");
     return 0;
 }
@@ -485,6 +538,11 @@ int capa_camera_disconnect(CapaCamera *cam)
         priv->controls = NULL;
     }
 
+    g_free(priv->driver);
+    g_free(priv->manual);
+    g_free(priv->summary);
+    priv->driver = priv->manual = priv->summary = NULL;
+
     capa_params_free(priv->params);
     priv->params = NULL;
 
@@ -496,40 +554,25 @@ int capa_camera_disconnect(CapaCamera *cam)
     return 0;
 }
 
-char *capa_camera_summary(CapaCamera *cam)
+const char *capa_camera_summary(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
-    CameraText txt;
-    if (priv->cam == NULL)
-        return g_strdup("");
 
-    gp_camera_get_summary(priv->cam, &txt, priv->params->ctx);
-
-    return g_strdup(txt.text);
+    return priv->summary;
 }
 
-char *capa_camera_manual(CapaCamera *cam)
+const char *capa_camera_manual(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
-    CameraText txt;
-    if (priv->cam == NULL)
-        return g_strdup("");
 
-    gp_camera_get_manual(priv->cam, &txt, priv->params->ctx);
-
-    return g_strdup(txt.text);
+    return priv->manual;
 }
 
-char *capa_camera_driver(CapaCamera *cam)
+const char *capa_camera_driver(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
-    CameraText txt;
-    if (priv->cam == NULL)
-        return g_strdup("");
 
-    gp_camera_get_about(priv->cam, &txt, priv->params->ctx);
-
-    return g_strdup(txt.text);
+    return priv->driver;
 }
 
 
