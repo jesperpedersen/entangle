@@ -261,19 +261,19 @@ static void do_refresh_cameras(CapaApp *app)
         gboolean found = FALSE;
         CapaCamera *cam = capa_camera_list_get(priv->cameras, i);
 
-        CAPA_DEBUG("Checking if %s exists", capa_camera_port(cam));
+        CAPA_DEBUG("Checking if %s exists", capa_camera_get_port(cam));
 
         for (int j = 0 ; j < gp_list_count(cams) ; j++) {
             const char *port;
             gp_list_get_value(cams, j, &port);
 
-            if (strcmp(port, capa_camera_port(cam)) == 0) {
+            if (strcmp(port, capa_camera_get_port(cam)) == 0) {
                 found = TRUE;
                 break;
             }
         }
         if (!found)
-            g_hash_table_insert(toRemove, g_strdup(capa_camera_port(cam)), cam);
+            g_hash_table_insert(toRemove, g_strdup(capa_camera_get_port(cam)), cam);
     }
 
     gp_list_unref(cams);

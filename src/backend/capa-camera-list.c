@@ -160,7 +160,7 @@ CapaCamera *capa_camera_list_find(CapaCameraList *list,
     int i;
 
     for (i = 0 ; i < priv->ncamera ; i++) {
-        const char *thisport = capa_camera_port(priv->cameras[i]);
+        const char *thisport = capa_camera_get_port(priv->cameras[i]);
 
         CAPA_DEBUG("Compare '%s' '%s'", port, thisport);
 

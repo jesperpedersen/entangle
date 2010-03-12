@@ -103,9 +103,9 @@ static void do_manager_connect(CapaCameraManager *manager G_GNUC_UNUSED,
 static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaAppDisplay *display)
 {
     CapaAppDisplayPrivate *priv = display->priv;
-    CAPA_DEBUG("emit connect %p %s", cam, capa_camera_model(cam));
+    CAPA_DEBUG("emit connect %p %s", cam, capa_camera_get_model(cam));
 
-    while (capa_camera_connect(cam) < 0) {
+    while (!capa_camera_connect(cam)) {
         int response;
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 GTK_DIALOG_MODAL,
@@ -183,8 +183,8 @@ static void do_camera_removed(CapaCameraList *cameras G_GNUC_UNUSED,
     g_object_get(priv->manager, "camera", &current, NULL);
 
     CAPA_DEBUG("Check removed camera '%s' %p, against '%s' %p",
-               capa_camera_model(camera), camera,
-               current ? capa_camera_model(current) : "<none>", current);
+               capa_camera_get_model(camera), camera,
+               current ? capa_camera_get_model(current) : "<none>", current);
 
     if (current == camera)
         g_object_set(priv->manager, "camera", NULL, NULL);
@@ -235,7 +235,7 @@ gboolean capa_app_display_show(CapaAppDisplay *display)
     if (capa_camera_list_count(cameras) == 1) {
         CapaCamera *cam = capa_camera_list_get(cameras, 0);
 
-        if (capa_camera_connect(cam) == 0) {
+        if (capa_camera_connect(cam)) {
             g_object_set(G_OBJECT(priv->manager), "camera", cam, NULL);
             choose = FALSE;
         }

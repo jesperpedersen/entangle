@@ -383,13 +383,13 @@ static void capa_camera_init(CapaCamera *picker)
 }
 
 
-const char *capa_camera_model(CapaCamera *cam)
+const char *capa_camera_get_model(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
     return priv->model;
 }
 
-const char *capa_camera_port(CapaCamera *cam)
+const char *capa_camera_get_port(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
     return priv->port;
@@ -454,7 +454,8 @@ static GPContextFeedback do_capa_camera_progress_cancelled(GPContext *ctx G_GNUC
     return GP_CONTEXT_FEEDBACK_OK;
 }
 
-int capa_camera_connect(CapaCamera *cam)
+
+gboolean capa_camera_connect(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
     int i;
@@ -465,7 +466,7 @@ int capa_camera_connect(CapaCamera *cam)
     CAPA_DEBUG("Conencting to cam");
 
     if (priv->cam != NULL)
-        return 0;
+        return TRUE;
 
     priv->params = capa_params_new();
 
@@ -493,7 +494,7 @@ int capa_camera_connect(CapaCamera *cam)
         gp_camera_unref(priv->cam);
         priv->cam = NULL;
         CAPA_DEBUG("failed");
-        return -1;
+        return FALSE;
     }
 
     /* Update capabilities as a sanity-check against orignal constructor */
@@ -515,17 +516,17 @@ int capa_camera_connect(CapaCamera *cam)
     priv->driver = g_strdup(txt.text);
 
     CAPA_DEBUG("ok");
-    return 0;
+    return TRUE;
 }
 
-int capa_camera_disconnect(CapaCamera *cam)
+gboolean capa_camera_disconnect(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 
     CAPA_DEBUG("Disconnecting from cam");
 
     if (priv->cam == NULL)
-        return 0;
+        return TRUE;
 
     gp_camera_exit(priv->cam, priv->params->ctx);
 
@@ -551,24 +552,24 @@ int capa_camera_disconnect(CapaCamera *cam)
 
     priv->hasCapture = priv->hasPreview = priv->hasSettings = FALSE;
 
-    return 0;
+    return TRUE;
 }
 
-const char *capa_camera_summary(CapaCamera *cam)
+const char *capa_camera_get_summary(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 
     return priv->summary;
 }
 
-const char *capa_camera_manual(CapaCamera *cam)
+const char *capa_camera_get_manual(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 
     return priv->manual;
 }
 
-const char *capa_camera_driver(CapaCamera *cam)
+const char *capa_camera_get_driver(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 
@@ -1009,7 +1010,7 @@ static CapaControl *do_build_controls(CapaCamera *cam,
 }
 
 
-CapaControlGroup *capa_camera_controls(CapaCamera *cam)
+CapaControlGroup *capa_camera_get_controls(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 
@@ -1026,21 +1027,21 @@ CapaControlGroup *capa_camera_controls(CapaCamera *cam)
     return priv->controls;
 }
 
-gboolean capa_camera_has_capture(CapaCamera *cam)
+gboolean capa_camera_get_has_capture(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 
     return priv->hasCapture;
 }
 
-gboolean capa_camera_has_preview(CapaCamera *cam)
+gboolean capa_camera_get_has_preview(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 
     return priv->hasPreview;
 }
 
-gboolean capa_camera_has_settings(CapaCamera *cam)
+gboolean capa_camera_get_has_settings(CapaCamera *cam)
 {
     CapaCameraPrivate *priv = cam->priv;
 

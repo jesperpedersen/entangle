@@ -256,19 +256,19 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
 
     gtk_widget_set_sensitive(toolCapture,
                              priv->camera &&
-                             capa_camera_has_capture(priv->camera) &&
+                             capa_camera_get_has_capture(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
     gtk_widget_set_sensitive(priv->menuItemCapture,
                              priv->camera &&
-                             capa_camera_has_capture(priv->camera) &&
+                             capa_camera_get_has_capture(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
     gtk_widget_set_sensitive(priv->menuItemPreview,
                              priv->camera &&
-                             capa_camera_has_preview(priv->camera) &&
+                             capa_camera_get_has_preview(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
     gtk_widget_set_sensitive(priv->menuItemMonitor,
                              priv->camera &&
-                             capa_camera_has_capture(priv->camera) &&
+                             capa_camera_get_has_capture(priv->camera) &&
                              !priv->inOperation ? TRUE : FALSE);
 
     gtk_widget_set_sensitive(toolNew,
@@ -292,17 +292,17 @@ static void do_capture_widget_sensitivity(CapaCameraManager *manager)
                              priv->camera && !priv->inOperation ?
                              TRUE : FALSE);
 
-    if (priv->camera && !capa_camera_has_capture(priv->camera)) {
+    if (priv->camera && !capa_camera_get_has_capture(priv->camera)) {
         gtk_widget_set_tooltip_text(toolCapture, "This camera does not support image capture");
         gtk_widget_set_tooltip_text(priv->menuItemCapture, "This camera does not support image capture");
         /* XXX is this check correct ? unclear if some cameras can support wait-for-downloads
          * mode, but not be able to trigger the shutter for immediate capture */
         gtk_widget_set_tooltip_text(priv->menuItemMonitor, "This camera does not support image capture");
     }
-    if (priv->camera && !capa_camera_has_preview(priv->camera))
+    if (priv->camera && !capa_camera_get_has_preview(priv->camera))
         gtk_widget_set_tooltip_text(priv->menuItemPreview, "This camera does not support image preview");
 
-    if (priv->camera && capa_camera_has_settings(priv->camera))
+    if (priv->camera && capa_camera_get_has_settings(priv->camera))
         gtk_widget_show(settingsScroll);
     else
         gtk_widget_hide(settingsScroll);
@@ -522,7 +522,7 @@ static void do_add_camera(CapaCameraManager *manager)
     priv->scheduler = capa_camera_scheduler_new(priv->camera);
 
     title = g_strdup_printf("%s Camera Manager - Capa",
-                            capa_camera_model(priv->camera));
+                            capa_camera_get_model(priv->camera));
 
     win = glade_xml_get_widget(priv->glade, "camera-manager");
     gtk_window_set_title(GTK_WINDOW(win), title);
@@ -540,7 +540,7 @@ static void do_add_camera(CapaCameraManager *manager)
 
     directory = g_strdup_printf("%s/%s/Default Session",
                                 capa_preferences_picture_dir(priv->prefs),
-                                capa_camera_model(priv->camera));
+                                capa_camera_get_model(priv->camera));
 
     priv->session = capa_session_new(directory,
                                      capa_preferences_filename_pattern(priv->prefs));
@@ -824,7 +824,7 @@ static void capa_camera_manager_new_session(CapaCameraManager *manager)
 
     dir = g_strdup_printf("%s/%s",
                           capa_preferences_picture_dir(priv->prefs),
-                          capa_camera_model(priv->camera));
+                          capa_camera_get_model(priv->camera));
     g_mkdir_with_parents(dir, 0777);
     CAPA_DEBUG("Set curent folder '%s'", dir);
     gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), dir);
@@ -870,7 +870,7 @@ static void capa_camera_manager_open_session(CapaCameraManager *manager)
 
     dir = g_strdup_printf("%s/%s",
                           capa_preferences_picture_dir(priv->prefs),
-                          capa_camera_model(priv->camera));
+                          capa_camera_get_model(priv->camera));
     g_mkdir_with_parents(dir, 0777);
 
     gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), dir);

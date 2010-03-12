@@ -56,13 +56,13 @@ static void do_info_refresh(CapaCameraInfo *info)
     if (priv->camera) {
         switch (priv->data) {
         case CAPA_CAMERA_INFO_DATA_SUMMARY:
-            gtk_text_buffer_set_text(buf, capa_camera_summary(priv->camera), -1);
+            gtk_text_buffer_set_text(buf, capa_camera_get_summary(priv->camera), -1);
             break;
         case CAPA_CAMERA_INFO_DATA_MANUAL:
-            gtk_text_buffer_set_text(buf, capa_camera_manual(priv->camera), -1);
+            gtk_text_buffer_set_text(buf, capa_camera_get_manual(priv->camera), -1);
             break;
         case CAPA_CAMERA_INFO_DATA_DRIVER:
-            gtk_text_buffer_set_text(buf, capa_camera_driver(priv->camera), -1);
+            gtk_text_buffer_set_text(buf, capa_camera_get_driver(priv->camera), -1);
             break;
         case CAPA_CAMERA_INFO_DATA_SUPPORTED:
             gtk_text_buffer_set_text(buf, "supported", -1);
@@ -120,7 +120,7 @@ static void capa_camera_info_set_property(GObject *object,
             g_object_ref(G_OBJECT(priv->camera));
 
             title = g_strdup_printf("%s Camera Info - Capa",
-                                    capa_camera_model(priv->camera));
+                                    capa_camera_get_model(priv->camera));
 
             win = glade_xml_get_widget(priv->glade, "camera-info");
             gtk_window_set_title(GTK_WINDOW(win), title);

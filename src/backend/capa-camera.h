@@ -68,15 +68,15 @@ CapaCamera *capa_camera_new(const char *model,
                             gboolean hasPreview,
                             gboolean hasSettings);
 
-const char *capa_camera_model(CapaCamera *cam);
-const char *capa_camera_port(CapaCamera *cam);
+const char *capa_camera_get_model(CapaCamera *cam);
+const char *capa_camera_get_port(CapaCamera *cam);
 
-int capa_camera_connect(CapaCamera *cap);
-int capa_camera_disconnect(CapaCamera *cap);
+gboolean capa_camera_connect(CapaCamera *cap);
+gboolean capa_camera_disconnect(CapaCamera *cap);
 
-const char *capa_camera_summary(CapaCamera *cam);
-const char *capa_camera_manual(CapaCamera *cam);
-const char *capa_camera_driver(CapaCamera *cam);
+const char *capa_camera_get_summary(CapaCamera *cam);
+const char *capa_camera_get_manual(CapaCamera *cam);
+const char *capa_camera_get_driver(CapaCamera *cam);
 
 CapaCameraFile *capa_camera_capture_image(CapaCamera *cam);
 
@@ -92,11 +92,11 @@ gboolean capa_camera_event_flush(CapaCamera *cam);
 gboolean capa_camera_event_wait(CapaCamera *cam,
                                 int waitms);
 
-gboolean capa_camera_has_capture(CapaCamera *cam);
-gboolean capa_camera_has_preview(CapaCamera *cam);
-gboolean capa_camera_has_settings(CapaCamera *cam);
+gboolean capa_camera_get_has_capture(CapaCamera *cam);
+gboolean capa_camera_get_has_preview(CapaCamera *cam);
+gboolean capa_camera_get_has_settings(CapaCamera *cam);
 
-CapaControlGroup *capa_camera_controls(CapaCamera *cam);
+CapaControlGroup *capa_camera_get_controls(CapaCamera *cam);
 
 G_END_DECLS
 

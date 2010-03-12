@@ -249,7 +249,7 @@ static void do_setup_camera(CapaControlPanel *panel)
     if (!priv->camera)
         return;
 
-    grp = capa_camera_controls(priv->camera);
+    grp = capa_camera_get_controls(priv->camera);
 
     do_setup_control_group(panel, GTK_VBOX(panel), grp);
     gtk_widget_show_all(GTK_WIDGET(panel));

@@ -63,7 +63,7 @@ static void capa_camera_cell_data_model_func(GtkTreeViewColumn *col G_GNUC_UNUSE
 
     cam = g_value_get_object(&val);
 
-    g_object_set(cell, "text", capa_camera_model(cam), NULL);
+    g_object_set(cell, "text", capa_camera_get_model(cam), NULL);
 
     g_object_unref(cam);
 }
@@ -83,7 +83,7 @@ static void capa_camera_cell_data_port_func(GtkTreeViewColumn *col G_GNUC_UNUSED
 
     cam = g_value_get_object(&val);
 
-    g_object_set(cell, "text", capa_camera_port(cam), NULL);
+    g_object_set(cell, "text", capa_camera_get_port(cam), NULL);
 
     g_object_unref(cam);
 }
@@ -103,9 +103,9 @@ static void capa_camera_cell_data_capture_func(GtkTreeViewColumn *col G_GNUC_UNU
 
     cam = g_value_get_object(&val);
 
-    CAPA_DEBUG("Has %d", capa_camera_has_capture(cam));
+    CAPA_DEBUG("Has %d", capa_camera_get_has_capture(cam));
 
-    g_object_set(cell, "text", capa_camera_has_capture(cam) ? "Yes" : "No", NULL);
+    g_object_set(cell, "text", capa_camera_get_has_capture(cam) ? "Yes" : "No", NULL);
 
     g_object_unref(cam);
 }
