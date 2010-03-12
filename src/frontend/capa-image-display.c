@@ -24,7 +24,6 @@
 
 #include "capa-debug.h"
 #include "capa-image-display.h"
-#include "capa-image-loader.h"
 
 #define CAPA_IMAGE_DISPLAY_GET_PRIVATE(obj)                             \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_IMAGE_DISPLAY, CapaImageDisplayPrivate))
@@ -116,19 +115,6 @@ static void capa_image_display_get_property(GObject *object,
         }
 }
 
-static void capa_image_display_image_loaded(CapaPixbufLoader *loader,
-                                            const char *filename,
-                                            gpointer opaque)
-{
-    CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(opaque);
-    CapaImageDisplayPrivate *priv = display->priv;
-
-    if (strcmp(filename, priv->filename) != 0)
-        return;
-
-    GdkPixbuf *pixbuf = capa_pixbuf_loader_get_pixbuf(loader, filename);
-    g_object_set(G_OBJECT(display), "pixbuf", pixbuf, NULL);
-}
 
 static void capa_image_display_set_property(GObject *object,
                                             guint prop_id,
@@ -136,65 +122,29 @@ static void capa_image_display_set_property(GObject *object,
                                             GParamSpec *pspec)
 {
     CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(object);
-    CapaImageDisplayPrivate *priv = display->priv;
 
     CAPA_DEBUG("Set prop on image display %d", prop_id);
 
     switch (prop_id)
         {
         case PROP_IMAGE_LOADER:
-            if (priv->imageLoader) {
-                if (priv->filename)
-                    capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-                g_signal_handler_disconnect(G_OBJECT(priv->imageLoader), priv->imageLoaderNotifyID);
-                g_object_unref(G_OBJECT(priv->imageLoader));
-            }
-            priv->imageLoader = g_value_get_object(value);
-            if (priv->imageLoader) {
-                g_object_ref(G_OBJECT(priv->imageLoader));
-                priv->imageLoaderNotifyID = g_signal_connect(G_OBJECT(priv->imageLoader),
-                                                        "pixbuf-loaded",
-                                                        G_CALLBACK(capa_image_display_image_loaded),
-                                                        object);
-                if (priv->filename)
-                    capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-            }
+            capa_image_display_set_image_loader(display, g_value_get_object(value));
             break;
 
         case PROP_FILENAME:
-            if (priv->filename) {
-                if (priv->imageLoader)
-                    capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-                g_free(priv->filename);
-            }
-            priv->filename = g_value_dup_string(value);
-            if (priv->imageLoader && priv->filename)
-                capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
+            capa_image_display_set_filename(display, g_value_get_string(value));
             break;
 
         case PROP_PIXBUF:
-            if (priv->pixbuf)
-                g_object_unref(G_OBJECT(priv->pixbuf));
-            priv->pixbuf = g_value_get_object(value);
-            if (priv->pixbuf)
-                g_object_ref(G_OBJECT(priv->pixbuf));
-
-            do_capa_pixmap_setup(display);
-
-            if (GTK_WIDGET_VISIBLE(object))
-                gtk_widget_queue_resize(GTK_WIDGET(object));
+            capa_image_display_set_pixbuf(display, g_value_get_object(value));
             break;
 
         case PROP_AUTOSCALE:
-            priv->autoscale = g_value_get_boolean(value);
-            if (GTK_WIDGET_VISIBLE(object))
-                gtk_widget_queue_resize(GTK_WIDGET(object));
+            capa_image_display_set_autoscale(display, g_value_get_boolean(value));
             break;
 
         case PROP_SCALE:
-            priv->scale = g_value_get_float(value);
-            if (GTK_WIDGET_VISIBLE(object))
-                gtk_widget_queue_resize(GTK_WIDGET(object));
+            capa_image_display_set_scale(display, g_value_get_float(value));
             break;
 
         default:
@@ -443,6 +393,142 @@ static void capa_image_display_init(CapaImageDisplay *display)
     priv->autoscale = TRUE;
 }
 
+
+static void capa_image_display_image_loaded(CapaPixbufLoader *loader,
+                                            const char *filename,
+                                            gpointer opaque)
+{
+    CapaImageDisplay *display = CAPA_IMAGE_DISPLAY(opaque);
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    if (strcmp(filename, priv->filename) != 0)
+        return;
+
+    GdkPixbuf *pixbuf = capa_pixbuf_loader_get_pixbuf(loader, filename);
+    g_object_set(G_OBJECT(display), "pixbuf", pixbuf, NULL);
+}
+
+
+void capa_image_display_set_image_loader(CapaImageDisplay *display,
+                                         CapaImageLoader *loader)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    if (priv->imageLoader) {
+        if (priv->filename)
+            capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
+        g_signal_handler_disconnect(priv->imageLoader, priv->imageLoaderNotifyID);
+        g_object_unref(priv->imageLoader);
+    }
+    priv->imageLoader = loader;
+    if (priv->imageLoader) {
+        g_object_ref(priv->imageLoader);
+        priv->imageLoaderNotifyID = g_signal_connect(priv->imageLoader,
+                                                     "pixbuf-loaded",
+                                                     G_CALLBACK(capa_image_display_image_loaded),
+                                                     display);
+        if (priv->filename)
+            capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
+    }
+}
+
+
+CapaImageLoader *capa_image_display_get_image_loader(CapaImageDisplay *display)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    return priv->imageLoader;
+}
+
+
+void capa_image_display_set_filename(CapaImageDisplay *display,
+                                     const gchar *filename)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    if (priv->filename) {
+        if (priv->imageLoader)
+            capa_pixbuf_loader_unload(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
+        g_free(priv->filename);
+    }
+    priv->filename = filename ? g_strdup(filename) : NULL;
+    if (priv->imageLoader && priv->filename)
+        capa_pixbuf_loader_load(CAPA_PIXBUF_LOADER(priv->imageLoader), priv->filename);
+}
+
+
+const gchar *capa_image_display_get_filename(CapaImageDisplay *display)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    return priv->filename;
+}
+
+
+void capa_image_display_set_pixbuf(CapaImageDisplay *display,
+                                   GdkPixbuf *pixbuf)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    if (priv->pixbuf)
+        g_object_unref(priv->pixbuf);
+    priv->pixbuf = pixbuf;
+    if (priv->pixbuf)
+        g_object_ref(priv->pixbuf);
+
+    do_capa_pixmap_setup(display);
+
+    if (GTK_WIDGET_VISIBLE(display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+GdkPixbuf *capa_image_display_get_pixbuf(CapaImageDisplay *display)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    return priv->pixbuf;
+}
+
+
+void capa_image_display_set_autoscale(CapaImageDisplay *display,
+                                      gboolean autoscale)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    priv->autoscale = autoscale;
+
+    if (GTK_WIDGET_VISIBLE(display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+gboolean capa_image_display_get_autoscale(CapaImageDisplay *display)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    return priv->autoscale;
+}
+
+
+void capa_image_display_set_scale(CapaImageDisplay *display,
+                                  gfloat scale)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    priv->scale = scale;
+
+    if (GTK_WIDGET_VISIBLE(display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+gfloat capa_image_display_get_scale(CapaImageDisplay *display)
+{
+    CapaImageDisplayPrivate *priv = display->priv;
+
+    return priv->scale;
+}
 
 /*
  * Local variables:

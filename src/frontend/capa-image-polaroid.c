@@ -91,9 +91,8 @@ static void capa_image_polaroid_set_property(GObject *object,
             priv->image = g_value_get_object(value);
             g_object_ref(G_OBJECT(priv->image));
 
-            g_object_set(G_OBJECT(priv->display),
-                         "filename", capa_image_filename(priv->image),
-                         NULL);
+            capa_image_display_set_filename(priv->display,
+                                            capa_image_filename(priv->image));
         } break;
 
         case PROP_IMAGE_LOADER: {
@@ -102,9 +101,8 @@ static void capa_image_polaroid_set_property(GObject *object,
             priv->imageLoader = g_value_get_object(value);
             g_object_ref(G_OBJECT(priv->imageLoader));
 
-            g_object_set(G_OBJECT(priv->display),
-                         "image-loader", priv->imageLoader,
-                         NULL);
+            capa_image_display_set_image_loader(priv->display,
+                                                priv->imageLoader);
         } break;
 
         default:

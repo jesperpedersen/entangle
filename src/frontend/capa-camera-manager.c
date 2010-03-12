@@ -340,9 +340,7 @@ static void do_camera_file_download(CapaCamera *cam G_GNUC_UNUSED, CapaCameraFil
     gdk_threads_enter();
     capa_session_add(priv->session, image);
 
-    g_object_set(G_OBJECT(priv->imageDisplay),
-                 "filename", capa_image_filename(image),
-                 NULL);
+    capa_image_display_set_filename(priv->imageDisplay, capa_image_filename(image));
     gdk_threads_leave();
 
     g_object_unref(image);
@@ -368,9 +366,7 @@ static void do_camera_file_preview(CapaCamera *cam G_GNUC_UNUSED, CapaCameraFile
     pixbuf = gdk_pixbuf_new_from_stream(is, NULL, NULL);
 
     gdk_threads_enter();
-    g_object_set(G_OBJECT(priv->imageDisplay),
-                 "pixbuf", pixbuf,
-                 NULL);
+    capa_image_display_set_pixbuf(priv->imageDisplay, pixbuf);
     gdk_threads_leave();
 
     g_object_unref(pixbuf);
@@ -491,10 +487,8 @@ static void do_remove_camera(CapaCameraManager *manager)
                  NULL);
     capa_camera_set_progress(priv->camera, NULL);
 
-    g_object_set(G_OBJECT(priv->imageDisplay),
-                 "filename", NULL,
-                 "pixbuf", NULL,
-                 NULL);
+    capa_image_display_set_filename(priv->imageDisplay, NULL);
+    capa_image_display_set_pixbuf(priv->imageDisplay, NULL);
 
     g_signal_handler_disconnect(priv->camera, priv->sigFilePreview);
     g_signal_handler_disconnect(priv->camera, priv->sigFileDownload);
@@ -1063,7 +1057,6 @@ static void capa_camera_manager_setup_capture_menu(CapaCameraManager *manager)
 static void do_zoom_widget_sensitivity(CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
-    GValue autoscale;
     GtkWidget *toolzoomnormal = glade_xml_get_widget(priv->glade, "toolbar-zoom-normal");
     GtkWidget *toolzoombest = glade_xml_get_widget(priv->glade, "toolbar-zoom-best");
     GtkWidget *toolzoomin = glade_xml_get_widget(priv->glade, "toolbar-zoom-in");
@@ -1073,13 +1066,11 @@ static void do_zoom_widget_sensitivity(CapaCameraManager *manager)
     GtkWidget *menuzoombest = glade_xml_get_widget(priv->glade, "menu-zoom-best");
     GtkWidget *menuzoomin = glade_xml_get_widget(priv->glade, "menu-zoom-in");
     GtkWidget *menuzoomout = glade_xml_get_widget(priv->glade, "menu-zoom-out");
+    gboolean autoscale;
 
+    autoscale = capa_image_display_get_autoscale(priv->imageDisplay);
 
-    memset(&autoscale, 0, sizeof autoscale);
-    g_value_init(&autoscale, G_TYPE_BOOLEAN);
-    g_object_get_property(G_OBJECT(priv->imageDisplay), "autoscale", &autoscale);
-
-    if (g_value_get_boolean(&autoscale)) {
+    if (autoscale) {
         gtk_widget_set_sensitive(toolzoombest, FALSE);
         gtk_widget_set_sensitive(toolzoomnormal, TRUE);
         gtk_widget_set_sensitive(toolzoomin, FALSE);
@@ -1102,19 +1093,27 @@ static void do_zoom_widget_sensitivity(CapaCameraManager *manager)
     }
 }
 
+static void capa_camera_manager_update_zoom(CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->zoomLevel > 0)
+        capa_image_display_set_scale(priv->imageDisplay, 1.0+priv->zoomLevel);
+    else if (priv->zoomLevel < 0)
+        capa_image_display_set_scale(priv->imageDisplay, 1.0/pow(1.5, -priv->zoomLevel));
+    else
+        capa_image_display_set_scale(priv->imageDisplay, 0.0);
+    do_zoom_widget_sensitivity(manager);
+}
+
 static void capa_camera_manager_zoom_in(CapaCameraManager *manager)
 {
     CapaCameraManagerPrivate *priv = manager->priv;
 
     if (priv->zoomLevel < 10)
         priv->zoomLevel += 1;
-    if (priv->zoomLevel > 0)
-        g_object_set(G_OBJECT(priv->imageDisplay), "scale", 1.0+priv->zoomLevel, NULL);
-    else if (priv->zoomLevel < 0)
-        g_object_set(G_OBJECT(priv->imageDisplay), "scale", 1.0/pow(1.5, -priv->zoomLevel), NULL);
-    else
-        g_object_set(G_OBJECT(priv->imageDisplay), "scale", 0.0, NULL);
-    do_zoom_widget_sensitivity(manager);
+
+    capa_camera_manager_update_zoom(manager);
 }
 
 static void capa_camera_manager_zoom_out(CapaCameraManager *manager)
@@ -1123,13 +1122,8 @@ static void capa_camera_manager_zoom_out(CapaCameraManager *manager)
 
     if (priv->zoomLevel > -10)
         priv->zoomLevel -= 1;
-    if (priv->zoomLevel > 0)
-        g_object_set(G_OBJECT(priv->imageDisplay), "scale", 1.0+priv->zoomLevel, NULL);
-    else if (priv->zoomLevel < 0)
-        g_object_set(G_OBJECT(priv->imageDisplay), "scale", 1.0/pow(1.5, -priv->zoomLevel), NULL);
-    else
-        g_object_set(G_OBJECT(priv->imageDisplay), "scale", 0.0, NULL);
-    do_zoom_widget_sensitivity(manager);
+
+    capa_camera_manager_update_zoom(manager);
 }
 
 static void capa_camera_manager_zoom_normal(CapaCameraManager *manager)
@@ -1137,8 +1131,8 @@ static void capa_camera_manager_zoom_normal(CapaCameraManager *manager)
     CapaCameraManagerPrivate *priv = manager->priv;
 
     priv->zoomLevel = 0;
-    g_object_set(G_OBJECT(priv->imageDisplay), "autoscale", FALSE, NULL);
-    g_object_set(G_OBJECT(priv->imageDisplay), "scale", 0.0, NULL);
+    capa_image_display_set_scale(priv->imageDisplay, 0.0);
+    capa_image_display_set_autoscale(priv->imageDisplay, FALSE);
     do_zoom_widget_sensitivity(manager);
 }
 
@@ -1147,7 +1141,7 @@ static void capa_camera_manager_zoom_best(CapaCameraManager *manager)
     CapaCameraManagerPrivate *priv = manager->priv;
 
     priv->zoomLevel = 0;
-    g_object_set(G_OBJECT(priv->imageDisplay), "autoscale", TRUE, NULL);
+    capa_image_display_set_autoscale(priv->imageDisplay, TRUE);
     do_zoom_widget_sensitivity(manager);
 }
 
@@ -1310,9 +1304,7 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
     CAPA_DEBUG("Image selection changed");
     if (img) {
         CAPA_DEBUG("Try load");
-        g_object_set(G_OBJECT(priv->imageDisplay),
-                     "filename", capa_image_filename(img),
-                     NULL);
+        capa_image_display_set_filename(priv->imageDisplay, capa_image_filename(img));
         g_object_unref(G_OBJECT(img));
     }
 }
@@ -1436,7 +1428,7 @@ static void capa_camera_manager_init(CapaCameraManager *manager)
     priv->sessionBrowser = capa_session_browser_new();
     priv->controlPanel = capa_control_panel_new();
 
-    g_object_set(G_OBJECT(priv->imageDisplay), "image-loader", priv->imageLoader, NULL);
+    capa_image_display_set_image_loader(priv->imageDisplay, priv->imageLoader);
     g_object_set(G_OBJECT(priv->sessionBrowser), "thumbnail-loader", priv->thumbLoader, NULL);
 
     g_signal_connect(G_OBJECT(priv->sessionBrowser), "selection-changed",

@@ -23,6 +23,8 @@
 
 #include <gtk/gtk.h>
 
+#include "capa-image-loader.h"
+
 G_BEGIN_DECLS
 
 #define CAPA_TYPE_IMAGE_DISPLAY            (capa_image_display_get_type ())
@@ -53,6 +55,32 @@ struct _CapaImageDisplayClass
 GType capa_image_display_get_type(void) G_GNUC_CONST;
 
 CapaImageDisplay* capa_image_display_new(void);
+
+
+void capa_image_display_set_image_loader(CapaImageDisplay *display,
+                                         CapaImageLoader *loader);
+CapaImageLoader *capa_image_display_get_image_loader(CapaImageDisplay *display);
+
+
+void capa_image_display_set_filename(CapaImageDisplay *display,
+                                     const gchar *filename);
+const gchar *capa_image_display_get_filename(CapaImageDisplay *display);
+
+
+void capa_image_display_set_pixbuf(CapaImageDisplay *display,
+                                   GdkPixbuf *pixbuf);
+GdkPixbuf *capa_image_display_get_pixbuf(CapaImageDisplay *display);
+
+
+void capa_image_display_set_autoscale(CapaImageDisplay *displsy,
+                                      gboolean autoscale);
+gboolean capa_image_display_get_autoscale(CapaImageDisplay *display);
+
+
+void capa_image_display_set_scale(CapaImageDisplay *display,
+                                  gfloat scale);
+gfloat capa_image_display_get_scale(CapaImageDisplay *display);
+
 
 G_END_DECLS
 
