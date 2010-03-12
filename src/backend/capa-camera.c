@@ -624,12 +624,12 @@ CapaCameraFile *capa_camera_preview_image(CapaCamera *cam)
     file = capa_camera_file_new("/", name);
 
     if (gp_file_get_mime_type(datafile, &mimetype) == GP_OK)
-        g_object_set(file, "mimetype", mimetype, NULL);
+        capa_camera_file_set_mimetype(file, mimetype);
 
     data = g_byte_array_new();
     g_byte_array_append(data, (const guint8 *)rawdata, rawdatalen);
 
-    g_object_set(file, "data", data, NULL);
+    capa_camera_file_set_data(file, data);
     g_byte_array_unref(data);
 
     gp_file_unref(datafile);
@@ -678,7 +678,7 @@ gboolean capa_camera_download_file(CapaCamera *cam,
     gp_file_unref(datafile);
 
 
-    g_object_set(file, "data", filedata, NULL);
+    capa_camera_file_set_data(file, filedata);
     g_byte_array_unref(filedata);
 
     g_signal_emit_by_name(cam, "camera-file-downloaded", file);

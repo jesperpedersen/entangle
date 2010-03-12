@@ -219,17 +219,13 @@ const char *capa_camera_file_get_folder(CapaCameraFile *file)
     return priv->folder;
 }
 
+
 const char *capa_camera_file_get_name(CapaCameraFile *file)
 {
     CapaCameraFilePrivate *priv = file->priv;
     return priv->name;
 }
 
-const char *capa_camera_file_get_mimetype(CapaCameraFile *file)
-{
-    CapaCameraFilePrivate *priv = file->priv;
-    return priv->mimetype;
-}
 
 gboolean capa_camera_file_save_path(CapaCameraFile *file,
                                     const char *localpath,
@@ -352,16 +348,27 @@ void capa_camera_file_set_data(CapaCameraFile *file, GByteArray *data)
     if (priv->data)
         g_byte_array_unref(priv->data);
     priv->data = data;
-    g_byte_array_ref(priv->data);
+    if (priv->data)
+        g_byte_array_ref(priv->data);
 }
 
 
-gboolean capa_camera_file_has_data(CapaCameraFile *file)
+const gchar *capa_camera_file_get_mimetype(CapaCameraFile *file)
 {
     CapaCameraFilePrivate *priv = file->priv;
-    return priv->data ? TRUE : FALSE;
+
+    return priv->mimetype;
 }
 
+
+void capa_camera_file_set_mimetype(CapaCameraFile *file, const gchar *mimetype)
+{
+    CapaCameraFilePrivate *priv = file->priv;
+    g_free(priv->mimetype);
+    priv->mimetype = NULL;
+    if (mimetype)
+        priv->mimetype = g_strdup(mimetype);
+}
 
 /*
  * Local variables:

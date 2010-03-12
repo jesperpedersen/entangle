@@ -56,7 +56,6 @@ CapaCameraFile *capa_camera_file_new(const char *folder,
 
 const char *capa_camera_file_get_folder(CapaCameraFile *file);
 const char *capa_camera_file_get_name(CapaCameraFile *file);
-const char *capa_camera_file_get_mimetype(CapaCameraFile *file);
 
 gboolean capa_camera_file_save_path(CapaCameraFile *file,
 				    const char *localpath,
@@ -67,7 +66,9 @@ gboolean capa_camera_file_save_uri(CapaCameraFile *file,
 
 GByteArray *capa_camera_file_get_data(CapaCameraFile *file);
 void capa_camera_file_set_data(CapaCameraFile *file, GByteArray *data);
-gboolean capa_camera_file_has_data(CapaCameraFile *file);
+
+const gchar *capa_camera_file_get_mimetype(CapaCameraFile *file);
+void capa_camera_file_set_mimetype(CapaCameraFile *file, const gchar *mimetype);
 
 G_END_DECLS
 
