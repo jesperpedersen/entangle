@@ -24,6 +24,8 @@
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#include "capa-colour-profile.h"
+
 G_BEGIN_DECLS
 
 #define CAPA_TYPE_PIXBUF_LOADER            (capa_pixbuf_loader_get_type ())
@@ -72,6 +74,15 @@ gboolean capa_pixbuf_loader_load(CapaPixbufLoader *loader,
 gboolean capa_pixbuf_loader_unload(CapaPixbufLoader *loader,
                                    const char *filename);
 
+void capa_pixbuf_loader_set_colour_transform(CapaPixbufLoader *loader,
+                                             CapaColourProfileTransform *transform);
+
+CapaColourProfileTransform *capa_pixbuf_loader_get_colour_transform(CapaPixbufLoader *loader);
+
+void capa_pixbuf_loader_set_workers(CapaPixbufLoader *loader,
+                                    int count);
+
+int capa_pixbuf_loader_get_workers(CapaPixbufLoader *loader);
 
 G_END_DECLS
 

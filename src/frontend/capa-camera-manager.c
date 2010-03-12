@@ -192,13 +192,11 @@ static void capa_camera_manager_update_colour_transform(CapaCameraManager *manag
 
     priv->colourTransform = capa_camera_manager_colour_transform(manager);
     if (priv->imageLoader)
-        g_object_set(G_OBJECT(priv->imageLoader),
-                     "colour-transform", priv->colourTransform,
-                     NULL);
+        capa_pixbuf_loader_set_colour_transform(CAPA_PIXBUF_LOADER(priv->imageLoader),
+                                                priv->colourTransform);
     if (priv->thumbLoader)
-        g_object_set(G_OBJECT(priv->thumbLoader),
-                     "colour-transform", priv->colourTransform,
-                     NULL);
+        capa_pixbuf_loader_set_colour_transform(CAPA_PIXBUF_LOADER(priv->thumbLoader),
+                                                priv->colourTransform);
 }
 
 

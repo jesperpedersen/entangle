@@ -25,7 +25,6 @@
 
 #include "capa-debug.h"
 #include "capa-pixbuf-loader.h"
-#include "capa-colour-profile.h"
 
 #define CAPA_PIXBUF_LOADER_GET_PRIVATE(obj)                                     \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_PIXBUF_LOADER, CapaPixbufLoaderPrivate))
@@ -57,7 +56,7 @@ G_DEFINE_ABSTRACT_TYPE(CapaPixbufLoader, capa_pixbuf_loader, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
-    PROP_NTHREADS,
+    PROP_WORKERS,
     PROP_COLOUR_TRANSFORM,
 };
 
@@ -72,8 +71,8 @@ static void capa_pixbuf_loader_get_property(GObject *object,
 
     switch (prop_id)
         {
-        case PROP_NTHREADS:
-            g_value_set_int(value, g_thread_pool_get_max_threads(priv->workers));
+        case PROP_WORKERS:
+            g_value_set_int(value, capa_pixbuf_loader_get_workers(loader));
             break;
 
         case PROP_COLOUR_TRANSFORM:
@@ -85,54 +84,29 @@ static void capa_pixbuf_loader_get_property(GObject *object,
         }
 }
 
-static void capa_pixbuf_loader_trigger_reload(CapaPixbufLoader *loader)
-{
-    CapaPixbufLoaderPrivate *priv = loader->priv;
-    GHashTableIter iter;
-    gpointer key, value;
-
-    CAPA_DEBUG("Triggering mass reload");
-
-    g_mutex_lock(priv->lock);
-    g_hash_table_iter_init(&iter, priv->pixbufs);
-    while (g_hash_table_iter_next(&iter, &key, &value)) {
-        CapaPixbufLoaderEntry *entry = value;
-        if (entry->refs &&
-            !entry->processing)
-            g_thread_pool_push(priv->workers, entry->filename, NULL);
-    }
-    g_mutex_unlock(priv->lock);
-}
 
 static void capa_pixbuf_loader_set_property(GObject *object,
-                                           guint prop_id,
-                                           const GValue *value,
-                                           GParamSpec *pspec)
+                                            guint prop_id,
+                                            const GValue *value,
+                                            GParamSpec *pspec)
 {
     CapaPixbufLoader *loader = CAPA_PIXBUF_LOADER(object);
-    CapaPixbufLoaderPrivate *priv = loader->priv;
 
     switch (prop_id)
         {
-        case PROP_NTHREADS:
-            g_thread_pool_set_max_threads(priv->workers, g_value_get_int(value), NULL);
+        case PROP_WORKERS:
+            capa_pixbuf_loader_set_workers(loader, g_value_get_int(value));
             break;
 
         case PROP_COLOUR_TRANSFORM:
-            g_mutex_lock(priv->lock);
-            if (priv->colourTransform)
-                g_object_unref(G_OBJECT(priv->colourTransform));
-            priv->colourTransform = g_value_get_object(value);
-            if (priv->colourTransform)
-                g_object_ref(G_OBJECT(priv->colourTransform));
-            g_mutex_unlock(priv->lock);
-            capa_pixbuf_loader_trigger_reload(loader);
+            capa_pixbuf_loader_set_colour_transform(loader, g_value_get_object(value));
             break;
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
 }
+
 
 static void capa_pixbuf_loader_entry_free(gpointer opaque)
 {
@@ -157,6 +131,26 @@ static CapaPixbufLoaderEntry *capa_pixbuf_loader_entry_new(const char *filename)
     CAPA_DEBUG("new entry %p %s", entry, filename);
 
     return entry;
+}
+
+
+static void capa_pixbuf_loader_trigger_reload(CapaPixbufLoader *loader)
+{
+    CapaPixbufLoaderPrivate *priv = loader->priv;
+    GHashTableIter iter;
+    gpointer key, value;
+
+    CAPA_DEBUG("Triggering mass reload");
+
+    g_mutex_lock(priv->lock);
+    g_hash_table_iter_init(&iter, priv->pixbufs);
+    while (g_hash_table_iter_next(&iter, &key, &value)) {
+        CapaPixbufLoaderEntry *entry = value;
+        if (entry->refs &&
+            !entry->processing)
+            g_thread_pool_push(priv->workers, entry->filename, NULL);
+    }
+    g_mutex_unlock(priv->lock);
 }
 
 
@@ -287,10 +281,10 @@ static void capa_pixbuf_loader_class_init(CapaPixbufLoaderClass *klass)
     object_class->set_property = capa_pixbuf_loader_set_property;
 
     g_object_class_install_property(object_class,
-                                    PROP_NTHREADS,
-                                    g_param_spec_int("nthreads",
-                                                     "Number of threads",
-                                                     "Number of threads to load pixbufs",
+                                    PROP_WORKERS,
+                                    g_param_spec_int("workers",
+                                                     "Workers",
+                                                     "Number of worker threads to load pixbufs",
                                                      1, 64, 1,
                                                      G_PARAM_READWRITE |
                                                      G_PARAM_CONSTRUCT_ONLY |
@@ -431,6 +425,47 @@ gboolean capa_pixbuf_loader_unload(CapaPixbufLoader *loader,
     return TRUE;
 }
 
+
+void capa_pixbuf_loader_set_colour_transform(CapaPixbufLoader *loader,
+                                             CapaColourProfileTransform *transform)
+{
+    CapaPixbufLoaderPrivate *priv = loader->priv;
+
+    g_mutex_lock(priv->lock);
+    if (priv->colourTransform)
+        g_object_unref(priv->colourTransform);
+    priv->colourTransform = transform;
+    if (priv->colourTransform)
+        g_object_ref(priv->colourTransform);
+    g_mutex_unlock(priv->lock);
+
+    capa_pixbuf_loader_trigger_reload(loader);
+}
+
+
+CapaColourProfileTransform *capa_pixbuf_loader_get_colour_transform(CapaPixbufLoader *loader)
+{
+    CapaPixbufLoaderPrivate *priv = loader->priv;
+
+    return priv->colourTransform;
+}
+
+
+void capa_pixbuf_loader_set_workers(CapaPixbufLoader *loader,
+                                    int count)
+{
+    CapaPixbufLoaderPrivate *priv = loader->priv;
+
+    g_thread_pool_set_max_threads(priv->workers, count, NULL);
+}
+
+
+int capa_pixbuf_loader_get_workers(CapaPixbufLoader *loader)
+{
+    CapaPixbufLoaderPrivate *priv = loader->priv;
+
+    return g_thread_pool_get_max_threads(priv->workers);
+}
 
 
 /*
