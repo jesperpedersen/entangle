@@ -405,7 +405,7 @@ static void capa_image_display_image_loaded(CapaPixbufLoader *loader,
         return;
 
     GdkPixbuf *pixbuf = capa_pixbuf_loader_get_pixbuf(loader, filename);
-    g_object_set(display, "pixbuf", pixbuf, NULL);
+    capa_image_display_set_pixbuf(display, pixbuf);
 }
 
 

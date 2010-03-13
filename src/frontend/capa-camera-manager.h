@@ -66,6 +66,13 @@ void capa_camera_manager_hide(CapaCameraManager *manager);
 
 gboolean capa_camera_manager_visible(CapaCameraManager *manager);
 
+void capa_camera_manager_set_camera(CapaCameraManager *manager,
+                                    CapaCamera *cam);
+CapaCamera *capa_camera_manager_get_camera(CapaCameraManager *manager);
+
+CapaPreferences *capa_camera_manager_get_preferences(CapaCameraManager *manager);
+CapaPluginManager *capa_camera_manager_get_plugin_manager(CapaCameraManager *manager);
+
 G_END_DECLS
 
 #endif /* __CAPA_CAMERA_MANAGER_H__ */

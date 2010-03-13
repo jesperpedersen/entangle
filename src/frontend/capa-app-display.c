@@ -133,7 +133,7 @@ static void do_picker_connect(CapaCameraPicker *picker, CapaCamera *cam, CapaApp
             return;
     }
 
-    g_object_set(priv->manager, "camera", cam, NULL);
+    capa_camera_manager_set_camera(priv->manager, cam);
     capa_camera_picker_hide(picker);
 }
 
@@ -187,7 +187,7 @@ static void do_camera_removed(CapaCameraList *cameras G_GNUC_UNUSED,
                current ? capa_camera_get_model(current) : "<none>", current);
 
     if (current == camera)
-        g_object_set(priv->manager, "camera", NULL, NULL);
+        capa_camera_manager_set_camera(priv->manager, NULL);
 }
 
 static void capa_app_display_init(CapaAppDisplay *display)
@@ -236,7 +236,7 @@ gboolean capa_app_display_show(CapaAppDisplay *display)
         CapaCamera *cam = capa_camera_list_get(cameras, 0);
 
         if (capa_camera_connect(cam)) {
-            g_object_set(priv->manager, "camera", cam, NULL);
+            capa_camera_manager_set_camera(priv->manager, cam);
             choose = FALSE;
         }
     }

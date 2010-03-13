@@ -24,6 +24,8 @@
 #include <gtk/gtk.h>
 
 #include "capa-image.h"
+#include "capa-thumbnail-loader.h"
+#include "capa-session.h"
 
 G_BEGIN_DECLS
 
@@ -57,6 +59,17 @@ GType capa_session_browser_get_type(void) G_GNUC_CONST;
 CapaSessionBrowser* capa_session_browser_new(void);
 
 CapaImage *capa_session_browser_selected_image(CapaSessionBrowser *browser);
+
+
+void capa_session_browser_set_thumbnail_loader(CapaSessionBrowser *browser,
+                                               CapaThumbnailLoader *loader);
+CapaThumbnailLoader *capa_session_browser_get_thumbnail_loader(CapaSessionBrowser *browser);
+
+
+void capa_session_browser_set_session(CapaSessionBrowser *browser,
+                                      CapaSession *session);
+CapaSession *capa_session_browser_get_session(CapaSessionBrowser *browser);
+
 
 G_END_DECLS
 

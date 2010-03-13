@@ -478,13 +478,8 @@ static void do_remove_camera(CapaCameraManager *manager)
     gtk_window_set_title(GTK_WINDOW(win), title);
     g_free(title);
 
-    g_object_set(priv->sessionBrowser,
-                 "session", NULL,
-                 NULL);
-
-    g_object_set(priv->controlPanel,
-                 "camera", NULL,
-                 NULL);
+    capa_session_browser_set_session(priv->sessionBrowser, NULL);
+    capa_control_panel_set_camera(priv->controlPanel, NULL);
     capa_camera_set_progress(priv->camera, NULL);
 
     capa_image_display_set_filename(priv->imageDisplay, NULL);
@@ -537,14 +532,8 @@ static void do_add_camera(CapaCameraManager *manager)
     capa_session_load(priv->session);
 
     capa_camera_set_progress(priv->camera, CAPA_PROGRESS(manager));
-
-    g_object_set(priv->sessionBrowser,
-                 "session", priv->session,
-                 NULL);
-
-    g_object_set(priv->controlPanel,
-                 "camera", priv->camera,
-                 NULL);
+    capa_session_browser_set_session(priv->sessionBrowser, priv->session);
+    capa_control_panel_set_camera(priv->controlPanel, priv->camera);
 
     g_free(directory);
 
@@ -592,20 +581,9 @@ static void capa_camera_manager_set_property(GObject *object,
 
     switch (prop_id)
         {
-        case PROP_CAMERA: {
-            if (priv->camera) {
-                do_remove_camera(manager);
-                g_object_unref(priv->camera);
-                priv->inOperation = FALSE;
-            }
-            priv->camera = g_value_get_object(value);
-            if (priv->camera) {
-                g_object_ref(priv->camera);
-                do_add_camera(manager);
-            }
-
-            do_capture_widget_sensitivity(manager);
-        } break;
+        case PROP_CAMERA:
+            capa_camera_manager_set_camera(manager, g_value_get_object(value));
+            break;
 
         case PROP_PREFERENCES:
             if (priv->prefs) {
@@ -819,9 +797,7 @@ static void capa_camera_manager_new_session(CapaCameraManager *manager)
         if (priv->session)
             g_object_unref(priv->session);
         priv->session = session;
-        g_object_set(priv->sessionBrowser,
-                     "session", session,
-                     NULL);
+        capa_session_browser_set_session(priv->sessionBrowser, session);
     }
 
     gtk_widget_destroy(chooser);
@@ -865,10 +841,7 @@ static void capa_camera_manager_open_session(CapaCameraManager *manager)
         if (priv->session)
             g_object_unref(priv->session);
         priv->session = session;
-
-        g_object_set(priv->sessionBrowser,
-                     "session", session,
-                     NULL);
+        capa_session_browser_set_session(priv->sessionBrowser, session);
     }
 
     gtk_widget_destroy(chooser);
@@ -1512,6 +1485,51 @@ gboolean capa_camera_manager_visible(CapaCameraManager *manager)
 
     return GTK_WIDGET_FLAGS(win) & GTK_VISIBLE;
 }
+
+
+void capa_camera_manager_set_camera(CapaCameraManager *manager,
+                                    CapaCamera *cam)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->camera) {
+        do_remove_camera(manager);
+        g_object_unref(priv->camera);
+        priv->inOperation = FALSE;
+    }
+    priv->camera = cam;
+    if (priv->camera) {
+        g_object_ref(priv->camera);
+        do_add_camera(manager);
+    }
+
+    do_capture_widget_sensitivity(manager);
+}
+
+
+CapaCamera *capa_camera_manager_get_camera(CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    return priv->camera;
+}
+
+
+CapaPreferences *capa_camera_manager_get_preferences(CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    return priv->prefs;
+}
+
+
+CapaPluginManager *capa_camera_manager_get_plugin_manager(CapaCameraManager *manager)
+{
+    CapaCameraManagerPrivate *priv = manager->priv;
+
+    return priv->pluginManager;
+}
+
 
 /*
  * Local variables:

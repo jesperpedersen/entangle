@@ -57,6 +57,10 @@ GType capa_control_panel_get_type(void) G_GNUC_CONST;
 CapaControlPanel* capa_control_panel_new(void);
 
 
+void capa_control_panel_set_camera(CapaControlPanel *panel,
+                                   CapaCamera *cam);
+CapaCamera *capa_control_panel_get_camera(CapaControlPanel *panel);
+
 G_END_DECLS
 
 #endif /* __CAPA_CONTROL_PANEL_H__ */

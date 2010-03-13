@@ -24,8 +24,6 @@
 
 #include "capa-debug.h"
 #include "capa-session-browser.h"
-#include "capa-thumbnail-loader.h"
-#include "capa-session.h"
 
 #define CAPA_SESSION_BROWSER_GET_PRIVATE(obj)                           \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), CAPA_TYPE_SESSION_BROWSER, CapaSessionBrowserPrivate))
@@ -229,43 +227,17 @@ static void capa_session_browser_set_property(GObject *object,
                                               GParamSpec *pspec)
 {
     CapaSessionBrowser *browser = CAPA_SESSION_BROWSER(object);
-    CapaSessionBrowserPrivate *priv = browser->priv;
 
     CAPA_DEBUG("Set prop on session browser %d", prop_id);
 
     switch (prop_id)
         {
         case PROP_SESSION:
-            if (priv->session) {
-                if (priv->loader)
-                    do_model_unload(browser);
-
-                g_object_unref(priv->session);
-            }
-            priv->session = g_value_get_object(value);
-            if (priv->session) {
-                g_object_ref(priv->session);
-
-                if (priv->loader)
-                    do_model_load(browser);
-            }
-
+            capa_session_browser_set_session(browser, g_value_get_object(value));
             break;
 
         case PROP_LOADER:
-            if (priv->loader) {
-                if (priv->session)
-                    do_model_unload(browser);
-
-                g_object_unref(priv->loader);
-            }
-            priv->loader = g_value_get_object(value);
-            if (priv->loader) {
-                g_object_ref(priv->loader);
-
-                if (priv->session)
-                    do_model_load(browser);
-            }
+            capa_session_browser_set_thumbnail_loader(browser, g_value_get_object(value));
             break;
 
         default:
@@ -397,6 +369,63 @@ CapaImage *capa_session_browser_selected_image(CapaSessionBrowser *browser)
     g_list_foreach(items, (GFunc)(gtk_tree_path_free), NULL);
     g_list_free(items);
     return img;
+}
+
+
+void capa_session_browser_set_thumbnail_loader(CapaSessionBrowser *browser,
+                                               CapaThumbnailLoader *loader)
+{
+    CapaSessionBrowserPrivate *priv = browser->priv;
+
+    if (priv->loader) {
+        if (priv->session)
+            do_model_unload(browser);
+
+        g_object_unref(priv->loader);
+    }
+    priv->loader = loader;
+    if (priv->loader) {
+        g_object_ref(priv->loader);
+
+        if (priv->session)
+            do_model_load(browser);
+    }
+}
+
+
+CapaThumbnailLoader *capa_session_browser_get_thumbnail_loader(CapaSessionBrowser *browser)
+{
+    CapaSessionBrowserPrivate *priv = browser->priv;
+
+    return priv->loader;
+}
+
+
+void capa_session_browser_set_session(CapaSessionBrowser *browser,
+                                      CapaSession *session)
+{
+    CapaSessionBrowserPrivate *priv = browser->priv;
+
+    if (priv->session) {
+        if (priv->loader)
+            do_model_unload(browser);
+        g_object_unref(priv->session);
+    }
+    priv->session = session;
+    if (priv->session) {
+        g_object_ref(priv->session);
+
+        if (priv->loader)
+            do_model_load(browser);
+    }
+}
+
+
+CapaSession *capa_session_browser_get_session(CapaSessionBrowser *browser)
+{
+    CapaSessionBrowserPrivate *priv = browser->priv;
+
+    return priv->session;
 }
 
 /*

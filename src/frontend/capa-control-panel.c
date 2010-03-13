@@ -280,19 +280,13 @@ static void capa_control_panel_set_property(GObject *object,
                                             GParamSpec *pspec)
 {
     CapaControlPanel *panel = CAPA_CONTROL_PANEL(object);
-    CapaControlPanelPrivate *priv = panel->priv;
 
     CAPA_DEBUG("Set prop on control panel %d", prop_id);
 
     switch (prop_id)
         {
         case PROP_CAMERA:
-            if (priv->camera)
-                g_object_unref(priv->camera);
-            priv->camera = g_value_get_object(value);
-            if (priv->camera)
-                g_object_ref(priv->camera);
-            do_setup_camera(panel);
+            capa_control_panel_set_camera(panel, g_value_get_object(value));
             break;
 
         default:
@@ -348,6 +342,28 @@ static void capa_control_panel_init(CapaControlPanel *panel)
     memset(priv, 0, sizeof *priv);
 
     //gtk_container_set_border_width(GTK_CONTAINER(panel), 6);
+}
+
+
+void capa_control_panel_set_camera(CapaControlPanel *panel,
+                                   CapaCamera *cam)
+{
+    CapaControlPanelPrivate *priv = panel->priv;
+
+    if (priv->camera)
+        g_object_unref(priv->camera);
+    priv->camera = cam;
+    if (priv->camera)
+        g_object_ref(priv->camera);
+    do_setup_camera(panel);
+}
+
+
+CapaCamera *capa_control_panel_get_camera(CapaControlPanel *panel)
+{
+    CapaControlPanelPrivate *priv = panel->priv;
+
+    return priv->camera;
 }
 
 
