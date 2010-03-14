@@ -52,6 +52,7 @@ libcapa_backend_la_SOURCES = \
 	backend/capa-config-entry-enums.h backend/capa-config-entry-enums.c \
 	backend/capa-config-set.h backend/capa-config-set.c \
 	backend/capa-config-store.h backend/capa-config-store.c \
+	backend/capa-config-store-gconf.h backend/capa-config-store-gconf.c \
 	backend/capa-debug.h backend/capa-debug.c \
 	backend/capa-device-manager.h backend/capa-device-manager.c \
 	backend/capa-image.h backend/capa-image.c \
