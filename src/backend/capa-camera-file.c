@@ -269,7 +269,7 @@ gboolean capa_camera_file_save_path(CapaCameraFile *file,
     }
 
     ret = TRUE;
-    CAPA_DEBUG("Wrote %d of %p %d\n", written, priv->data, priv->data->len);
+    CAPA_DEBUG("Wrote %d of %p %d\n", (int)written, priv->data, priv->data->len);
 
  cleanup:
     if (gos) {
@@ -323,7 +323,7 @@ gboolean capa_camera_file_save_uri(CapaCameraFile *file,
     }
 
     ret = TRUE;
-    CAPA_DEBUG("Wrote %d of %p %d\n", written, priv->data, priv->data->len);
+    CAPA_DEBUG("Wrote %d of %p %d\n", (int)written, priv->data, priv->data->len);
  cleanup:
     if (gos) {
         if (!ret)
