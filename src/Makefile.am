@@ -1,20 +1,20 @@
 
 
-noinst_LTLIBRARIES = libcapa_backend.la libcapa_frontend.la
+noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
 if WITH_JAVASCRIPT
 plugin_LTLIBRARIES = javascript.la
-plugindir = $(libdir)/capa/plugins
+plugindir = $(libdir)/entangle/plugins
 endif # WITH_JAVASCRIPT
 
-bin_PROGRAMS = capa
+bin_PROGRAMS = entangle
 
 gladedir = $(pkgdatadir)
-glade_DATA = capa.glade
+glade_DATA = entangle.glade
 
 desktopdir = $(datadir)/applications
-desktop_DATA_IN = capa.desktop.in
-desktop_DATA = capa.desktop
+desktop_DATA_IN = entangle.desktop.in
+desktop_DATA = entangle.desktop
 
 icondir = $(pkgdatadir)
 icon_DATA = $(PACKAGE).svg $(wildcard *.png)
@@ -23,52 +23,52 @@ iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
 
 BUILT_SOURCES = \
-	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c \
-	backend/capa-config-entry-enums.h backend/capa-config-entry-enums.c
+	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
+	backend/entangle-config-entry-enums.h backend/entangle-config-entry-enums.c
 
 EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
 
-libcapa_backend_la_SOURCES = \
-	backend/capa-app.h backend/capa-app.c \
-	backend/capa-camera.h backend/capa-camera.c \
-	backend/capa-camera-file.h backend/capa-camera-file.c \
-	backend/capa-camera-task.h backend/capa-camera-task.c \
-	backend/capa-camera-task-capture.h backend/capa-camera-task-capture.c \
-	backend/capa-camera-task-preview.h backend/capa-camera-task-preview.c \
-	backend/capa-camera-task-monitor.h backend/capa-camera-task-monitor.c \
-	backend/capa-camera-scheduler.h backend/capa-camera-scheduler.c \
-	backend/capa-camera-list.h backend/capa-camera-list.c \
-	backend/capa-colour-profile.h backend/capa-colour-profile.c \
-	backend/capa-colour-profile-enums.h backend/capa-colour-profile-enums.c \
-	backend/capa-control.h backend/capa-control.c \
-	backend/capa-control-button.h backend/capa-control-button.c \
-	backend/capa-control-choice.h backend/capa-control-choice.c \
-	backend/capa-control-date.h backend/capa-control-date.c \
-	backend/capa-control-group.h backend/capa-control-group.c \
-	backend/capa-control-range.h backend/capa-control-range.c \
-	backend/capa-control-text.h backend/capa-control-text.c \
-	backend/capa-control-toggle.h backend/capa-control-toggle.c \
-	backend/capa-config-entry.h backend/capa-config-entry.c \
-	backend/capa-config-entry-enums.h backend/capa-config-entry-enums.c \
-	backend/capa-config-set.h backend/capa-config-set.c \
-	backend/capa-config-store.h backend/capa-config-store.c \
-	backend/capa-config-store-gconf.h backend/capa-config-store-gconf.c \
-	backend/capa-debug.h backend/capa-debug.c \
-	backend/capa-device-manager.h backend/capa-device-manager.c \
-	backend/capa-image.h backend/capa-image.c \
-	backend/capa-image-loader.h backend/capa-image-loader.c \
-	backend/capa-params.h backend/capa-params.c \
-	backend/capa-pixbuf-loader.h backend/capa-pixbuf-loader.c \
-	backend/capa-plugin.h backend/capa-plugin.c \
-	backend/capa-plugin-native.h backend/capa-plugin-native.c \
-	backend/capa-plugin-manager.h backend/capa-plugin-manager.c \
-	backend/capa-preferences.h backend/capa-preferences.c \
-	backend/capa-preferences-gconf.h backend/capa-preferences-gconf.c \
-	backend/capa-progress.h backend/capa-progress.c \
-	backend/capa-session.h backend/capa-session.c \
-	backend/capa-thumbnail-loader.h backend/capa-thumbnail-loader.c
+libentangle_backend_la_SOURCES = \
+	backend/entangle-app.h backend/entangle-app.c \
+	backend/entangle-camera.h backend/entangle-camera.c \
+	backend/entangle-camera-file.h backend/entangle-camera-file.c \
+	backend/entangle-camera-task.h backend/entangle-camera-task.c \
+	backend/entangle-camera-task-capture.h backend/entangle-camera-task-capture.c \
+	backend/entangle-camera-task-preview.h backend/entangle-camera-task-preview.c \
+	backend/entangle-camera-task-monitor.h backend/entangle-camera-task-monitor.c \
+	backend/entangle-camera-scheduler.h backend/entangle-camera-scheduler.c \
+	backend/entangle-camera-list.h backend/entangle-camera-list.c \
+	backend/entangle-colour-profile.h backend/entangle-colour-profile.c \
+	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
+	backend/entangle-control.h backend/entangle-control.c \
+	backend/entangle-control-button.h backend/entangle-control-button.c \
+	backend/entangle-control-choice.h backend/entangle-control-choice.c \
+	backend/entangle-control-date.h backend/entangle-control-date.c \
+	backend/entangle-control-group.h backend/entangle-control-group.c \
+	backend/entangle-control-range.h backend/entangle-control-range.c \
+	backend/entangle-control-text.h backend/entangle-control-text.c \
+	backend/entangle-control-toggle.h backend/entangle-control-toggle.c \
+	backend/entangle-config-entry.h backend/entangle-config-entry.c \
+	backend/entangle-config-entry-enums.h backend/entangle-config-entry-enums.c \
+	backend/entangle-config-set.h backend/entangle-config-set.c \
+	backend/entangle-config-store.h backend/entangle-config-store.c \
+	backend/entangle-config-store-gconf.h backend/entangle-config-store-gconf.c \
+	backend/entangle-debug.h backend/entangle-debug.c \
+	backend/entangle-device-manager.h backend/entangle-device-manager.c \
+	backend/entangle-image.h backend/entangle-image.c \
+	backend/entangle-image-loader.h backend/entangle-image-loader.c \
+	backend/entangle-params.h backend/entangle-params.c \
+	backend/entangle-pixbuf-loader.h backend/entangle-pixbuf-loader.c \
+	backend/entangle-plugin.h backend/entangle-plugin.c \
+	backend/entangle-plugin-native.h backend/entangle-plugin-native.c \
+	backend/entangle-plugin-manager.h backend/entangle-plugin-manager.c \
+	backend/entangle-preferences.h backend/entangle-preferences.c \
+	backend/entangle-preferences-gconf.h backend/entangle-preferences-gconf.c \
+	backend/entangle-progress.h backend/entangle-progress.c \
+	backend/entangle-session.h backend/entangle-session.c \
+	backend/entangle-thumbnail-loader.h backend/entangle-thumbnail-loader.c
 
-libcapa_backend_la_LDFLAGS = \
+libentangle_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(GIO_LIBS) \
 	$(GMODULE_LIBS) \
@@ -81,7 +81,7 @@ libcapa_backend_la_LDFLAGS = \
 	$(DBUS_GLIB_LIBS) \
 	$(WARNING_CFLAGS)
 
-libcapa_backend_la_CFLAGS = \
+libentangle_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GIO_CFLAGS) \
 	$(GMODULE_CFLAGS) \
@@ -98,8 +98,8 @@ libcapa_backend_la_CFLAGS = \
 
 if WITH_JAVASCRIPT
 javascript_la_SOURCES = \
-	backend/capa-plugin-javascript.h backend/capa-plugin-javascript.c \
-	backend/capa-plugin-javascript-module.c
+	backend/entangle-plugin-javascript.h backend/entangle-plugin-javascript.c \
+	backend/entangle-plugin-javascript-module.c
 
 javascript_la_LDFLAGS = \
 	-avoid-version -module \
@@ -126,25 +126,25 @@ uninstall-local:
 else # WITH_JAVASCRIPT
 EXTRA_DIST += \
 	javascript.cfg \
-	backend/capa-plugin-javascript.h backend/capa-plugin-javascript.c \
-	backend/capa-plugin-javascript-module.c
+	backend/entangle-plugin-javascript.h backend/entangle-plugin-javascript.c \
+	backend/entangle-plugin-javascript-module.c
 endif # WITH_JAVASCRIPT
 
-libcapa_frontend_la_SOURCES = \
-	frontend/capa-app-display.h frontend/capa-app-display.c \
-	frontend/capa-camera-info.h frontend/capa-camera-info.c \
-	frontend/capa-camera-manager.h frontend/capa-camera-manager.c \
-	frontend/capa-camera-picker.h frontend/capa-camera-picker.c \
-	frontend/capa-control-panel.h frontend/capa-control-panel.c \
-	frontend/capa-help-about.h frontend/capa-help-about.c \
-	frontend/capa-image-display.h frontend/capa-image-display.c \
-	frontend/capa-image-polaroid.h frontend/capa-image-polaroid.c \
-	frontend/capa-preferences-display.h frontend/capa-preferences-display.c \
-	frontend/capa-session-browser.h frontend/capa-session-browser.c
+libentangle_frontend_la_SOURCES = \
+	frontend/entangle-app-display.h frontend/entangle-app-display.c \
+	frontend/entangle-camera-info.h frontend/entangle-camera-info.c \
+	frontend/entangle-camera-manager.h frontend/entangle-camera-manager.c \
+	frontend/entangle-camera-picker.h frontend/entangle-camera-picker.c \
+	frontend/entangle-control-panel.h frontend/entangle-control-panel.c \
+	frontend/entangle-help-about.h frontend/entangle-help-about.c \
+	frontend/entangle-image-display.h frontend/entangle-image-display.c \
+	frontend/entangle-image-polaroid.h frontend/entangle-image-polaroid.c \
+	frontend/entangle-preferences-display.h frontend/entangle-preferences-display.c \
+	frontend/entangle-session-browser.h frontend/entangle-session-browser.c
 
-libcapa_frontend_la_LIBADD = libcapa_backend.la
+libentangle_frontend_la_LIBADD = libentangle_backend.la
 
-libcapa_frontend_la_LDFLAGS = \
+libentangle_frontend_la_LDFLAGS = \
 	$(GTHREAD_LIBS) \
 	$(GMODULE_LIBS) \
 	$(GTK_LIBS) \
@@ -152,7 +152,7 @@ libcapa_frontend_la_LDFLAGS = \
 	$(UNIQUE_LIBS) \
 	$(WARNING_CFLAGS)
 
-libcapa_frontend_la_CFLAGS = \
+libentangle_frontend_la_CFLAGS = \
 	-I$(srcdir)/backend \
 	$(GTHREAD_CFLAGS) \
 	$(GMODULE_CFLAGS) \
@@ -164,11 +164,11 @@ libcapa_frontend_la_CFLAGS = \
 
 
 
-capa_SOURCES = capa-main.c
+entangle_SOURCES = entangle-main.c
 
-capa_LDADD = libcapa_frontend.la
+entangle_LDADD = libentangle_frontend.la
 
-capa_LDFLAGS = \
+entangle_LDFLAGS = \
 	$(GTHREAD_LIBS) \
 	$(GMODULE_LIBS) \
 	$(GTK_LIBS) \
@@ -176,7 +176,7 @@ capa_LDFLAGS = \
 	$(STARTUP_LIBS) \
 	$(WARNING_CFLAGS)
 
-capa_CFLAGS = \
+entangle_CFLAGS = \
 	-I$(srcdir)/backend \
 	-I$(srcdir)/frontend \
 	$(GTHREAD_FLAGS) \
@@ -190,9 +190,9 @@ capa_CFLAGS = \
 %.desktop: $(srcdir)/%.desktop.in
 	$(AM_V_GEN)sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
-backend/capa-colour-profile-enums.c: backend/capa-colour-profile.h backend/capa-colour-profile-enums.h Makefile.am
+backend/entangle-colour-profile-enums.c: backend/entangle-colour-profile.h backend/entangle-colour-profile-enums.h Makefile.am
 	$(AM_V_GEN)glib-mkenums \
-			--fhead "#include \"capa-colour-profile-enums.h\"\n\n" \
+			--fhead "#include \"entangle-colour-profile-enums.h\"\n\n" \
                         --fprod "\n/* enumerations from \"@filename@\" */" \
                         --fprod "\n#include \"@filename@\"\n" \
                         --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
@@ -205,22 +205,22 @@ backend/capa-colour-profile-enums.c: backend/capa-colour-profile.h backend/capa-
                         --vtail "  return type;\n}\n\n" \
                 $< > $@
 
-backend/capa-colour-profile-enums.h: backend/capa-colour-profile.h Makefile.am
+backend/entangle-colour-profile-enums.h: backend/entangle-colour-profile.h Makefile.am
 	$(AM_V_GEN)glib-mkenums \
-			--fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
-                        --fhead "#define __CAPA_COLOUR_PROFILE_ENUMS_H__\n\n" \
+			--fhead "#ifndef __ENTANGLE_COLOUR_PROFILE_ENUMS_H__\n" \
+                        --fhead "#define __ENTANGLE_COLOUR_PROFILE_ENUMS_H__\n\n" \
                         --fhead "#include <glib-object.h>\n" \
                         --fhead "G_BEGIN_DECLS\n\n" \
                         --ftail "G_END_DECLS\n\n" \
-                        --ftail "#endif /* __CAPA_COLOUR_PROFILE_ENUMS_H__ */\n" \
+                        --ftail "#endif /* __ENTANGLE_COLOUR_PROFILE_ENUMS_H__ */\n" \
                         --fprod "\n/* --- @filename@ --- */" \
-                        --eprod "#define CAPA_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
+                        --eprod "#define ENTANGLE_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
                         --eprod "GType @enum_name@_get_type (void);\n" \
                 $< >  $@
 
-backend/capa-config-entry-enums.c: backend/capa-config-entry.h backend/capa-config-entry-enums.h Makefile.am
+backend/entangle-config-entry-enums.c: backend/entangle-config-entry.h backend/entangle-config-entry-enums.h Makefile.am
 	$(AM_V_GEN)glib-mkenums \
-			--fhead "#include \"capa-config-entry-enums.h\"\n\n" \
+			--fhead "#include \"entangle-config-entry-enums.h\"\n\n" \
                         --fprod "\n/* enumerations from \"@filename@\" */" \
                         --fprod "\n#include \"@filename@\"\n" \
                         --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
@@ -233,16 +233,16 @@ backend/capa-config-entry-enums.c: backend/capa-config-entry.h backend/capa-conf
                         --vtail "  return type;\n}\n\n" \
                 $< > $@
 
-backend/capa-config-entry-enums.h: backend/capa-config-entry.h Makefile.am
+backend/entangle-config-entry-enums.h: backend/entangle-config-entry.h Makefile.am
 	$(AM_V_GEN)glib-mkenums \
-			--fhead "#ifndef __CAPA_COLOUR_PROFILE_ENUMS_H__\n" \
-                        --fhead "#define __CAPA_COLOUR_PROFILE_ENUMS_H__\n\n" \
+			--fhead "#ifndef __ENTANGLE_COLOUR_PROFILE_ENUMS_H__\n" \
+                        --fhead "#define __ENTANGLE_COLOUR_PROFILE_ENUMS_H__\n\n" \
                         --fhead "#include <glib-object.h>\n" \
                         --fhead "G_BEGIN_DECLS\n\n" \
                         --ftail "G_END_DECLS\n\n" \
-                        --ftail "#endif /* __CAPA_COLOUR_PROFILE_ENUMS_H__ */\n" \
+                        --ftail "#endif /* __ENTANGLE_COLOUR_PROFILE_ENUMS_H__ */\n" \
                         --fprod "\n/* --- @filename@ --- */" \
-                        --eprod "#define CAPA_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
+                        --eprod "#define ENTANGLE_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
                         --eprod "GType @enum_name@_get_type (void);\n" \
                 $< >  $@
 
@@ -250,14 +250,14 @@ CLEANFILES = *~ $(desktop_DATA) $(BUILT_SOURCES)
 
 
 if WITH_GOBJECT_INTROSPECTION
-Capa-0.1.gir: capa GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
+Entangle-0.1.gir: entangle GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
 	$(G_IR_SCANNER) -v \
-                --namespace Capa \
+                --namespace Entangle \
                 --nsversion 0.1 \
 		--include GObject-2.0 \
 		--include Gtk-2.0 \
                 --include GPhoto-2.0 \
-                --program=$(builddir)/capa \
+                --program=$(builddir)/entangle \
                 --add-include-path=$(srcdir) \
                 --add-include-path=$(builddir) \
                 --output $@ \
@@ -273,15 +273,15 @@ Capa-0.1.gir: capa GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
                 --pkg=libglade-2.0 \
                 --pkg=hal \
                 --pkg=dbus-glib-1 \
-                $(libcapa_backend_la_SOURCES:%=$(srcdir)/%) \
-                $(libcapa_frontend_la_SOURCES:%=$(srcdir)/%) \
-                $(capa_SOURCES:%=$(srcdir)/%)
+                $(libentangle_backend_la_SOURCES:%=$(srcdir)/%) \
+                $(libentangle_frontend_la_SOURCES:%=$(srcdir)/%) \
+                $(entangle_SOURCES:%=$(srcdir)/%)
 
 girdir = $(datadir)/gir-1.0
-gir_DATA = GPhoto-2.0.gir Capa-0.1.gir
+gir_DATA = GPhoto-2.0.gir Entangle-0.1.gir
 
 typelibsdir = $(libdir)/girepository-1.0
-typelibs_DATA = GPhoto-2.0.typelib Capa-0.1.typelib
+typelibs_DATA = GPhoto-2.0.typelib Entangle-0.1.typelib
 
 %.typelib: %.gir
 	g-ir-compiler \
@@ -290,7 +290,7 @@ typelibs_DATA = GPhoto-2.0.typelib Capa-0.1.typelib
 		-o $@ $<
 
 EXTRA_DIST += GPhoto-2.0.gir
-CLEANFILES += Capa-0.1.gir $(typelibs_DATA)
+CLEANFILES += Entangle-0.1.gir $(typelibs_DATA)
 
 endif # WITH_GOBJECT_INTROSPECTION
 

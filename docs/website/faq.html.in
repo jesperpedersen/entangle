@@ -6,15 +6,23 @@
 <dl>
   <dt>Where does the name come from ?</dt>
   <dd>
-    <p>The original desire was to have a name which met the following criteria</p>
-    <ul>
-      <li>Recursive acronym</li>
-      <li>Easily typed short format</li>
-      <li>No clashes with existing open source projects</li>
-      <li>Derived from / related to the word 'capture'</li>
-    </ul>
     <p>
-      After a little brainstorming the result was <code>Capa: Capa Assists Photograph Acquisition</code>.
+      <a href="http://wikipedia.org/">Wikipedia</a>
+      says of
+      <a href="http://en.wikipedia.org/wiki/Quantum_entanglement">Quantum entanglement</a>
+    </p>
+    <blockquote>
+      <p>
+	Quantum entanglement is a property of a quantum mechanical state of a
+	system of two or more objects in which the quantum states of the constituting
+	objects are linked together so that one object can no longer be adequately
+	described without full mention of its counterpart
+      </p>
+    </blockquote>
+    <p>
+      Entangle is an application that links together a computer and camera to
+      form a photographic system in which each part can no longer be adequately
+      described without full mention of its counterpart.
     </p>
   </dd>
   <dt>Why was this application created?</dt>
@@ -37,7 +45,7 @@
       in a popup menu. The GVFS gphoto plugin already provides integration
       with nautilus and the wider ghome stack, so there is no compelling
       reason to duplicate file management capabilities in a standalone
-      application. Thus Capa focuses exclusively on providing an effective
+      application. Thus Entangle focuses exclusively on providing an effective
       interface for tethered shooting.
     </p>
   </dd>
@@ -143,7 +151,7 @@
       If you are a end user then you probably want to download a official
       released source archive on the <a href="download.html">download page</a>.
       If you are a developer wanting to contribute, then goto the
-      <a href="http://gitorious.org/capa/capa">master GIT repository</a>
+      <a href="http://gitorious.org/entangle/entangle">master GIT repository</a>
     </p>
   </dd>
   <dt>How do I build from source?</dt>
@@ -180,7 +188,7 @@ make install
   <dt>What's this I hear about javascript plugins?</dt>
   <dd>
     <p>
-      The Capa codebase is designed to be friendly to development of plugins,
+      The Entangle codebase is designed to be friendly to development of plugins,
       with a strict split between the application object model and the graphical
       user interface. In cases where a 3rd party library is used, that library's
       APIs are first mapped to GObject derived classes. The recently added

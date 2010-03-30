@@ -42,5 +42,5 @@ if [ -f /usr/bin/rpmbuild ]; then
   rpmbuild --nodeps \
      --define "extra_release $EXTRA_RELEASE" \
      --define "_sourcedir `pwd`" \
-     -ba --clean capa.spec
+     -ba --clean entangle.spec
 fi

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Entangle
+Comment=Tethered Camera Control
+Icon=::DATADIR::/::PACKAGE::/::PACKAGE::.svg
+Exec=::PACKAGE::
+Type=Application
+Terminal=false
+Encoding=UTF-8
+Categories=Graphics;GTK;
+StartupNotify=true

@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([capa], [0.0.1])
-AC_CONFIG_SRCDIR([src/capa-main.c])
+AC_INIT([entangle], [0.0.1])
+AC_CONFIG_SRCDIR([src/entangle-main.c])
 AM_CONFIG_HEADER([config.h])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([-Wno-portability])
@@ -169,7 +169,7 @@ fi
 AM_CONDITIONAL([WITH_JAVASCRIPT], [test "x$with_javascript" = "xyes"])
 
 
-CAPA_COMPILE_WARNINGS
+ENTANGLE_COMPILE_WARNINGS
 
 AC_PATH_PROG([TPAGE], [tpage])
 
@@ -180,7 +180,7 @@ fi
 
 AC_CONFIG_FILES(
   Makefile
-  capa.spec
+  entangle.spec
   src/Makefile
   docs/Makefile
   docs/reference/Makefile

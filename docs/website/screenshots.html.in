@@ -136,7 +136,7 @@ $(document).ready(function() {
   </p>
   <p>
     The gphoto library provides a short overview of all the
-    capabilities supported by the connected camrra. This dialog
+    capabilities supported by the connected camera. This dialog
     is displaying that information
   </p>
 </div>

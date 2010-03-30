@@ -56,7 +56,7 @@ dnl We've removed
 dnl   CFLAGS="$realsave_CFLAGS"
 dnl   to avoid clobbering user-specified CFLAGS
 dnl
-AC_DEFUN([CAPA_COMPILE_WARNINGS],[
+AC_DEFUN([ENTANGLE_COMPILE_WARNINGS],[
     dnl ******************************
     dnl More compiler warnings
     dnl ******************************

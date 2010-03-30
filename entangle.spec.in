@@ -1,0 +1,120 @@
+# -*- rpm-spec -*-
+
+%define with_introspection 0
+
+%if 0%{?fedora} >= 12
+%define with_introspection 1
+%endif
+%if 0%{?rhel} >= 6
+%define with_introspection 1
+%endif
+
+Summary: Tethered shooting & control of digital cameras
+Name: entangle
+Version: @VERSION@
+Release: 1%{?dist}%{?extra_release}
+License: GPLv3+
+Group: Applications/Multimedia
+Source: http://entangle-project.org/download/%{name}-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+URL: http://entangle-project.org/
+
+BuildRequires: glib2-devel >= 2.10.0
+BuildRequires: gtk2-devel >= 2.12.0
+BuildRequires: libgphoto2-devel >= 2.4.7
+BuildRequires: libglade2-devel >= 2.6.0
+BuildRequires: hal-devel >= 0.5.10
+BuildRequires: GConf2-devel >= 2.12.0
+BuildRequires: dbus-glib-devel >= 0.60
+BuildRequires: lcms-devel >= 1.18
+BuildRequires: /usr/bin/tpage
+%if %{with_introspection}
+BuildRequires: gobject-introspection-devel
+BuildRequires: gir-repository-devel
+BuildRequires: gjs-devel
+%endif
+BuildRequires: startup-notification-devel >= 0.5
+BuildRequires: unique-devel >= 1.0.0
+
+Requires(post): desktop-file-utils
+Requires(postun): desktop-file-utils
+
+%description
+Entangle is an application which uses GTK and libgphoto2 to provide a
+graphical interface for tethered photography with digital cameras.
+
+It includes control over camera shooting and configuration settings
+and 'hands off' shooting directly from the controlling computer.
+
+%prep
+%setup -q
+
+%build
+
+%if %{with_introspection}
+%define introspection_arg --enable-introspection --with-javascript
+%else
+%define introspection_arg --disable-introspection --without-javascript
+%endif
+
+%configure %{introspection_arg}
+make %{?_smp_mflags}
+
+%install
+rm -fr %{buildroot}
+
+%makeinstall
+
+rm -f %{buildroot}%{_libdir}/entangle/plugins/*.a
+rm -f %{buildroot}%{_libdir}/entangle/plugins/*.la
+
+cd %{buildroot}%{_datadir}/%{name}/website
+ln -s ../../gtk-doc/html/Entangle api
+
+%clean
+rm -fr %{buildroot}
+
+%post
+update-desktop-database %{_datadir}/applications
+
+%postun
+update-desktop-database %{_datadir}/applications
+
+%files
+%defattr(-, root, root)
+%doc README COPYING AUTHORS NEWS ChangeLog
+%{_bindir}/entangle
+%{_datadir}/%{name}/%{name}.glade
+%{_datadir}/%{name}/%{name}-16x16.png
+%{_datadir}/%{name}/%{name}-32x32.png
+%{_datadir}/%{name}/%{name}-48x48.png
+%{_datadir}/%{name}/%{name}-64x64.png
+%{_datadir}/%{name}/%{name}-128x128.png
+%{_datadir}/%{name}/%{name}-256x256.png
+%{_datadir}/%{name}/%{name}.svg
+%{_datadir}/%{name}/plugins.png
+%{_datadir}/%{name}/plugins-22.png
+%{_datadir}/%{name}/folders.png
+%{_datadir}/%{name}/folders-22.png
+%{_datadir}/%{name}/color-management.png
+%{_datadir}/%{name}/color-management-22.png
+%{_datadir}/%{name}/sRGB.icc
+%{_datadir}/gtk-doc/html/Entangle
+%{_datadir}/applications/%{name}.desktop
+%doc %{_datadir}/%{name}/website/
+%if %{with_introspection}
+%{_datadir}/gir-1.0/Entangle-0.1.gir
+%{_datadir}/gir-1.0/GPhoto-2.0.gir
+%{_libdir}/girepository-1.0/Entangle-0.1.typelib
+%{_libdir}/girepository-1.0/GPhoto-2.0.typelib
+%dir %{_libdir}/entangle
+%dir %{_libdir}/entangle/plugins
+%{_libdir}/entangle/plugins/javascript.so
+%dir %{_datadir}/%{name}/plugins
+%dir %{_datadir}/%{name}/plugins/javascript
+%{_datadir}/%{name}/plugins/javascript/plugin.cfg
+%endif
+
+%changelog
+* Wed Sep 30 2009 Daniel P. Berrange <berrange@redhat.com> - 0.0.1-1
+- Initial package

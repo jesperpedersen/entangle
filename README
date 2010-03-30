@@ -1,15 +1,19 @@
-       Capa Assists Photograph Acquisition
-       ===================================
+       Entangle: Tethered Camera Control & Capture
+       ===========================================
 
-Capa is an application which uses GTK and libgphoto2 to provide a
+Entangle is an application which uses GTK and libgphoto2 to provide a
 graphical interface for tethered photography with digital cameras.
 
 It includes control over camera shooting and configuration settings
 and 'hands off' shooting directly from the controlling computer.
 
-Capa is distributed under the terms of the GNU GPL v3+
+Entangle is distributed under the terms of the GNU GPL v3+
 
-For further information contact
+For further information visit
+
+   http://entangle-photo.org/
+
+Or contact the author
 
    Daniel P. Berrange  <dan-at-berrange-dot-com>
 

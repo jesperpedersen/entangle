@@ -45,5 +45,5 @@ cd $THEDIR
 
 $srcdir/configure --enable-compile-warnings=error "$@" && {
     echo
-    echo "Now type 'make' to compile capa."
+    echo "Now type 'make' to compile entangle."
 }

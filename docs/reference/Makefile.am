@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = 1.6
 # of using the various options.
 
 # The name of the module, e.g. 'glib'.
-DOC_MODULE=Capa
+DOC_MODULE=Entangle
 
 # Uncomment for versioned docs and specify the version of the module, e.g. '2'.
 #DOC_MODULE_VERSION=2
@@ -90,7 +90,7 @@ GTKDOC_CFLAGS=	\
 	$(GLADE2_CFLAGS) \
 	$(UNIQUE_CFLAGS)
 
-GTKDOC_LIBS=$(top_builddir)/src/libcapa_backend.la $(top_builddir)/src/libcapa_frontend.la\
+GTKDOC_LIBS=$(top_builddir)/src/libentangle_backend.la $(top_builddir)/src/libentangle_frontend.la\
 	$(top_builddir)/src/javascript.la
 
 
