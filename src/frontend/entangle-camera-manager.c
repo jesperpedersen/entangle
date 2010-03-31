@@ -36,7 +36,7 @@
 #include "entangle-image-display.h"
 #include "entangle-image-loader.h"
 #include "entangle-thumbnail-loader.h"
-#include "entangle-image-polaroid.h"
+#include "entangle-image-popup.h"
 #include "entangle-help-about.h"
 #include "entangle-session-browser.h"
 #include "entangle-control-panel.h"
@@ -74,7 +74,8 @@ struct _EntangleCameraManagerPrivate {
     EntangleControlPanel *controlPanel;
     EntanglePreferencesDisplay *prefsDisplay;
 
-    GHashTable *polaroids;
+    EntangleImagePopup *imagePresentation;
+    GHashTable *popups;
 
     GtkWidget *menuCapture;
     GtkWidget *menuItemCapture;
@@ -342,6 +343,8 @@ static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleC
     entangle_session_add(priv->session, image);
 
     entangle_image_display_set_filename(priv->imageDisplay, entangle_image_filename(image));
+    if (priv->imagePresentation)
+        g_object_set(priv->imagePresentation, "image", image, NULL);
     gdk_threads_leave();
 
     g_object_unref(image);
@@ -499,6 +502,12 @@ static void do_remove_camera(EntangleCameraManager *manager)
     g_object_unref(priv->session);
     priv->scheduler = NULL;
     priv->session = NULL;
+
+    if (priv->imagePresentation) {
+        entangle_image_popup_hide(priv->imagePresentation);
+        g_object_unref(priv->imagePresentation);
+        priv->imagePresentation = NULL;
+    }
 }
 
 static void do_add_camera(EntangleCameraManager *manager)
@@ -648,7 +657,10 @@ static void entangle_camera_manager_finalize (GObject *object)
     if (priv->prefsDisplay)
         g_object_unref(priv->prefsDisplay);
 
-    g_hash_table_destroy(priv->polaroids);
+    if (priv->imagePresentation)
+        g_object_unref(priv->imagePresentation);
+
+    g_hash_table_destroy(priv->popups);
 
     g_object_unref(priv->glade);
 
@@ -1208,6 +1220,36 @@ static void do_menu_fullscreen(GtkCheckMenuItem *src,
                                           gtk_check_menu_item_get_active(src));
 }
 
+static void do_presentation_end(EntangleImagePopup *popup G_GNUC_UNUSED,
+                                EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *menu = glade_xml_get_widget(priv->glade, "menu-presentation");
+
+    fprintf(stderr, "got close\n");
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu), FALSE);
+}
+
+static void do_menu_presentation(GtkCheckMenuItem *src,
+                                 EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (gtk_check_menu_item_get_active(src)) {
+        if (!priv->imagePresentation) {
+            priv->imagePresentation = entangle_image_popup_new();
+            fprintf(stderr, "do setup\n");
+            g_signal_connect(priv->imagePresentation, "popup-close", G_CALLBACK(do_presentation_end), manager);
+            g_object_set(priv->imagePresentation, "image-loader", priv->imageLoader, NULL);
+        }
+        entangle_image_popup_show_fullscreen(priv->imagePresentation);
+    } else if (priv->imagePresentation) {
+        entangle_image_popup_hide(priv->imagePresentation);
+        g_object_unref(priv->imagePresentation);
+        priv->imagePresentation = NULL;
+    }
+}
+
 
 static void do_menu_preferences_activate(GtkCheckMenuItem *src G_GNUC_UNUSED,
                                          EntangleCameraManager *manager)
@@ -1287,11 +1329,11 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
 }
 
 
-static void do_polaroid_remove(gpointer data)
+static void do_popup_remove(gpointer data)
 {
-    EntangleImagePolaroid *pol = data;
+    EntangleImagePopup *pol = data;
 
-    entangle_image_polaroid_hide(pol);
+    entangle_image_popup_hide(pol);
     g_object_unref(pol);
 }
 
@@ -1314,16 +1356,16 @@ static void do_drag_failed(GtkWidget *widget,
                                     &x, &y, NULL);
             GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
             const gchar *filename = entangle_image_filename(img);
-            EntangleImagePolaroid *pol;
-            if (!(pol = g_hash_table_lookup(priv->polaroids, filename))) {
-                pol = entangle_image_polaroid_new();
+            EntangleImagePopup *pol;
+            if (!(pol = g_hash_table_lookup(priv->popups, filename))) {
+                pol = entangle_image_popup_new();
                 g_object_set(pol, "image-loader", priv->imageLoader, NULL);
                 g_object_set(pol, "image", img, NULL);
                 g_object_unref(img);
-                g_hash_table_insert(priv->polaroids, g_strdup(filename), pol);
+                g_hash_table_insert(priv->popups, g_strdup(filename), pol);
             }
-            ENTANGLE_DEBUG("Polaroid %p for %s", pol, filename);
-            entangle_image_polaroid_show(pol, GTK_WINDOW(win), x, y);
+            ENTANGLE_DEBUG("Popup %p for %s", pol, filename);
+            entangle_image_popup_show(pol, GTK_WINDOW(win), x, y);
         }
     }
 }
@@ -1382,6 +1424,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     glade_xml_signal_connect_data(priv->glade, "menu_zoom_normal_activate", G_CALLBACK(do_menu_zoom_normal), manager);
 
     glade_xml_signal_connect_data(priv->glade, "menu_fullscreen_toggle", G_CALLBACK(do_menu_fullscreen), manager);
+    glade_xml_signal_connect_data(priv->glade, "menu_presentation_toggle", G_CALLBACK(do_menu_presentation), manager);
 
     glade_xml_signal_connect_data(priv->glade, "menu_connect_activate", G_CALLBACK(do_manager_connect), manager);
     glade_xml_signal_connect_data(priv->glade, "menu_disconnect_activate", G_CALLBACK(do_manager_disconnect), manager);
@@ -1443,10 +1486,10 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_widget_set_size_request(settingsBox, 300, 100);
     gtk_widget_set_size_request(iconScroll, 140, 140);
 
-    priv->polaroids = g_hash_table_new_full(g_str_hash,
+    priv->popups = g_hash_table_new_full(g_str_hash,
                                             g_str_equal,
                                             g_free,
-                                            do_polaroid_remove);
+                                            do_popup_remove);
 
     ENTANGLE_DEBUG("Adding %p to %p", priv->imageDisplay, viewport);
     gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
@@ -1476,8 +1519,8 @@ void entangle_camera_manager_hide(EntangleCameraManager *manager)
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
 
-    ENTANGLE_DEBUG("Removing all polaroids");
-    g_hash_table_remove_all(priv->polaroids);
+    ENTANGLE_DEBUG("Removing all popups");
+    g_hash_table_remove_all(priv->popups);
 
     gtk_widget_hide(win);
 }

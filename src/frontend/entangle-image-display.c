@@ -401,7 +401,10 @@ static void entangle_image_display_image_loaded(EntanglePixbufLoader *loader,
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(opaque);
     EntangleImageDisplayPrivate *priv = display->priv;
 
-    if (strcmp(filename, priv->filename) != 0)
+    ENTANGLE_DEBUG("Loaded filename %s %s", filename, priv->filename);
+
+    if (!priv->filename ||
+        strcmp(filename, priv->filename) != 0)
         return;
 
     GdkPixbuf *pixbuf = entangle_pixbuf_loader_get_pixbuf(loader, filename);
@@ -445,6 +448,8 @@ void entangle_image_display_set_filename(EntangleImageDisplay *display,
                                      const gchar *filename)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
+
+    ENTANGLE_DEBUG("Update filename %s %s", filename, priv->filename);
 
     if (priv->filename) {
         if (priv->imageLoader)

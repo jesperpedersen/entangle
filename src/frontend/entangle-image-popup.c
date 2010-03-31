@@ -27,22 +27,22 @@
 #include <gdk/gdkkeysyms.h>
 
 #include "entangle-debug.h"
-#include "entangle-image-polaroid.h"
+#include "entangle-image-popup.h"
 #include "entangle-image.h"
 #include "entangle-image-display.h"
 #include "entangle-image-loader.h"
 
-#define ENTANGLE_IMAGE_POLAROID_GET_PRIVATE(obj)                            \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_POLAROID, EntangleImagePolaroidPrivate))
+#define ENTANGLE_IMAGE_POPUP_GET_PRIVATE(obj)                            \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_POPUP, EntangleImagePopupPrivate))
 
-struct _EntangleImagePolaroidPrivate {
+struct _EntangleImagePopupPrivate {
     EntangleImageLoader *imageLoader;
     EntangleImage *image;
     EntangleImageDisplay *display;
     GladeXML *glade;
 };
 
-G_DEFINE_TYPE(EntangleImagePolaroid, entangle_image_polaroid, G_TYPE_OBJECT);
+G_DEFINE_TYPE(EntangleImagePopup, entangle_image_popup, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
@@ -50,13 +50,13 @@ enum {
     PROP_IMAGE_LOADER,
 };
 
-static void entangle_image_polaroid_get_property(GObject *object,
+static void entangle_image_popup_get_property(GObject *object,
                                              guint prop_id,
                                              GValue *value,
                                              GParamSpec *pspec)
 {
-    EntangleImagePolaroid *polaroid = ENTANGLE_IMAGE_POLAROID(object);
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
+    EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(object);
+    EntangleImagePopupPrivate *priv = popup->priv;
 
     switch (prop_id)
         {
@@ -73,15 +73,15 @@ static void entangle_image_polaroid_get_property(GObject *object,
         }
 }
 
-static void entangle_image_polaroid_set_property(GObject *object,
+static void entangle_image_popup_set_property(GObject *object,
                                              guint prop_id,
                                              const GValue *value,
                                              GParamSpec *pspec)
 {
-    EntangleImagePolaroid *polaroid = ENTANGLE_IMAGE_POLAROID(object);
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
+    EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(object);
+    EntangleImagePopupPrivate *priv = popup->priv;
 
-    ENTANGLE_DEBUG("Set prop on image polaroid %d", prop_id);
+    ENTANGLE_DEBUG("Set prop on image popup %d", prop_id);
 
     switch (prop_id)
         {
@@ -110,31 +110,31 @@ static void entangle_image_polaroid_set_property(GObject *object,
         }
 }
 
-static void entangle_image_polaroid_finalize (GObject *object)
+static void entangle_image_popup_finalize (GObject *object)
 {
-    EntangleImagePolaroid *polaroid = ENTANGLE_IMAGE_POLAROID(object);
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
+    EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(object);
+    EntangleImagePopupPrivate *priv = popup->priv;
 
-    ENTANGLE_DEBUG("Remove polaroid");
+    ENTANGLE_DEBUG("Remove popup");
 
     g_object_unref(priv->glade);
 
     if (priv->image)
         g_object_unref(priv->image);
 
-    G_OBJECT_CLASS (entangle_image_polaroid_parent_class)->finalize (object);
+    G_OBJECT_CLASS (entangle_image_popup_parent_class)->finalize (object);
 }
 
-static gboolean entangle_image_polaroid_button_press(GtkWidget *widget G_GNUC_UNUSED,
+static gboolean entangle_image_popup_button_press(GtkWidget *widget G_GNUC_UNUSED,
                                                  GdkEventButton *ev,
                                                  gpointer data)
 {
-    EntangleImagePolaroid *polaroid = ENTANGLE_IMAGE_POLAROID(data);
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
+    EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(data);
+    EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win;
     int w, h;
 
-    win = glade_xml_get_widget(priv->glade, "image-polaroid");
+    win = glade_xml_get_widget(priv->glade, "image-popup");
 
     gtk_window_get_size(GTK_WINDOW(win), &w, &h);
 
@@ -161,33 +161,35 @@ static gboolean entangle_image_polaroid_button_press(GtkWidget *widget G_GNUC_UN
     return TRUE;
 }
 
-static gboolean entangle_image_polaroid_key_release(GtkWidget *widget G_GNUC_UNUSED,
+static gboolean entangle_image_popup_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                                 GdkEventKey *ev,
                                                 gpointer data)
 {
-    EntangleImagePolaroid *polaroid = ENTANGLE_IMAGE_POLAROID(data);
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
+    EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(data);
+    EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win;
 
-    win = glade_xml_get_widget(priv->glade, "image-polaroid");
+    win = glade_xml_get_widget(priv->glade, "image-popup");
 
     if (ev->keyval == GDK_Escape ||
         ev->keyval == GDK_KP_Enter ||
         ev->keyval == GDK_Return) {
-        entangle_image_polaroid_hide(polaroid);
+        entangle_image_popup_hide(popup);
+        fprintf(stderr, "emit clsoe\n");
+        g_signal_emit_by_name(popup, "popup-close");
         return TRUE;
     }
 
     return FALSE;
 }
 
-static void entangle_image_polaroid_class_init(EntangleImagePolaroidClass *klass)
+static void entangle_image_popup_class_init(EntangleImagePopupClass *klass)
 {
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-    object_class->finalize = entangle_image_polaroid_finalize;
-    object_class->get_property = entangle_image_polaroid_get_property;
-    object_class->set_property = entangle_image_polaroid_set_property;
+    object_class->finalize = entangle_image_popup_finalize;
+    object_class->get_property = entangle_image_popup_get_property;
+    object_class->set_property = entangle_image_popup_set_property;
 
     g_object_class_install_property(object_class,
                                     PROP_IMAGE,
@@ -211,59 +213,69 @@ static void entangle_image_polaroid_class_init(EntangleImagePolaroidClass *klass
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
-    g_type_class_add_private(klass, sizeof(EntangleImagePolaroidPrivate));
+    g_signal_new("popup-close",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(EntangleImagePopupClass, popup_close),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE,
+                 0);
+
+
+    g_type_class_add_private(klass, sizeof(EntangleImagePopupPrivate));
 }
 
-EntangleImagePolaroid *entangle_image_polaroid_new(void)
+EntangleImagePopup *entangle_image_popup_new(void)
 {
-    return ENTANGLE_IMAGE_POLAROID(g_object_new(ENTANGLE_TYPE_IMAGE_POLAROID, NULL));
+    return ENTANGLE_IMAGE_POPUP(g_object_new(ENTANGLE_TYPE_IMAGE_POPUP, NULL));
 }
 
-static gboolean do_polaroid_delete(GtkWidget *src G_GNUC_UNUSED,
+static gboolean do_popup_delete(GtkWidget *src G_GNUC_UNUSED,
                                    GdkEvent *ev G_GNUC_UNUSED,
-                                   EntangleImagePolaroid *polaroid)
+                                   EntangleImagePopup *popup)
 {
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
-    ENTANGLE_DEBUG("polaroid delete");
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-polaroid");
+    EntangleImagePopupPrivate *priv = popup->priv;
+    ENTANGLE_DEBUG("popup delete");
+    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
 
     gtk_widget_hide(win);
     return TRUE;
 }
 
-static void entangle_image_polaroid_init(EntangleImagePolaroid *polaroid)
+static void entangle_image_popup_init(EntangleImagePopup *popup)
 {
-    EntangleImagePolaroidPrivate *priv;
+    EntangleImagePopupPrivate *priv;
     GtkWidget *win;
 
-    priv = polaroid->priv = ENTANGLE_IMAGE_POLAROID_GET_PRIVATE(polaroid);
+    priv = popup->priv = ENTANGLE_IMAGE_POPUP_GET_PRIVATE(popup);
 
     if (access("./entangle.glade", R_OK) == 0)
-        priv->glade = glade_xml_new("entangle.glade", "image-polaroid", "entangle");
+        priv->glade = glade_xml_new("entangle.glade", "image-popup", "entangle");
     else
-        priv->glade = glade_xml_new(PKGDATADIR "/entangle.glade", "image-polaroid", "entangle");
+        priv->glade = glade_xml_new(PKGDATADIR "/entangle.glade", "image-popup", "entangle");
 
-    win = glade_xml_get_widget(priv->glade, "image-polaroid");
+    win = glade_xml_get_widget(priv->glade, "image-popup");
 
     g_signal_connect(win, "button-press-event",
-                     G_CALLBACK(entangle_image_polaroid_button_press), polaroid);
+                     G_CALLBACK(entangle_image_popup_button_press), popup);
     g_signal_connect(win, "key-release-event",
-                     G_CALLBACK(entangle_image_polaroid_key_release), polaroid);
+                     G_CALLBACK(entangle_image_popup_key_release), popup);
 
     priv->display = entangle_image_display_new();
     gtk_container_add(GTK_CONTAINER(win), GTK_WIDGET(priv->display));
 
-    g_signal_connect(win, "delete-event", G_CALLBACK(do_polaroid_delete), polaroid);
+    g_signal_connect(win, "delete-event", G_CALLBACK(do_popup_delete), popup);
 }
 
-void entangle_image_polaroid_show(EntangleImagePolaroid *polaroid,
+void entangle_image_popup_show(EntangleImagePopup *popup,
                               GtkWindow *parent,
                               int x, int y)
 {
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-polaroid");
+    EntangleImagePopupPrivate *priv = popup->priv;
+    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
 
-    win = glade_xml_get_widget(priv->glade, "image-polaroid");
+    win = glade_xml_get_widget(priv->glade, "image-popup");
 
     gtk_widget_realize(win);
 
@@ -275,10 +287,49 @@ void entangle_image_polaroid_show(EntangleImagePolaroid *polaroid,
     gtk_window_present(GTK_WINDOW(win));
 }
 
-void entangle_image_polaroid_hide(EntangleImagePolaroid *polaroid)
+static GdkCursor *create_null_cursor(void)
 {
-    EntangleImagePolaroidPrivate *priv = polaroid->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-polaroid");
+    GdkBitmap *image;
+    gchar data[4] = {0};
+    GdkColor fg = { 0, 0, 0, 0 };
+    GdkCursor *cursor;
+
+    image = gdk_bitmap_create_from_data(NULL, data, 1, 1);
+
+    cursor = gdk_cursor_new_from_pixmap(GDK_PIXMAP(image),
+                                        GDK_PIXMAP(image),
+                                        &fg, &fg, 0, 0);
+    g_object_unref(image);
+
+    return cursor;
+}
+
+
+void entangle_image_popup_show_fullscreen(EntangleImagePopup *popup)
+{
+    EntangleImagePopupPrivate *priv = popup->priv;
+    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
+    GdkCursor *null_cursor = create_null_cursor();
+
+    win = glade_xml_get_widget(priv->glade, "image-popup");
+
+    gtk_widget_realize(win);
+
+    gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(win)),
+                          null_cursor);
+    //g_object_unref(null_cursor);
+
+    gtk_window_fullscreen(GTK_WINDOW(win));
+    gtk_widget_show(win);
+    gtk_widget_show(GTK_WIDGET(priv->display));
+    gtk_window_present(GTK_WINDOW(win));
+}
+
+
+void entangle_image_popup_hide(EntangleImagePopup *popup)
+{
+    EntangleImagePopupPrivate *priv = popup->priv;
+    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
 
     gtk_widget_hide(win);
 }

@@ -140,7 +140,7 @@ libentangle_frontend_la_SOURCES = \
 	frontend/entangle-control-panel.h frontend/entangle-control-panel.c \
 	frontend/entangle-help-about.h frontend/entangle-help-about.c \
 	frontend/entangle-image-display.h frontend/entangle-image-display.c \
-	frontend/entangle-image-polaroid.h frontend/entangle-image-polaroid.c \
+	frontend/entangle-image-popup.h frontend/entangle-image-popup.c \
 	frontend/entangle-preferences-display.h frontend/entangle-preferences-display.c \
 	frontend/entangle-session-browser.h frontend/entangle-session-browser.c
 
