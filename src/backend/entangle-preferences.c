@@ -59,52 +59,15 @@ enum {
 };
 
 
-static char *entangle_find_base_dir(void)
-{
-    const char *xdgUserDir = "/usr/bin/xdg-user-dir";
-    const char *xdgUserDirArgs[] = {
-        xdgUserDir, "PICTURES", NULL,
-    };
-    char *dir;
-    char *tmp;
-    gint status;
-    GError *err = NULL;
-    int len;
-
-    g_spawn_sync(NULL, (char**)xdgUserDirArgs, NULL,
-                 G_SPAWN_STDERR_TO_DEV_NULL,
-                 NULL, NULL, &dir, NULL, &status, &err);
-
-    if (dir) {
-        tmp = strchr(dir, '\n');
-        if (tmp) *tmp = '\0';
-        return dir;
-    }
-
-    len = 1024;
-    do {
-        dir = g_renew(char, dir, len);
-        if (dir == NULL) {
-            if (errno != ERANGE)
-                len += 1024;
-            else
-                return NULL;
-        }
-    } while (!dir);
-
-    return dir;
-}
-
 static char *entangle_find_picture_dir(void)
 {
-    char *baseDir = entangle_find_base_dir();
-    char *ret;
+    const gchar *baseDir = g_get_user_special_dir(G_USER_DIRECTORY_PICTURES);
+    gchar *ret;
     if (baseDir) {
         ret = g_strdup_printf("%s/%s", baseDir, "Capture");
     } else {
         ret = g_strdup_printf("Capture");
     }
-    g_free(baseDir);
     ENTANGLE_DEBUG("******** PICTURE '%s'", ret);
     return ret;
 }
