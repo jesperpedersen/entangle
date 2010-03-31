@@ -22,8 +22,15 @@
 
 #include <string.h>
 #include <stdio.h>
+
+#if WITH_GUDEV
+#define G_UDEV_API_IS_SUBJECT_TO_CHANGE
+#include <gudev/gudev.h>
+#endif
+#if WITH_HAL
 #include <libhal.h>
 #include <dbus/dbus-glib-lowlevel.h>
+#endif
 
 #include "entangle-debug.h"
 #include "entangle-device-manager.h"
@@ -32,8 +39,13 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_DEVICE_MANAGER, EntangleDeviceManagerPrivate))
 
 struct _EntangleDeviceManagerPrivate {
+#if WITH_GUDEV
+    GUdevClient *ctx;
+#endif
+#if WITH_HAL
     LibHalContext *ctx;
     GHashTable *ports; /* UDI -> portname */
+#endif
 };
 
 G_DEFINE_TYPE(EntangleDeviceManager, entangle_device_manager, G_TYPE_OBJECT);
@@ -45,12 +57,17 @@ static void entangle_device_manager_finalize (GObject *object)
     EntangleDeviceManagerPrivate *priv = manager->priv;
     ENTANGLE_DEBUG("Finalize manager");
 
+#if WITH_GUDEV
+    if (priv->ctx)
+        g_object_unref(priv->ctx);
+#endif
+#if WITH_HAL
     if (priv->ctx) {
         libhal_ctx_shutdown(priv->ctx, NULL);
         libhal_ctx_free(priv->ctx);
     }
-
     g_hash_table_unref(priv->ports);
+#endif
 
     G_OBJECT_CLASS (entangle_device_manager_parent_class)->finalize (object);
 }
@@ -86,7 +103,45 @@ static void entangle_device_manager_class_init(EntangleDeviceManagerClass *klass
     g_type_class_add_private(klass, sizeof(EntangleDeviceManagerPrivate));
 }
 
+#if WITH_GUDEV
+static void do_udev_event(GUdevClient *client G_GNUC_UNUSED,
+                          const char *action,
+                          GUdevDevice *dev,
+                          gpointer opaque)
+{
+    EntangleDeviceManager *manager = opaque;
+    const gchar *sysfs;
+    const gchar *usbbus, *usbdev;
+    const gchar *devtype;
+    gchar *port;
 
+    if (strcmp(action, "add") != 0 &&
+        strcmp(action, "remove") != 0)
+        return;
+
+    devtype = g_udev_device_get_devtype(dev);
+    if (strcmp(devtype, "usb_device") != 0)
+        return;
+
+    sysfs = g_udev_device_get_sysfs_path(dev);
+
+    usbbus = g_udev_device_get_property(dev, "BUSNUM");
+    usbdev = g_udev_device_get_property(dev, "DEVNUM");
+    port = g_strdup_printf("usb:%s,%s", usbbus, usbdev);
+
+    ENTANGLE_DEBUG("%s device '%s' '%s'", action, sysfs, port);
+
+    if (strcmp(action, "add") == 0) {
+        g_signal_emit_by_name(manager, "device-added", port);
+    } else {
+        g_signal_emit_by_name(manager, "device-removed", port);
+    }
+    g_free(port);
+}
+
+#endif
+
+#if WITH_HAL
 static void do_device_added(LibHalContext *ctx, const char *udi)
 {
     EntangleDeviceManager *manager = libhal_ctx_get_user_data(ctx);
@@ -141,6 +196,7 @@ static void do_device_removed(LibHalContext *ctx, const char *udi)
         g_hash_table_remove(priv->ports, udi);
     }
 }
+#endif
 
 EntangleDeviceManager *entangle_device_manager_new(void)
 {
@@ -148,20 +204,51 @@ EntangleDeviceManager *entangle_device_manager_new(void)
 }
 
 
-static void entangle_device_manager_init(EntangleDeviceManager *manager)
+#if WITH_GUDEV
+static void entangle_device_manager_init_devices(EntangleDeviceManager *manager)
 {
-    EntangleDeviceManagerPrivate *priv;
+    EntangleDeviceManagerPrivate *priv = manager->priv;
+    GList *devs, *tmp;
+    const gchar *const subsys[] = {
+        "usb/usb_device", NULL,
+    };
+
+    ENTANGLE_DEBUG("Init udev");
+
+    priv->ctx = g_udev_client_new(subsys);
+
+    g_signal_connect(priv->ctx, "uevent", G_CALLBACK(do_udev_event), manager);
+
+    devs = g_udev_client_query_by_subsystem(priv->ctx, "usb");
+
+    tmp = devs;
+    while (tmp) {
+        GUdevDevice *dev = tmp->data;
+
+        do_udev_event(priv->ctx, "add", dev, manager);
+
+        g_object_unref(dev);
+        tmp = tmp->next;
+    }
+
+    g_list_free(devs);
+}
+#endif
+
+
+#if WITH_HAL
+static void entangle_device_manager_init_devices(EntangleDeviceManager *manager)
+{
+    EntangleDeviceManagerPrivate *priv = manager->priv;
     DBusConnection *conn;
     int num_devs;
     char **udis;
 
-    priv = manager->priv = ENTANGLE_DEVICE_MANAGER_GET_PRIVATE(manager);
-
-    priv->ctx = libhal_ctx_new();
     priv->ports = g_hash_table_new_full(g_str_hash,
                                         g_str_equal,
                                         g_free,
                                         g_free);
+    priv->ctx = libhal_ctx_new();
 
     if (!priv->ctx)
         return;
@@ -192,6 +279,16 @@ static void entangle_device_manager_init(EntangleDeviceManager *manager)
         }
         g_free(udis);
     }
+}
+#endif
+
+static void entangle_device_manager_init(EntangleDeviceManager *manager)
+{
+    EntangleDeviceManagerPrivate *priv;
+
+    priv = manager->priv = ENTANGLE_DEVICE_MANAGER_GET_PRIVATE(manager);
+
+    entangle_device_manager_init_devices(manager);
 }
 
 

@@ -78,6 +78,7 @@ libentangle_backend_la_LDFLAGS = \
 	$(GCONF2_LIBS) \
 	$(LCMS_LIBS) \
 	$(HAL_LIBS) \
+	$(GUDEV_LIBS) \
 	$(DBUS_GLIB_LIBS) \
 	$(WARNING_CFLAGS)
 
@@ -91,6 +92,7 @@ libentangle_backend_la_CFLAGS = \
 	$(GCONF2_CFLAGS) \
 	$(LCMS_CFLAGS) \
 	$(HAL_CFLAGS) \
+	$(GUDEV_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
 	$(WARNING_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
