@@ -561,6 +561,13 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam)
     return TRUE;
 }
 
+gboolean entangle_camera_get_connected(EntangleCamera *cam)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+
+    return priv->cam != NULL ? TRUE : FALSE;
+}
+
 const char *entangle_camera_get_summary(EntangleCamera *cam)
 {
     EntangleCameraPrivate *priv = cam->priv;
@@ -589,6 +596,11 @@ EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam)
     CameraFilePath camerapath;
     EntangleCameraFile *file;
 
+    if (!priv->cam) {
+        ENTANGLE_DEBUG("Cannot capture image while not connected");
+        return FALSE;
+    }
+
     ENTANGLE_DEBUG("Starting capture");
     if (gp_camera_capture(priv->cam,
                           GP_CAPTURE_IMAGE,
@@ -615,6 +627,11 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam)
     const char *rawdata;
     unsigned long int rawdatalen;
     const char *name;
+
+    if (!priv->cam) {
+        ENTANGLE_DEBUG("Cannot preview image while not connected");
+        return FALSE;
+    }
 
     gp_file_new(&datafile);
 
@@ -665,6 +682,11 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
     unsigned long int datalen;
     GByteArray *filedata;
 
+    if (!priv->cam) {
+        ENTANGLE_DEBUG("Cannot download file while not connected");
+        return FALSE;
+    }
+
     ENTANGLE_DEBUG("Downloading '%s' from '%s'",
                entangle_camera_file_get_name(file),
                entangle_camera_file_get_folder(file));
@@ -709,6 +731,11 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
 {
     EntangleCameraPrivate *priv = cam->priv;
 
+    if (!priv->cam) {
+        ENTANGLE_DEBUG("Cannot delete file while not connected");
+        return FALSE;
+    }
+
     ENTANGLE_DEBUG("Deleting '%s' from '%s'",
                entangle_camera_file_get_name(file),
                entangle_camera_file_get_folder(file));
@@ -730,6 +757,11 @@ gboolean entangle_camera_event_flush(EntangleCamera *cam)
     EntangleCameraPrivate *priv = cam->priv;
     CameraEventType eventType;
     void *eventData;
+
+    if (!priv->cam) {
+        ENTANGLE_DEBUG("Cannot flush events while not connected");
+        return FALSE;
+    }
 
     ENTANGLE_DEBUG("Flushing events");
 
@@ -753,6 +785,11 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
     void *eventData;
     gboolean ret = TRUE;
 
+    if (!priv->cam) {
+        ENTANGLE_DEBUG("Cannot wait for events while not connected");
+        return FALSE;
+    }
+
     ENTANGLE_DEBUG("Waiting for events");
 
     do {
@@ -767,6 +804,7 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
             break;
 
         case GP_EVENT_TIMEOUT:
+            ENTANGLE_DEBUG("Wait timed out");
             break;
 
         case GP_EVENT_FILE_ADDED: {

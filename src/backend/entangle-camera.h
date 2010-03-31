@@ -71,8 +71,9 @@ EntangleCamera *entangle_camera_new(const char *model,
 const char *entangle_camera_get_model(EntangleCamera *cam);
 const char *entangle_camera_get_port(EntangleCamera *cam);
 
-gboolean entangle_camera_connect(EntangleCamera *cap);
-gboolean entangle_camera_disconnect(EntangleCamera *cap);
+gboolean entangle_camera_connect(EntangleCamera *cam);
+gboolean entangle_camera_disconnect(EntangleCamera *cam);
+gboolean entangle_camera_get_connected(EntangleCamera *cam);
 
 const char *entangle_camera_get_summary(EntangleCamera *cam);
 const char *entangle_camera_get_manual(EntangleCamera *cam);

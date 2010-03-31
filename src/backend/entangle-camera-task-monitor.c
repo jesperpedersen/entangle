@@ -70,7 +70,8 @@ static gboolean entangle_camera_task_monitor_execute(EntangleCameraTask *task,
 
     while (!entangle_progress_cancelled(progress)) {
         ENTANGLE_DEBUG("Wait for event");
-        entangle_camera_event_wait(camera, 500);
+        if (!entangle_camera_event_wait(camera, 500))
+            break;
     }
 
     g_signal_handler_disconnect(camera, sig);
