@@ -390,7 +390,10 @@ static void do_camera_task_end(EntangleCamera *cam G_GNUC_UNUSED, EntangleCamera
 
     priv->inOperation = FALSE;
     priv->operationCancel = FALSE;
+
+    gdk_threads_enter();
     do_capture_widget_sensitivity(manager);
+    gdk_threads_leave();
 }
 
 static void do_entangle_camera_progress_start(EntangleProgress *iface, float target, const char *format, va_list args)
@@ -453,7 +456,7 @@ static gboolean do_entangle_camera_progress_cancelled(EntangleProgress *iface)
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(iface);
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    ENTANGLE_DEBUG("Cancel called");
+    ENTANGLE_DEBUG("Cancel queried %d", (int)priv->operationCancel);
 
     return priv->operationCancel;
 }
@@ -1495,6 +1498,7 @@ void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
 
     if (priv->camera) {
         do_remove_camera(manager);
+        entangle_camera_disconnect(priv->camera);
         g_object_unref(priv->camera);
         priv->inOperation = FALSE;
     }
