@@ -75,6 +75,7 @@ struct _EntangleCameraManagerPrivate {
     EntanglePreferencesDisplay *prefsDisplay;
 
     EntangleImagePopup *imagePresentation;
+    gint presentationMonitor;
     GHashTable *popups;
 
     GtkWidget *menuCapture;
@@ -199,6 +200,57 @@ static void entangle_camera_manager_update_colour_transform(EntangleCameraManage
     if (priv->thumbLoader)
         entangle_pixbuf_loader_set_colour_transform(ENTANGLE_PIXBUF_LOADER(priv->thumbLoader),
                                                 priv->colourTransform);
+}
+
+
+static void do_presentation_monitor_toggled(GtkCheckMenuItem *menu, gpointer opaque)
+{
+    EntangleCameraManager *manager = opaque;
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    gpointer data = g_object_get_data(G_OBJECT(menu), "monitor");
+
+    priv->presentationMonitor = GPOINTER_TO_INT(data);
+
+    ENTANGLE_DEBUG("Set monitor %d", priv->presentationMonitor);
+
+    if (priv->imagePresentation)
+        entangle_image_popup_move_to_monitor(priv->imagePresentation,
+                                             priv->presentationMonitor);
+}
+
+
+static GtkWidget *entangle_camera_manager_monitor_menu(EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
+    GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(win));
+    GtkWidget *menu = gtk_menu_new();
+    GSList *group = NULL;
+#ifdef gdk_screen_get_primary_monitor
+    int active = gdk_screen_get_primary_monitor(screen);
+#else
+    int active = 0;
+#endif
+
+    for (int i = 0 ; i < gdk_screen_get_n_monitors(screen) ; i++) {
+        const gchar *name = gdk_screen_get_monitor_plug_name(screen, i);
+        GtkWidget *submenu = gtk_radio_menu_item_new_with_label(group, name);
+        g_object_set_data(G_OBJECT(submenu), "monitor", GINT_TO_POINTER(i));
+        group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(submenu));
+
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), submenu);
+
+        if (i == active)
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(submenu), TRUE);
+
+        g_signal_connect(submenu, "toggled",
+                         G_CALLBACK(do_presentation_monitor_toggled), manager);
+    }
+
+    priv->presentationMonitor = active;
+    gtk_widget_show_all(menu);
+
+    return menu;
 }
 
 
@@ -1190,11 +1242,15 @@ static void do_toolbar_fullscreen(GtkToggleToolButton *src,
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
     GtkWidget *menu = glade_xml_get_widget(priv->glade, "menu-fullscreen");
+    GtkWidget *menubar = glade_xml_get_widget(priv->glade, "menubar");
 
-    if (gtk_toggle_tool_button_get_active(src))
+    if (gtk_toggle_tool_button_get_active(src)) {
+        gtk_widget_hide(menubar);
         gtk_window_fullscreen(GTK_WINDOW(win));
-    else
+    } else {
         gtk_window_unfullscreen(GTK_WINDOW(win));
+        gtk_widget_show(menubar);
+    }
 
     if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu)) !=
         gtk_toggle_tool_button_get_active(src))
@@ -1208,11 +1264,15 @@ static void do_menu_fullscreen(GtkCheckMenuItem *src,
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
     GtkWidget *tool = glade_xml_get_widget(priv->glade, "toolbar-fullscreen");
+    GtkWidget *menubar = glade_xml_get_widget(priv->glade, "menubar");
 
-    if (gtk_check_menu_item_get_active(src))
+    if (gtk_check_menu_item_get_active(src)) {
+        gtk_widget_hide(menubar);
         gtk_window_fullscreen(GTK_WINDOW(win));
-    else
+    } else {
         gtk_window_unfullscreen(GTK_WINDOW(win));
+        gtk_widget_show(menubar);
+    }
 
     if (gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(tool)) !=
         gtk_check_menu_item_get_active(src))
@@ -1226,7 +1286,6 @@ static void do_presentation_end(EntangleImagePopup *popup G_GNUC_UNUSED,
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *menu = glade_xml_get_widget(priv->glade, "menu-presentation");
 
-    fprintf(stderr, "got close\n");
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu), FALSE);
 }
 
@@ -1238,11 +1297,11 @@ static void do_menu_presentation(GtkCheckMenuItem *src,
     if (gtk_check_menu_item_get_active(src)) {
         if (!priv->imagePresentation) {
             priv->imagePresentation = entangle_image_popup_new();
-            fprintf(stderr, "do setup\n");
             g_signal_connect(priv->imagePresentation, "popup-close", G_CALLBACK(do_presentation_end), manager);
             g_object_set(priv->imagePresentation, "image-loader", priv->imageLoader, NULL);
         }
-        entangle_image_popup_show_fullscreen(priv->imagePresentation);
+        entangle_image_popup_show_on_monitor(priv->imagePresentation,
+                                             priv->presentationMonitor);
     } else if (priv->imagePresentation) {
         entangle_image_popup_hide(priv->imagePresentation);
         g_object_unref(priv->imagePresentation);
@@ -1380,6 +1439,8 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     GtkWidget *settingsBox;
     GtkWidget *settingsViewport;
     GtkWidget *win;
+    GtkWidget *menu;
+    GtkWidget *monitorMenu;
     XID xid;
     GdkDragProtocol protocol;
     GtkTargetEntry targets[] = {
@@ -1438,6 +1499,10 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
 
     win = glade_xml_get_widget(priv->glade, "camera-manager");
     g_signal_connect(win, "delete-event", G_CALLBACK(do_manager_delete), manager);
+
+    menu = glade_xml_get_widget(priv->glade, "menu-monitor");
+    monitorMenu = entangle_camera_manager_monitor_menu(manager);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu), monitorMenu);
 
     viewport = glade_xml_get_widget(priv->glade, "image-viewport");
 

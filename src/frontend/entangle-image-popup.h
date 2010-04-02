@@ -59,7 +59,8 @@ EntangleImagePopup* entangle_image_popup_new(void);
 void entangle_image_popup_show(EntangleImagePopup *popup,
                                GtkWindow *parent,
                                int x, int y);
-void entangle_image_popup_show_fullscreen(EntangleImagePopup *popup);
+void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monitor);
+void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monitor);
 void entangle_image_popup_hide(EntangleImagePopup *popup);
 
 G_END_DECLS

@@ -175,7 +175,6 @@ static gboolean entangle_image_popup_key_release(GtkWidget *widget G_GNUC_UNUSED
         ev->keyval == GDK_KP_Enter ||
         ev->keyval == GDK_Return) {
         entangle_image_popup_hide(popup);
-        fprintf(stderr, "emit clsoe\n");
         g_signal_emit_by_name(popup, "popup-close");
         return TRUE;
     }
@@ -305,7 +304,23 @@ static GdkCursor *create_null_cursor(void)
 }
 
 
-void entangle_image_popup_show_fullscreen(EntangleImagePopup *popup)
+void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monitor)
+{
+    EntangleImagePopupPrivate *priv = popup->priv;
+    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
+    GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(win));
+    GdkRectangle r;
+
+    gdk_screen_get_monitor_geometry(screen, monitor, &r);
+
+    ENTANGLE_DEBUG("At %d,%d Size %d,%d", r.x, r.y, r.width, r.height);
+
+    gtk_window_move(GTK_WINDOW(win), r.x, r.y);
+    gtk_window_resize(GTK_WINDOW(win), r.width, r.height);
+    gtk_window_fullscreen(GTK_WINDOW(win));
+}
+
+void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monitor)
 {
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
@@ -317,9 +332,11 @@ void entangle_image_popup_show_fullscreen(EntangleImagePopup *popup)
 
     gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(win)),
                           null_cursor);
+    gdk_cursor_unref(null_cursor);
     //g_object_unref(null_cursor);
 
-    gtk_window_fullscreen(GTK_WINDOW(win));
+    entangle_image_popup_move_to_monitor(popup, monitor);
+
     gtk_widget_show(win);
     gtk_widget_show(GTK_WIDGET(priv->display));
     gtk_window_present(GTK_WINDOW(win));

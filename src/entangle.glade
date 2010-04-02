@@ -11,7 +11,7 @@
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
-          <widget class="GtkMenuBar" id="menubar1">
+          <widget class="GtkMenuBar" id="menubar">
             <property name="visible">True</property>
             <child>
               <widget class="GtkMenuItem" id="menuitem1">
@@ -203,6 +203,18 @@
                         <property name="label" translatable="yes">Presentation</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="menu_presentation_toggle"/>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkSeparatorMenuItem" id="menuitem5">
+                        <property name="visible">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkMenuItem" id="menu-monitor">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Present on</property>
+                        <property name="use_underline">True</property>
                       </widget>
                     </child>
                   </widget>
