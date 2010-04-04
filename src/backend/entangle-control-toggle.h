@@ -54,9 +54,10 @@ struct _EntangleControlToggleClass
 
 GType entangle_control_toggle_get_type(void) G_GNUC_CONST;
 EntangleControlToggle* entangle_control_toggle_new(const char *path,
-                                           int id,
-                                           const char *label,
-                                           const char *info);
+                                                   int id,
+                                                   const char *label,
+                                                   const char *info,
+                                                   gboolean readonly);
 
 G_END_DECLS
 

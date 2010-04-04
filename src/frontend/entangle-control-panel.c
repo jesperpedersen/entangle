@@ -135,6 +135,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             GtkWidget *value;
 
             value = gtk_button_new_with_label(entangle_control_label(control));
+            if (entangle_control_get_readonly(control))
+                gtk_widget_set_sensitive(value, FALSE);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (ENTANGLE_IS_CONTROL_CHOICE(control)) {
             GtkWidget *label;
@@ -170,6 +172,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                                           entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n));
             }
 
+            if (entangle_control_get_readonly(control))
+                gtk_widget_set_sensitive(value, FALSE);
             gtk_combo_box_set_active(GTK_COMBO_BOX(value), active);
             g_signal_connect(value, "changed",
                              G_CALLBACK(do_update_control_combo), control);
@@ -187,6 +191,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
 
             value = gtk_entry_new();
             g_object_get(control, "value", &date, NULL);
+            if (entangle_control_get_readonly(control))
+                gtk_widget_set_sensitive(value, FALSE);
             //gtk_entry_set_text(GTK_ENTRY(value), text);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (ENTANGLE_IS_CONTROL_RANGE(control)) {
@@ -205,6 +211,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                                               entangle_control_range_get_step(ENTANGLE_CONTROL_RANGE(control)));
             g_object_get(control, "value", &offset, NULL);
             gtk_range_set_value(GTK_RANGE(value), offset);
+            if (entangle_control_get_readonly(control))
+                gtk_widget_set_sensitive(value, FALSE);
             g_signal_connect(value, "change-value",
                              G_CALLBACK(do_update_control_range), control);
             gtk_container_add(GTK_CONTAINER(box), value);
@@ -222,6 +230,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             value = gtk_entry_new();
             g_object_get(control, "value", &text, NULL);
             gtk_entry_set_text(GTK_ENTRY(value), text);
+            if (entangle_control_get_readonly(control))
+                gtk_widget_set_sensitive(value, FALSE);
             g_signal_connect(value, "focus-out-event",
                              G_CALLBACK(do_update_control_entry), control);
             gtk_container_add(GTK_CONTAINER(box), value);
@@ -232,6 +242,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             value = gtk_check_button_new_with_label(entangle_control_label(control));
             g_object_get(control, "value", &active, NULL);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
+            if (entangle_control_get_readonly(control))
+                gtk_widget_set_sensitive(value, FALSE);
             g_signal_connect(value, "toggled",
                              G_CALLBACK(do_update_control_toggle), control);
             gtk_container_add(GTK_CONTAINER(box), value);

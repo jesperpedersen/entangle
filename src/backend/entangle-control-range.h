@@ -54,12 +54,13 @@ struct _EntangleControlRangeClass
 
 GType entangle_control_range_get_type(void) G_GNUC_CONST;
 EntangleControlRange* entangle_control_range_new(const char *path,
-                                         int id,
-                                         const char *label,
-                                         const char *info,
-                                         float min,
-                                         float max,
-                                         float step);
+                                                 int id,
+                                                 const char *label,
+                                                 const char *info,
+                                                 gboolean readonly,
+                                                 float min,
+                                                 float max,
+                                                 float step);
 
 
 float entangle_control_range_get_min(EntangleControlRange *range);

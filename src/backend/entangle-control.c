@@ -33,6 +33,7 @@ struct _EntangleControlPrivate {
     int id;
     char *label;
     char *info;
+    gboolean readonly;
 };
 
 G_DEFINE_ABSTRACT_TYPE(EntangleControl, entangle_control, G_TYPE_OBJECT);
@@ -43,12 +44,13 @@ enum {
     PROP_ID,
     PROP_LABEL,
     PROP_INFO,
+    PROP_READONLY
 };
 
 static void entangle_control_get_property(GObject *object,
-                                      guint prop_id,
-                                      GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControl *picker = ENTANGLE_CONTROL(object);
     EntangleControlPrivate *priv = picker->priv;
@@ -71,15 +73,19 @@ static void entangle_control_get_property(GObject *object,
             g_value_set_string(value, priv->info);
             break;
 
+        case PROP_READONLY:
+            g_value_set_boolean(value, priv->readonly);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
 }
 
 static void entangle_control_set_property(GObject *object,
-                                      guint prop_id,
-                                      const GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          const GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControl *picker = ENTANGLE_CONTROL(object);
     EntangleControlPrivate *priv = picker->priv;
@@ -103,6 +109,10 @@ static void entangle_control_set_property(GObject *object,
         case PROP_INFO:
             g_free(priv->info);
             priv->info = g_value_dup_string(value);
+            break;
+
+        case PROP_READONLY:
+            priv->readonly = g_value_get_boolean(value);
             break;
 
         default:
@@ -179,19 +189,31 @@ static void entangle_control_class_init(EntangleControlClass *klass)
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_READONLY,
+                                    g_param_spec_boolean("readonly",
+                                                         "Control state",
+                                                         "State of the control",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntangleControlPrivate));
 }
 
 
-EntangleControl *entangle_control_new(const char *path, int id, const char *label, const char *info)
+EntangleControl *entangle_control_new(const char *path, int id, const char *label, const char *info, gboolean readonly)
 {
     return ENTANGLE_CONTROL(g_object_new(ENTANGLE_TYPE_CONTROL,
-                                     "path", path,
-                                     "id", id,
-                                     "label", label,
-                                     "info", info,
-                                     NULL));
+                                         "path", path,
+                                         "id", id,
+                                         "label", label,
+                                         "info", info,
+                                         "readonly", readonly,
+                                         NULL));
 }
 
 
@@ -222,6 +244,13 @@ const char *entangle_control_info(EntangleControl *control)
     EntangleControlPrivate *priv = control->priv;
 
     return priv->info;
+}
+
+gboolean entangle_control_get_readonly(EntangleControl *control)
+{
+    EntangleControlPrivate *priv = control->priv;
+
+    return priv->readonly;
 }
 
 /*

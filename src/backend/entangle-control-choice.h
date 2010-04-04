@@ -54,9 +54,10 @@ struct _EntangleControlChoiceClass
 
 GType entangle_control_choice_get_type(void) G_GNUC_CONST;
 EntangleControlChoice* entangle_control_choice_new(const char *path,
-                                           int id,
-                                           const char *label,
-                                           const char *info);
+                                                   int id,
+                                                   const char *label,
+                                                   const char *info,
+                                                   gboolean readonly);
 
 void entangle_control_choice_add_entry(EntangleControlChoice *choice,
                                    const char *entry);

@@ -107,16 +107,18 @@ static void entangle_control_toggle_class_init(EntangleControlToggleClass *klass
 
 
 EntangleControlToggle *entangle_control_toggle_new(const char *path,
-                                           int id,
-                                           const char *label,
-                                           const char *info)
+                                                   int id,
+                                                   const char *label,
+                                                   const char *info,
+                                                   gboolean readonly)
 {
     return ENTANGLE_CONTROL_TOGGLE(g_object_new(ENTANGLE_TYPE_CONTROL_TOGGLE,
-                                            "path", path,
-                                            "id", id,
-                                            "label", label,
-                                            "info", info,
-                                            NULL));
+                                                "path", path,
+                                                "id", id,
+                                                "label", label,
+                                                "info", info,
+                                                "readonly", readonly,
+                                                NULL));
 }
 
 

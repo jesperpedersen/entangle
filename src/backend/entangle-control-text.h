@@ -54,9 +54,10 @@ struct _EntangleControlTextClass
 
 GType entangle_control_text_get_type(void) G_GNUC_CONST;
 EntangleControlText* entangle_control_text_new(const char *path,
-                                       int id,
-                                       const char *label,
-                                       const char *info);
+                                               int id,
+                                               const char *label,
+                                               const char *info,
+                                               gboolean readonly);
 
 G_END_DECLS
 

@@ -52,16 +52,18 @@ static void entangle_control_button_class_init(EntangleControlButtonClass *klass
 
 
 EntangleControlButton *entangle_control_button_new(const char *path,
-                                           int id,
-                                           const char *label,
-                                           const char *info)
+                                                   int id,
+                                                   const char *label,
+                                                   const char *info,
+                                                   gboolean readonly)
 {
     return ENTANGLE_CONTROL_BUTTON(g_object_new(ENTANGLE_TYPE_CONTROL_BUTTON,
-                                            "path", path,
-                                            "id", id,
-                                            "label", label,
-                                            "info", info,
-                                            NULL));
+                                                "path", path,
+                                                "id", id,
+                                                "label", label,
+                                                "info", info,
+                                                "readonly", readonly,
+                                                NULL));
 }
 
 

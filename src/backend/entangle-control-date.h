@@ -54,9 +54,10 @@ struct _EntangleControlDateClass
 
 GType entangle_control_date_get_type(void) G_GNUC_CONST;
 EntangleControlDate* entangle_control_date_new(const char *path,
-                                       int id,
-                                       const char *label,
-                                       const char *info);
+                                               int id,
+                                               const char *label,
+                                               const char *info,
+                                               gboolean readonly);
 
 
 G_END_DECLS

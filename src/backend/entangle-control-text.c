@@ -114,16 +114,18 @@ static void entangle_control_text_class_init(EntangleControlTextClass *klass)
 
 
 EntangleControlText *entangle_control_text_new(const char *path,
-                                       int id,
-                                       const char *label,
-                                       const char *info)
+                                               int id,
+                                               const char *label,
+                                               const char *info,
+                                               gboolean readonly)
 {
     return ENTANGLE_CONTROL_TEXT(g_object_new(ENTANGLE_TYPE_CONTROL_TEXT,
-                                          "path", path,
-                                          "id", id,
-                                          "label", label,
-                                          "info", info,
-                                          NULL));
+                                              "path", path,
+                                              "id", id,
+                                              "label", label,
+                                              "info", info,
+                                              "readonly", readonly,
+                                              NULL));
 }
 
 

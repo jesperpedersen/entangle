@@ -118,16 +118,18 @@ static void entangle_control_choice_class_init(EntangleControlChoiceClass *klass
 
 
 EntangleControlChoice *entangle_control_choice_new(const char *path,
-                                           int id,
-                                           const char *label,
-                                           const char *info)
+                                                   int id,
+                                                   const char *label,
+                                                   const char *info,
+                                                   gboolean readonly)
 {
     return ENTANGLE_CONTROL_CHOICE(g_object_new(ENTANGLE_TYPE_CONTROL_CHOICE,
-                                            "path", path,
-                                            "id", id,
-                                            "label", label,
-                                            "info", info,
-                                            NULL));
+                                                "path", path,
+                                                "id", id,
+                                                "label", label,
+                                                "info", info,
+                                                "readonly", readonly,
+                                                NULL));
 }
 
 

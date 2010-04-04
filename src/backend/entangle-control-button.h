@@ -54,9 +54,10 @@ struct _EntangleControlButtonClass
 
 GType entangle_control_button_get_type(void) G_GNUC_CONST;
 EntangleControlButton* entangle_control_button_new(const char *path,
-                                           int id,
-                                           const char *label,
-                                           const char *info);
+                                                   int id,
+                                                   const char *label,
+                                                   const char *info,
+                                                   gboolean readonly);
 
 
 G_END_DECLS

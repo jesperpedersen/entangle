@@ -21,7 +21,7 @@ URL: http://entangle-project.org/
 
 BuildRequires: glib2-devel >= 2.10.0
 BuildRequires: gtk2-devel >= 2.12.0
-BuildRequires: libgphoto2-devel >= 2.4.7
+BuildRequires: libgphoto2-devel >= 2.4.8
 BuildRequires: libglade2-devel >= 2.6.0
 %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 BuildRequires: libgudev1-devel >= 145

@@ -109,16 +109,18 @@ static void entangle_control_date_class_init(EntangleControlDateClass *klass)
 
 
 EntangleControlDate *entangle_control_date_new(const char *path,
-                                       int id,
-                                       const char *label,
-                                       const char *info)
+                                               int id,
+                                               const char *label,
+                                               const char *info,
+                                               gboolean readonly)
 {
     return ENTANGLE_CONTROL_DATE(g_object_new(ENTANGLE_TYPE_CONTROL_DATE,
-                                          "path", path,
-                                          "id", id,
-                                          "label", label,
-                                          "info", info,
-                                          NULL));
+                                              "path", path,
+                                              "id", id,
+                                              "label", label,
+                                              "info", info,
+                                              "readonly", readonly,
+                                              NULL));
 }
 
 

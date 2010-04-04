@@ -927,8 +927,8 @@ static void do_update_control_boolean(GObject *object,
 }
 
 static EntangleControl *do_build_controls(EntangleCamera *cam,
-                                      const char *path,
-                                      CameraWidget *widget)
+                                          const char *path,
+                                          CameraWidget *widget)
 {
     CameraWidgetType type;
     EntangleControl *ret = NULL;
@@ -937,6 +937,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
     int id;
     const char *label;
     const char *info;
+    int ro;
 
     if (gp_widget_get_type(widget, &type) != GP_OK)
         return NULL;
@@ -947,6 +948,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
     gp_widget_get_id(widget, &id);
     gp_widget_get_label(widget, &label);
     gp_widget_get_info(widget, &info);
+    gp_widget_get_readonly(widget, &ro);
     if (info == NULL)
         info = label;
 
@@ -959,7 +961,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
         {
             EntangleControlGroup *grp;
             ENTANGLE_DEBUG("Add group %s %d %s", fullpath, id, label);
-            grp = entangle_control_group_new(fullpath, id, label, info);
+            grp = entangle_control_group_new(fullpath, id, label, info, ro);
             for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
                 CameraWidget *child;
                 EntangleControl *subctl;
@@ -981,7 +983,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
     case GP_WIDGET_BUTTON:
         {
             ENTANGLE_DEBUG("Add button %s %d %s", fullpath, id, label);
-            ret = ENTANGLE_CONTROL(entangle_control_button_new(fullpath, id, label, info));
+            ret = ENTANGLE_CONTROL(entangle_control_button_new(fullpath, id, label, info, ro));
         } break;
 
         /* Unclear why these two are the same in libgphoto */
@@ -990,7 +992,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
         {
             char *value = NULL;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
-            ret = ENTANGLE_CONTROL(entangle_control_choice_new(fullpath, id, label, info));
+            ret = ENTANGLE_CONTROL(entangle_control_choice_new(fullpath, id, label, info, ro));
 
             for (int i = 0 ; i < gp_widget_count_choices(widget) ; i++) {
                 const char *choice;
@@ -1008,7 +1010,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
         {
             int value = 0;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
-            ret = ENTANGLE_CONTROL(entangle_control_date_new(fullpath, id, label, info));
+            ret = ENTANGLE_CONTROL(entangle_control_date_new(fullpath, id, label, info, ro));
             g_object_set(ret, "value", value, NULL);
         } break;
 
@@ -1018,8 +1020,8 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
             float value = 0.0;
             gp_widget_get_range(widget, &min, &max, &step);
             ENTANGLE_DEBUG("Add range %s %d %s %f %f %f", fullpath, id, label, min, max, step);
-            ret = ENTANGLE_CONTROL(entangle_control_range_new(fullpath, id, label, info,
-                                                      min, max, step));
+            ret = ENTANGLE_CONTROL(entangle_control_range_new(fullpath, id, label, info, ro,
+                                                              min, max, step));
 
             gp_widget_get_value(widget, &value);
             g_object_set(ret, "value", value, NULL);
@@ -1031,7 +1033,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
         {
             char *value = NULL;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
-            ret = ENTANGLE_CONTROL(entangle_control_text_new(fullpath, id, label, info));
+            ret = ENTANGLE_CONTROL(entangle_control_text_new(fullpath, id, label, info, ro));
 
             gp_widget_get_value(widget, &value);
             g_object_set(ret, "value", value, NULL);
@@ -1043,7 +1045,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
         {
             int value = 0;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
-            ret = ENTANGLE_CONTROL(entangle_control_toggle_new(fullpath, id, label, info));
+            ret = ENTANGLE_CONTROL(entangle_control_toggle_new(fullpath, id, label, info, ro));
 
             gp_widget_get_value(widget, &value);
             g_object_set(ret, "value", (gboolean)value, NULL);
