@@ -38,6 +38,7 @@
 struct _EntangleSessionPrivate {
     char *directory;
     char *filenamePattern;
+    gboolean recalculateDigit;
     int nextFilenameDigit;
 
     GList *images;
@@ -93,7 +94,7 @@ static void entangle_session_set_property(GObject *object,
         case PROP_FILENAME_PATTERN:
             g_free(priv->filenamePattern);
             priv->filenamePattern = g_value_dup_string(value);
-            priv->nextFilenameDigit = 0;
+            priv->recalculateDigit = TRUE;
             break;
 
         default:
@@ -200,6 +201,8 @@ static void entangle_session_init(EntangleSession *session)
     EntangleSessionPrivate *priv;
 
     priv = session->priv = ENTANGLE_SESSION_GET_PRIVATE(session);
+
+    priv->recalculateDigit = TRUE;
 }
 
 
@@ -217,11 +220,121 @@ const char *entangle_session_filename_pattern(EntangleSession *session)
     return priv->filenamePattern;
 }
 
-char *entangle_session_next_filename(EntangleSession *session)
+
+static const char *entangle_session_get_extension(EntangleCameraFile *file)
+{
+    const char *name = entangle_camera_file_get_name(file);
+    const char *ext;
+    
+    ext = g_strrstr(name, ".");
+
+    if (!ext)
+        return "jpeg";
+
+    ext++;
+    return ext;
+}
+
+
+static gint entangle_session_next_digit(EntangleSession *session)
+{
+    EntangleSessionPrivate *priv = session->priv;
+    gint maxDigit = -1;
+    GList *images = priv->images;
+    const gchar *template = strchr(priv->filenamePattern, 'X');
+    gchar *prefix = g_strndup(priv->filenamePattern, (template - priv->filenamePattern));
+    gint prefixlen = strlen(prefix);
+    gint templatelen = 0;
+    const gchar *postfix;
+    gint postfixlen;
+
+    while (*template == 'X') {
+        templatelen++;
+        template++;
+    }
+
+    postfix = template;
+    postfixlen = strlen(postfix);
+
+    ENTANGLE_DEBUG("Template '%s' with prefixlen %d, %d digits and postfix %d",
+                   priv->filenamePattern, prefixlen, templatelen, postfixlen);
+
+    while (images) {
+        EntangleImage *image = images->data;
+        const gchar *name = entangle_image_filename(image);
+        gsize remain = templatelen;
+        gint digit = 0;
+
+        if (!g_str_has_prefix(name, priv->directory)) {
+            ENTANGLE_DEBUG("File %s does not match directory",
+                           entangle_image_filename(image));
+            goto next;
+        }
+        name += strlen(priv->directory);
+        while (*name == '/')
+            name++;
+
+        /* Ignore files not matching the template prefix */
+        if (!g_str_has_prefix(name, prefix)) {
+            ENTANGLE_DEBUG("File %s does not match prefix",
+                           entangle_image_filename(image));
+            goto next;
+        }
+
+        name += prefixlen;
+
+        /* Skip over filename matching digits */
+        while (remain && g_ascii_isdigit(*name)) {
+            digit *= 10;
+            digit += *name - '0';
+            name++;
+            remain--;
+        }
+
+        /* See if unexpectedly got a non-digit before end of template */
+        if (remain) {
+            ENTANGLE_DEBUG("File %s has too few digits",
+                           entangle_image_filename(image));
+            goto next;
+        }
+
+        if (!g_str_has_prefix(name, postfix)) {
+            ENTANGLE_DEBUG("File %s does not match postfix",
+                           entangle_image_filename(image));
+            goto next;
+        }
+
+        name += postfixlen;
+
+        /* Verify there is a file extension following the digits */
+        if (*name != '.') {
+            ENTANGLE_DEBUG("File %s has trailing data",
+                           entangle_image_filename(image));
+            goto next;
+        }
+
+        if (digit > maxDigit)
+            maxDigit = digit;
+        ENTANGLE_DEBUG("File %s matches maxDigit is %d",
+                       entangle_image_filename(image), maxDigit);
+
+    next:
+        images = images->next;
+    }
+
+    g_free(prefix);
+    
+    return maxDigit + 1;
+}
+
+
+char *entangle_session_next_filename(EntangleSession *session,
+                                     EntangleCameraFile *file)
 {
     EntangleSessionPrivate *priv = session->priv;
     const char *template = strchr(priv->filenamePattern, 'X');
     const char *postfix;
+    const char *ext = entangle_session_get_extension(file);
     char *prefix;
     char *format;
     char *filename;
@@ -233,6 +346,11 @@ char *entangle_session_next_filename(EntangleSession *session)
 
     if (!template)
         return NULL;
+
+    if (priv->recalculateDigit) {
+        priv->nextFilenameDigit = entangle_session_next_digit(session);
+        priv->recalculateDigit = FALSE;
+    }
 
     postfix = template;
     while (*postfix == 'X')
@@ -246,47 +364,29 @@ char *entangle_session_next_filename(EntangleSession *session)
     for (max = 1, i = 0 ; i < ndigits ; i++)
         max *= 10;
 
-    format = g_strdup_printf("%%s/%%s%%0%dd%%s", ndigits);
+    format = g_strdup_printf("%%s/%%s%%0%dd%%s.%%s", ndigits);
 
-    ENTANGLE_DEBUG("TEST %d (%d) possible with '%s' prefix='%s' postfix='%s'", max, ndigits, format, prefix, postfix);
+    ENTANGLE_DEBUG("Format '%s' prefix='%s' postfix='%s' ndigits=%d nextDigits=%d ext=%s",
+                   format, prefix, postfix, ndigits, priv->nextFilenameDigit, ext);
 
-    for (i = priv->nextFilenameDigit ; i < max ; i++) {
-        filename = g_strdup_printf(format, priv->directory,
-                                   prefix, i, postfix);
+    filename = g_strdup_printf(format, priv->directory,
+                               prefix, priv->nextFilenameDigit,
+                               postfix, ext);
+    
+    ENTANGLE_DEBUG("Built '%s'", filename);
 
-        ENTANGLE_DEBUG("Test filename '%s'", filename);
-        if (access(filename, R_OK) < 0) {
-            if (errno != ENOENT) {
-                g_free(filename);
-                filename = NULL;
-            }
-            /* Cache digit offset to avoid stat() sooo many files next time */
-            priv->nextFilenameDigit = i + 1;
-            break;
-        }
+    if (access(filename, R_OK) == 0 || errno != ENOENT) {
+        ENTANGLE_DEBUG("Filename %s unexpectedly exists", filename);
         g_free(filename);
         filename = NULL;
     }
 
+    priv->nextFilenameDigit++;
+
     g_free(prefix);
     g_free(format);
+
     return filename;
-}
-
-
-char *entangle_session_temp_filename(EntangleSession *session)
-{
-    EntangleSessionPrivate *priv = session->priv;
-    char *pattern = g_strdup_printf("%s/%s", priv->directory, "previewXXXXXX");
-    int fd = mkstemp(pattern);
-
-    if (fd < 0) {
-        g_free(pattern);
-        return NULL;
-    }
-
-    close(fd);
-    return pattern;
 }
 
 
@@ -299,6 +399,7 @@ void entangle_session_add(EntangleSession *session, EntangleImage *image)
 
     g_signal_emit_by_name(session, "session-image-added", image);
 }
+
 
 gboolean entangle_session_load(EntangleSession *session)
 {
@@ -323,6 +424,8 @@ gboolean entangle_session_load(EntangleSession *session)
         g_object_unref(image);
     }
     closedir(dh);
+
+    priv->recalculateDigit = TRUE;
 
     return TRUE;
 }

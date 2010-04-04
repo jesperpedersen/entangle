@@ -22,11 +22,9 @@
 #define __ENTANGLE_SESSION_H__
 
 #include <glib-object.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
-#include "entangle-control-group.h"
 #include "entangle-image.h"
+#include "entangle-camera-file.h"
 
 G_BEGIN_DECLS
 
@@ -66,8 +64,8 @@ EntangleSession *entangle_session_new(const char *directory,
 const char *entangle_session_directory(EntangleSession *session);
 const char *entangle_session_filename_pattern(EntangleSession *session);
 
-char *entangle_session_next_filename(EntangleSession *session);
-char *entangle_session_temp_filename(EntangleSession *session);
+char *entangle_session_next_filename(EntangleSession *session,
+                                     EntangleCameraFile *file);
 
 gboolean entangle_session_load(EntangleSession *session);
 

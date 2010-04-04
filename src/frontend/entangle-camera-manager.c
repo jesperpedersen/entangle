@@ -382,7 +382,7 @@ static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleC
 
     ENTANGLE_DEBUG("File download %p %p %p", cam, file, data);
 
-    localpath = entangle_session_next_filename(priv->session);
+    localpath = entangle_session_next_filename(priv->session, file);
 
     if (!entangle_camera_file_save_path(file, localpath, NULL)) {
         ENTANGLE_DEBUG("Failed save path");

@@ -289,7 +289,7 @@ static void entangle_preferences_init(EntanglePreferences *picker)
     memset(priv, 0, sizeof(*priv));
 
     priv->pictureDir = entangle_find_picture_dir();
-    priv->filenamePattern = g_strdup("captureXXXXXX.jpeg");
+    priv->filenamePattern = g_strdup("captureXXXXXX");
 
     priv->enableColourManagement = TRUE;
     priv->detectSystemProfile = TRUE;
