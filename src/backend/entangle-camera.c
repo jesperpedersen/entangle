@@ -827,6 +827,10 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
             ENTANGLE_DEBUG("Folder added '%s' in '%s'", camerapath->name, camerapath->folder);
         }   break;
 
+        case GP_EVENT_CAPTURE_COMPLETE:
+            ENTANGLE_DEBUG("Capture is complete");
+            break;
+
         default:
             ENTANGLE_DEBUG("Unexpected event received %d", eventType);
             ret = FALSE;
