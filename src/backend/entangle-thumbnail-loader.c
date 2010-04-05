@@ -316,7 +316,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
         tw = gdk_pixbuf_get_width(thumb);
         th = gdk_pixbuf_get_height(thumb);
 
-        if (tw != priv->width &&
+        if (tw != priv->width ||
             th != priv->height) {
             double ta, ra;
             int rw, rh;
