@@ -48,6 +48,14 @@ enum {
     PROP_LOADER,
 };
 
+enum {
+    FIELD_IMAGE,
+    FIELD_PIXMAP,
+    FIELD_LASTMOD,
+    FIELD_NAME,
+
+    FIELD_LAST,
+};
 
 static void do_thumb_loaded(EntanglePixbufLoader *loader,
                             const char *filename,
@@ -68,10 +76,10 @@ static void do_thumb_loaded(EntanglePixbufLoader *loader,
 
     do {
         EntangleImage *img;
-        gtk_tree_model_get(GTK_TREE_MODEL(priv->model), &iter, 0, &img, -1);
+        gtk_tree_model_get(GTK_TREE_MODEL(priv->model), &iter, FIELD_IMAGE, &img, -1);
 
-        if (strcmp(entangle_image_filename(img), filename) == 0) {
-            gtk_list_store_set(priv->model, &iter, 1, pixbuf, -1);
+        if (strcmp(entangle_image_get_filename(img), filename) == 0) {
+            gtk_list_store_set(priv->model, &iter, FIELD_PIXMAP, pixbuf, -1);
             break;
         }
 
@@ -86,16 +94,22 @@ static void do_image_added(EntangleSession *session G_GNUC_UNUSED,
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GtkTreeIter iter;
     GtkTreePath *path = NULL;
-    int mod = entangle_image_last_modified(img);
+    int mod = entangle_image_get_last_modified(img);
+    gchar *name = g_path_get_basename(entangle_image_get_filename(img));
 
-    ENTANGLE_DEBUG("Request image %s for new image", entangle_image_filename(img));
+    ENTANGLE_DEBUG("Request image %s for new image", entangle_image_get_filename(img));
     entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->loader),
-                            entangle_image_filename(img));
+                            entangle_image_get_filename(img));
 
     gtk_list_store_append(priv->model, &iter);
 
     /* XXX what's our refcount policy going to be for pixbuf.... */
-    gtk_list_store_set(priv->model, &iter, 0, img, 1, priv->blank, 2, mod, -1);
+    gtk_list_store_set(priv->model, &iter,
+                       FIELD_IMAGE, img,
+                       FIELD_PIXMAP, priv->blank,
+                       FIELD_LASTMOD, mod,
+                       FIELD_NAME, name,
+                       -1);
     ENTANGLE_DEBUG("ADD IMAGE EXTRA %p", img);
     path = gtk_tree_model_get_path(GTK_TREE_MODEL(priv->model), &iter);
 
@@ -125,7 +139,7 @@ static void do_model_unload(EntangleSessionBrowser *browser)
     for (int i = 0 ; i < count ; i++) {
         EntangleImage *img = entangle_session_image_get(priv->session, i);
         entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->loader),
-                                  entangle_image_filename(img));
+                                  entangle_image_get_filename(img));
     }
 
     g_object_unref(priv->blank);
@@ -157,16 +171,22 @@ static void do_model_load(EntangleSessionBrowser *browser)
     count = entangle_session_image_count(priv->session);
     for (int i = 0 ; i < count ; i++) {
         EntangleImage *img = entangle_session_image_get(priv->session, i);
-        int mod = entangle_image_last_modified(img);
+        int mod = entangle_image_get_last_modified(img);
         GtkTreeIter iter;
+        gchar *name = g_path_get_basename(entangle_image_get_filename(img));
 
         gtk_list_store_append(priv->model, &iter);
         ENTANGLE_DEBUG("ADD IMAGE FIRST %p", img);
         /* XXX what's our refcount policy going to be for pixbuf.... */
-        gtk_list_store_set(priv->model, &iter, 0, img, 1, priv->blank, 2, mod, -1);
+        gtk_list_store_set(priv->model, &iter,
+                           FIELD_IMAGE, img,
+                           FIELD_PIXMAP, priv->blank,
+                           FIELD_LASTMOD, mod,
+                           FIELD_NAME, name,
+                           -1);
 
         entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->loader),
-                                entangle_image_filename(img));
+                                entangle_image_get_filename(img));
         //g_object_unref(cam);
     }
 
@@ -190,8 +210,8 @@ do_image_sort_modified(GtkTreeModel *model,
 {
     gint ai, bi;
 
-    gtk_tree_model_get(model, a, 2, &ai, -1);
-    gtk_tree_model_get(model, b, 2, &bi, -1);
+    gtk_tree_model_get(model, a, FIELD_LASTMOD, &ai, -1);
+    gtk_tree_model_get(model, b, FIELD_LASTMOD, &bi, -1);
 
     return ai - bi;
 }
@@ -312,10 +332,10 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
     priv = browser->priv = ENTANGLE_SESSION_BROWSER_GET_PRIVATE(browser);
     memset(priv, 0, sizeof *priv);
 
-    priv->model = gtk_list_store_new(3, ENTANGLE_TYPE_IMAGE, GDK_TYPE_PIXBUF, G_TYPE_INT);
+    priv->model = gtk_list_store_new(FIELD_LAST, ENTANGLE_TYPE_IMAGE, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_STRING);
 
-    gtk_icon_view_set_text_column(GTK_ICON_VIEW(browser), -1);
-    gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(browser), 1);
+    gtk_icon_view_set_text_column(GTK_ICON_VIEW(browser), FIELD_NAME);
+    gtk_icon_view_set_pixbuf_column(GTK_ICON_VIEW(browser), FIELD_PIXMAP);
     gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(browser), GTK_SELECTION_SINGLE);
     gtk_icon_view_set_model(GTK_ICON_VIEW(browser), GTK_TREE_MODEL(priv->model));
 
@@ -331,11 +351,11 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
                                            ntargets,
                                            GDK_ACTION_PRIVATE);
 
-    gtk_icon_view_set_orientation(GTK_ICON_VIEW(browser), GTK_ORIENTATION_HORIZONTAL);
+    gtk_icon_view_set_orientation(GTK_ICON_VIEW(browser), GTK_ORIENTATION_VERTICAL);
     /* XXX gross hack - GtkIconView doesn't seem to have a better
      * way to force everything into a single row. Perhaps we should
      * just right a new widget for our needs */
-    gtk_icon_view_set_columns(GTK_ICON_VIEW(browser), 1000);
+    gtk_icon_view_set_columns(GTK_ICON_VIEW(browser), 10000);
 }
 
 

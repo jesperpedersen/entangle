@@ -24,6 +24,7 @@
 
 #include "entangle-debug.h"
 #include "entangle-image-display.h"
+#include "entangle-image.h"
 
 #define ENTANGLE_IMAGE_DISPLAY_GET_PRIVATE(obj)                             \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_DISPLAY, EntangleImageDisplayPrivate))
@@ -80,10 +81,65 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
 }
 
 
+static void entangle_image_display_update_hint(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+    gchar *fileInfo = NULL;
+    gchar *pixmapInfo = NULL;
+    gchar *hint;
+
+    if (priv->filename) {
+        EntangleImage *image = entangle_image_new(priv->filename);
+        gchar *base = entangle_image_get_basename(image);
+        gchar *dir = entangle_image_get_dirname(image);
+        time_t lastMod = entangle_image_get_last_modified(image);
+        off_t size = entangle_image_get_file_size(image);
+        GTimeVal tv = { .tv_sec = lastMod, .tv_usec = 0 };
+        gchar *datestr = g_time_val_to_iso8601(&tv);
+
+        fileInfo = g_strdup_printf("<b>File:</b> %s\n"
+                                   "<b>Session:</b> %s\n"
+                                   "<b>Last modified:</b> %s\n"
+                                   "<b>Size:</b> %d kb\n",
+                                   base, dir,
+                                   datestr, (int)size/1024);
+
+        g_free(base);
+        g_free(dir);
+        g_free(datestr);
+
+        g_object_unref(image);
+    }
+
+    if (priv->pixbuf) {
+        pixmapInfo = g_strdup_printf("<b>Width:</b> %d\n"
+                                     "<b>Height:</b> %d\n",
+                                     gdk_pixbuf_get_width(priv->pixbuf),
+                                     gdk_pixbuf_get_height(priv->pixbuf));
+    }
+
+
+    if (fileInfo || pixmapInfo) {
+        hint = g_strdup_printf("%s%s",
+                               fileInfo ? fileInfo : "",
+                               pixmapInfo ? pixmapInfo : "");
+
+        gtk_widget_set_tooltip_markup(GTK_WIDGET(display), hint);
+
+        g_free(fileInfo);
+        g_free(pixmapInfo);
+        g_free(hint);
+    } else {
+        gtk_widget_set_tooltip_markup(GTK_WIDGET(display), "");
+    }
+
+}
+
+
 static void entangle_image_display_get_property(GObject *object,
-                                            guint prop_id,
-                                            GValue *value,
-                                            GParamSpec *pspec)
+                                                guint prop_id,
+                                                GValue *value,
+                                                GParamSpec *pspec)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(object);
     EntangleImageDisplayPrivate *priv = display->priv;
@@ -117,9 +173,9 @@ static void entangle_image_display_get_property(GObject *object,
 
 
 static void entangle_image_display_set_property(GObject *object,
-                                            guint prop_id,
-                                            const GValue *value,
-                                            GParamSpec *pspec)
+                                                guint prop_id,
+                                                const GValue *value,
+                                                GParamSpec *pspec)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(object);
 
@@ -177,7 +233,7 @@ static void entangle_image_display_realize(GtkWidget *widget)
 }
 
 static gboolean entangle_image_display_expose(GtkWidget *widget,
-                                          GdkEventExpose *expose)
+                                              GdkEventExpose *expose)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
     EntangleImageDisplayPrivate *priv = display->priv;
@@ -275,7 +331,7 @@ static gboolean entangle_image_display_expose(GtkWidget *widget,
 }
 
 static void entangle_image_display_size_request(GtkWidget *widget,
-                                            GtkRequisition *requisition)
+                                                GtkRequisition *requisition)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
     EntangleImageDisplayPrivate *priv = display->priv;
@@ -395,8 +451,8 @@ static void entangle_image_display_init(EntangleImageDisplay *display)
 
 
 static void entangle_image_display_image_loaded(EntanglePixbufLoader *loader,
-                                            const char *filename,
-                                            gpointer opaque)
+                                                const char *filename,
+                                                gpointer opaque)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(opaque);
     EntangleImageDisplayPrivate *priv = display->priv;
@@ -413,7 +469,7 @@ static void entangle_image_display_image_loaded(EntanglePixbufLoader *loader,
 
 
 void entangle_image_display_set_image_loader(EntangleImageDisplay *display,
-                                         EntangleImageLoader *loader)
+                                             EntangleImageLoader *loader)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -459,6 +515,8 @@ void entangle_image_display_set_filename(EntangleImageDisplay *display,
     priv->filename = filename ? g_strdup(filename) : NULL;
     if (priv->imageLoader && priv->filename)
         entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader), priv->filename);
+
+    entangle_image_display_update_hint(display);
 }
 
 
@@ -471,7 +529,7 @@ const gchar *entangle_image_display_get_filename(EntangleImageDisplay *display)
 
 
 void entangle_image_display_set_pixbuf(EntangleImageDisplay *display,
-                                   GdkPixbuf *pixbuf)
+                                       GdkPixbuf *pixbuf)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -485,6 +543,8 @@ void entangle_image_display_set_pixbuf(EntangleImageDisplay *display,
 
     if (GTK_WIDGET_VISIBLE(display))
         gtk_widget_queue_resize(GTK_WIDGET(display));
+
+    entangle_image_display_update_hint(display);
 }
 
 
@@ -497,7 +557,7 @@ GdkPixbuf *entangle_image_display_get_pixbuf(EntangleImageDisplay *display)
 
 
 void entangle_image_display_set_autoscale(EntangleImageDisplay *display,
-                                      gboolean autoscale)
+                                          gboolean autoscale)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -517,7 +577,7 @@ gboolean entangle_image_display_get_autoscale(EntangleImageDisplay *display)
 
 
 void entangle_image_display_set_scale(EntangleImageDisplay *display,
-                                  gfloat scale)
+                                      gfloat scale)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 

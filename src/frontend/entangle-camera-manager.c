@@ -394,7 +394,8 @@ static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleC
     gdk_threads_enter();
     entangle_session_add(priv->session, image);
 
-    entangle_image_display_set_filename(priv->imageDisplay, entangle_image_filename(image));
+    entangle_image_display_set_filename(priv->imageDisplay,
+                                        entangle_image_get_filename(image));
     if (priv->imagePresentation)
         g_object_set(priv->imagePresentation, "image", image, NULL);
     gdk_threads_leave();
@@ -422,6 +423,7 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
     pixbuf = gdk_pixbuf_new_from_stream(is, NULL, NULL);
 
     gdk_threads_enter();
+    entangle_image_display_set_filename(priv->imageDisplay, NULL);
     entangle_image_display_set_pixbuf(priv->imageDisplay, pixbuf);
     gdk_threads_leave();
 
@@ -593,7 +595,7 @@ static void do_add_camera(EntangleCameraManager *manager)
                                 entangle_camera_get_model(priv->camera));
 
     priv->session = entangle_session_new(directory,
-                                     entangle_preferences_filename_pattern(priv->prefs));
+                                         entangle_preferences_filename_pattern(priv->prefs));
     entangle_session_load(priv->session);
 
     entangle_camera_set_progress(priv->camera, ENTANGLE_PROGRESS(manager));
@@ -1382,7 +1384,8 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
     ENTANGLE_DEBUG("Image selection changed");
     if (img) {
         ENTANGLE_DEBUG("Try load");
-        entangle_image_display_set_filename(priv->imageDisplay, entangle_image_filename(img));
+        entangle_image_display_set_filename(priv->imageDisplay,
+                                            entangle_image_get_filename(img));
         g_object_unref(img);
     }
 }
@@ -1414,7 +1417,7 @@ static void do_drag_failed(GtkWidget *widget,
                                     &screen,
                                     &x, &y, NULL);
             GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-manager");
-            const gchar *filename = entangle_image_filename(img);
+            const gchar *filename = entangle_image_get_filename(img);
             EntangleImagePopup *pol;
             if (!(pol = g_hash_table_lookup(priv->popups, filename))) {
                 pol = entangle_image_popup_new();
@@ -1549,7 +1552,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
 
     /* XXX match icon size + padding + scrollbar needs */
     gtk_widget_set_size_request(settingsBox, 300, 100);
-    gtk_widget_set_size_request(iconScroll, 140, 140);
+    gtk_widget_set_size_request(iconScroll, 140, 170);
 
     priv->popups = g_hash_table_new_full(g_str_hash,
                                             g_str_equal,

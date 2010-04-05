@@ -261,13 +261,13 @@ static gint entangle_session_next_digit(EntangleSession *session)
 
     while (images) {
         EntangleImage *image = images->data;
-        const gchar *name = entangle_image_filename(image);
+        const gchar *name = entangle_image_get_filename(image);
         gsize remain = templatelen;
         gint digit = 0;
 
         if (!g_str_has_prefix(name, priv->directory)) {
             ENTANGLE_DEBUG("File %s does not match directory",
-                           entangle_image_filename(image));
+                           entangle_image_get_filename(image));
             goto next;
         }
         name += strlen(priv->directory);
@@ -277,7 +277,7 @@ static gint entangle_session_next_digit(EntangleSession *session)
         /* Ignore files not matching the template prefix */
         if (!g_str_has_prefix(name, prefix)) {
             ENTANGLE_DEBUG("File %s does not match prefix",
-                           entangle_image_filename(image));
+                           entangle_image_get_filename(image));
             goto next;
         }
 
@@ -294,13 +294,13 @@ static gint entangle_session_next_digit(EntangleSession *session)
         /* See if unexpectedly got a non-digit before end of template */
         if (remain) {
             ENTANGLE_DEBUG("File %s has too few digits",
-                           entangle_image_filename(image));
+                           entangle_image_get_filename(image));
             goto next;
         }
 
         if (!g_str_has_prefix(name, postfix)) {
             ENTANGLE_DEBUG("File %s does not match postfix",
-                           entangle_image_filename(image));
+                           entangle_image_get_filename(image));
             goto next;
         }
 
@@ -309,14 +309,14 @@ static gint entangle_session_next_digit(EntangleSession *session)
         /* Verify there is a file extension following the digits */
         if (*name != '.') {
             ENTANGLE_DEBUG("File %s has trailing data",
-                           entangle_image_filename(image));
+                           entangle_image_get_filename(image));
             goto next;
         }
 
         if (digit > maxDigit)
             maxDigit = digit;
         ENTANGLE_DEBUG("File %s matches maxDigit is %d",
-                       entangle_image_filename(image), maxDigit);
+                       entangle_image_get_filename(image), maxDigit);
 
     next:
         images = images->next;

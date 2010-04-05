@@ -45,9 +45,9 @@ enum {
 };
 
 static void entangle_image_get_property(GObject *object,
-                                    guint prop_id,
-                                    GValue *value,
-                                    GParamSpec *pspec)
+                                        guint prop_id,
+                                        GValue *value,
+                                        GParamSpec *pspec)
 {
     EntangleImage *picker = ENTANGLE_IMAGE(object);
     EntangleImagePrivate *priv = picker->priv;
@@ -64,9 +64,9 @@ static void entangle_image_get_property(GObject *object,
 }
 
 static void entangle_image_set_property(GObject *object,
-                                    guint prop_id,
-                                    const GValue *value,
-                                    GParamSpec *pspec)
+                                        guint prop_id,
+                                        const GValue *value,
+                                        GParamSpec *pspec)
 {
     EntangleImage *picker = ENTANGLE_IMAGE(object);
     EntangleImagePrivate *priv = picker->priv;
@@ -140,11 +140,28 @@ static void entangle_image_init(EntangleImage *picker)
 }
 
 
-const char *entangle_image_filename(EntangleImage *image)
+const char *entangle_image_get_filename(EntangleImage *image)
 {
     EntangleImagePrivate *priv = image->priv;
     return priv->filename;
 }
+
+
+char *entangle_image_get_basename(EntangleImage *image)
+{
+    EntangleImagePrivate *priv = image->priv;
+    return g_path_get_basename(priv->filename);
+}
+
+
+char *entangle_image_get_dirname(EntangleImage *image)
+{
+    EntangleImagePrivate *priv = image->priv;
+    return g_path_get_dirname(priv->filename);
+}
+
+
+
 
 static gboolean entangle_image_load(EntangleImage *image)
 {
@@ -162,7 +179,7 @@ static gboolean entangle_image_load(EntangleImage *image)
     return TRUE;
 }
 
-time_t entangle_image_last_modified(EntangleImage *image)
+time_t entangle_image_get_last_modified(EntangleImage *image)
 {
     EntangleImagePrivate *priv = image->priv;
 
@@ -172,14 +189,14 @@ time_t entangle_image_last_modified(EntangleImage *image)
     return priv->st.st_mtime;
 }
 
-off_t entangle_image_file_size(EntangleImage *image)
+off_t entangle_image_get_file_size(EntangleImage *image)
 {
     EntangleImagePrivate *priv = image->priv;
 
     if (!entangle_image_load(image))
         return 0;
 
-    return priv->st.st_mtime;
+    return priv->st.st_size;
 }
 
 

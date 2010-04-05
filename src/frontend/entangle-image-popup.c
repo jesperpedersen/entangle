@@ -92,7 +92,7 @@ static void entangle_image_popup_set_property(GObject *object,
             g_object_ref(priv->image);
 
             entangle_image_display_set_filename(priv->display,
-                                            entangle_image_filename(priv->image));
+                                                entangle_image_get_filename(priv->image));
         } break;
 
         case PROP_IMAGE_LOADER: {

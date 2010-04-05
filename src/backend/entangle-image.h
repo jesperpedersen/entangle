@@ -58,10 +58,14 @@ GType entangle_image_get_type(void) G_GNUC_CONST;
 
 EntangleImage *entangle_image_new(const char *filename);
 
-const char *entangle_image_filename(EntangleImage *image);
+const char *entangle_image_get_filename(EntangleImage *image);
 
-time_t entangle_image_last_modified(EntangleImage *image);
-off_t entangle_image_file_size(EntangleImage *image);
+time_t entangle_image_get_last_modified(EntangleImage *image);
+off_t entangle_image_get_file_size(EntangleImage *image);
+
+char *entangle_image_get_basename(EntangleImage *image);
+char *entangle_image_get_dirname(EntangleImage *image);
+
 
 G_END_DECLS
 
