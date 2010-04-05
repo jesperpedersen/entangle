@@ -175,8 +175,7 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(const char *filename,
 
     thumbnametmp = g_strdup_printf("%s.entangle-tmp", thumbname);
 
-    orientationstr = gdk_pixbuf_get_option (master, "orientation");
-
+    orientationstr = gdk_pixbuf_get_option(master, "orientation");
     if (gdk_pixbuf_save(thumb, thumbnametmp,
                         "png", NULL,
                         "tEXt::Thumb::Image::Width", widthStr,
@@ -192,6 +191,13 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(const char *filename,
     }
     g_free(thumbnametmp);
 
+    /* gdk_pixbuf_save doesn't update internal options and there
+       is no set_option method, so abuse gobject data slots :-( */
+    g_object_set_data_full(G_OBJECT(thumb),
+                           "tEXt::Entangle::Orientation",
+                           g_strdup(orientationstr ? orientationstr : "0"),
+                           g_free);
+
     g_object_unref(master);
 
     return thumb;
@@ -203,12 +209,15 @@ static GdkPixbuf *entangle_thumbnail_loader_auto_rotate(GdkPixbuf *src)
     GdkPixbuf *dest = gdk_pixbuf_apply_embedded_orientation(src);
     GdkPixbuf *temp;
 
-    g_object_unref(src);
-
     if (dest == src) {
         const char *orientationstr;
         int transform = 0;
         orientationstr = gdk_pixbuf_get_option(src, "tEXt::Entangle::Orientation");
+
+        /* If not option, then try the gobject data slot */
+        if (!orientationstr)
+            orientationstr = g_object_get_data(G_OBJECT(src),
+                                               "tEXt::Entangle::Orientation");
 
         if (orientationstr)
             transform = (int)g_ascii_strtoll(orientationstr, NULL, 10);
@@ -254,6 +263,8 @@ static GdkPixbuf *entangle_thumbnail_loader_auto_rotate(GdkPixbuf *src)
         }
 
     }
+
+    g_object_unref(src);
 
     return dest;
 }
