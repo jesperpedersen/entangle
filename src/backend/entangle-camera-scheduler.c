@@ -102,7 +102,7 @@ static void entangle_camera_scheduler_finalize(GObject *object)
     EntangleCameraScheduler *scheduler = ENTANGLE_CAMERA_SCHEDULER(object);
     EntangleCameraSchedulerPrivate *priv = scheduler->priv;
 
-    ENTANGLE_DEBUG("Finalize camera %p", object);
+    ENTANGLE_DEBUG("Finalize camera scheduler %p", object);
 
     while (g_async_queue_length(priv->tasks) > 0) {
         EntangleCameraTask *task = g_async_queue_pop(priv->tasks);
@@ -214,6 +214,7 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
 
             if (!entangle_camera_get_connected(priv->camera)) {
                 g_object_unref(task);
+                g_mutex_lock(priv->lock);
                 break;
             }
 
@@ -223,11 +224,14 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
             g_object_unref(task);
         }
 
-        if (!entangle_camera_get_connected(priv->camera))
+        if (!entangle_camera_get_connected(priv->camera)) {
+            g_mutex_lock(priv->lock);
             break;
+        }
 
         if (!entangle_camera_event_wait(priv->camera, 500)) {
             ENTANGLE_DEBUG("Failed when waiting for events");
+            g_mutex_lock(priv->lock);
             break;
         }
 
@@ -248,12 +252,14 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
 
     g_mutex_unlock(priv->lock);
 
-    ENTANGLE_DEBUG("Camera scheduler worker quit, purging tasks");
+    ENTANGLE_DEBUG("Camera scheduler worker done, purging tasks");
     while (g_async_queue_length(priv->tasks) > 0) {
         EntangleCameraTask *task = g_async_queue_pop(priv->tasks);
         g_object_unref(task);
     }
     g_object_unref(scheduler);
+
+    ENTANGLE_DEBUG("Camera scheduler worker quit %p", scheduler);
     return NULL;
 }
 
