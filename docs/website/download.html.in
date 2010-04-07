@@ -4,7 +4,17 @@
 [% WRAPPER page.html %]
 
 <p>
-  At this time there are no official releases, check back soon
+  Source archives (tar.gz) for the official releases are available for
+  download at
+</p>
+
+<pre>
+  <a href="http://entangle-photo.org/download/sources/">http://entangle-photo.org/download/sources/</a>
+</pre>
+
+<p>
+  Binary releases will be made available by your operating system
+  distributor.
 </p>
 
 [% END %]
