@@ -787,7 +787,7 @@ when plugged in, for others try a refresh</property>
     <property name="program_name">Entangle</property>
     <property name="version">0.0.1</property>
     <property name="copyright" translatable="yes">Copyright (C) 2009 Daniel P. Berrange</property>
-    <property name="comments" translatable="yes">Tethered Camera Control</property>
+    <property name="comments" translatable="yes">Tethered Camera Control &amp; Capture</property>
     <property name="website">http://entangle-photo.org/</property>
     <property name="website_label" translatable="yes">entangle-photo.org</property>
     <property name="license" translatable="yes">                    GNU GENERAL PUBLIC LICENSE
