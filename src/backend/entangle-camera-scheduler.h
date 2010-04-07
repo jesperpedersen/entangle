@@ -63,8 +63,11 @@ EntangleCameraScheduler *entangle_camera_scheduler_new(EntangleCamera *camera);
 gboolean entangle_camera_scheduler_start(EntangleCameraScheduler *scheduler);
 gboolean entangle_camera_scheduler_end(EntangleCameraScheduler *scheduler);
 
+gboolean entangle_camera_scheduler_pause(EntangleCameraScheduler *scheduler);
+gboolean entangle_camera_scheduler_resume(EntangleCameraScheduler *scheduler);
+
 gboolean entangle_camera_scheduler_queue(EntangleCameraScheduler *scheduler,
-                                     EntangleCameraTask *task);
+                                         EntangleCameraTask *task);
 
 G_END_DECLS
 

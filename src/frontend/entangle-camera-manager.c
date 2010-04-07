@@ -541,6 +541,7 @@ static void do_remove_camera(EntangleCameraManager *manager)
 
     entangle_session_browser_set_session(priv->sessionBrowser, NULL);
     entangle_control_panel_set_camera(priv->controlPanel, NULL);
+    entangle_control_panel_set_camera_scheduler(priv->controlPanel, NULL);
     entangle_camera_set_progress(priv->camera, NULL);
 
     entangle_image_display_set_filename(priv->imageDisplay, NULL);
@@ -601,6 +602,7 @@ static void do_add_camera(EntangleCameraManager *manager)
     entangle_camera_set_progress(priv->camera, ENTANGLE_PROGRESS(manager));
     entangle_session_browser_set_session(priv->sessionBrowser, priv->session);
     entangle_control_panel_set_camera(priv->controlPanel, priv->camera);
+    entangle_control_panel_set_camera_scheduler(priv->controlPanel, priv->scheduler);
 
     g_free(directory);
 

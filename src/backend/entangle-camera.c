@@ -852,6 +852,7 @@ static void do_update_control_text(GObject *object,
     char *path;
     int id;
     CameraWidget *widget;
+    int ret;
 
     g_object_get(object, "path", &path, "id", &id, "value", &text, NULL);
     ENTANGLE_DEBUG("update of widget %s", path);
@@ -865,8 +866,8 @@ static void do_update_control_text(GObject *object,
         ENTANGLE_DEBUG("cannot set widget id %d to %s", id, text);
     }
 
-    if (gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx) != GP_OK)
-        ENTANGLE_DEBUG("cannot set config");
+    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx)) != GP_OK)
+        ENTANGLE_DEBUG("cannot set config %s", gp_result_as_string(ret));
 
 }
 

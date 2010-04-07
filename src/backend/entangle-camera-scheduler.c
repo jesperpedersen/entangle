@@ -35,7 +35,13 @@ struct _EntangleCameraSchedulerPrivate {
     EntangleCamera *camera;
 
     GThread *worker;
+    GMutex *lock;
     gboolean cancelled;
+
+    gboolean pause;
+    gboolean resume;
+    GCond *pauseSignal;
+    GCond *resumeSignal;
 
     GAsyncQueue *tasks;
 };
@@ -103,6 +109,10 @@ static void entangle_camera_scheduler_finalize(GObject *object)
         g_object_unref(task);
     }
     g_async_queue_unref(priv->tasks);
+
+    g_mutex_free(priv->lock);
+    g_cond_free(priv->pauseSignal);
+    g_cond_free(priv->resumeSignal);
 
     g_object_unref(priv->camera);
 
@@ -172,6 +182,9 @@ static void entangle_camera_scheduler_init(EntangleCameraScheduler *scheduler)
     priv = scheduler->priv = ENTANGLE_CAMERA_SCHEDULER_GET_PRIVATE(scheduler);
 
     priv->tasks = g_async_queue_new();
+    priv->lock = g_mutex_new();
+    priv->pauseSignal = g_cond_new();
+    priv->resumeSignal = g_cond_new();
 }
 
 
@@ -182,8 +195,12 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
 
     ENTANGLE_DEBUG("Camera scheduler worker active");
 
+    g_mutex_lock(priv->lock);
+
     while (!priv->cancelled &&
            entangle_camera_get_connected(priv->camera)) {
+
+        g_mutex_unlock(priv->lock);
 
         while (g_async_queue_length(priv->tasks) > 0) {
             EntangleCameraTask *task = g_async_queue_pop(priv->tasks);
@@ -213,7 +230,23 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
             ENTANGLE_DEBUG("Failed when waiting for events");
             break;
         }
+
+        g_mutex_lock(priv->lock);
+
+        if (priv->pause) {
+            ENTANGLE_DEBUG("Signalling that we are not paused");
+            priv->pause = FALSE;
+            priv->resume = FALSE;
+            g_cond_signal(priv->pauseSignal);
+
+            ENTANGLE_DEBUG("Waiting for resume");
+            while (!priv->resume)
+                g_cond_wait(priv->resumeSignal, priv->lock);
+            ENTANGLE_DEBUG("We are now resumed");
+        }
     }
+
+    g_mutex_unlock(priv->lock);
 
     ENTANGLE_DEBUG("Camera scheduler worker quit, purging tasks");
     while (g_async_queue_length(priv->tasks) > 0) {
@@ -254,7 +287,45 @@ gboolean entangle_camera_scheduler_end(EntangleCameraScheduler *scheduler)
     if (!priv->worker)
         return FALSE;
 
+    g_mutex_lock(priv->lock);
     priv->cancelled = TRUE;
+    g_mutex_unlock(priv->lock);
+
+    return TRUE;
+}
+
+
+gboolean entangle_camera_scheduler_pause(EntangleCameraScheduler *scheduler)
+{
+    EntangleCameraSchedulerPrivate *priv = scheduler->priv;
+
+    if (!priv->worker)
+        return FALSE;
+
+    g_mutex_lock(priv->lock);
+    priv->pause = TRUE;
+    ENTANGLE_DEBUG("Waiting for thread to pause");
+    while (priv->pause)
+        g_cond_wait(priv->pauseSignal, priv->lock);
+    ENTANGLE_DEBUG("Thread is now paused");
+    g_mutex_unlock(priv->lock);
+    
+    return TRUE;
+}
+
+
+gboolean entangle_camera_scheduler_resume(EntangleCameraScheduler *scheduler)
+{
+    EntangleCameraSchedulerPrivate *priv = scheduler->priv;
+
+    if (!priv->worker)
+        return FALSE;
+
+    g_mutex_lock(priv->lock);
+    ENTANGLE_DEBUG("Signalling thread to resume");
+    priv->resume = TRUE;
+    g_cond_signal(priv->resumeSignal);
+    g_mutex_unlock(priv->lock);
 
     return TRUE;
 }

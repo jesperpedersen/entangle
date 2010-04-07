@@ -37,6 +37,7 @@
 
 struct _EntangleControlPanelPrivate {
     EntangleCamera *camera;
+    EntangleCameraScheduler *cameraScheduler;
 };
 
 G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_VBOX);
@@ -46,6 +47,24 @@ enum {
     PROP_CAMERA,
 };
 
+
+static void do_scheduler_pause(EntangleControlPanel *panel)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+    gdk_threads_leave();
+    if (priv->cameraScheduler)
+        entangle_camera_scheduler_pause(priv->cameraScheduler);
+    gdk_threads_enter();
+}
+
+static void do_scheduler_resume(EntangleControlPanel *panel)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+    gdk_threads_leave();
+    if (priv->cameraScheduler)
+        entangle_camera_scheduler_resume(priv->cameraScheduler);
+    gdk_threads_enter();
+}
 
 static void do_control_remove(GtkWidget *widget,
                               gpointer data)
@@ -59,13 +78,16 @@ static void do_update_control_entry(GtkWidget *widget,
                                     GdkEventFocus *ev G_GNUC_UNUSED,
                                     gpointer data)
 {
-    EntangleControlText *control = data;
+    EntangleControlPanel *panel = data;
+    EntangleControlText *control = g_object_get_data(G_OBJECT(widget), "control");
     const char *text;
 
     text = gtk_entry_get_text(GTK_ENTRY(widget));
 
     ENTANGLE_DEBUG("entry [%s]", text);
+    do_scheduler_pause(panel);
     g_object_set(control, "value", text, NULL);
+    do_scheduler_resume(panel);
 }
 
 static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
@@ -73,21 +95,27 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
                                     gdouble value,
                                     gpointer data)
 {
-    EntangleControlText *control = data;
+    EntangleControlPanel *panel = data;
+    EntangleControlText *control = g_object_get_data(G_OBJECT(widget), "control");
 
     ENTANGLE_DEBUG("range [%lf]", value);
+    do_scheduler_pause(panel);
     g_object_set(control, "value", (float)value, NULL);
+    do_scheduler_resume(panel);
 }
 
 static void do_update_control_combo(GtkComboBox *widget,
                                     gpointer data)
 {
-    EntangleControlChoice *control = data;
+    EntangleControlPanel *panel = data;
+    EntangleControlChoice *control = g_object_get_data(G_OBJECT(widget), "control");
     char *text;
 
     text = gtk_combo_box_get_active_text(widget);
     ENTANGLE_DEBUG("combo [%s]", text);
+    do_scheduler_pause(panel);
     g_object_set(control, "value", text, NULL);
+    do_scheduler_resume(panel);
 
     g_free(text);
 }
@@ -95,12 +123,15 @@ static void do_update_control_combo(GtkComboBox *widget,
 static void do_update_control_toggle(GtkToggleButton *widget,
                                      gpointer data)
 {
-    EntangleControlChoice *control = data;
+    EntangleControlPanel *panel = data;
+    EntangleControlChoice *control = g_object_get_data(G_OBJECT(widget), "control");
     gboolean active;
 
     active = gtk_toggle_button_get_active(widget);
     ENTANGLE_DEBUG("toggle [%d]", active);
+    do_scheduler_pause(panel);
     g_object_set(control, "value", active, NULL);
+    do_scheduler_resume(panel);
 }
 
 static void do_setup_control_group(EntangleControlPanel *panel,
@@ -175,8 +206,10 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
             gtk_combo_box_set_active(GTK_COMBO_BOX(value), active);
+
+            g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "changed",
-                             G_CALLBACK(do_update_control_combo), control);
+                             G_CALLBACK(do_update_control_combo), panel);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (ENTANGLE_IS_CONTROL_DATE(control)) {
             GtkWidget *label;
@@ -213,8 +246,9 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_range_set_value(GTK_RANGE(value), offset);
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
+            g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "change-value",
-                             G_CALLBACK(do_update_control_range), control);
+                             G_CALLBACK(do_update_control_range), panel);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (ENTANGLE_IS_CONTROL_TEXT(control)) {
             GtkWidget *label;
@@ -232,8 +266,9 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_entry_set_text(GTK_ENTRY(value), text);
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
+            g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "focus-out-event",
-                             G_CALLBACK(do_update_control_entry), control);
+                             G_CALLBACK(do_update_control_entry), panel);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (ENTANGLE_IS_CONTROL_TOGGLE(control)) {
             GtkWidget *value;
@@ -244,8 +279,9 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
+            g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "toggled",
-                             G_CALLBACK(do_update_control_toggle), control);
+                             G_CALLBACK(do_update_control_toggle), panel);
             gtk_container_add(GTK_CONTAINER(box), value);
         }
     }
@@ -268,9 +304,9 @@ static void do_setup_camera(EntangleControlPanel *panel)
 }
 
 static void entangle_control_panel_get_property(GObject *object,
-                                            guint prop_id,
-                                            GValue *value,
-                                            GParamSpec *pspec)
+                                                guint prop_id,
+                                                GValue *value,
+                                                GParamSpec *pspec)
 {
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(object);
     EntangleControlPanelPrivate *priv = panel->priv;
@@ -287,9 +323,9 @@ static void entangle_control_panel_get_property(GObject *object,
 }
 
 static void entangle_control_panel_set_property(GObject *object,
-                                            guint prop_id,
-                                            const GValue *value,
-                                            GParamSpec *pspec)
+                                                guint prop_id,
+                                                const GValue *value,
+                                                GParamSpec *pspec)
 {
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(object);
 
@@ -313,6 +349,8 @@ static void entangle_control_panel_finalize (GObject *object)
 
     if (priv->camera)
         g_object_unref(priv->camera);
+    if (priv->cameraScheduler)
+        g_object_unref(priv->cameraScheduler);
 
     G_OBJECT_CLASS (entangle_control_panel_parent_class)->finalize (object);
 }
@@ -358,7 +396,7 @@ static void entangle_control_panel_init(EntangleControlPanel *panel)
 
 
 void entangle_control_panel_set_camera(EntangleControlPanel *panel,
-                                   EntangleCamera *cam)
+                                       EntangleCamera *cam)
 {
     EntangleControlPanelPrivate *priv = panel->priv;
 
@@ -378,6 +416,24 @@ EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel)
     return priv->camera;
 }
 
+void entangle_control_panel_set_camera_scheduler(EntangleControlPanel *panel,
+                                                 EntangleCameraScheduler *sched)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+
+    if (priv->cameraScheduler)
+        g_object_unref(priv->cameraScheduler);
+    priv->cameraScheduler = sched;
+    if (priv->cameraScheduler)
+        g_object_ref(priv->cameraScheduler);
+}
+
+EntangleCameraScheduler *entangle_control_panel_get_camera_scheduler(EntangleControlPanel *panel)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+
+    return priv->cameraScheduler;
+}
 
 /*
  * Local variables:
