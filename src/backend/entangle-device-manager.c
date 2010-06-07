@@ -120,13 +120,20 @@ static void do_udev_event(GUdevClient *client G_GNUC_UNUSED,
         return;
 
     devtype = g_udev_device_get_devtype(dev);
-    if (strcmp(devtype, "usb_device") != 0)
+    if ((devtype == NULL) ||
+        strcmp(devtype, "usb_device") != 0)
         return;
 
     sysfs = g_udev_device_get_sysfs_path(dev);
 
     usbbus = g_udev_device_get_property(dev, "BUSNUM");
     usbdev = g_udev_device_get_property(dev, "DEVNUM");
+
+    if (sysfs == NULL ||
+        usbbus == NULL ||
+        usbdev == NULL)
+        return;
+
     port = g_strdup_printf("usb:%s,%s", usbbus, usbdev);
 
     ENTANGLE_DEBUG("%s device '%s' '%s'", action, sysfs, port);
