@@ -119,12 +119,12 @@ javascript_la_CFLAGS = \
 EXTRA_DIST += javascript.cfg
 
 install-data-local:
-	install -d $(pkgdatadir)/plugins
-	install -d $(pkgdatadir)/plugins/javascript
-	install $(srcdir)/javascript.cfg $(pkgdatadir)/plugins/javascript/plugin.cfg
+	install -d $(DESTDIR)$(pkgdatadir)/plugins
+	install -d  $(DESTDIR)$(pkgdatadir)/plugins/javascript
+	install $(srcdir)/javascript.cfg  $(DESTDIR)$(pkgdatadir)/plugins/javascript/plugin.cfg
 
 uninstall-local:
-	rm -f $(pkgdatadir)/plugins/javascript/plugin.cfg
+	rm -f  $(DESTDIR)$(pkgdatadir)/plugins/javascript/plugin.cfg
 else # WITH_JAVASCRIPT
 EXTRA_DIST += \
 	javascript.cfg \
