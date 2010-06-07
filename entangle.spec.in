@@ -12,12 +12,12 @@
 Summary: Tethered shooting & control of digital cameras
 Name: entangle
 Version: @VERSION@
-Release: 1%{?dist}%{?extra_release}
+Release: 1%{?dist}
 License: GPLv3+
 Group: Applications/Multimedia
-Source: http://entangle-project.org/download/%{name}-%{version}.tar.gz
+Source: http://entangle-photo.org/download/sources/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-URL: http://entangle-project.org/
+URL: http://entangle-photo.org/
 
 BuildRequires: glib2-devel >= 2.10.0
 BuildRequires: gtk2-devel >= 2.12.0
@@ -68,12 +68,12 @@ make %{?_smp_mflags}
 rm -fr %{buildroot}
 
 %makeinstall
+chmod -x %{buildroot}%{_datadir}/entangle/plugins/*/*.cfg
 
 rm -f %{buildroot}%{_libdir}/entangle/plugins/*.a
 rm -f %{buildroot}%{_libdir}/entangle/plugins/*.la
 
-cd %{buildroot}%{_datadir}/%{name}/website
-ln -s ../../gtk-doc/html/Entangle api
+rm -rf %{buildroot}%{_datadir}/%{name}/website
 
 %clean
 rm -fr %{buildroot}
@@ -105,7 +105,6 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/%{name}/sRGB.icc
 %{_datadir}/gtk-doc/html/Entangle
 %{_datadir}/applications/%{name}.desktop
-%doc %{_datadir}/%{name}/website/
 %if %{with_introspection}
 %{_datadir}/gir-1.0/Entangle-0.1.gir
 %{_datadir}/gir-1.0/GPhoto-2.0.gir
@@ -120,5 +119,8 @@ update-desktop-database %{_datadir}/applications
 %endif
 
 %changelog
-* Wed Sep 30 2009 Daniel P. Berrange <berrange@redhat.com> - 0.0.1-1
-- Initial package
+* Fri Apr  9 2010 Daniel P. Berrange <berrange@redhat.com> - 0.1.0-2
+- Remove redundant website content from RPM
+
+* Thu Apr  8 2010 Daniel P. Berrange <berrange@redhat.com> - 0.1.0-1
+- Initial release
