@@ -315,6 +315,8 @@ void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monito
 
     ENTANGLE_DEBUG("At %d,%d Size %d,%d", r.x, r.y, r.width, r.height);
 
+    entangle_image_display_set_infohint(priv->display, FALSE);
+
     gtk_window_move(GTK_WINDOW(win), r.x, r.y);
     gtk_window_resize(GTK_WINDOW(win), r.width, r.height);
     gtk_window_fullscreen(GTK_WINDOW(win));

@@ -39,6 +39,7 @@ struct _EntangleImageDisplayPrivate {
 
     gboolean autoscale;
     float scale;
+    gboolean infoHint;
 };
 
 G_DEFINE_TYPE(EntangleImageDisplay, entangle_image_display, GTK_TYPE_DRAWING_AREA);
@@ -50,6 +51,7 @@ enum {
     PROP_PIXBUF,
     PROP_AUTOSCALE,
     PROP_SCALE,
+    PROP_INFOHINT,
 };
 
 static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
@@ -87,6 +89,11 @@ static void entangle_image_display_update_hint(EntangleImageDisplay *display)
     gchar *fileInfo = NULL;
     gchar *pixmapInfo = NULL;
     gchar *hint;
+
+    if (!priv->infoHint) {
+        gtk_widget_set_tooltip_markup(GTK_WIDGET(display), "");
+        return;
+    }
 
     if (priv->filename) {
         EntangleImage *image = entangle_image_new(priv->filename);
@@ -166,6 +173,10 @@ static void entangle_image_display_get_property(GObject *object,
             g_value_set_float(value, priv->scale);
             break;
 
+        case PROP_INFOHINT:
+            g_value_set_boolean(value, priv->infoHint);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -178,6 +189,7 @@ static void entangle_image_display_set_property(GObject *object,
                                                 GParamSpec *pspec)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(object);
+    EntangleImageDisplayPrivate *priv = display->priv;
 
     ENTANGLE_DEBUG("Set prop on image display %d", prop_id);
 
@@ -201,6 +213,11 @@ static void entangle_image_display_set_property(GObject *object,
 
         case PROP_SCALE:
             entangle_image_display_set_scale(display, g_value_get_float(value));
+            break;
+
+        case PROP_INFOHINT:
+            priv->infoHint = g_value_get_boolean(value);
+            entangle_image_display_update_hint(display);
             break;
 
         default:
@@ -428,6 +445,16 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
                                                        G_PARAM_STATIC_NAME |
                                                        G_PARAM_STATIC_NICK |
                                                        G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_INFOHINT,
+                                    g_param_spec_boolean("infohint",
+                                                         "Image info hint",
+                                                         "Image information hint",
+                                                         TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntangleImageDisplayPrivate));
 }
@@ -594,6 +621,22 @@ gfloat entangle_image_display_get_scale(EntangleImageDisplay *display)
 
     return priv->scale;
 }
+
+
+void entangle_image_display_set_infohint(EntangleImageDisplay *display,
+                                         gboolean hint)
+{
+    g_object_set(display, "infohint", hint, NULL);
+}
+
+
+gboolean entangle_image_display_get_infohint(EntangleImageDisplay *display)
+{
+    gboolean hint;
+    g_object_get(display, "infohint", &hint, NULL);
+    return hint;
+}
+
 
 /*
  * Local variables:
