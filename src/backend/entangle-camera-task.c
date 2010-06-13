@@ -46,9 +46,9 @@ enum {
 
 
 static void entangle_camera_task_get_property(GObject *object,
-                                            guint prop_id,
-                                            GValue *value,
-                                            GParamSpec *pspec)
+                                              guint prop_id,
+                                              GValue *value,
+                                              GParamSpec *pspec)
 {
     EntangleCameraTask *task = ENTANGLE_CAMERA_TASK(object);
     EntangleCameraTaskPrivate *priv = task->priv;
@@ -69,9 +69,9 @@ static void entangle_camera_task_get_property(GObject *object,
 }
 
 static void entangle_camera_task_set_property(GObject *object,
-                                          guint prop_id,
-                                          const GValue *value,
-                                          GParamSpec *pspec)
+                                              guint prop_id,
+                                              const GValue *value,
+                                              GParamSpec *pspec)
 {
     EntangleCameraTask *task = ENTANGLE_CAMERA_TASK(object);
     EntangleCameraTaskPrivate *priv = task->priv;
@@ -148,12 +148,12 @@ static void entangle_camera_task_class_init(EntangleCameraTaskClass *klass)
 
 
 EntangleCameraTask *entangle_camera_task_new(const char *name,
-                                     const char *label)
+                                             const char *label)
 {
     return ENTANGLE_CAMERA_TASK(g_object_new(ENTANGLE_TYPE_CAMERA_TASK,
-                                         "name", name,
-                                         "label", label,
-                                         NULL));
+                                             "name", name,
+                                             "label", label,
+                                             NULL));
 }
 
 
@@ -178,7 +178,7 @@ const char *entangle_camera_task_get_name(EntangleCameraTask *task)
 }
 
 gboolean entangle_camera_task_execute(EntangleCameraTask *task,
-                                  EntangleCamera *camera)
+                                      EntangleCamera *camera)
 {
     return (ENTANGLE_CAMERA_TASK_GET_CLASS(task)->execute)(task, camera);
 }

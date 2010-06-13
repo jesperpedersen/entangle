@@ -56,13 +56,13 @@ struct _EntangleCameraTaskClass
 GType entangle_camera_task_get_type(void) G_GNUC_CONST;
 
 EntangleCameraTask *entangle_camera_task_new(const char *name,
-                                     const char *label);
+                                             const char *label);
 
 const char *entangle_camera_task_get_name(EntangleCameraTask *task);
 const char *entangle_camera_task_get_label(EntangleCameraTask *task);
 
 gboolean entangle_camera_task_execute(EntangleCameraTask *task,
-                                  EntangleCamera *camera);
+                                      EntangleCamera *camera);
 
 G_END_DECLS
 

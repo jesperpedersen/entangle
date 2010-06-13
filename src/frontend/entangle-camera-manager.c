@@ -43,6 +43,8 @@
 #include "entangle-colour-profile.h"
 #include "entangle-preferences-display.h"
 #include "entangle-progress.h"
+#include "entangle-cancellable.h"
+#include "entangle-confirmable.h"
 #include "entangle-camera-task-capture.h"
 #include "entangle-camera-task-preview.h"
 #include "entangle-camera-task-monitor.h"
@@ -93,9 +95,9 @@ struct _EntangleCameraManagerPrivate {
 
     gulong sigPrefsNotify;
 
-    gboolean inOperation;
-    gboolean operationCancel;
-    float operationTarget;
+    EntangleCameraTask *task;
+    gboolean taskCancel;
+    float taskTarget;
 
     GladeXML *glade;
 };
@@ -309,39 +311,39 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     gtk_widget_set_sensitive(toolCapture,
                              priv->camera &&
                              entangle_camera_get_has_capture(priv->camera) &&
-                             !priv->inOperation ? TRUE : FALSE);
+                             !priv->task ? TRUE : FALSE);
     gtk_widget_set_sensitive(priv->menuItemCapture,
                              priv->camera &&
                              entangle_camera_get_has_capture(priv->camera) &&
-                             !priv->inOperation ? TRUE : FALSE);
+                             !priv->task ? TRUE : FALSE);
     gtk_widget_set_sensitive(priv->menuItemPreview,
                              priv->camera &&
                              entangle_camera_get_has_preview(priv->camera) &&
-                             !priv->inOperation ? TRUE : FALSE);
+                             !priv->task ? TRUE : FALSE);
     gtk_widget_set_sensitive(priv->menuItemMonitor,
                              priv->camera &&
                              entangle_camera_get_has_capture(priv->camera) &&
-                             !priv->inOperation ? TRUE : FALSE);
+                             !priv->task ? TRUE : FALSE);
 
     gtk_widget_set_sensitive(toolNew,
-                             priv->camera && !priv->inOperation ?
+                             priv->camera && !priv->task ?
                              TRUE : FALSE);
     gtk_widget_set_sensitive(toolOpen,
-                             priv->camera && !priv->inOperation ?
+                             priv->camera && !priv->task ?
                              TRUE : FALSE);
     gtk_widget_set_sensitive(menuNew,
-                             priv->camera && !priv->inOperation ?
+                             priv->camera && !priv->task ?
                              TRUE : FALSE);
     gtk_widget_set_sensitive(menuOpen,
-                             priv->camera && !priv->inOperation ?
+                             priv->camera && !priv->task ?
                              TRUE : FALSE);
     gtk_widget_set_sensitive(menuConnect,
                              priv->camera ? FALSE : TRUE);
     gtk_widget_set_sensitive(menuDisconnect,
-                             priv->camera && !priv->inOperation ?
+                             priv->camera && !priv->task ?
                              TRUE : FALSE);
     gtk_widget_set_sensitive(menuHelp,
-                             priv->camera && !priv->inOperation ?
+                             priv->camera && !priv->task ?
                              TRUE : FALSE);
 
     if (priv->camera && !entangle_camera_get_has_capture(priv->camera)) {
@@ -359,12 +361,19 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     else
         gtk_widget_hide(settingsScroll);
 
-    gtk_widget_set_sensitive(settingsScroll, !priv->inOperation);
-    /*gtk_widget_set_sensitive(iconScroll, !priv->inOperation);*/
+    gtk_widget_set_sensitive(settingsScroll, !priv->task);
+    /*gtk_widget_set_sensitive(iconScroll, !priv->task)*/
 
-    if (priv->inOperation) {
-        gtk_widget_show(cancel);
+    if (priv->task) {
+        if (ENTANGLE_IS_CANCELLABLE(priv->task))
+            gtk_widget_show(cancel);
+        else
+            gtk_widget_hide(cancel);
         gtk_widget_show(operation);
+        if (ENTANGLE_IS_CONFIRMABLE(priv->task))
+            gtk_widget_show(confirm);
+        else
+            gtk_widget_hide(confirm);
     } else {
         gtk_widget_hide(cancel);
         gtk_widget_hide(operation);
@@ -437,7 +446,7 @@ static void do_camera_task_begin(EntangleCamera *cam G_GNUC_UNUSED, EntangleCame
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    priv->operationCancel = FALSE;
+    priv->taskCancel = FALSE;
 }
 
 static void do_camera_task_end(EntangleCamera *cam G_GNUC_UNUSED, EntangleCameraTask *task G_GNUC_UNUSED, void *data)
@@ -445,8 +454,10 @@ static void do_camera_task_end(EntangleCamera *cam G_GNUC_UNUSED, EntangleCamera
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    priv->inOperation = FALSE;
-    priv->operationCancel = FALSE;
+    if (priv->task)
+        g_object_unref(priv->task);
+    priv->task = NULL;
+    priv->taskCancel = FALSE;
 
     gdk_threads_enter();
     do_capture_widget_sensitivity(manager);
@@ -462,7 +473,7 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
 
     gdk_threads_enter();
 
-    priv->operationTarget = target;
+    priv->taskTarget = target;
     mtr = glade_xml_get_widget(priv->glade, "toolbar-progress");
 
     txt = g_strdup_vprintf(format, args);
@@ -486,7 +497,7 @@ static void do_entangle_camera_progress_update(EntangleProgress *iface, float cu
 
     mtr = glade_xml_get_widget(priv->glade, "toolbar-progress");
 
-    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), current / priv->operationTarget);
+    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), current / priv->taskTarget);
 
     gdk_threads_leave();
 }
@@ -508,16 +519,6 @@ static void do_entangle_camera_progress_stop(EntangleProgress *iface)
     gdk_threads_leave();
 }
 
-static gboolean do_entangle_camera_progress_cancelled(EntangleProgress *iface)
-{
-    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(iface);
-    EntangleCameraManagerPrivate *priv = manager->priv;
-
-    ENTANGLE_DEBUG("Cancel queried %d", (int)priv->operationCancel);
-
-    return priv->operationCancel;
-}
-
 static void entangle_camera_progress_interface_init (gpointer g_iface,
                                                  gpointer iface_data G_GNUC_UNUSED)
 {
@@ -525,7 +526,6 @@ static void entangle_camera_progress_interface_init (gpointer g_iface,
     iface->start = do_entangle_camera_progress_start;
     iface->update = do_entangle_camera_progress_update;
     iface->stop = do_entangle_camera_progress_stop;
-    iface->cancelled = do_entangle_camera_progress_cancelled;
 }
 
 static void do_remove_camera(EntangleCameraManager *manager)
@@ -990,7 +990,20 @@ static void do_toolbar_cancel_clicked(GtkToolButton *src G_GNUC_UNUSED,
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    priv->operationCancel = TRUE;
+    if (priv->task &&
+        ENTANGLE_IS_CANCELLABLE(priv->task))
+        entangle_cancellable_cancel(ENTANGLE_CANCELLABLE(priv->task));
+}
+
+
+static void do_toolbar_confirm_clicked(GtkToolButton *src G_GNUC_UNUSED,
+                                       EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->task &&
+        ENTANGLE_IS_CONFIRMABLE(priv->task))
+        entangle_confirmable_confirm(ENTANGLE_CONFIRMABLE(priv->task));
 }
 
 
@@ -998,75 +1011,59 @@ static void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
                                EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
-    EntangleCameraTask *task;
 
     ENTANGLE_DEBUG("starting Capture thread");
 
-    if (priv->inOperation)
+    if (priv->task)
         return;
 
-    priv->inOperation = TRUE;
+    priv->task = ENTANGLE_CAMERA_TASK(entangle_camera_task_capture_new());
     do_capture_widget_sensitivity(manager);
-
-    task = ENTANGLE_CAMERA_TASK(entangle_camera_task_capture_new());
-    entangle_camera_scheduler_queue(priv->scheduler, task);
-    g_object_unref(task);
+    entangle_camera_scheduler_queue(priv->scheduler, priv->task);
 }
 
 static void do_menu_capture(GtkMenuItem *src G_GNUC_UNUSED,
                             EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
-    EntangleCameraTask *task;
 
     ENTANGLE_DEBUG("starting Capture thread");
 
-    if (priv->inOperation)
+    if (priv->task)
         return;
 
-    priv->inOperation = TRUE;
+    priv->task = ENTANGLE_CAMERA_TASK(entangle_camera_task_capture_new());
     do_capture_widget_sensitivity(manager);
-
-    task = ENTANGLE_CAMERA_TASK(entangle_camera_task_capture_new());
-    entangle_camera_scheduler_queue(priv->scheduler, task);
-    g_object_unref(task);
+    entangle_camera_scheduler_queue(priv->scheduler, priv->task);
 }
 
 static void do_menu_preview(GtkMenuItem *src G_GNUC_UNUSED,
                             EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
-    EntangleCameraTask *task;
 
     ENTANGLE_DEBUG("starting Preview thread");
-    if (priv->inOperation)
+    if (priv->task)
         return;
 
-    priv->inOperation = TRUE;
+    priv->task = ENTANGLE_CAMERA_TASK(entangle_camera_task_preview_new());
     do_capture_widget_sensitivity(manager);
-
-    task = ENTANGLE_CAMERA_TASK(entangle_camera_task_preview_new());
-    entangle_camera_scheduler_queue(priv->scheduler, task);
-    g_object_unref(task);
+    entangle_camera_scheduler_queue(priv->scheduler, priv->task);
 }
 
 static void do_menu_monitor(GtkMenuItem *src G_GNUC_UNUSED,
                             EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
-    EntangleCameraTask *task;
 
     ENTANGLE_DEBUG("starting monitor thread");
 
-    if (priv->inOperation)
+    if (priv->task)
         return;
 
-    priv->inOperation = TRUE;
+    priv->task = ENTANGLE_CAMERA_TASK(entangle_camera_task_monitor_new());
     do_capture_widget_sensitivity(manager);
-
-    task = ENTANGLE_CAMERA_TASK(entangle_camera_task_monitor_new());
-    entangle_camera_scheduler_queue(priv->scheduler, task);
-    g_object_unref(task);
+    entangle_camera_scheduler_queue(priv->scheduler, priv->task);
 }
 
 static void entangle_camera_manager_setup_capture_menu(EntangleCameraManager *manager)
@@ -1501,6 +1498,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     glade_xml_signal_connect_data(priv->glade, "menu_settings_toggled", G_CALLBACK(do_menu_settings_toggled), manager);
     glade_xml_signal_connect_data(priv->glade, "toolbar_settings_toggled", G_CALLBACK(do_toolbar_settings_toggled), manager);
     glade_xml_signal_connect_data(priv->glade, "toolbar_cancel_clicked", G_CALLBACK(do_toolbar_cancel_clicked), manager);
+    glade_xml_signal_connect_data(priv->glade, "toolbar_confirm_clicked", G_CALLBACK(do_toolbar_confirm_clicked), manager);
 
     win = glade_xml_get_widget(priv->glade, "camera-manager");
     g_signal_connect(win, "delete-event", G_CALLBACK(do_manager_delete), manager);
@@ -1613,7 +1611,10 @@ void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
         do_remove_camera(manager);
         entangle_camera_disconnect(priv->camera);
         g_object_unref(priv->camera);
-        priv->inOperation = FALSE;
+        if (priv->task) {
+            g_object_unref(priv->task);
+            priv->task = NULL;
+        }
     }
     priv->camera = cam;
     if (priv->camera) {

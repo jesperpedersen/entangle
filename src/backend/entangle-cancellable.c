@@ -21,38 +21,38 @@
 #include <config.h>
 
 #include "entangle-debug.h"
-#include "entangle-progress.h"
+#include "entangle-cancellable.h"
 
-void entangle_progress_start(EntangleProgress *prog, float target, const char *format, va_list args)
+void entangle_cancellable_reset(EntangleCancellable *can)
 {
-    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->start(prog, target, format, args);
+    ENTANGLE_CANCELLABLE_GET_INTERFACE(can)->reset(can);
 }
 
-void entangle_progress_update(EntangleProgress *prog, float current)
+void entangle_cancellable_cancel(EntangleCancellable *can)
 {
-    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->update(prog, current);
+    ENTANGLE_CANCELLABLE_GET_INTERFACE(can)->cancel(can);
 }
 
-void entangle_progress_stop(EntangleProgress *prog)
+gboolean entangle_cancellable_is_cancelled(EntangleCancellable *can)
 {
-    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->stop(prog);
+    return ENTANGLE_CANCELLABLE_GET_INTERFACE(can)->is_cancelled(can);
 }
 
 GType
-entangle_progress_get_type (void)
+entangle_cancellable_get_type (void)
 {
-    static GType progress_type = 0;
+    static GType cancellable_type = 0;
 
-    if (!progress_type) {
-        progress_type =
-            g_type_register_static_simple (G_TYPE_INTERFACE, "EntangleProgress",
-                                           sizeof (EntangleProgressInterface),
-                                           NULL, 0, NULL, 0);
+    if (!cancellable_type) {
+        cancellable_type =
+            g_type_register_static_simple(G_TYPE_INTERFACE, "EntangleCancellable",
+                                          sizeof (EntangleCancellableInterface),
+                                          NULL, 0, NULL, 0);
 
-        g_type_interface_add_prerequisite (progress_type, G_TYPE_OBJECT);
+        g_type_interface_add_prerequisite(cancellable_type, G_TYPE_OBJECT);
     }
 
-    return progress_type;
+    return cancellable_type;
 }
 
 /*

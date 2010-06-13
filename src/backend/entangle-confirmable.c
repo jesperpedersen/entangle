@@ -21,38 +21,38 @@
 #include <config.h>
 
 #include "entangle-debug.h"
-#include "entangle-progress.h"
+#include "entangle-confirmable.h"
 
-void entangle_progress_start(EntangleProgress *prog, float target, const char *format, va_list args)
+void entangle_confirmable_reset(EntangleConfirmable *con)
 {
-    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->start(prog, target, format, args);
+    ENTANGLE_CONFIRMABLE_GET_INTERFACE(con)->reset(con);
 }
 
-void entangle_progress_update(EntangleProgress *prog, float current)
+void entangle_confirmable_confirm(EntangleConfirmable *con)
 {
-    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->update(prog, current);
+    ENTANGLE_CONFIRMABLE_GET_INTERFACE(con)->confirm(con);
 }
 
-void entangle_progress_stop(EntangleProgress *prog)
+gboolean entangle_confirmable_is_confirmed(EntangleConfirmable *con)
 {
-    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->stop(prog);
+    return ENTANGLE_CONFIRMABLE_GET_INTERFACE(con)->is_confirmed(con);
 }
 
 GType
-entangle_progress_get_type (void)
+entangle_confirmable_get_type (void)
 {
-    static GType progress_type = 0;
+    static GType confirmable_type = 0;
 
-    if (!progress_type) {
-        progress_type =
-            g_type_register_static_simple (G_TYPE_INTERFACE, "EntangleProgress",
-                                           sizeof (EntangleProgressInterface),
-                                           NULL, 0, NULL, 0);
+    if (!confirmable_type) {
+        confirmable_type =
+            g_type_register_static_simple(G_TYPE_INTERFACE, "EntangleConfirmable",
+                                          sizeof (EntangleConfirmableInterface),
+                                          NULL, 0, NULL, 0);
 
-        g_type_interface_add_prerequisite (progress_type, G_TYPE_OBJECT);
+        g_type_interface_add_prerequisite(confirmable_type, G_TYPE_OBJECT);
     }
 
-    return progress_type;
+    return confirmable_type;
 }
 
 /*

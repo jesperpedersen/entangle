@@ -27,21 +27,31 @@
 
 #include "entangle-debug.h"
 #include "entangle-camera-task-monitor.h"
-#include "entangle-progress.h"
+#include "entangle-cancellable.h"
 
 #define ENTANGLE_CAMERA_TASK_MONITOR_GET_PRIVATE(obj)                                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_TASK_MONITOR, EntangleCameraTaskMonitorPrivate))
 
+static void entangle_camera_task_monitor_init_cancellable(gpointer g_iface,
+                                                          gpointer iface_data G_GNUC_UNUSED);
+
 struct _EntangleCameraTaskMonitorPrivate {
-    int dummy;
+    GMutex *lock;
+    gboolean cancelled;
 };
 
-G_DEFINE_TYPE(EntangleCameraTaskMonitor, entangle_camera_task_monitor, ENTANGLE_TYPE_CAMERA_TASK);
+G_DEFINE_TYPE_EXTENDED(EntangleCameraTaskMonitor, entangle_camera_task_monitor, ENTANGLE_TYPE_CAMERA_TASK, 0,
+                       G_IMPLEMENT_INTERFACE(ENTANGLE_TYPE_CANCELLABLE, entangle_camera_task_monitor_init_cancellable));
+
 
 
 static void entangle_camera_task_monitor_finalize(GObject *object)
 {
+    EntangleCameraTaskMonitor *task = ENTANGLE_CAMERA_TASK_MONITOR(object);
+    EntangleCameraTaskMonitorPrivate *priv = task->priv;
     ENTANGLE_DEBUG("Finalize camera %p", object);
+
+    g_mutex_free(priv->lock);
 
     G_OBJECT_CLASS (entangle_camera_task_monitor_parent_class)->finalize (object);
 }
@@ -58,25 +68,75 @@ static void do_camera_file_added(EntangleCamera *camera,
 }
 
 static gboolean entangle_camera_task_monitor_execute(EntangleCameraTask *task,
-                                                 EntangleCamera *camera)
+                                                     EntangleCamera *camera)
 {
+    EntangleCameraTaskMonitorPrivate *priv = ENTANGLE_CAMERA_TASK_MONITOR(task)->priv;
     gulong sig;
-    EntangleProgress *progress;
-
-    g_object_get(camera, "progress", &progress, NULL);
 
     sig = g_signal_connect(camera, "camera-file-added",
                            G_CALLBACK(do_camera_file_added), task);
 
-    while (!entangle_progress_cancelled(progress)) {
+    g_mutex_lock(priv->lock);
+    while (!priv->cancelled) {
+        g_mutex_unlock(priv->lock);
         ENTANGLE_DEBUG("Wait for event");
-        if (!entangle_camera_event_wait(camera, 500))
+        if (!entangle_camera_event_wait(camera, 500)) {
+            g_mutex_lock(priv->lock);
             break;
+        }
+        g_mutex_lock(priv->lock);
     }
+    g_mutex_unlock(priv->lock);
 
     g_signal_handler_disconnect(camera, sig);
 
     return TRUE;
+}
+
+
+static void entangle_camera_task_monitor_cancel(EntangleCancellable *con)
+{
+    EntangleCameraTaskMonitor *task = ENTANGLE_CAMERA_TASK_MONITOR(con);
+    EntangleCameraTaskMonitorPrivate *priv = task->priv;
+
+    g_mutex_lock(priv->lock);
+    priv->cancelled = TRUE;
+    g_mutex_unlock(priv->lock);
+}
+
+
+static void entangle_camera_task_monitor_cancel_reset(EntangleCancellable *con)
+{
+    EntangleCameraTaskMonitor *task = ENTANGLE_CAMERA_TASK_MONITOR(con);
+    EntangleCameraTaskMonitorPrivate *priv = task->priv;
+
+    g_mutex_lock(priv->lock);
+    priv->cancelled = FALSE;
+    g_mutex_unlock(priv->lock);
+}
+
+
+static gboolean entangle_camera_task_monitor_is_cancelled(EntangleCancellable *con)
+{
+    EntangleCameraTaskMonitor *task = ENTANGLE_CAMERA_TASK_MONITOR(con);
+    EntangleCameraTaskMonitorPrivate *priv = task->priv;
+    gboolean ret;
+
+    g_mutex_lock(priv->lock);
+    ret = priv->cancelled;
+    g_mutex_unlock(priv->lock);
+
+    return ret;
+}
+
+
+static void entangle_camera_task_monitor_init_cancellable(gpointer g_iface,
+                                                          gpointer iface_data G_GNUC_UNUSED)
+{
+    EntangleCancellableInterface *iface = g_iface;
+    iface->cancel = entangle_camera_task_monitor_cancel;
+    iface->reset = entangle_camera_task_monitor_cancel_reset;
+    iface->is_cancelled = entangle_camera_task_monitor_is_cancelled;
 }
 
 
@@ -108,6 +168,8 @@ static void entangle_camera_task_monitor_init(EntangleCameraTaskMonitor *task)
     EntangleCameraTaskMonitorPrivate *priv;
 
     priv = task->priv = ENTANGLE_CAMERA_TASK_MONITOR_GET_PRIVATE(task);
+
+    priv->lock = g_mutex_new();
 }
 
 

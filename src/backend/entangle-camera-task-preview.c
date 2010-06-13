@@ -27,31 +27,69 @@
 
 #include "entangle-debug.h"
 #include "entangle-camera-task-preview.h"
+#include "entangle-confirmable.h"
+#include "entangle-cancellable.h"
+
+static void entangle_camera_task_preview_init_confirmable(gpointer g_iface,
+                                                          gpointer iface_data G_GNUC_UNUSED);
+static void entangle_camera_task_preview_init_cancellable(gpointer g_iface,
+                                                          gpointer iface_data G_GNUC_UNUSED);
 
 #define ENTANGLE_CAMERA_TASK_PREVIEW_GET_PRIVATE(obj)                                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_TASK_PREVIEW, EntangleCameraTaskPreviewPrivate))
 
 struct _EntangleCameraTaskPreviewPrivate {
-    int dummy;
+    GMutex *lock;
+    gboolean confirmed;
+    gboolean cancelled;
 };
 
-G_DEFINE_TYPE(EntangleCameraTaskPreview, entangle_camera_task_preview, ENTANGLE_TYPE_CAMERA_TASK);
+G_DEFINE_TYPE_EXTENDED(EntangleCameraTaskPreview, entangle_camera_task_preview, ENTANGLE_TYPE_CAMERA_TASK, 0,
+                       {
+                           G_IMPLEMENT_INTERFACE(ENTANGLE_TYPE_CANCELLABLE, entangle_camera_task_preview_init_cancellable)
+                           G_IMPLEMENT_INTERFACE(ENTANGLE_TYPE_CONFIRMABLE, entangle_camera_task_preview_init_confirmable)
+                       });
+
 
 
 static void entangle_camera_task_preview_finalize(GObject *object)
 {
+    EntangleCameraTaskPreview *task = ENTANGLE_CAMERA_TASK_PREVIEW(object);
+    EntangleCameraTaskPreviewPrivate *priv = task->priv;
     ENTANGLE_DEBUG("Finalize camera %p", object);
+
+    g_mutex_free(priv->lock);
 
     G_OBJECT_CLASS (entangle_camera_task_preview_parent_class)->finalize (object);
 }
 
-static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task G_GNUC_UNUSED,
-                                                 EntangleCamera *camera)
-{
-    EntangleCameraFile *file;
-    int ntimes = 20;
+#define FRAMES_PER_SECOND 15
 
-    while (ntimes-- > 0) {
+static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task,
+                                                     EntangleCamera *camera)
+{
+    EntangleCameraTaskPreviewPrivate *priv = ENTANGLE_CAMERA_TASK_PREVIEW(task)->priv;
+    EntangleCameraFile *file = NULL;
+    EntangleProgress *progress;
+
+    g_object_get(camera, "progress", &progress, NULL);
+
+    g_mutex_lock(priv->lock);
+
+    while (!priv->confirmed) {
+        if (priv->cancelled) {
+            g_mutex_unlock(priv->lock);
+            /* To cancel live view mode we need to capture
+             * an image and discard it */
+            if ((file = entangle_camera_capture_image(camera)) &&
+                (!entangle_camera_delete_file(camera, file))) {
+                ENTANGLE_DEBUG("Failed delete preview capture");
+                goto error;
+            }
+            goto done;
+        }
+        g_mutex_unlock(priv->lock);
+
         ENTANGLE_DEBUG("Starting preview");
         if (!(file = entangle_camera_preview_image(camera))) {
             ENTANGLE_DEBUG("Failed preview");
@@ -60,8 +98,19 @@ static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task G_
 
         g_object_unref(file);
 
-        g_usleep(100*1000);
+        g_mutex_lock(priv->lock);
+        if (priv->cancelled) {
+            g_mutex_unlock(priv->lock);
+            goto error;
+        }
+        g_mutex_unlock(priv->lock);
+
+        g_usleep(1000*1000/FRAMES_PER_SECOND);
+
+        g_mutex_lock(priv->lock);
     }
+
+    g_mutex_unlock(priv->lock);
 
     ENTANGLE_DEBUG("Starting capture");
     if (!(file = entangle_camera_capture_image(camera))) {
@@ -81,6 +130,7 @@ static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task G_
 
     g_object_unref(file);
 
+ done:
     return TRUE;
 
  error_delete:
@@ -92,6 +142,97 @@ static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task G_
     if (file)
         g_object_unref(file);
     return FALSE;
+}
+
+static void entangle_camera_task_preview_confirm(EntangleConfirmable *con)
+{
+    EntangleCameraTaskPreview *task = ENTANGLE_CAMERA_TASK_PREVIEW(con);
+    EntangleCameraTaskPreviewPrivate *priv = task->priv;
+
+    g_mutex_lock(priv->lock);
+    priv->confirmed = TRUE;
+    g_mutex_unlock(priv->lock);
+}
+
+
+static void entangle_camera_task_preview_confirm_reset(EntangleConfirmable *con)
+{
+    EntangleCameraTaskPreview *task = ENTANGLE_CAMERA_TASK_PREVIEW(con);
+    EntangleCameraTaskPreviewPrivate *priv = task->priv;
+
+    g_mutex_lock(priv->lock);
+    priv->confirmed = FALSE;
+    g_mutex_unlock(priv->lock);
+}
+
+
+static gboolean entangle_camera_task_preview_is_confirmed(EntangleConfirmable *con)
+{
+    EntangleCameraTaskPreview *task = ENTANGLE_CAMERA_TASK_PREVIEW(con);
+    EntangleCameraTaskPreviewPrivate *priv = task->priv;
+    gboolean ret;
+
+    g_mutex_lock(priv->lock);
+    ret = priv->confirmed;
+    g_mutex_unlock(priv->lock);
+
+    return ret;
+}
+
+
+static void entangle_camera_task_preview_cancel(EntangleCancellable *con)
+{
+    EntangleCameraTaskPreview *task = ENTANGLE_CAMERA_TASK_PREVIEW(con);
+    EntangleCameraTaskPreviewPrivate *priv = task->priv;
+
+    g_mutex_lock(priv->lock);
+    priv->cancelled = TRUE;
+    g_mutex_unlock(priv->lock);
+}
+
+
+static void entangle_camera_task_preview_cancel_reset(EntangleCancellable *con)
+{
+    EntangleCameraTaskPreview *task = ENTANGLE_CAMERA_TASK_PREVIEW(con);
+    EntangleCameraTaskPreviewPrivate *priv = task->priv;
+
+    g_mutex_lock(priv->lock);
+    priv->cancelled = FALSE;
+    g_mutex_unlock(priv->lock);
+}
+
+
+static gboolean entangle_camera_task_preview_is_cancelled(EntangleCancellable *con)
+{
+    EntangleCameraTaskPreview *task = ENTANGLE_CAMERA_TASK_PREVIEW(con);
+    EntangleCameraTaskPreviewPrivate *priv = task->priv;
+    gboolean ret;
+
+    g_mutex_lock(priv->lock);
+    ret = priv->cancelled;
+    g_mutex_unlock(priv->lock);
+
+    return ret;
+}
+
+
+static void entangle_camera_task_preview_init_confirmable(gpointer g_iface,
+                                                          gpointer iface_data G_GNUC_UNUSED)
+{
+    EntangleConfirmableInterface *iface = g_iface;
+    iface->confirm = entangle_camera_task_preview_confirm;
+    iface->reset = entangle_camera_task_preview_confirm_reset;
+    iface->is_confirmed = entangle_camera_task_preview_is_confirmed;
+}
+
+
+static void entangle_camera_task_preview_init_cancellable(gpointer g_iface,
+                                                          gpointer iface_data G_GNUC_UNUSED)
+{
+    EntangleCancellableInterface *iface = g_iface;
+    iface->cancel = entangle_camera_task_preview_cancel;
+    iface->reset = entangle_camera_task_preview_cancel_reset;
+    iface->is_cancelled = entangle_camera_task_preview_is_cancelled;
 }
 
 
@@ -112,9 +253,9 @@ static void entangle_camera_task_preview_class_init(EntangleCameraTaskPreviewCla
 EntangleCameraTaskPreview *entangle_camera_task_preview_new(void)
 {
     return ENTANGLE_CAMERA_TASK_PREVIEW(g_object_new(ENTANGLE_TYPE_CAMERA_TASK_PREVIEW,
-                                                 "name", "preview",
-                                                 "label", "Preview an image",
-                                                 NULL));
+                                                     "name", "preview",
+                                                     "label", "Preview an image",
+                                                     NULL));
 }
 
 
@@ -123,6 +264,8 @@ static void entangle_camera_task_preview_init(EntangleCameraTaskPreview *task)
     EntangleCameraTaskPreviewPrivate *priv;
 
     priv = task->priv = ENTANGLE_CAMERA_TASK_PREVIEW_GET_PRIVATE(task);
+
+    priv->lock = g_mutex_new();
 }
 
 

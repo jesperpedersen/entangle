@@ -440,26 +440,6 @@ static void do_entangle_camera_progress_stop(GPContext *ctx G_GNUC_UNUSED,
         entangle_progress_stop(priv->progress);
 }
 
-static GPContextFeedback do_entangle_camera_progress_cancelled(GPContext *ctx G_GNUC_UNUSED,
-                                                           void *data)
-{
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
-
-    ENTANGLE_DEBUG("Cancel check");
-
-    if (!priv->progress)
-        return GP_CONTEXT_FEEDBACK_CANCEL;
-
-    if (entangle_progress_cancelled(priv->progress)) {
-        ENTANGLE_DEBUG("yes");
-        return GP_CONTEXT_FEEDBACK_CANCEL;
-    }
-
-    ENTANGLE_DEBUG("no");
-    return GP_CONTEXT_FEEDBACK_OK;
-}
-
 
 gboolean entangle_camera_connect(EntangleCamera *cam)
 {
@@ -481,10 +461,6 @@ gboolean entangle_camera_connect(EntangleCamera *cam)
                                   do_entangle_camera_progress_update,
                                   do_entangle_camera_progress_stop,
                                   cam);
-
-    gp_context_set_cancel_func(priv->params->ctx,
-                               do_entangle_camera_progress_cancelled,
-                               cam);
 
     i = gp_port_info_list_lookup_path(priv->params->ports, priv->port);
     gp_port_info_list_get_info(priv->params->ports, i, &port);

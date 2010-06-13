@@ -38,8 +38,10 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-camera-task-monitor.h backend/entangle-camera-task-monitor.c \
 	backend/entangle-camera-scheduler.h backend/entangle-camera-scheduler.c \
 	backend/entangle-camera-list.h backend/entangle-camera-list.c \
+	backend/entangle-cancellable.h backend/entangle-cancellable.c \
 	backend/entangle-colour-profile.h backend/entangle-colour-profile.c \
 	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
+	backend/entangle-confirmable.h backend/entangle-confirmable.c \
 	backend/entangle-control.h backend/entangle-control.c \
 	backend/entangle-control-button.h backend/entangle-control-button.c \
 	backend/entangle-control-choice.h backend/entangle-control-choice.c \
