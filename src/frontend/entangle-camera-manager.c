@@ -453,6 +453,29 @@ static void do_camera_task_end(EntangleCamera *cam G_GNUC_UNUSED, EntangleCamera
 {
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
+    GError *error = NULL;
+
+    if (!entangle_camera_task_result(task, &error)) {
+        gdk_threads_enter();
+        GtkWidget *msg = gtk_message_dialog_new(NULL,
+                                                0,
+                                                GTK_MESSAGE_ERROR,
+                                                GTK_BUTTONS_OK,
+                                                "Operation: %s",
+                                                entangle_camera_task_get_label(task));
+        gtk_window_set_title(GTK_WINDOW(msg),
+                             "Entangle: Operation failed");
+        gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
+                                                 "%s",
+                                                 error->message);
+        g_error_free(error);
+        g_signal_connect_swapped(msg,
+                                 "response",
+                                 G_CALLBACK (gtk_widget_destroy),
+                                 msg);
+        gtk_widget_show_all(msg);
+        gdk_threads_leave();
+    }
 
     if (priv->task)
         g_object_unref(priv->task);

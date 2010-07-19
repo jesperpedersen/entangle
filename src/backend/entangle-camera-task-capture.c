@@ -40,28 +40,29 @@ G_DEFINE_TYPE(EntangleCameraTaskCapture, entangle_camera_task_capture, ENTANGLE_
 
 static void entangle_camera_task_capture_finalize(GObject *object)
 {
-    ENTANGLE_DEBUG("Finalize camera %p", object);
+    ENTANGLE_DEBUG("Finalize camera capture task %p", object);
 
     G_OBJECT_CLASS (entangle_camera_task_capture_parent_class)->finalize (object);
 }
 
 static gboolean entangle_camera_task_capture_execute(EntangleCameraTask *task G_GNUC_UNUSED,
-                                                 EntangleCamera *camera)
+                                                     EntangleCamera *camera,
+                                                     GError **error)
 {
     EntangleCameraFile *file;
 
     ENTANGLE_DEBUG("Starting capture");
-    if (!(file = entangle_camera_capture_image(camera))) {
+    if (!(file = entangle_camera_capture_image(camera, error))) {
         ENTANGLE_DEBUG("Failed capture");
         goto error;
     }
 
-    if (!entangle_camera_download_file(camera, file)) {
+    if (!entangle_camera_download_file(camera, file, error)) {
         ENTANGLE_DEBUG("Failed download");
         goto error_delete;
     }
 
-    if (!entangle_camera_delete_file(camera, file)) {
+    if (!entangle_camera_delete_file(camera, file, error)) {
         ENTANGLE_DEBUG("Failed delete file");
         goto error;
     }
@@ -71,7 +72,7 @@ static gboolean entangle_camera_task_capture_execute(EntangleCameraTask *task G_
     return TRUE;
 
  error_delete:
-    if (!entangle_camera_delete_file(camera, file)) {
+    if (!entangle_camera_delete_file(camera, file, NULL)) {
         goto error;
     }
 

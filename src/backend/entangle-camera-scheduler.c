@@ -55,9 +55,9 @@ enum {
 
 
 static void entangle_camera_scheduler_get_property(GObject *object,
-                                            guint prop_id,
-                                            GValue *value,
-                                            GParamSpec *pspec)
+                                                   guint prop_id,
+                                                   GValue *value,
+                                                   GParamSpec *pspec)
 {
     EntangleCameraScheduler *scheduler = ENTANGLE_CAMERA_SCHEDULER(object);
     EntangleCameraSchedulerPrivate *priv = scheduler->priv;
@@ -74,9 +74,9 @@ static void entangle_camera_scheduler_get_property(GObject *object,
 }
 
 static void entangle_camera_scheduler_set_property(GObject *object,
-                                          guint prop_id,
-                                          const GValue *value,
-                                          GParamSpec *pspec)
+                                                   guint prop_id,
+                                                   const GValue *value,
+                                                   GParamSpec *pspec)
 {
     EntangleCameraScheduler *scheduler = ENTANGLE_CAMERA_SCHEDULER(object);
     EntangleCameraSchedulerPrivate *priv = scheduler->priv;
@@ -204,10 +204,15 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
 
         while (g_async_queue_length(priv->tasks) > 0) {
             EntangleCameraTask *task = g_async_queue_pop(priv->tasks);
+            GError *error = NULL;
             ENTANGLE_DEBUG("Running task %p on camera %p", task, priv->camera);
 
             g_signal_emit_by_name(scheduler, "camera-scheduler-task-begin", task);
-            entangle_camera_task_execute(task, priv->camera);
+            if (!entangle_camera_task_execute(task, priv->camera, &error)) {
+                ENTANGLE_DEBUG("Failed task %p on camera %p: %s",
+                               task, priv->camera, error->message);
+                g_error_free(error);
+            }
             g_signal_emit_by_name(scheduler, "camera-scheduler-task-end", task);
 
             ENTANGLE_DEBUG("Finished task %p on camera %p", task, priv->camera);
@@ -219,7 +224,7 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
             }
 
             ENTANGLE_DEBUG("Flush events %p", priv->camera);
-            entangle_camera_event_flush(priv->camera);
+            entangle_camera_event_flush(priv->camera, NULL);
 
             g_object_unref(task);
         }
@@ -229,7 +234,7 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
             break;
         }
 
-        if (!entangle_camera_event_wait(priv->camera, 500)) {
+        if (!entangle_camera_event_wait(priv->camera, 500, NULL)) {
             ENTANGLE_DEBUG("Failed when waiting for events");
             g_mutex_lock(priv->lock);
             break;

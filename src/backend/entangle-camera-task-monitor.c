@@ -49,7 +49,7 @@ static void entangle_camera_task_monitor_finalize(GObject *object)
 {
     EntangleCameraTaskMonitor *task = ENTANGLE_CAMERA_TASK_MONITOR(object);
     EntangleCameraTaskMonitorPrivate *priv = task->priv;
-    ENTANGLE_DEBUG("Finalize camera %p", object);
+    ENTANGLE_DEBUG("Finalize camera monitor task %p", object);
 
     g_mutex_free(priv->lock);
 
@@ -60,18 +60,20 @@ static void do_camera_file_added(EntangleCamera *camera,
                                  EntangleCameraFile *file,
                                  EntangleCameraTask *task G_GNUC_UNUSED)
 {
-    entangle_camera_download_file(camera, file);
+    entangle_camera_download_file(camera, file, NULL);
 
-    if (!entangle_camera_delete_file(camera, file)) {
+    if (!entangle_camera_delete_file(camera, file, NULL)) {
         ENTANGLE_DEBUG("Failed delete file");
     }
 }
 
 static gboolean entangle_camera_task_monitor_execute(EntangleCameraTask *task,
-                                                     EntangleCamera *camera)
+                                                     EntangleCamera *camera,
+                                                     GError **error)
 {
     EntangleCameraTaskMonitorPrivate *priv = ENTANGLE_CAMERA_TASK_MONITOR(task)->priv;
     gulong sig;
+    gboolean ret = FALSE;
 
     sig = g_signal_connect(camera, "camera-file-added",
                            G_CALLBACK(do_camera_file_added), task);
@@ -80,17 +82,18 @@ static gboolean entangle_camera_task_monitor_execute(EntangleCameraTask *task,
     while (!priv->cancelled) {
         g_mutex_unlock(priv->lock);
         ENTANGLE_DEBUG("Wait for event");
-        if (!entangle_camera_event_wait(camera, 500)) {
-            g_mutex_lock(priv->lock);
-            break;
-        }
+        if (!entangle_camera_event_wait(camera, 500, error))
+            goto cleanup;
         g_mutex_lock(priv->lock);
     }
     g_mutex_unlock(priv->lock);
 
+    ret = TRUE;
+
+ cleanup:
     g_signal_handler_disconnect(camera, sig);
 
-    return TRUE;
+    return ret;
 }
 
 

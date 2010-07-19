@@ -34,6 +34,8 @@
 struct _EntangleCameraTaskPrivate {
     char *name;
     char *label;
+    gboolean result;
+    GError *error;
 };
 
 G_DEFINE_ABSTRACT_TYPE(EntangleCameraTask, entangle_camera_task, G_TYPE_OBJECT);
@@ -99,10 +101,12 @@ static void entangle_camera_task_finalize(GObject *object)
     EntangleCameraTask *task = ENTANGLE_CAMERA_TASK(object);
     EntangleCameraTaskPrivate *priv = task->priv;
 
-    ENTANGLE_DEBUG("Finalize camera %p", object);
+    ENTANGLE_DEBUG("Finalize camera task %p", object);
 
     g_free(priv->label);
     g_free(priv->name);
+    if (priv->error)
+        g_error_free(priv->error);
 
     G_OBJECT_CLASS (entangle_camera_task_parent_class)->finalize (object);
 }
@@ -178,9 +182,23 @@ const char *entangle_camera_task_get_name(EntangleCameraTask *task)
 }
 
 gboolean entangle_camera_task_execute(EntangleCameraTask *task,
-                                      EntangleCamera *camera)
+                                      EntangleCamera *camera,
+                                      GError **error)
 {
-    return (ENTANGLE_CAMERA_TASK_GET_CLASS(task)->execute)(task, camera);
+    EntangleCameraTaskPrivate *priv = task->priv;
+    priv->result = (ENTANGLE_CAMERA_TASK_GET_CLASS(task)->execute)(task, camera, &priv->error);
+    if (!priv->result && error)
+        *error = g_error_copy(priv->error);
+    return priv->result;
+}
+
+gboolean entangle_camera_task_result(EntangleCameraTask *task,
+                                     GError **error)
+{
+    EntangleCameraTaskPrivate *priv = task->priv;
+    if (!priv->result && error)
+        *error = g_error_copy(priv->error);
+    return priv->result;
 }
 
 

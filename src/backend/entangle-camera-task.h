@@ -50,7 +50,7 @@ struct _EntangleCameraTaskClass
 {
     GObjectClass parent_class;
 
-    gboolean (*execute)(EntangleCameraTask *task, EntangleCamera *cam);
+    gboolean (*execute)(EntangleCameraTask *task, EntangleCamera *cam, GError **error);
 };
 
 GType entangle_camera_task_get_type(void) G_GNUC_CONST;
@@ -62,7 +62,11 @@ const char *entangle_camera_task_get_name(EntangleCameraTask *task);
 const char *entangle_camera_task_get_label(EntangleCameraTask *task);
 
 gboolean entangle_camera_task_execute(EntangleCameraTask *task,
-                                      EntangleCamera *camera);
+                                      EntangleCamera *camera,
+                                      GError **error);
+
+gboolean entangle_camera_task_result(EntangleCameraTask *task,
+                                     GError **error);
 
 G_END_DECLS
 

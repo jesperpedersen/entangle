@@ -79,19 +79,25 @@ const char *entangle_camera_get_summary(EntangleCamera *cam);
 const char *entangle_camera_get_manual(EntangleCamera *cam);
 const char *entangle_camera_get_driver(EntangleCamera *cam);
 
-EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam);
+EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
+                                                  GError **error);
 
-EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam);
+EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
+                                                  GError **error);
 
 gboolean entangle_camera_download_file(EntangleCamera *cam,
-                                   EntangleCameraFile *file);
+                                       EntangleCameraFile *file,
+                                       GError **error);
 
 gboolean entangle_camera_delete_file(EntangleCamera *cam,
-                                 EntangleCameraFile *file);
+                                     EntangleCameraFile *file,
+                                     GError **error);
 
-gboolean entangle_camera_event_flush(EntangleCamera *cam);
+gboolean entangle_camera_event_flush(EntangleCamera *cam,
+                                     GError **error);
 gboolean entangle_camera_event_wait(EntangleCamera *cam,
-                                    guint64 waitms);
+                                    guint64 waitms,
+                                    GError **error);
 
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);
