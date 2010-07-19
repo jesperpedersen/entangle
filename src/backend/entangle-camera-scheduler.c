@@ -250,6 +250,7 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
         }
     }
 
+    priv->worker = NULL;
     g_mutex_unlock(priv->lock);
 
     ENTANGLE_DEBUG("Camera scheduler worker done, purging tasks");
