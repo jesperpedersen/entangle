@@ -754,22 +754,27 @@ gboolean entangle_camera_event_flush(EntangleCamera *cam)
 
 
 gboolean entangle_camera_event_wait(EntangleCamera *cam,
-                                int waitms)
+                                    guint64 waitms)
 {
     EntangleCameraPrivate *priv = cam->priv;
-    CameraEventType eventType;
+    CameraEventType eventType = 0;
     void *eventData;
-    gboolean ret = TRUE;
+    GTimeVal tv;
+    guint64 startms, endms, donems;
 
     if (!priv->cam) {
         ENTANGLE_DEBUG("Cannot wait for events while not connected");
         return FALSE;
     }
 
-    ENTANGLE_DEBUG("Waiting for events");
+    g_get_current_time(&tv);
+    startms = (tv.tv_sec * 1000ll) + (tv.tv_usec / 1000ll);
 
+    ENTANGLE_DEBUG("Waiting for events %llu", (unsigned long long)startms);
+
+    donems = 0;
     do {
-        if (gp_camera_wait_for_event(priv->cam, waitms, &eventType, &eventData, priv->params->ctx) != GP_OK) {
+        if (gp_camera_wait_for_event(priv->cam, waitms - donems, &eventType, &eventData, priv->params->ctx) != GP_OK) {
             ENTANGLE_DEBUG("Failed event wait");
             return FALSE;
         }
@@ -809,12 +814,18 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
 
         default:
             ENTANGLE_DEBUG("Unexpected event received %d", eventType);
-            ret = FALSE;
             break;
         }
-    } while (ret && eventType != GP_EVENT_TIMEOUT);
 
-    return ret;
+        g_get_current_time(&tv);
+        endms = (tv.tv_sec * 1000ll) + (tv.tv_usec / 1000ll);
+        donems = endms - startms;
+    } while (eventType != GP_EVENT_TIMEOUT &&
+             donems < waitms);
+
+    ENTANGLE_DEBUG("Done waiting for events %llu", (unsigned long long)donems);
+
+    return TRUE;
 }
 
 

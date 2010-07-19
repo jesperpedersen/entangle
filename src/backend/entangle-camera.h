@@ -91,7 +91,7 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
 
 gboolean entangle_camera_event_flush(EntangleCamera *cam);
 gboolean entangle_camera_event_wait(EntangleCamera *cam,
-                                int waitms);
+                                    guint64 waitms);
 
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);
