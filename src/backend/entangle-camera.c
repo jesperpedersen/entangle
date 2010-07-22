@@ -788,6 +788,7 @@ gboolean entangle_camera_event_flush(EntangleCamera *cam,
     EntangleCameraPrivate *priv = cam->priv;
     CameraEventType eventType;
     void *eventData;
+    int ret;
 
     if (!priv->cam) {
         ENTANGLE_ERROR(error, "Cannot flush events while not connected");
@@ -798,7 +799,14 @@ gboolean entangle_camera_event_flush(EntangleCamera *cam,
 
     entangle_camera_reset_last_error(cam);
     do {
-        if (gp_camera_wait_for_event(priv->cam, 10, &eventType, &eventData, priv->params->ctx) != GP_OK) {
+        ret = gp_camera_wait_for_event(priv->cam, 10, &eventType, &eventData, priv->params->ctx);
+        if (ret != GP_OK) {
+            /* Some drivers (eg canon native) can't do events */
+            if (ret == GP_ERROR_NOT_SUPPORTED) {
+                ENTANGLE_DEBUG("Event wait not supported, nothing to flush");
+                return TRUE;
+            }
+
             ENTANGLE_ERROR(error, "Unable to wait for events: %s", priv->lastError);
             return FALSE;
         }
@@ -820,6 +828,7 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
     void *eventData;
     GTimeVal tv;
     guint64 startms, endms, donems;
+    int ret;
 
     if (!priv->cam) {
         ENTANGLE_ERROR(error, "Cannot wait for events while not connected");
@@ -834,7 +843,14 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
     entangle_camera_reset_last_error(cam);
     donems = 0;
     do {
-        if (gp_camera_wait_for_event(priv->cam, waitms - donems, &eventType, &eventData, priv->params->ctx) != GP_OK) {
+        ret = gp_camera_wait_for_event(priv->cam, waitms - donems, &eventType, &eventData, priv->params->ctx);
+        if (ret != GP_OK) { 
+            /* Some drivers (eg canon native) can't do events, so just do a sleep */
+            if (ret == GP_ERROR_NOT_SUPPORTED) {
+                ENTANGLE_DEBUG("Event wait not supported, using usleep");
+                g_usleep((waitms-donems)*1000ll);
+                return TRUE;
+            }
             ENTANGLE_ERROR(error, "Unable to wait for events: %s", priv->lastError);
             return FALSE;
         }
