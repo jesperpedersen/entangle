@@ -54,7 +54,6 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-device-manager.h backend/entangle-device-manager.c \
 	backend/entangle-image.h backend/entangle-image.c \
 	backend/entangle-image-loader.h backend/entangle-image-loader.c \
-	backend/entangle-params.h backend/entangle-params.c \
 	backend/entangle-pixbuf-loader.h backend/entangle-pixbuf-loader.c \
 	backend/entangle-preferences.h backend/entangle-preferences.c \
 	backend/entangle-preferences-gconf.h backend/entangle-preferences-gconf.c \
@@ -239,14 +238,12 @@ PLUGIN_PKG=
 endif
 
 if WITH_GOBJECT_INTROSPECTION
-Entangle-0.1.gir: entangle GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
-	$(G_IR_SCANNER) -v \
+Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
+	$(AM_V_GEN)$(G_IR_SCANNER) -v --quiet \
                 --namespace Entangle \
                 --nsversion 0.1 \
 		--include GObject-2.0 \
 		--include Gtk-2.0 \
-                --include GPhoto-2.0 \
-                --include GPhoto-2.0 \
 		$(PLUGIN_INC) \
                 --program=$(builddir)/entangle \
                 --add-include-path=$(srcdir) \
@@ -270,18 +267,17 @@ Entangle-0.1.gir: entangle GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
                 $(entangle_SOURCES:%=$(srcdir)/%)
 
 girdir = $(datadir)/gir-1.0
-gir_DATA = GPhoto-2.0.gir Entangle-0.1.gir
+gir_DATA = Entangle-0.1.gir
 
 typelibsdir = $(libdir)/girepository-1.0
-typelibs_DATA = GPhoto-2.0.typelib Entangle-0.1.typelib
+typelibs_DATA = Entangle-0.1.typelib
 
 %.typelib: %.gir
-	g-ir-compiler \
+	$(AM_V_GEN)$(G_IR_COMPILER) \
 		--includedir=$(srcdir) \
 		--includedir=$(builddir) \
 		-o $@ $<
 
-EXTRA_DIST += GPhoto-2.0.gir
 CLEANFILES += Entangle-0.1.gir $(typelibs_DATA)
 
 endif # WITH_GOBJECT_INTROSPECTION

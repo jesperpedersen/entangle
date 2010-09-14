@@ -23,10 +23,10 @@
 #include <glib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <gphoto2.h>
 
 #include "entangle-debug.h"
 #include "entangle-camera.h"
-#include "entangle-params.h"
 #include "entangle-control-button.h"
 #include "entangle-control-choice.h"
 #include "entangle-control-date.h"
@@ -45,7 +45,9 @@
                 msg)
 
 struct _EntangleCameraPrivate {
-    EntangleParams *params;
+    GPContext *ctx;
+    CameraAbilitiesList *caps;
+    GPPortInfoList *ports;
     Camera *cam;
 
     CameraWidget *widgets;
@@ -189,14 +191,18 @@ static void entangle_camera_finalize(GObject *object)
     if (priv->progress)
         g_object_unref(priv->progress);
     if (priv->cam) {
-        gp_camera_exit(priv->cam, priv->params->ctx);
+        gp_camera_exit(priv->cam, priv->ctx);
         gp_camera_free(priv->cam);
     }
     if (priv->widgets)
         gp_widget_unref(priv->widgets);
     if (priv->controls)
         g_object_unref(priv->controls);
-    entangle_params_free(priv->params);
+    if (priv->ports)
+        gp_port_info_list_free(priv->ports);
+    if (priv->caps)
+        gp_abilities_list_free(priv->caps);
+    gp_context_unref(priv->ctx);
     g_free(priv->driver);
     g_free(priv->summary);
     g_free(priv->manual);
@@ -484,28 +490,40 @@ gboolean entangle_camera_connect(EntangleCamera *cam)
     if (priv->cam != NULL)
         return TRUE;
 
-    priv->params = entangle_params_new();
+    priv->ctx = gp_context_new();
 
-    gp_context_set_error_func(priv->params->ctx,
+    if (gp_abilities_list_new(&priv->caps) != GP_OK)
+        g_error("Cannot initialize gphoto2 abilities");
+
+    if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK)
+        g_error("Cannot load gphoto2 abilities");
+
+    if (gp_port_info_list_new(&priv->ports) != GP_OK)
+        g_error("Cannot initialize gphoto2 ports");
+
+    if (gp_port_info_list_load(priv->ports) != GP_OK)
+        g_error("Cannot load gphoto2 ports");
+
+    gp_context_set_error_func(priv->ctx,
                               do_entangle_camera_error,
                               cam);
-    gp_context_set_progress_funcs(priv->params->ctx,
+    gp_context_set_progress_funcs(priv->ctx,
                                   do_entangle_camera_progress_start,
                                   do_entangle_camera_progress_update,
                                   do_entangle_camera_progress_stop,
                                   cam);
 
-    i = gp_port_info_list_lookup_path(priv->params->ports, priv->port);
-    gp_port_info_list_get_info(priv->params->ports, i, &port);
+    i = gp_port_info_list_lookup_path(priv->ports, priv->port);
+    gp_port_info_list_get_info(priv->ports, i, &port);
 
-    i = gp_abilities_list_lookup_model(priv->params->caps, priv->model);
-    gp_abilities_list_get_abilities(priv->params->caps, i, &cap);
+    i = gp_abilities_list_lookup_model(priv->caps, priv->model);
+    gp_abilities_list_get_abilities(priv->caps, i, &cap);
 
     gp_camera_new(&priv->cam);
     gp_camera_set_abilities(priv->cam, cap);
     gp_camera_set_port_info(priv->cam, port);
 
-    if (gp_camera_init(priv->cam, priv->params->ctx) != GP_OK) {
+    if (gp_camera_init(priv->cam, priv->ctx) != GP_OK) {
         gp_camera_unref(priv->cam);
         priv->cam = NULL;
         ENTANGLE_DEBUG("failed");
@@ -521,13 +539,13 @@ gboolean entangle_camera_connect(EntangleCamera *cam)
     if (cap.operations & GP_OPERATION_CONFIG)
         priv->hasSettings = TRUE;
 
-    gp_camera_get_summary(priv->cam, &txt, priv->params->ctx);
+    gp_camera_get_summary(priv->cam, &txt, priv->ctx);
     priv->summary = g_strdup(txt.text);
 
-    gp_camera_get_manual(priv->cam, &txt, priv->params->ctx);
+    gp_camera_get_manual(priv->cam, &txt, priv->ctx);
     priv->manual = g_strdup(txt.text);
 
-    gp_camera_get_about(priv->cam, &txt, priv->params->ctx);
+    gp_camera_get_about(priv->cam, &txt, priv->ctx);
     priv->driver = g_strdup(txt.text);
 
     ENTANGLE_DEBUG("ok");
@@ -543,7 +561,7 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam)
     if (priv->cam == NULL)
         return TRUE;
 
-    gp_camera_exit(priv->cam, priv->params->ctx);
+    gp_camera_exit(priv->cam, priv->ctx);
 
     if (priv->widgets) {
         gp_widget_unref(priv->widgets);
@@ -559,8 +577,11 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam)
     g_free(priv->summary);
     priv->driver = priv->manual = priv->summary = NULL;
 
-    entangle_params_free(priv->params);
-    priv->params = NULL;
+    if (priv->ports)
+        gp_port_info_list_free(priv->ports);
+    if (priv->caps)
+        gp_abilities_list_free(priv->caps);
+    gp_context_unref(priv->ctx);
 
     gp_camera_unref(priv->cam);
     priv->cam = NULL;
@@ -616,7 +637,7 @@ EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
     if (gp_camera_capture(priv->cam,
                           GP_CAPTURE_IMAGE,
                           &camerapath,
-                          priv->params->ctx) != GP_OK) {
+                          priv->ctx) != GP_OK) {
         ENTANGLE_ERROR(error, "Unable to capture image: %s", priv->lastError);
         return NULL;
     }
@@ -653,7 +674,7 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
     entangle_camera_reset_last_error(cam);
     if (gp_camera_capture_preview(priv->cam,
                                   datafile,
-                                  priv->params->ctx) != GP_OK) {
+                                  priv->ctx) != GP_OK) {
         ENTANGLE_ERROR(error, "Unable to capture preview: %s", priv->lastError);
         goto error;
     }
@@ -721,7 +742,7 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
                            entangle_camera_file_get_name(file),
                            GP_FILE_TYPE_NORMAL,
                            datafile,
-                           priv->params->ctx) != GP_OK) {
+                           priv->ctx) != GP_OK) {
         ENTANGLE_ERROR(error, "Unable to get camera file: %s", priv->lastError);
         goto error;
     }
@@ -771,7 +792,7 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
     if (gp_camera_file_delete(priv->cam,
                               entangle_camera_file_get_folder(file),
                               entangle_camera_file_get_name(file),
-                              priv->params->ctx) != GP_OK) {
+                              priv->ctx) != GP_OK) {
         ENTANGLE_ERROR(error, "Unable to delete file: %s", priv->lastError);
         return FALSE;
     }
@@ -799,7 +820,7 @@ gboolean entangle_camera_event_flush(EntangleCamera *cam,
 
     entangle_camera_reset_last_error(cam);
     do {
-        ret = gp_camera_wait_for_event(priv->cam, 10, &eventType, &eventData, priv->params->ctx);
+        ret = gp_camera_wait_for_event(priv->cam, 10, &eventType, &eventData, priv->ctx);
         if (ret != GP_OK) {
             /* Some drivers (eg canon native) can't do events */
             if (ret == GP_ERROR_NOT_SUPPORTED) {
@@ -843,7 +864,7 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
     entangle_camera_reset_last_error(cam);
     donems = 0;
     do {
-        ret = gp_camera_wait_for_event(priv->cam, waitms - donems, &eventType, &eventData, priv->params->ctx);
+        ret = gp_camera_wait_for_event(priv->cam, waitms - donems, &eventType, &eventData, priv->ctx);
         if (ret != GP_OK) { 
             /* Some drivers (eg canon native) can't do events, so just do a sleep */
             if (ret == GP_ERROR_NOT_SUPPORTED) {
@@ -929,7 +950,7 @@ static void do_update_control_text(GObject *object,
         ENTANGLE_DEBUG("cannot set widget id %d to %s", id, text);
     }
 
-    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx)) != GP_OK)
+    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
         ENTANGLE_DEBUG("cannot set config %s", gp_result_as_string(ret));
 
 }
@@ -957,7 +978,7 @@ static void do_update_control_float(GObject *object,
         ENTANGLE_DEBUG("cannot set widget id %d to %f", id, value);
     }
 
-    if (gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx) != GP_OK)
+    if (gp_camera_set_config(priv->cam, priv->widgets, priv->ctx) != GP_OK)
         ENTANGLE_DEBUG("cannot set config");
 
 }
@@ -985,7 +1006,7 @@ static void do_update_control_boolean(GObject *object,
         ENTANGLE_DEBUG("cannot set widget id %d to %d", id, value);
     }
 
-    if (gp_camera_set_config(priv->cam, priv->widgets, priv->params->ctx) != GP_OK)
+    if (gp_camera_set_config(priv->cam, priv->widgets, priv->ctx) != GP_OK)
         ENTANGLE_DEBUG("cannot set config");
 
 }
@@ -1132,7 +1153,7 @@ EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam)
         return NULL;
 
     if (priv->controls == NULL) {
-        if (gp_camera_get_config(priv->cam, &priv->widgets, priv->params->ctx) != GP_OK)
+        if (gp_camera_get_config(priv->cam, &priv->widgets, priv->ctx) != GP_OK)
             return NULL;
 
         priv->controls = ENTANGLE_CONTROL_GROUP(do_build_controls(cam, "", priv->widgets));

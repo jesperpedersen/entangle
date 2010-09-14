@@ -107,9 +107,7 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/applications/%{name}.desktop
 %if %{with_introspection}
 %{_datadir}/gir-1.0/Entangle-0.1.gir
-%{_datadir}/gir-1.0/GPhoto-2.0.gir
 %{_libdir}/girepository-1.0/Entangle-0.1.typelib
-%{_libdir}/girepository-1.0/GPhoto-2.0.typelib
 %endif
 %if %{with_plugins}
 %dir %{_libdir}/%{name}

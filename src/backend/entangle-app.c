@@ -27,7 +27,6 @@
 
 #include "entangle-debug.h"
 #include "entangle-app.h"
-#include "entangle-params.h"
 #include "entangle-device-manager.h"
 #include "entangle-preferences-gconf.h"
 
@@ -52,7 +51,9 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_APP, EntangleAppPrivate))
 
 struct _EntangleAppPrivate {
-    EntangleParams *params;
+    GPContext *ctx;
+    CameraAbilitiesList *caps;
+    GPPortInfoList *ports;
 
     EntangleDeviceManager *devManager;
     EntangleCameraList *cameras;
@@ -159,7 +160,11 @@ static void entangle_app_finalize(GObject *object)
         g_object_unref(priv->pluginExt);
 #endif
 
-    entangle_params_free(priv->params);
+    if (priv->ports)
+        gp_port_info_list_free(priv->ports);
+    if (priv->caps)
+        gp_abilities_list_free(priv->caps);
+    gp_context_unref(priv->ctx);
 
     G_OBJECT_CLASS (entangle_app_parent_class)->finalize (object);
 }
@@ -219,14 +224,19 @@ static void do_refresh_cameras(EntangleApp *app)
     GHashTableIter iter;
     gpointer key, value;
 
-    entangle_params_refresh(priv->params);
+    if (priv->ports)
+        gp_port_info_list_free(priv->ports);
+    if (gp_port_info_list_new(&priv->ports) != GP_OK)
+        return;
+    if (gp_port_info_list_load(priv->ports) != GP_OK)
+        return;
 
     ENTANGLE_DEBUG("Detecting cameras");
 
     if (gp_list_new(&cams) != GP_OK)
         return;
 
-    gp_abilities_list_detect(priv->params->caps, priv->params->ports, cams, priv->params->ctx);
+    gp_abilities_list_detect(priv->caps, priv->ports, cams, priv->ctx);
 
     for (int i = 0 ; i < gp_list_count(cams) ; i++) {
         const char *model, *port;
@@ -242,8 +252,8 @@ static void do_refresh_cameras(EntangleApp *app)
         if (cam)
             continue;
 
-        n = gp_abilities_list_lookup_model(priv->params->caps, model);
-        gp_abilities_list_get_abilities(priv->params->caps, n, &cap);
+        n = gp_abilities_list_lookup_model(priv->caps, model);
+        gp_abilities_list_get_abilities(priv->caps, n, &cap);
 
         /* For back compat, libgphoto2 always adds a default
          * USB camera called 'usb:'. We ignore that, since we
@@ -324,6 +334,16 @@ on_extension_removed(PeasExtensionSet *set G_GNUC_UNUSED,
 }
 #endif
 
+static void do_entangle_log(GPLogLevel level G_GNUC_UNUSED,
+                            const char *domain,
+                            const char *format,
+                            va_list args,
+                            void *data G_GNUC_UNUSED)
+{
+    char *msg = g_strdup_vprintf(format, args);
+    g_debug("%s: %s", domain, msg);
+}
+
 static void entangle_app_init(EntangleApp *app)
 {
     EntangleAppPrivate *priv;
@@ -335,9 +355,26 @@ static void entangle_app_init(EntangleApp *app)
     priv = app->priv = ENTANGLE_APP_GET_PRIVATE(app);
 
     priv->preferences = entangle_preferences_gconf_new();
-    priv->params = entangle_params_new();
     priv->cameras = entangle_camera_list_new();
     priv->devManager = entangle_device_manager_new();
+
+    if (entangle_debug_gphoto) {
+        gp_log_add_func(GP_LOG_DEBUG, do_entangle_log, NULL);
+    }
+
+    priv->ctx = gp_context_new();
+
+    if (gp_abilities_list_new(&priv->caps) != GP_OK)
+        g_error("Cannot initialize gphoto2 abilities");
+
+    if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK)
+        g_error("Cannot load gphoto2 abilities");
+
+    if (gp_port_info_list_new(&priv->ports) != GP_OK)
+        g_error("Cannot initialize gphoto2 ports");
+
+    if (gp_port_info_list_load(priv->ports) != GP_OK)
+        g_error("Cannot load gphoto2 ports");
 
 #if HAVE_PLUGINS
     peasPath = g_new0(gchar *, 5);

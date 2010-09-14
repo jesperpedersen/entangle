@@ -28,7 +28,6 @@
 
 #include "entangle-debug.h"
 #include "entangle-preferences.h"
-#include "entangle-params.h"
 #include "entangle-progress.h"
 
 #define ENTANGLE_PREFERENCES_GET_PRIVATE(obj)                               \
