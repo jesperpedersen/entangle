@@ -25,11 +25,14 @@
 #include <glade/glade.h>
 #include <unistd.h>
 
+#if HAVE_PLUGINS
+#include <libpeasui/peas-ui.h>
+#endif
+
 #include "entangle-debug.h"
 #include "entangle-preferences-display.h"
 #include "entangle-camera-picker.h"
 #include "entangle-camera-manager.h"
-#include "entangle-plugin.h"
 
 #define ENTANGLE_PREFERENCES_DISPLAY_GET_PRIVATE(obj)                               \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_PREFERENCES_DISPLAY, EntanglePreferencesDisplayPrivate))
@@ -39,8 +42,10 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 struct _EntanglePreferencesDisplayPrivate {
     GladeXML *glade;
 
-    GtkListStore *plugins;
-    EntanglePluginManager *pluginManager;
+#if HAVE_PLUGINS
+    PeasEngine *pluginEngine;
+    PeasUIPluginManager *pluginManager;
+#endif
     EntanglePreferences *prefs;
     gulong prefsID;
 };
@@ -50,7 +55,9 @@ G_DEFINE_TYPE(EntanglePreferencesDisplay, entangle_preferences_display, G_TYPE_O
 enum {
     PROP_0,
     PROP_PREFERENCES,
-    PROP_PLUGIN_MANAGER,
+#if HAVE_PLUGINS
+    PROP_PLUGIN_ENGINE,
+#endif
 };
 
 static void entangle_preferences_display_get_property(GObject *object,
@@ -67,96 +74,17 @@ static void entangle_preferences_display_get_property(GObject *object,
             g_value_set_object(value, priv->prefs);
             break;
 
-        case PROP_PLUGIN_MANAGER:
-            g_value_set_object(value, priv->pluginManager);
+#if HAVE_PLUGINS
+        case PROP_PLUGIN_ENGINE:
+            g_value_set_object(value, priv->pluginEngine);
             break;
+#endif
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
 }
 
-static void entangle_preferences_display_setup_plugins(EntanglePreferencesDisplay *display)
-{
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
-    GtkWidget *tree;
-    GtkCellRenderer *cellText;
-    GtkCellRenderer *cellImage;
-    GtkCellRenderer *cellEnabled;
-    GtkTreeViewColumn *colText;
-    GtkTreeViewColumn *colImage;
-    GtkTreeViewColumn *colEnabled;
-
-    priv->plugins = gtk_list_store_new(5, ENTANGLE_TYPE_PLUGIN, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_STRING, -1);
-
-    cellText = gtk_cell_renderer_text_new();
-    cellImage = gtk_cell_renderer_pixbuf_new();
-    cellEnabled = gtk_cell_renderer_toggle_new();
-
-    colText = gtk_tree_view_column_new_with_attributes("Description", cellText, "text", 1, NULL);
-    colImage = gtk_tree_view_column_new_with_attributes("", cellImage, "pixbuf", 2, NULL);
-    colEnabled = gtk_tree_view_column_new_with_attributes("Enabled", cellEnabled, "active", 3, NULL);
-
-    g_object_set(colText, "expand", TRUE, NULL);
-    g_object_set(colImage, "expand", FALSE, NULL);
-    g_object_set(colEnabled, "expand", FALSE, NULL);
-
-    tree = glade_xml_get_widget(priv->glade, "plugins-list");
-    gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(priv->plugins));
-    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colEnabled);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colImage);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colText);
-    gtk_tree_view_set_tooltip_column(GTK_TREE_VIEW(tree), 4);
-}
-
-
-static gchar *entangle_preferences_display_plugin_tooltip(EntanglePlugin *plugin)
-{
-    gchar *tip = g_strdup_printf("Name: %s\n"
-                                 "Version: %s\n"
-                                 "URI: %s\n"
-                                 "Email: %s",
-                                 entangle_plugin_get_name(plugin),
-                                 entangle_plugin_get_version(plugin),
-                                 entangle_plugin_get_uri(plugin),
-                                 entangle_plugin_get_email(plugin));
-
-    return tip;
-}
-
-static void entangle_preferences_display_populate_plugins(EntanglePreferencesDisplay *display)
-{
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
-    GList *plugins;
-    GList *tmp;
-
-    gtk_list_store_clear(priv->plugins);
-
-    if (!priv->pluginManager)
-        return;
-
-    plugins = entangle_plugin_manager_get_all(priv->pluginManager);
-
-    tmp = plugins;
-    while (tmp) {
-        EntanglePlugin *plugin = ENTANGLE_PLUGIN(tmp->data);
-        GtkTreeIter iter;
-        gchar *tip = entangle_preferences_display_plugin_tooltip(plugin);
-
-        gtk_list_store_append(priv->plugins, &iter);
-        gtk_list_store_set(priv->plugins, &iter,
-                           0, plugin,
-                           1, entangle_plugin_get_description(plugin),
-                           2, NULL,
-                           3, TRUE,
-                           4, tip,
-                           -1);
-
-        tmp = tmp->next;
-    }
-
-    g_list_free(plugins);
-}
 
 static void entangle_preferences_display_notify(GObject *object, GParamSpec *spec, gpointer opaque)
 {
@@ -289,16 +217,32 @@ static void entangle_preferences_display_set_property(GObject *object,
                                              object);
         } break;
 
-        case PROP_PLUGIN_MANAGER: {
-            if (priv->pluginManager) {
-                g_object_unref(priv->pluginManager);
+#if HAVE_PLUGINS
+        case PROP_PLUGIN_ENGINE: {
+            if (priv->pluginEngine)
+                g_object_unref(priv->pluginEngine);
+            priv->pluginEngine = g_value_dup_object(value);
+            if (priv->pluginEngine) {
+                GtkWidget *panel = glade_xml_get_widget(priv->glade, "plugins-panel");
+                priv->pluginManager = PEAS_UI_PLUGIN_MANAGER(peas_ui_plugin_manager_new(priv->pluginEngine));
+                GList *children = gtk_container_get_children(GTK_CONTAINER(priv->pluginManager));
+                GList *tmp = children;
+                /* XXX hack. We don't want the generic 'Plugins:' label, since
+                 * we already have our own. There isn't an official API to kill
+                 * it though. Lets hope this doesn't break too bad...
+                 */
+                while (tmp) {
+                    GtkWidget *child = tmp->data;
+                    if (GTK_IS_LABEL(child)) {
+                        gtk_container_remove(GTK_CONTAINER(priv->pluginManager), child);
+                    }
+                    tmp = tmp->next;
+                }
+                g_list_free(children);
+                gtk_box_pack_start(GTK_BOX(panel), GTK_WIDGET(priv->pluginManager), TRUE, TRUE, 0);
             }
-            priv->pluginManager = g_value_get_object(value);
-            if (priv->pluginManager)
-                g_object_ref(priv->pluginManager);
-
-            entangle_preferences_display_populate_plugins(display);
         } break;
+#endif
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -350,7 +294,9 @@ static void entangle_preferences_display_finalize (GObject *object)
 
     g_signal_handler_disconnect(priv->prefs, priv->prefsID);
     g_object_unref(priv->prefs);
-    g_object_unref(priv->pluginManager);
+#if HAVE_PLUGINS
+    g_object_unref(priv->pluginEngine);
+#endif
     g_object_unref(priv->glade);
 }
 
@@ -373,32 +319,40 @@ static void entangle_preferences_display_class_init(EntanglePreferencesDisplayCl
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
-
+#if HAVE_PLUGINS
     g_object_class_install_property(object_class,
-                                    PROP_PLUGIN_MANAGER,
-                                    g_param_spec_object("plugin-manager",
-                                                        "Plugin manager",
-                                                        "Plugin manager",
-                                                        ENTANGLE_TYPE_PLUGIN_MANAGER,
+                                    PROP_PLUGIN_ENGINE,
+                                    g_param_spec_object("plugin-engine",
+                                                        "Plugin engine",
+                                                        "Plugin engine",
+                                                        PEAS_TYPE_ENGINE,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
-
+#endif
 
     g_type_class_add_private(klass, sizeof(EntanglePreferencesDisplayPrivate));
 }
 
 
+#if HAVE_PLUGINS
 EntanglePreferencesDisplay *entangle_preferences_display_new(EntanglePreferences *preferences,
-                                                     EntanglePluginManager *pluginManager)
+                                                             PeasEngine *pluginEngine)
 {
     return ENTANGLE_PREFERENCES_DISPLAY(g_object_new(ENTANGLE_TYPE_PREFERENCES_DISPLAY,
-                                                 "preferences", preferences,
-                                                 "plugin-manager", pluginManager,
-                                                 NULL));
+                                                     "preferences", preferences,
+                                                     "plugin-engine", pluginEngine,
+                                                     NULL));
 }
-
+#else
+EntanglePreferencesDisplay *entangle_preferences_display_new(EntanglePreferences *preferences)
+{
+    return ENTANGLE_PREFERENCES_DISPLAY(g_object_new(ENTANGLE_TYPE_PREFERENCES_DISPLAY,
+                                                     "preferences", preferences,
+                                                     NULL));
+}
+#endif
 
 static void do_preferences_close(GtkButton *src G_GNUC_UNUSED, EntanglePreferencesDisplay *preferences)
 {
@@ -562,6 +516,10 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     notebook = glade_xml_get_widget(priv->glade, "preferences-notebook");
     gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), FALSE);
 
+#if !HAVE_PLUGINS
+    gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), 2);
+#endif
+
     box = glade_xml_get_widget(priv->glade, "cms-box");
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
     image = glade_xml_get_widget(priv->glade, "cms-image");
@@ -578,6 +536,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/folders.png");
 
+#if HAVE_PLUGINS
     box = glade_xml_get_widget(priv->glade, "plugins-box");
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
     image = glade_xml_get_widget(priv->glade, "plugins-image");
@@ -585,6 +544,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
         gtk_image_set_from_file(GTK_IMAGE(image), "./plugins.png");
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/plugins.png");
+#endif
 
     list = gtk_list_store_new(3, G_TYPE_INT, G_TYPE_STRING, GDK_TYPE_PIXBUF, -1);
 
@@ -616,6 +576,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/color-management-22.png", NULL),
                            -1);
 
+#if HAVE_PLUGINS
     gtk_list_store_append(list, &iter);
     if (local)
         gtk_list_store_set(list, &iter,
@@ -629,6 +590,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
                            1, "Plugins",
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/plugins-22.png", NULL),
                            -1);
+#endif
 
     cellText = gtk_cell_renderer_text_new();
     cellImage = gtk_cell_renderer_pixbuf_new();
@@ -673,8 +635,6 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     g_object_unref(allFilter);
 
     g_signal_connect(selection, "changed", G_CALLBACK(do_page_changed), preferences);
-
-    entangle_preferences_display_setup_plugins(preferences);
 }
 
 
@@ -683,7 +643,7 @@ void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences)
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "preferences");
 
-    gtk_widget_show(win);
+    gtk_widget_show_all(win);
 }
 
 /*

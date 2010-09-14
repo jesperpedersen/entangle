@@ -1,12 +1,11 @@
 # -*- rpm-spec -*-
 
 %define with_introspection 0
+%define with_plugins 0
 
-%if 0%{?fedora} >= 12
+%if 0%{?fedora} >= 14
 %define with_introspection 1
-%endif
-%if 0%{?rhel} >= 6
-%define with_introspection 1
+%define with_plugins 1
 %endif
 
 Summary: Tethered shooting & control of digital cameras
@@ -34,8 +33,9 @@ BuildRequires: lcms-devel >= 1.18
 BuildRequires: /usr/bin/tpage
 %if %{with_introspection}
 BuildRequires: gobject-introspection-devel
-BuildRequires: gir-repository-devel
-BuildRequires: gjs-devel
+%endif
+%if %{with_plugins}
+BuildRequires: libpeas-devel
 %endif
 BuildRequires: startup-notification-devel >= 0.5
 BuildRequires: unique-devel >= 1.0.0
@@ -56,23 +56,23 @@ and 'hands off' shooting directly from the controlling computer.
 %build
 
 %if %{with_introspection}
-%define introspection_arg --enable-introspection --with-javascript
+%define introspection_arg --enable-introspection
 %else
-%define introspection_arg --disable-introspection --without-javascript
+%define introspection_arg --disable-introspection
+%endif
+%if %{with_plugins}
+%define plugins_arg --with-plugins
+%else
+%define plugins_arg --without-plugins
 %endif
 
-%configure %{introspection_arg}
+%configure %{introspection_arg} %{plugins_arg}
 make %{?_smp_mflags}
 
 %install
 rm -fr %{buildroot}
 
 %makeinstall
-chmod -x %{buildroot}%{_datadir}/entangle/plugins/*/*.cfg
-
-rm -f %{buildroot}%{_libdir}/entangle/plugins/*.a
-rm -f %{buildroot}%{_libdir}/entangle/plugins/*.la
-
 rm -rf %{buildroot}%{_datadir}/%{name}/website
 
 %clean
@@ -110,12 +110,11 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/gir-1.0/GPhoto-2.0.gir
 %{_libdir}/girepository-1.0/Entangle-0.1.typelib
 %{_libdir}/girepository-1.0/GPhoto-2.0.typelib
-%dir %{_libdir}/entangle
-%dir %{_libdir}/entangle/plugins
-%{_libdir}/entangle/plugins/javascript.so
+%endif
+%if %{with_plugins}
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/plugins
 %dir %{_datadir}/%{name}/plugins
-%dir %{_datadir}/%{name}/plugins/javascript
-%{_datadir}/%{name}/plugins/javascript/plugin.cfg
 %endif
 
 %changelog

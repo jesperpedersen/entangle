@@ -22,10 +22,12 @@
 #define __ENTANGLE_APP_H__
 
 #include <glib-object.h>
+#if HAVE_PLUGINS
+#include <libpeas/peas.h>
+#endif
 
 #include "entangle-preferences.h"
 #include "entangle-camera-list.h"
-#include "entangle-plugin-manager.h"
 
 G_BEGIN_DECLS
 
@@ -61,7 +63,9 @@ void entangle_app_refresh_cameras(EntangleApp *app);
 
 EntangleCameraList *entangle_app_get_cameras(EntangleApp *app);
 EntanglePreferences *entangle_app_get_preferences(EntangleApp *app);
-EntanglePluginManager *entangle_app_get_plugin_manager(EntangleApp *app);
+#if HAVE_PLUGINS
+PeasEngine *entangle_app_get_plugin_engine(EntangleApp *app);
+#endif
 
 G_END_DECLS
 

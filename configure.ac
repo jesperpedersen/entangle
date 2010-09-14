@@ -40,7 +40,7 @@ GUDEV_REQUIRED=145
 AC_SUBST(GUDEV_REQUIRED)
 DBUS_GLIB_REQUIRED=0.60
 AC_SUBST(DBUS_GLIB_REQUIRED)
-GOBJECT_INTROSPECTION_REQUIRED=0.6.2
+GOBJECT_INTROSPECTION_REQUIRED=0.9.3
 AC_SUBST(GOBJECT_INTROSPECTION_REQUIRED)
 LCMS_REQUIRED=1.18
 AC_SUBST(LCMS_REQUIRED)
@@ -48,8 +48,8 @@ STARTUP_REQUIRED=0.5
 AC_SUBST(STARTUP_REQUIRED)
 UNIQUE_REQUIRED=1.0.0
 AC_SUBST(UNIQUE_REQUIRED)
-GJS_REQUIRED=0.4
-AC_SUBST(GJS_REQUIRED)
+LIBPEAS_REQUIRED=0.5.4
+AC_SUBST(LIBPEAS_REQUIRED)
 
 dnl *******************************************************************************
 dnl Setup core compilers / build helpers
@@ -158,30 +158,39 @@ if test "x$enable_introspection" != "xno" ; then
 fi
 AM_CONDITIONAL([WITH_GOBJECT_INTROSPECTION], [test "x$enable_introspection" = "xyes"])
 
-AC_ARG_WITH([javascript],
-      AS_HELP_STRING([--with-javascript],[enable JavaScript plugins]),
-      [], [with_javascript=check])
+AC_ARG_WITH([plugins],
+      AS_HELP_STRING([--with-plugins],[enable libPeas plugins]),
+      [], [with_plugins=check])
 
-if test "x$with_javascript" != "xno" ; then
-  if test "x$enable_introspection" = "xno" ; then
-    if test "x$with_javascript" = "xyes"; then
-      AC_MSG_ERROR([gobject-introspection is requird for javascript plugins])
-    fi
+if test "x$with_plugins" != "xno" ; then
+  PKG_CHECK_MODULES(PEAS, libpeas-1.0 >= $LIBPEAS_REQUIRED,
+                    [],[
+                      if test "$with_plugins" = "check"; then
+                         with_plugins=no
+                      else
+                         AC_MSG_ERROR([libpeas >= $LIBPEAS_REQUIRED is required for plugins])
+                      fi
+                    ])
+  if test "$with_plugins" != "no"; then
+    PKG_CHECK_MODULES(PEAS_UI, libpeasui-1.0 >= $LIBPEAS_REQUIRED,
+                      [with_plugins=yes],[
+                        if test "$with_plugins" = "check"; then
+                          with_plugins=no
+                        else
+                           AC_MSG_ERROR([libpeas >= $LIBPEAS_REQUIRED is required for plugins])
+                        fi
+                      ])
   fi
-
-  PKG_CHECK_MODULES(GJS, gjs-1.0 >= $GJS_REQUIRED)
-  AC_SUBST(GJS_CFLAGS)
-  AC_SUBST(GJS_LIBS)
-
-  PKG_CHECK_MODULES(GJS_GI, gjs-gi-1.0 >= $GJS_REQUIRED)
-  AC_SUBST(GJS_GI_CFLAGS)
-  AC_SUBST(GJS_GI_LIBS)
-
-  with_javascript=yes
-  AC_DEFINE([WITH_JAVASCRIPT], [1], [enable JavaScript plugins])
+  if test "$with_plugins" = "yes" ; then
+     AC_DEFINE_UNQUOTED([HAVE_PLUGINS], 1,
+          [whether plugins are enabled])
+  fi
 fi
-AM_CONDITIONAL([WITH_JAVASCRIPT], [test "x$with_javascript" = "xyes"])
-
+AC_SUBST(LIBPEAS_CFLAGS)
+AC_SUBST(LIBPEAS_LIBS)
+AC_SUBST(LIBPEAS_UI_CFLAGS)
+AC_SUBST(LIBPEAS_UI_LIBS)
+AM_CONDITIONAL([HAVE_PLUGINS], [test "$with_plugins" = "yes"])
 
 ENTANGLE_COMPILE_WARNINGS
 

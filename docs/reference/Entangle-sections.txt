@@ -192,20 +192,6 @@ ENTANGLE_IS_CONTROL_BUTTON_CLASS
 ENTANGLE_CONTROL_BUTTON_GET_CLASS
 </SECTION>
 
-<SECTION>
-<FILE>entangle-plugin-javascript</FILE>
-EntanglePluginJavascriptPrivate
-<TITLE>EntanglePluginJavascript</TITLE>
-EntanglePluginJavascript
-<SUBSECTION Standard>
-ENTANGLE_PLUGIN_JAVASCRIPT
-ENTANGLE_IS_PLUGIN_JAVASCRIPT
-ENTANGLE_TYPE_PLUGIN_JAVASCRIPT
-entangle_plugin_javascript_get_type
-ENTANGLE_PLUGIN_JAVASCRIPT_CLASS
-ENTANGLE_IS_PLUGIN_JAVASCRIPT_CLASS
-ENTANGLE_PLUGIN_JAVASCRIPT_GET_CLASS
-</SECTION>
 
 <SECTION>
 <FILE>entangle-control</FILE>
@@ -269,21 +255,6 @@ ENTANGLE_SESSION_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>entangle-plugin-native</FILE>
-EntanglePluginNativePrivate
-<TITLE>EntanglePluginNative</TITLE>
-EntanglePluginNative
-<SUBSECTION Standard>
-ENTANGLE_PLUGIN_NATIVE
-ENTANGLE_IS_PLUGIN_NATIVE
-ENTANGLE_TYPE_PLUGIN_NATIVE
-entangle_plugin_native_get_type
-ENTANGLE_PLUGIN_NATIVE_CLASS
-ENTANGLE_IS_PLUGIN_NATIVE_CLASS
-ENTANGLE_PLUGIN_NATIVE_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>entangle-app</FILE>
 EntangleAppPrivate
 <TITLE>EntangleApp</TITLE>
@@ -292,7 +263,7 @@ entangle_app_new
 entangle_app_refresh_cameras
 entangle_app_get_cameras
 entangle_app_get_preferences
-entangle_app_get_plugin_manager
+entangle_app_get_plugin_engine
 <SUBSECTION Standard>
 ENTANGLE_APP
 ENTANGLE_IS_APP
@@ -491,24 +462,6 @@ ENTANGLE_IS_IMAGE_LOADER_CLASS
 ENTANGLE_IMAGE_LOADER_GET_CLASS
 </SECTION>
 
-<SECTION>
-<FILE>entangle-plugin-manager</FILE>
-ENTANGLE_PLUGIN_MANAGER_GET_INTERFACE
-EntanglePluginManagerPrivate
-<TITLE>EntanglePluginManager</TITLE>
-EntanglePluginManager
-entangle_plugin_manager_new
-entangle_plugin_manager_scan
-entangle_plugin_manager_register_type
-entangle_plugin_manager_activate
-entangle_plugin_manager_deactivate
-entangle_plugin_manager_get_all
-<SUBSECTION Standard>
-ENTANGLE_PLUGIN_MANAGER
-ENTANGLE_IS_PLUGIN_MANAGER
-ENTANGLE_TYPE_PLUGIN_MANAGER
-entangle_plugin_manager_get_type
-</SECTION>
 
 <SECTION>
 <FILE>entangle-colour-profile</FILE>
@@ -568,30 +521,6 @@ entangle_preferences_get_type
 ENTANGLE_PREFERENCES_CLASS
 ENTANGLE_IS_PREFERENCES_CLASS
 ENTANGLE_PREFERENCES_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>entangle-plugin</FILE>
-EntanglePluginPrivate
-<TITLE>EntanglePlugin</TITLE>
-EntanglePlugin
-entangle_plugin_activate
-entangle_plugin_deactivate
-entangle_plugin_is_active
-entangle_plugin_get_dir
-entangle_plugin_get_name
-entangle_plugin_get_version
-entangle_plugin_get_description
-entangle_plugin_get_uri
-entangle_plugin_get_email
-<SUBSECTION Standard>
-ENTANGLE_PLUGIN
-ENTANGLE_IS_PLUGIN
-ENTANGLE_TYPE_PLUGIN
-entangle_plugin_get_type
-ENTANGLE_PLUGIN_CLASS
-ENTANGLE_IS_PLUGIN_CLASS
-ENTANGLE_PLUGIN_GET_CLASS
 </SECTION>
 
 <SECTION>

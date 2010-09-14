@@ -87,11 +87,11 @@ GTKDOC_CFLAGS=	\
 	$(GTHREAD_CFLAGS) \
 	$(GMODULE_CFLAGS) \
 	$(GTK_CFLAGS) \
+	$(LIBPEAS_CFLAGS) \
 	$(GLADE2_CFLAGS) \
 	$(UNIQUE_CFLAGS)
 
-GTKDOC_LIBS=$(top_builddir)/src/libentangle_backend.la $(top_builddir)/src/libentangle_frontend.la\
-	$(top_builddir)/src/javascript.la
+GTKDOC_LIBS=$(top_builddir)/src/libentangle_backend.la $(top_builddir)/src/libentangle_frontend.la
 
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.

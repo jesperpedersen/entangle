@@ -2,11 +2,6 @@
 
 noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
-if WITH_JAVASCRIPT
-plugin_LTLIBRARIES = javascript.la
-plugindir = $(libdir)/entangle/plugins
-endif # WITH_JAVASCRIPT
-
 bin_PROGRAMS = entangle
 
 gladedir = $(pkgdatadir)
@@ -61,9 +56,6 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-image-loader.h backend/entangle-image-loader.c \
 	backend/entangle-params.h backend/entangle-params.c \
 	backend/entangle-pixbuf-loader.h backend/entangle-pixbuf-loader.c \
-	backend/entangle-plugin.h backend/entangle-plugin.c \
-	backend/entangle-plugin-native.h backend/entangle-plugin-native.c \
-	backend/entangle-plugin-manager.h backend/entangle-plugin-manager.c \
 	backend/entangle-preferences.h backend/entangle-preferences.c \
 	backend/entangle-preferences-gconf.h backend/entangle-preferences-gconf.c \
 	backend/entangle-progress.h backend/entangle-progress.c \
@@ -82,6 +74,7 @@ libentangle_backend_la_LDFLAGS = \
 	$(HAL_LIBS) \
 	$(GUDEV_LIBS) \
 	$(DBUS_GLIB_LIBS) \
+	$(PEAS_LIBS) \
 	$(WARNING_CFLAGS)
 
 libentangle_backend_la_CFLAGS = \
@@ -96,43 +89,11 @@ libentangle_backend_la_CFLAGS = \
 	$(HAL_CFLAGS) \
 	$(GUDEV_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
+	$(PEAS_CFLAGS) \
 	$(WARNING_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
+	-DDATADIR="\"$(datadir)\"" \
 	-DLIBDIR="\"$(libdir)\""
-
-if WITH_JAVASCRIPT
-javascript_la_SOURCES = \
-	backend/entangle-plugin-javascript.h backend/entangle-plugin-javascript.c \
-	backend/entangle-plugin-javascript-module.c
-
-javascript_la_LDFLAGS = \
-	-avoid-version -module \
-	$(GJS_LIBS) \
-	$(GJS_GI_LIBS) \
-	$(WARNING_CFLAGS)
-
-javascript_la_CFLAGS = \
-	$(GLIB_CFLAGS) \
-	$(GDK_PIXBUF_CFLAGS) \
-	$(GJS_CFLAGS) \
-	$(GJS_GI_CFLAGS) \
-	$(WARNING_CFLAGS)
-
-EXTRA_DIST += javascript.cfg
-
-install-data-local:
-	install -d $(DESTDIR)$(pkgdatadir)/plugins
-	install -d  $(DESTDIR)$(pkgdatadir)/plugins/javascript
-	install $(srcdir)/javascript.cfg  $(DESTDIR)$(pkgdatadir)/plugins/javascript/plugin.cfg
-
-uninstall-local:
-	rm -f  $(DESTDIR)$(pkgdatadir)/plugins/javascript/plugin.cfg
-else # WITH_JAVASCRIPT
-EXTRA_DIST += \
-	javascript.cfg \
-	backend/entangle-plugin-javascript.h backend/entangle-plugin-javascript.c \
-	backend/entangle-plugin-javascript-module.c
-endif # WITH_JAVASCRIPT
 
 libentangle_frontend_la_SOURCES = \
 	frontend/entangle-app-display.h frontend/entangle-app-display.c \
@@ -154,6 +115,8 @@ libentangle_frontend_la_LDFLAGS = \
 	$(GTK_LIBS) \
 	$(GLADE2_LIBS) \
 	$(UNIQUE_LIBS) \
+	$(PEAS_LIBS) \
+	$(PEAS_UI_LIBS) \
 	$(WARNING_CFLAGS)
 
 libentangle_frontend_la_CFLAGS = \
@@ -163,6 +126,8 @@ libentangle_frontend_la_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(GLADE2_CFLAGS) \
 	$(UNIQUE_CFLAGS) \
+	$(PEAS_CFLAGS) \
+	$(PEAS_UI_CFLAGS) \
 	$(WARNING_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\""
 
@@ -177,6 +142,7 @@ entangle_LDFLAGS = \
 	$(GMODULE_LIBS) \
 	$(GTK_LIBS) \
 	$(GOBJECT_INTROSPECTION_LIBS) \
+	$(PEAS_LIBS) \
 	$(STARTUP_LIBS) \
 	$(WARNING_CFLAGS)
 
@@ -187,6 +153,7 @@ entangle_CFLAGS = \
 	$(GMODULE_FLAGS) \
 	$(GTK_CFLAGS) \
 	$(GOBJECT_INTROSPECTION_CFLAGS) \
+	$(PEAS_CFLAGS) \
 	$(STARTUP_CFLAGS) \
 	$(WARNING_CFLAGS)
 
@@ -252,6 +219,24 @@ backend/entangle-config-entry-enums.h: backend/entangle-config-entry.h Makefile.
 
 CLEANFILES = *~ $(desktop_DATA) $(BUILT_SOURCES)
 
+if HAVE_PLUGINS
+PLUGIN_INC=--include Peas-1.0
+PLUGIN_PKG=--pkg=libpeas-1.0
+
+install-data-local:
+	$(MKDIR_P) $(DESTDIR)$(libdir)/entangle/plugins
+	$(MKDIR_P) $(DESTDIR)$(datadir)/entangle/plugins
+
+uninstall-local::
+	rmdir $(DESTDIR)$(libdir)/entangle/plugins ||:
+	rmdir $(DESTDIR)$(libdir)/entangle ||:
+	rmdir $(DESTDIR)$(datadir)/entangle/plugins ||:
+	rmdir $(DESTDIR)$(datadir)/entangle ||:
+
+else
+PLUGIN_INC=
+PLUGIN_PKG=
+endif
 
 if WITH_GOBJECT_INTROSPECTION
 Entangle-0.1.gir: entangle GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
@@ -261,6 +246,8 @@ Entangle-0.1.gir: entangle GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
 		--include GObject-2.0 \
 		--include Gtk-2.0 \
                 --include GPhoto-2.0 \
+                --include GPhoto-2.0 \
+		$(PLUGIN_INC) \
                 --program=$(builddir)/entangle \
                 --add-include-path=$(srcdir) \
                 --add-include-path=$(builddir) \
@@ -276,6 +263,7 @@ Entangle-0.1.gir: entangle GPhoto-2.0.typelib $(G_IR_SCANNER) Makefile.am
                 --pkg=libgphoto2 \
                 --pkg=libglade-2.0 \
                 --pkg=hal \
+                $(PLUGIN_PKG) \
                 --pkg=dbus-glib-1 \
                 $(libentangle_backend_la_SOURCES:%=$(srcdir)/%) \
                 $(libentangle_frontend_la_SOURCES:%=$(srcdir)/%) \

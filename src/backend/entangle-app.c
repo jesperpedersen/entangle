@@ -30,8 +30,6 @@
 #include "entangle-params.h"
 #include "entangle-device-manager.h"
 #include "entangle-preferences-gconf.h"
-#include "entangle-plugin-native.h"
-#include "entangle-plugin-javascript.h"
 
 /**
  * @Short_description: Global application state base class
@@ -61,7 +59,10 @@ struct _EntangleAppPrivate {
 
     EntanglePreferences *preferences;
 
-    EntanglePluginManager *pluginManager;
+#if HAVE_PLUGINS
+    PeasEngine *pluginEngine;
+    PeasExtensionSet *pluginExt;
+#endif
 };
 
 G_DEFINE_TYPE(EntangleApp, entangle_app, G_TYPE_OBJECT);
@@ -151,8 +152,12 @@ static void entangle_app_finalize(GObject *object)
         g_object_unref(priv->preferences);
     if (priv->devManager)
         g_object_unref(priv->devManager);
-    if (priv->pluginManager)
-        g_object_unref(priv->pluginManager);
+#if HAVE_PLUGINS
+    if (priv->pluginEngine)
+        g_object_unref(priv->pluginEngine);
+    if (priv->pluginExt)
+        g_object_unref(priv->pluginExt);
+#endif
 
     entangle_params_free(priv->params);
 
@@ -299,11 +304,33 @@ EntangleApp *entangle_app_new(void)
     return ENTANGLE_APP(g_object_new(ENTANGLE_TYPE_APP, NULL));
 }
 
+#if HAVE_PLUGINS
+static void
+on_extension_added(PeasExtensionSet *set G_GNUC_UNUSED,
+                   PeasPluginInfo *info G_GNUC_UNUSED,
+                   PeasExtension *exten,
+                   gpointer opaque)
+{
+    peas_extension_call(exten, "activate", opaque);
+}
+
+static void
+on_extension_removed(PeasExtensionSet *set G_GNUC_UNUSED,
+                     PeasPluginInfo *info G_GNUC_UNUSED,
+                     PeasExtension *exten,
+                     gpointer opaque G_GNUC_UNUSED)
+{
+    peas_extension_call(exten, "deactivate");
+}
+#endif
 
 static void entangle_app_init(EntangleApp *app)
 {
     EntangleAppPrivate *priv;
-    gint newmodules;
+#if HAVE_PLUGINS
+    gchar **peasPath;
+    int i;
+#endif
 
     priv = app->priv = ENTANGLE_APP_GET_PRIVATE(app);
 
@@ -311,23 +338,53 @@ static void entangle_app_init(EntangleApp *app)
     priv->params = entangle_params_new();
     priv->cameras = entangle_camera_list_new();
     priv->devManager = entangle_device_manager_new();
-    priv->pluginManager = entangle_plugin_manager_new();
+
+#if HAVE_PLUGINS
+    peasPath = g_new0(gchar *, 5);
+    peasPath[0] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
+    peasPath[1] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
+    peasPath[2] = g_strdup(LIBDIR "/entangle/plugins");
+    peasPath[3] = g_strdup(DATADIR "/entangle/plugins");
+    peasPath[4] = NULL;
+
+    g_mkdir_with_parents(peasPath[0], 0777);
+
+    priv->pluginEngine = peas_engine_new("Entangle",
+                                         LIBDIR "/entangle/",
+                                         (const gchar **)peasPath);
+
+    priv->pluginExt = peas_extension_set_new(priv->pluginEngine,
+                                             PEAS_TYPE_ACTIVATABLE,
+                                             "object", app,
+                                             NULL);
+
+    peas_extension_set_call(priv->pluginExt, "activate");
+
+    g_signal_connect(priv->pluginExt, "extension-added",
+                     G_CALLBACK(on_extension_added), app);
+    g_signal_connect(priv->pluginExt, "extension-removed",
+                     G_CALLBACK(on_extension_removed), app);
+
+    g_free(peasPath[0]);
+    g_free(peasPath[1]);
+    g_free(peasPath[2]);
+    g_free(peasPath[3]);
+    g_free(peasPath[4]);
+    g_free(peasPath);
+#endif
 
     g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), app);
     g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), app);
 
     do_refresh_cameras(app);
 
-    entangle_plugin_manager_register_type(priv->pluginManager, "native",
-                                      ENTANGLE_TYPE_PLUGIN_NATIVE);
-    /* Scan repeatedly because each new plugin may register
-     * new plugin types, requiring a repeat scan
-     */
-    do {
-        newmodules = entangle_plugin_manager_scan(priv->pluginManager);
-        entangle_plugin_manager_activate(priv->pluginManager, G_OBJECT(app));
-        ENTANGLE_DEBUG("Activated %d plugins", newmodules);
-    } while (newmodules > 0);
+#if HAVE_PLUGINS
+    const GList *plugins = peas_engine_get_plugin_list(priv->pluginEngine);
+    for (i = 0 ; i < g_list_length((GList *)plugins) ; i++) {
+        PeasPluginInfo *plugin = g_list_nth_data((GList*)plugins, i);
+        peas_engine_load_plugin(priv->pluginEngine, plugin);
+    }
+#endif
 }
 
 
@@ -367,17 +424,18 @@ EntanglePreferences *entangle_app_get_preferences(EntangleApp *app)
     return priv->preferences;
 }
 
-
+#if HAVE_PLUGINS
 /**
- * entangle_app_get_plugin_manager: Retrieve the plugin manager
+ * entangle_app_get_plugin_engine: Retrieve the plugin manager
  *
- * Returns: (transfer none): the plugin manager
+ * Returns: (transfer none): the plugin engine
  */
-EntanglePluginManager *entangle_app_get_plugin_manager(EntangleApp *app)
+PeasEngine *entangle_app_get_plugin_engine(EntangleApp *app)
 {
     EntangleAppPrivate *priv = app->priv;
-    return priv->pluginManager;
+    return priv->pluginEngine;
 }
+#endif
 
 
 /*

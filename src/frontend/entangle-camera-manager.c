@@ -59,7 +59,9 @@ struct _EntangleCameraManagerPrivate {
     EntangleSession *session;
 
     EntanglePreferences *prefs;
-    EntanglePluginManager *pluginManager;
+#if HAVE_PLUGINS
+    PeasEngine *pluginEngine;
+#endif
 
     EntangleHelpAbout *about;
 
@@ -113,7 +115,9 @@ enum {
     PROP_O,
     PROP_CAMERA,
     PROP_PREFERENCES,
-    PROP_PLUGIN_MANAGER,
+#if HAVE_PLUGINS
+    PROP_PLUGIN_ENGINE,
+#endif
 };
 
 
@@ -651,9 +655,11 @@ static void entangle_camera_manager_get_property(GObject *object,
             g_value_set_object(value, priv->prefs);
             break;
 
-        case PROP_PLUGIN_MANAGER:
-            g_value_set_object(value, priv->pluginManager);
+#if HAVE_PLUGINS
+        case PROP_PLUGIN_ENGINE:
+            g_value_set_object(value, priv->pluginEngine);
             break;
+#endif
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -694,18 +700,18 @@ static void entangle_camera_manager_set_property(GObject *object,
             entangle_camera_manager_update_colour_transform(manager);
             break;
 
-        case PROP_PLUGIN_MANAGER:
-            if (priv->pluginManager)
-                g_object_unref(priv->pluginManager);
-            priv->pluginManager = g_value_get_object(value);
-            if (priv->pluginManager)
-                g_object_ref(priv->pluginManager);
+#if HAVE_PLUGINS
+        case PROP_PLUGIN_ENGINE:
+            if (priv->pluginEngine)
+                g_object_unref(priv->pluginEngine);
+            priv->pluginEngine = g_value_dup_object(value);
 
             if (priv->prefsDisplay)
-                g_object_set(priv->prefsDisplay, "plugin-manager", priv->pluginManager, NULL);
+                g_object_set(priv->prefsDisplay, "plugin-engine", priv->pluginEngine, NULL);
 
             entangle_camera_manager_update_colour_transform(manager);
             break;
+#endif
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -729,8 +735,10 @@ static void entangle_camera_manager_finalize (GObject *object)
         g_object_unref(priv->scheduler);
     if (priv->camera)
         g_object_unref(priv->camera);
-    if (priv->pluginManager)
-        g_object_unref(priv->pluginManager);
+#if HAVE_PLUGINS
+    if (priv->pluginEngine)
+        g_object_unref(priv->pluginEngine);
+#endif
     if (priv->prefs)
         g_object_unref(priv->prefs);
     if (priv->prefsDisplay)
@@ -795,29 +803,40 @@ static void entangle_camera_manager_class_init(EntangleCameraManagerClass *klass
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+#if HAVE_PLUGINS
     g_object_class_install_property(object_class,
-                                    PROP_PLUGIN_MANAGER,
-                                    g_param_spec_object("plugin-manager",
-                                                        "Plugin manager",
-                                                        "Plugin manager",
-                                                        ENTANGLE_TYPE_PLUGIN_MANAGER,
+                                    PROP_PLUGIN_ENGINE,
+                                    g_param_spec_object("plugin-engine",
+                                                        "Plugin engine",
+                                                        "Plugin engine",
+                                                        PEAS_TYPE_ENGINE,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
+#endif
 
     g_type_class_add_private(klass, sizeof(EntangleCameraManagerPrivate));
 }
 
-
+#if HAVE_PLUGINS
 EntangleCameraManager *entangle_camera_manager_new(EntanglePreferences *prefs,
-                                           EntanglePluginManager *pluginManager)
+                                                   PeasEngine *pluginEngine)
 {
     return ENTANGLE_CAMERA_MANAGER(g_object_new(ENTANGLE_TYPE_CAMERA_MANAGER,
-                                            "preferences", prefs,
-                                            "plugin-manager", pluginManager,
-                                            NULL));
+                                                "preferences", prefs,
+                                                "plugin-engine", pluginEngine,
+                                                NULL));
 }
+#else
+EntangleCameraManager *entangle_camera_manager_new(EntanglePreferences *prefs)
+{
+    return ENTANGLE_CAMERA_MANAGER(g_object_new(ENTANGLE_TYPE_CAMERA_MANAGER,
+                                                "preferences", prefs,
+                                                NULL));
+}
+#endif
+
 
 static void do_manager_help_summary(GtkMenuItem *src G_GNUC_UNUSED,
                                     EntangleCameraManager *manager)
@@ -1339,8 +1358,12 @@ static void do_menu_preferences_activate(GtkCheckMenuItem *src G_GNUC_UNUSED,
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     if (priv->prefsDisplay == NULL)
+#if HAVE_PLUGINS
         priv->prefsDisplay = entangle_preferences_display_new(priv->prefs,
-                                                          priv->pluginManager);
+                                                              priv->pluginEngine);
+#else
+        priv->prefsDisplay = entangle_preferences_display_new(priv->prefs);
+#endif
 
     entangle_preferences_display_show(priv->prefsDisplay);
 }
@@ -1664,13 +1687,14 @@ EntanglePreferences *entangle_camera_manager_get_preferences(EntangleCameraManag
     return priv->prefs;
 }
 
-
-EntanglePluginManager *entangle_camera_manager_get_plugin_manager(EntangleCameraManager *manager)
+#if HAVE_PLUGINS
+PeasEngine *entangle_camera_manager_get_plugin_engine(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    return priv->pluginManager;
+    return priv->pluginEngine;
 }
+#endif
 
 
 /*

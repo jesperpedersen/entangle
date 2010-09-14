@@ -25,7 +25,9 @@
 
 #include "entangle-app.h"
 #include "entangle-preferences.h"
-#include "entangle-plugin-manager.h"
+#if HAVE_PLUGINS
+#include <libpeas/peas.h>
+#endif
 
 G_BEGIN_DECLS
 
@@ -56,8 +58,12 @@ struct _EntanglePreferencesDisplayClass
 
 
 GType entangle_preferences_display_get_type(void) G_GNUC_CONST;
+#if HAVE_PLUGINS
 EntanglePreferencesDisplay* entangle_preferences_display_new(EntanglePreferences *prefs,
-                                                     EntanglePluginManager *pluginManager);
+                                                             PeasEngine *pluginEngine);
+#else
+EntanglePreferencesDisplay* entangle_preferences_display_new(EntanglePreferences *prefs);
+#endif
 
 void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences);
 
