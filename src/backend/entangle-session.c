@@ -221,7 +221,7 @@ const char *entangle_session_filename_pattern(EntangleSession *session)
 }
 
 
-static const char *entangle_session_get_extension(EntangleCameraFile *file)
+static char *entangle_session_get_extension(EntangleCameraFile *file)
 {
     const char *name = entangle_camera_file_get_name(file);
     const char *ext;
@@ -229,10 +229,10 @@ static const char *entangle_session_get_extension(EntangleCameraFile *file)
     ext = g_strrstr(name, ".");
 
     if (!ext)
-        return "jpeg";
+        ext = ".jpeg";
 
     ext++;
-    return ext;
+    return g_ascii_strdown(ext, -1);
 }
 
 
@@ -334,7 +334,7 @@ char *entangle_session_next_filename(EntangleSession *session,
     EntangleSessionPrivate *priv = session->priv;
     const char *template = strchr(priv->filenamePattern, 'X');
     const char *postfix;
-    const char *ext = entangle_session_get_extension(file);
+    char *ext = entangle_session_get_extension(file);
     char *prefix;
     char *format;
     char *filename;
@@ -385,6 +385,7 @@ char *entangle_session_next_filename(EntangleSession *session,
 
     g_free(prefix);
     g_free(format);
+    g_free(ext);
 
     return filename;
 }
