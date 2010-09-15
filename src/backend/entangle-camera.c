@@ -1203,6 +1203,137 @@ EntangleProgress *entangle_camera_get_progress(EntangleCamera *cam)
     return priv->progress;
 }
 
+
+static GMount *entangle_device_manager_find_mount(EntangleCamera *cam,
+                                                  GVolumeMonitor *monitor)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+    gchar *uri = g_strdup_printf("gphoto2://[%s]/", priv->port);
+    GList *mounts = g_volume_monitor_get_mounts(monitor);
+    GList *tmp = mounts;
+    GMount *ret = NULL;
+    while (tmp) {
+        GMount *mount = tmp->data;
+        GFile *root = g_mount_get_root(mount);
+        gchar *thisuri = g_file_get_uri(root);
+
+        if (g_strcmp0(uri, thisuri) == 0)
+            ret = mount;
+        else
+            g_object_unref(mount);
+
+        tmp = tmp->next;
+    }
+    g_list_free(mounts);
+
+    g_free(uri);
+    return ret;
+}
+
+
+gboolean entangle_camera_is_mounted(EntangleCamera *cam)
+{
+    GVolumeMonitor *monitor = g_volume_monitor_get();
+    GMount *mount = entangle_device_manager_find_mount(cam, monitor);
+    gboolean ret;
+
+    if (mount) {
+        g_object_unref(mount);
+        ret = TRUE;
+    } else {
+        ret = FALSE;
+    }
+
+    g_object_unref(monitor);
+    return ret;
+}
+#if 0
+void entangle_camera_mount_async(EntangleCamera *cam,
+                                 GCancellable *cancellable,
+                                 GAsyncReadyCallback callback,
+                                 gpointer user_data);
+gboolean entangle_camera_mount_finish(EntangleCamera *cam,
+                                      GAsyncResult *result,
+                                      GError **err);
+#endif
+
+struct UnmountData {
+    GVolumeMonitor *monitor;
+    GMount *mount;
+    GAsyncReadyCallback callback;
+    gpointer user_data;
+};
+
+static void entangle_camera_unmount_cleanup(GObject *object,
+                                            GAsyncResult *result,
+                                            gpointer user_data)
+{
+    struct UnmountData *data = user_data;
+
+    data->callback(object, result, data->user_data);
+
+    g_object_unref(data->monitor);
+    if (data->mount)
+        g_object_unref(data->mount);
+    g_free(data);
+}
+
+static void entangle_camera_unmount_complete(GObject *object,
+                                             GAsyncResult *result,
+                                             gpointer user_data)
+{
+    GSimpleAsyncResult *camresult = user_data;
+    GError *err = NULL;
+    GMount *mount = G_MOUNT(object);
+
+    g_mount_unmount_with_operation_finish(mount,
+                                          result,
+                                          &err);
+
+    if (err)
+        g_simple_async_result_set_from_error(camresult, err);
+
+    g_simple_async_result_complete(camresult);
+    g_object_unref(camresult);
+}
+
+void entangle_camera_unmount_async(EntangleCamera *cam,
+                                   GCancellable *cancellable,
+                                   GAsyncReadyCallback callback,
+                                   gpointer user_data)
+{
+    struct UnmountData *data = g_new0(struct UnmountData, 1);
+
+    data->monitor = g_volume_monitor_get();
+    data->mount = entangle_device_manager_find_mount(cam, data->monitor);
+    data->callback = callback;
+    data->user_data = user_data;
+
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           entangle_camera_unmount_cleanup,
+                                                           data,
+                                                           entangle_camera_unmount_async);
+
+    if (data->mount) {
+        g_mount_unmount_with_operation(data->mount,
+                                       0, NULL,
+                                       cancellable,
+                                       entangle_camera_unmount_complete,
+                                       result);
+    } else {
+        g_simple_async_result_complete(result);
+        g_object_unref(result);
+    }
+}
+
+gboolean entangle_camera_unmount_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                        GAsyncResult *result,
+                                        GError **err)
+{
+    return g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                 err);
+}
+
 /*
  * Local variables:
  *  c-indent-level: 4

@@ -124,6 +124,7 @@ int main(int argc, char **argv)
     if (!gtk_init_check(NULL, NULL))
         return 1;
 
+    gdk_threads_enter();
     display = entangle_app_display_new();
 
     g_signal_connect(display, "app-closed", gtk_main_quit, NULL);
@@ -133,10 +134,9 @@ int main(int argc, char **argv)
     startup_notification_complete();
 
     if (unique) {
-        gdk_threads_enter();
         gtk_main();
-        gdk_threads_leave();
     }
+    gdk_threads_leave();
 
     g_object_unref(display);
     return 0;

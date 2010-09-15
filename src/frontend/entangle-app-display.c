@@ -100,10 +100,96 @@ static void do_manager_connect(EntangleCameraManager *manager G_GNUC_UNUSED,
 }
 
 
-static void do_picker_connect(EntangleCameraPicker *picker, EntangleCamera *cam, EntangleAppDisplay *display)
+static gboolean need_camera_unmount(EntangleCamera *cam)
+{
+    if (entangle_camera_is_mounted(cam)) {
+        int response;
+        GtkWidget *msg = gtk_message_dialog_new(NULL,
+                                                GTK_DIALOG_MODAL,
+                                                GTK_MESSAGE_ERROR,
+                                                GTK_BUTTONS_NONE,
+                                                "%s",
+                                                "Camera is in use");
+
+        gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
+                                                   "%s",
+                                                   "The camera cannot be opened because it is "
+                                                   "currently mounted as a filesystem. Do you "
+                                                   "wish to umount it now ?");
+
+        gtk_dialog_add_button(GTK_DIALOG(msg), "No", GTK_RESPONSE_NO);
+        gtk_dialog_add_button(GTK_DIALOG(msg), "Yes", GTK_RESPONSE_YES);
+        gtk_dialog_set_default_response(GTK_DIALOG(msg), GTK_RESPONSE_YES);
+
+        response = gtk_dialog_run(GTK_DIALOG(msg));
+
+        gtk_widget_destroy(msg);
+
+        if (response == GTK_RESPONSE_YES)
+            return TRUE;
+    }
+    return FALSE;
+}
+
+static void do_camera_unmount_complete(GObject *source,
+                                       GAsyncResult *result,
+                                       gpointer opaque)
+{
+    GtkDialog *msg = GTK_DIALOG(opaque);
+    EntangleCamera *cam = ENTANGLE_CAMERA(source);
+
+    gtk_dialog_response(msg, GTK_RESPONSE_OK);
+
+    entangle_camera_unmount_finish(cam, result, NULL);
+}
+
+static gboolean do_camera_unmount_tick(gpointer data)
+{
+    GtkProgressBar *progress = GTK_PROGRESS_BAR(data);
+
+    gtk_progress_bar_pulse(progress);
+
+    return TRUE;
+}
+
+static void do_camera_unmount(EntangleCamera *cam)
+{
+    GtkWidget *msg = gtk_message_dialog_new(NULL,
+                                            GTK_DIALOG_MODAL,
+                                            GTK_MESSAGE_ERROR,
+                                            GTK_BUTTONS_NONE,
+                                            "%s",
+                                            "Unmounting camera");
+
+    GtkWidget *box = gtk_dialog_get_content_area(GTK_DIALOG(msg));
+    GtkWidget *progress = gtk_progress_bar_new();
+    GCancellable *cancellable = g_cancellable_new();
+
+    gtk_container_add(GTK_CONTAINER(box), progress);
+    gtk_widget_show(progress);
+
+    gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
+
+    entangle_camera_unmount_async(cam, cancellable, do_camera_unmount_complete, msg); 
+
+    guint ticker = g_timeout_add(100, do_camera_unmount_tick, progress);
+    int response = gtk_dialog_run(GTK_DIALOG(msg));
+
+    if (response == GTK_RESPONSE_CANCEL)
+        g_cancellable_cancel(cancellable);
+
+    g_source_remove(ticker);
+    gtk_widget_destroy(msg);
+}
+
+static void do_picker_connect(EntangleCameraPicker *picker G_GNUC_UNUSED,
+                              EntangleCamera *cam,
+                              EntangleAppDisplay *display)
 {
     EntangleAppDisplayPrivate *priv = display->priv;
     ENTANGLE_DEBUG("emit connect %p %s", cam, entangle_camera_get_model(cam));
+    if (need_camera_unmount(cam))
+        do_camera_unmount(cam);
 
     while (!entangle_camera_connect(cam)) {
         int response;
@@ -123,18 +209,19 @@ static void do_picker_connect(EntangleCameraPicker *picker, EntangleCamera *cam,
 
         gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
         gtk_dialog_add_button(GTK_DIALOG(msg), "Retry", GTK_RESPONSE_ACCEPT);
+        gtk_dialog_set_default_response(GTK_DIALOG(msg), GTK_RESPONSE_ACCEPT);
 
         response = gtk_dialog_run(GTK_DIALOG(msg));
 
-        gtk_widget_hide(msg);
-        //g_object_unref(msg);
+        gtk_widget_destroy(msg);
 
         if (response == GTK_RESPONSE_CANCEL)
             return;
     }
 
     entangle_camera_manager_set_camera(priv->manager, cam);
-    entangle_camera_picker_hide(picker);
+    entangle_camera_picker_hide(priv->picker);
+
 }
 
 static void do_set_icons(void)
@@ -238,6 +325,9 @@ gboolean entangle_app_display_show(EntangleAppDisplay *display)
 
     if (entangle_camera_list_count(cameras) == 1) {
         EntangleCamera *cam = entangle_camera_list_get(cameras, 0);
+
+        if (need_camera_unmount(cam))
+            do_camera_unmount(cam);
 
         if (entangle_camera_connect(cam)) {
             entangle_camera_manager_set_camera(priv->manager, cam);

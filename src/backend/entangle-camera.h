@@ -22,6 +22,7 @@
 #define __ENTANGLE_CAMERA_H__
 
 #include <glib-object.h>
+#include <gio/gio.h>
 
 #include "entangle-control-group.h"
 #include "entangle-camera-file.h"
@@ -107,6 +108,24 @@ EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam);
 
 void entangle_camera_set_progress(EntangleCamera *cam, EntangleProgress *prog);
 EntangleProgress *entangle_camera_get_progress(EntangleCamera *cam);
+
+gboolean entangle_camera_is_mounted(EntangleCamera *cam);
+
+void entangle_camera_mount_async(EntangleCamera *cam,
+                                 GCancellable *cancellable,
+                                 GAsyncReadyCallback callback,
+                                 gpointer user_data);
+gboolean entangle_camera_mount_finish(EntangleCamera *cam,
+                                      GAsyncResult *result,
+                                      GError **err);
+
+void entangle_camera_unmount_async(EntangleCamera *cam,
+                                   GCancellable *cancellable,
+                                   GAsyncReadyCallback callback,
+                                   gpointer user_data);
+gboolean entangle_camera_unmount_finish(EntangleCamera *cam,
+                                        GAsyncResult *result,
+                                        GError **err);
 
 G_END_DECLS
 
