@@ -35,7 +35,7 @@ BuildRequires: /usr/bin/tpage
 BuildRequires: gobject-introspection-devel
 %endif
 %if %{with_plugins}
-BuildRequires: libpeas-devel
+BuildRequires: libpeas-devel >= 0.5.5
 %endif
 BuildRequires: startup-notification-devel >= 0.5
 BuildRequires: unique-devel >= 1.0.0

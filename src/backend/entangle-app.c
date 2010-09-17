@@ -387,7 +387,6 @@ static void entangle_app_init(EntangleApp *app)
     g_mkdir_with_parents(peasPath[0], 0777);
 
     priv->pluginEngine = peas_engine_new("Entangle",
-                                         LIBDIR "/entangle/",
                                          (const gchar **)peasPath);
 
     priv->pluginExt = peas_extension_set_new(priv->pluginEngine,

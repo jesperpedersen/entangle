@@ -48,7 +48,7 @@ STARTUP_REQUIRED=0.5
 AC_SUBST(STARTUP_REQUIRED)
 UNIQUE_REQUIRED=1.0.0
 AC_SUBST(UNIQUE_REQUIRED)
-LIBPEAS_REQUIRED=0.5.4
+LIBPEAS_REQUIRED=0.5.5
 AC_SUBST(LIBPEAS_REQUIRED)
 
 dnl *******************************************************************************
@@ -172,12 +172,12 @@ if test "x$with_plugins" != "xno" ; then
                       fi
                     ])
   if test "$with_plugins" != "no"; then
-    PKG_CHECK_MODULES(PEAS_UI, libpeasui-1.0 >= $LIBPEAS_REQUIRED,
+    PKG_CHECK_MODULES(PEAS_UI, libpeas-gtk-1.0 >= $LIBPEAS_REQUIRED,
                       [with_plugins=yes],[
                         if test "$with_plugins" = "check"; then
                           with_plugins=no
                         else
-                           AC_MSG_ERROR([libpeas >= $LIBPEAS_REQUIRED is required for plugins])
+                           AC_MSG_ERROR([libpeas-gtk >= $LIBPEAS_REQUIRED is required for plugins])
                         fi
                       ])
   fi

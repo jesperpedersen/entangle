@@ -26,7 +26,7 @@
 #include <unistd.h>
 
 #if HAVE_PLUGINS
-#include <libpeasui/peas-ui.h>
+#include <libpeas-gtk/peas-gtk.h>
 #endif
 
 #include "entangle-debug.h"
@@ -44,7 +44,7 @@ struct _EntanglePreferencesDisplayPrivate {
 
 #if HAVE_PLUGINS
     PeasEngine *pluginEngine;
-    PeasUIPluginManager *pluginManager;
+    PeasGtkPluginManager *pluginManager;
 #endif
     EntanglePreferences *prefs;
     gulong prefsID;
@@ -224,7 +224,7 @@ static void entangle_preferences_display_set_property(GObject *object,
             priv->pluginEngine = g_value_dup_object(value);
             if (priv->pluginEngine) {
                 GtkWidget *panel = glade_xml_get_widget(priv->glade, "plugins-panel");
-                priv->pluginManager = PEAS_UI_PLUGIN_MANAGER(peas_ui_plugin_manager_new(priv->pluginEngine));
+                priv->pluginManager = PEAS_GTK_PLUGIN_MANAGER(peas_gtk_plugin_manager_new(priv->pluginEngine));
                 GList *children = gtk_container_get_children(GTK_CONTAINER(priv->pluginManager));
                 GList *tmp = children;
                 /* XXX hack. We don't want the generic 'Plugins:' label, since
