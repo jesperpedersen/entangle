@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([entangle], [0.1.0])
+AC_INIT([entangle], [0.2.0])
 AC_CONFIG_SRCDIR([src/entangle-main.c])
 AM_CONFIG_HEADER([config.h])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms

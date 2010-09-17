@@ -1,6 +1,18 @@
       Entangle News
       =============
 
+Release 0.2.0
+-------------
+
+ * Better compatibility with cameras not supporting events
+ * Ability to unmount camera via GVFS
+ * Switch to libpeas for plugins
+ * Improved error reporting
+ * Fixed inifinite loops in event waiting
+ * Improved preview capability
+ * Fixed crash with udev
+
+
 Release 0.1.0
 -------------
 
