@@ -194,12 +194,6 @@ AM_CONDITIONAL([HAVE_PLUGINS], [test "$with_plugins" = "yes"])
 
 ENTANGLE_COMPILE_WARNINGS
 
-AC_PATH_PROG([TPAGE], [tpage])
-
-if test -z "$TPAGE" ; then
-   AC_MSG_ERROR([The 'tpage' command from Template-Toolkit is required to build the website])
-fi
-
 
 AC_CONFIG_FILES(
   Makefile
@@ -207,7 +201,6 @@ AC_CONFIG_FILES(
   src/Makefile
   docs/Makefile
   docs/reference/Makefile
-  docs/website/Makefile
   )
 
 AC_OUTPUT

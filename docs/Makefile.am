@@ -1,5 +1,5 @@
 
-SUBDIRS = website reference
+SUBDIRS = reference
 
 EXTRA_DIST = README
 
