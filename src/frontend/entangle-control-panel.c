@@ -38,6 +38,8 @@
 struct _EntangleControlPanelPrivate {
     EntangleCamera *camera;
     EntangleCameraScheduler *cameraScheduler;
+
+    gboolean hasControls;
 };
 
 G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_VBOX);
@@ -45,6 +47,7 @@ G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_VBOX);
 enum {
     PROP_O,
     PROP_CAMERA,
+    PROP_HAS_CONTROLS,
 };
 
 
@@ -138,10 +141,13 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                                    GtkVBox *box,
                                    EntangleControlGroup *grp)
 {
+    EntangleControlPanelPrivate *priv = panel->priv;
     int i;
 
     for (i = 0 ; i < entangle_control_group_count(grp) ; i++) {
         EntangleControl *control = entangle_control_group_get(grp, i);
+
+        priv->hasControls = TRUE;
 
         ENTANGLE_DEBUG("Build control %d %s",
                    entangle_control_id(control),
@@ -299,6 +305,9 @@ static void do_setup_camera(EntangleControlPanel *panel)
 
     grp = entangle_camera_get_controls(priv->camera);
 
+    if (!grp)
+        return;
+
     do_setup_control_group(panel, GTK_VBOX(panel), grp);
     gtk_widget_show_all(GTK_WIDGET(panel));
 }
@@ -315,6 +324,10 @@ static void entangle_control_panel_get_property(GObject *object,
         {
         case PROP_CAMERA:
             g_value_set_object(value, priv->camera);
+            break;
+
+        case PROP_HAS_CONTROLS:
+            g_value_set_boolean(value, priv->hasControls);
             break;
 
         default:
@@ -375,6 +388,17 @@ static void entangle_control_panel_class_init(EntangleControlPanelClass *klass)
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_CAMERA,
+                                    g_param_spec_boolean("has-controls",
+                                                         "Has Controls",
+                                                         "Has Controls",
+                                                         FALSE,
+                                                         G_PARAM_READABLE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntangleControlPanelPrivate));
 }
 
@@ -434,6 +458,14 @@ EntangleCameraScheduler *entangle_control_panel_get_camera_scheduler(EntangleCon
 
     return priv->cameraScheduler;
 }
+
+gboolean entangle_control_panel_get_has_controls(EntangleControlPanel *panel)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+
+    return priv->hasControls;
+}
+
 
 /*
  * Local variables:

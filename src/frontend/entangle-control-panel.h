@@ -66,6 +66,7 @@ void entangle_control_panel_set_camera_scheduler(EntangleControlPanel *panel,
                                                  EntangleCameraScheduler *sched);
 EntangleCameraScheduler *entangle_control_panel_get_camera_scheduler(EntangleControlPanel *panel);
 
+gboolean entangle_control_panel_get_has_controls(EntangleControlPanel *panel);
 
 G_END_DECLS
 

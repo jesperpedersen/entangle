@@ -280,32 +280,39 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *toolCapture;
-    GtkWidget *settingsScroll;
+    GtkWidget *settingsBox;
     GtkWidget *iconScroll;
 
     GtkWidget *toolNew;
     GtkWidget *toolOpen;
+    GtkWidget *toolSettings;
     GtkWidget *menuNew;
     GtkWidget *menuOpen;
     GtkWidget *menuConnect;
     GtkWidget *menuDisconnect;
     GtkWidget *menuHelp;
+    GtkWidget *menuSettings;
 
     GtkWidget *cancel;
     GtkWidget *operation;
     GtkWidget *confirm;
+    gboolean hasControls;
+
+    hasControls = entangle_control_panel_get_has_controls(priv->controlPanel);
 
     toolCapture = glade_xml_get_widget(priv->glade, "toolbar-capture");
-    settingsScroll = glade_xml_get_widget(priv->glade, "settings-scroll");
+    settingsBox = glade_xml_get_widget(priv->glade, "settings-box");
     iconScroll = glade_xml_get_widget(priv->glade, "icon-scroll");
 
     toolNew = glade_xml_get_widget(priv->glade, "toolbar-new");
     toolOpen = glade_xml_get_widget(priv->glade, "toolbar-open");
+    toolSettings = glade_xml_get_widget(priv->glade, "toolbar-settings");
     menuNew = glade_xml_get_widget(priv->glade, "menu-new");
     menuOpen = glade_xml_get_widget(priv->glade, "menu-open");
     menuConnect = glade_xml_get_widget(priv->glade, "menu-connect");
     menuDisconnect = glade_xml_get_widget(priv->glade, "menu-disconnect");
     menuHelp = glade_xml_get_widget(priv->glade, "menu-help-camera");
+    menuSettings = glade_xml_get_widget(priv->glade, "menu-settings");
 
     cancel = glade_xml_get_widget(priv->glade, "toolbar-cancel");
     operation = glade_xml_get_widget(priv->glade, "toolbar-operation");
@@ -360,12 +367,23 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     if (priv->camera && !entangle_camera_get_has_preview(priv->camera))
         gtk_widget_set_tooltip_text(priv->menuItemPreview, "This camera does not support image preview");
 
-    if (priv->camera && entangle_camera_get_has_settings(priv->camera))
-        gtk_widget_show(settingsScroll);
-    else
-        gtk_widget_hide(settingsScroll);
+    if (priv->camera &&
+        hasControls &&
+        entangle_camera_get_has_settings(priv->camera)) {
+        gtk_widget_show(settingsBox);
+        gtk_widget_set_sensitive(toolSettings, TRUE);
+        gtk_widget_set_sensitive(menuSettings, TRUE);
+        gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(toolSettings), TRUE);
+        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuSettings), TRUE);
+    } else {
+        gtk_widget_hide(settingsBox);
+        gtk_widget_set_sensitive(toolSettings, FALSE);
+        gtk_widget_set_sensitive(menuSettings, FALSE);
+        gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(toolSettings), FALSE);
+        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuSettings), FALSE);
+    }
 
-    gtk_widget_set_sensitive(settingsScroll, !priv->task);
+    gtk_widget_set_sensitive(settingsBox, !priv->task);
     /*gtk_widget_set_sensitive(iconScroll, !priv->task)*/
 
     if (priv->task) {
