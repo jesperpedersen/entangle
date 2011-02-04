@@ -267,6 +267,8 @@ static void do_camera_removed(EntangleCameraList *cameras G_GNUC_UNUSED,
     EntangleAppDisplayPrivate *priv = display->priv;
     EntangleCamera *current;
 
+    gdk_threads_enter();
+
     g_object_get(priv->manager, "camera", &current, NULL);
 
     ENTANGLE_DEBUG("Check removed camera '%s' %p, against '%s' %p",
@@ -275,6 +277,8 @@ static void do_camera_removed(EntangleCameraList *cameras G_GNUC_UNUSED,
 
     if (current == camera)
         entangle_camera_manager_set_camera(priv->manager, NULL);
+
+    gdk_threads_leave();
 }
 
 static void entangle_app_display_init(EntangleAppDisplay *display)
