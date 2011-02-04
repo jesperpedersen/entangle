@@ -597,7 +597,9 @@ static void do_remove_camera(EntangleCameraManager *manager)
     g_signal_handler_disconnect(priv->scheduler, priv->sigTaskBegin);
     g_signal_handler_disconnect(priv->scheduler, priv->sigTaskEnd);
 
+    gdk_threads_leave();
     entangle_camera_scheduler_end(priv->scheduler);
+    gdk_threads_enter();
     g_object_unref(priv->scheduler);
     g_object_unref(priv->session);
     priv->scheduler = NULL;

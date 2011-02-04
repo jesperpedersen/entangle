@@ -36,12 +36,14 @@ struct _EntangleCameraSchedulerPrivate {
 
     GThread *worker;
     GMutex *lock;
-    gboolean cancelled;
 
+    gboolean quit;
     gboolean pause;
     gboolean resume;
+
     GCond *pauseSignal;
     GCond *resumeSignal;
+    GCond *quitSignal;
 
     GAsyncQueue *tasks;
 };
@@ -185,6 +187,7 @@ static void entangle_camera_scheduler_init(EntangleCameraScheduler *scheduler)
     priv->lock = g_mutex_new();
     priv->pauseSignal = g_cond_new();
     priv->resumeSignal = g_cond_new();
+    priv->quitSignal = g_cond_new();
 }
 
 
@@ -197,7 +200,7 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
 
     g_mutex_lock(priv->lock);
 
-    while (!priv->cancelled &&
+    while (!priv->quit &&
            entangle_camera_get_connected(priv->camera)) {
 
         g_mutex_unlock(priv->lock);
@@ -257,6 +260,7 @@ static gpointer entangle_camera_scheduler_worker(gpointer data)
 
     priv->worker = NULL;
     g_mutex_unlock(priv->lock);
+    g_cond_signal(priv->quitSignal);
 
     ENTANGLE_DEBUG("Camera scheduler worker done, purging tasks");
     while (g_async_queue_length(priv->tasks) > 0) {
@@ -274,20 +278,27 @@ gboolean entangle_camera_scheduler_start(EntangleCameraScheduler *scheduler)
 {
     EntangleCameraSchedulerPrivate *priv = scheduler->priv;
 
-    if (priv->worker)
+    g_mutex_lock(priv->lock);
+
+    if (priv->worker) {
+        g_mutex_unlock(priv->lock);
         return FALSE;
+    }
 
     /* Keep a extra ref while the BG thread is active */
     g_object_ref(scheduler);
 
-    priv->cancelled = FALSE;
+    priv->quit = FALSE;
     priv->worker = g_thread_create(entangle_camera_scheduler_worker,
                                    scheduler,
                                    FALSE,
                                    NULL);
-    if (!priv->worker)
+    if (!priv->worker) {
+        g_mutex_unlock(priv->lock);
         return FALSE;
+    }
 
+    g_mutex_unlock(priv->lock);
     return TRUE;
 }
 
@@ -296,11 +307,16 @@ gboolean entangle_camera_scheduler_end(EntangleCameraScheduler *scheduler)
 {
     EntangleCameraSchedulerPrivate *priv = scheduler->priv;
 
-    if (!priv->worker)
-        return FALSE;
-
     g_mutex_lock(priv->lock);
-    priv->cancelled = TRUE;
+    if (!priv->worker) {
+        g_mutex_unlock(priv->lock);
+        return FALSE;
+    }
+
+    priv->quit = TRUE;
+    while (priv->worker != NULL)
+        g_cond_wait(priv->quitSignal, priv->lock);
+
     g_mutex_unlock(priv->lock);
 
     return TRUE;
