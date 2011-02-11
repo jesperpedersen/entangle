@@ -23,6 +23,8 @@
 
 #include <glib-object.h>
 
+#include "entangle-image.h"
+
 G_BEGIN_DECLS
 
 #define ENTANGLE_TYPE_IMAGE_POPUP            (entangle_image_popup_get_type ())
@@ -62,6 +64,9 @@ void entangle_image_popup_show(EntangleImagePopup *popup,
 void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monitor);
 void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monitor);
 void entangle_image_popup_hide(EntangleImagePopup *popup);
+
+void entangle_image_popup_set_image(EntangleImagePopup *popup, EntangleImage *image);
+EntangleImage *entangle_image_popup_get_image(EntangleImagePopup *popup);
 
 G_END_DECLS
 

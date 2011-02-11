@@ -58,16 +58,17 @@ enum {
 };
 
 static void do_thumb_loaded(EntanglePixbufLoader *loader,
-                            const char *filename,
+                            EntangleImage *image,
                             gpointer data)
 {
     EntangleSessionBrowser *browser = data;
     EntangleSessionBrowserPrivate *priv = browser->priv;
-    GdkPixbuf *pixbuf = entangle_pixbuf_loader_get_pixbuf(loader, filename);
+    GdkPixbuf *pixbuf;
     GtkTreeIter iter;
 
-    ENTANGLE_DEBUG("Got pixbuf update on %s", filename);
+    ENTANGLE_DEBUG("Got pixbuf update on %p", image);
 
+    pixbuf = entangle_pixbuf_loader_get_pixbuf(loader, image);
     if (!pixbuf)
         return;
 
@@ -75,10 +76,10 @@ static void do_thumb_loaded(EntanglePixbufLoader *loader,
         return;
 
     do {
-        EntangleImage *img;
-        gtk_tree_model_get(GTK_TREE_MODEL(priv->model), &iter, FIELD_IMAGE, &img, -1);
+        EntangleImage *thisimage;
+        gtk_tree_model_get(GTK_TREE_MODEL(priv->model), &iter, FIELD_IMAGE, &thisimage, -1);
 
-        if (strcmp(entangle_image_get_filename(img), filename) == 0) {
+        if (image == thisimage) {
             gtk_list_store_set(priv->model, &iter, FIELD_PIXMAP, pixbuf, -1);
             break;
         }
@@ -98,8 +99,7 @@ static void do_image_added(EntangleSession *session G_GNUC_UNUSED,
     gchar *name = g_path_get_basename(entangle_image_get_filename(img));
 
     ENTANGLE_DEBUG("Request image %s for new image", entangle_image_get_filename(img));
-    entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->loader),
-                            entangle_image_get_filename(img));
+    entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->loader), img);
 
     gtk_list_store_append(priv->model, &iter);
 
@@ -138,8 +138,7 @@ static void do_model_unload(EntangleSessionBrowser *browser)
     count = entangle_session_image_count(priv->session);
     for (int i = 0 ; i < count ; i++) {
         EntangleImage *img = entangle_session_image_get(priv->session, i);
-        entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->loader),
-                                  entangle_image_get_filename(img));
+        entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->loader), img);
     }
 
     g_object_unref(priv->blank);
@@ -185,8 +184,7 @@ static void do_model_load(EntangleSessionBrowser *browser)
                            FIELD_NAME, name,
                            -1);
 
-        entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->loader),
-                                entangle_image_get_filename(img));
+        entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->loader), img);
         //g_object_unref(cam);
     }
 

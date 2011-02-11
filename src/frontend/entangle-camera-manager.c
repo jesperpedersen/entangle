@@ -78,6 +78,8 @@ struct _EntangleCameraManagerPrivate {
     EntangleControlPanel *controlPanel;
     EntanglePreferencesDisplay *prefsDisplay;
 
+    EntangleImage *currentImage;
+
     EntangleImagePopup *imagePresentation;
     gint presentationMonitor;
     GHashTable *popups;
@@ -202,10 +204,10 @@ static void entangle_camera_manager_update_colour_transform(EntangleCameraManage
     priv->colourTransform = entangle_camera_manager_colour_transform(manager);
     if (priv->imageLoader)
         entangle_pixbuf_loader_set_colour_transform(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
-                                                priv->colourTransform);
+                                                    priv->colourTransform);
     if (priv->thumbLoader)
         entangle_pixbuf_loader_set_colour_transform(ENTANGLE_PIXBUF_LOADER(priv->thumbLoader),
-                                                priv->colourTransform);
+                                                    priv->colourTransform);
 }
 
 
@@ -404,6 +406,31 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 }
 
 
+static void do_select_image(EntangleCameraManager *manager,
+                            EntangleImage *image)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    ENTANGLE_DEBUG("Select image %p", image);
+    if (priv->currentImage) {
+        entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
+                                      priv->currentImage);
+        g_object_unref(priv->currentImage);
+    }
+
+    priv->currentImage = image;
+
+    if (priv->currentImage) {
+        g_object_ref(priv->currentImage);
+        entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
+                                    priv->currentImage);
+    }
+
+    entangle_image_display_set_image(priv->imageDisplay, priv->currentImage);
+    if (priv->imagePresentation)
+        entangle_image_popup_set_image(priv->imagePresentation, priv->currentImage);
+}
+
 static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleCameraFile *file, void *data)
 {
     EntangleCameraManager *manager = data;
@@ -420,15 +447,11 @@ static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleC
         goto cleanup;
     }
     ENTANGLE_DEBUG("Saved to %s", localpath);
-    image = entangle_image_new(localpath);
+    image = entangle_image_new_file(localpath);
 
     gdk_threads_enter();
     entangle_session_add(priv->session, image);
-
-    entangle_image_display_set_filename(priv->imageDisplay,
-                                        entangle_image_get_filename(image));
-    if (priv->imagePresentation)
-        g_object_set(priv->imagePresentation, "image", image, NULL);
+    do_select_image(manager, image);
     gdk_threads_leave();
 
     g_object_unref(image);
@@ -441,10 +464,10 @@ static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleC
 static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCameraFile *file, void *data)
 {
     EntangleCameraManager *manager = data;
-    EntangleCameraManagerPrivate *priv = manager->priv;
     GdkPixbuf *pixbuf;
     GByteArray *bytes;
     GInputStream *is;
+    EntangleImage *image;
 
     ENTANGLE_DEBUG("File preview %p %p %p", cam, file, data);
 
@@ -453,9 +476,10 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
 
     pixbuf = gdk_pixbuf_new_from_stream(is, NULL, NULL);
 
+    image = entangle_image_new_pixbuf(pixbuf);
+
     gdk_threads_enter();
-    entangle_image_display_set_filename(priv->imageDisplay, NULL);
-    entangle_image_display_set_pixbuf(priv->imageDisplay, pixbuf);
+    do_select_image(manager, image);
     gdk_threads_leave();
 
     g_object_unref(pixbuf);
@@ -589,8 +613,7 @@ static void do_remove_camera(EntangleCameraManager *manager)
     entangle_control_panel_set_camera_scheduler(priv->controlPanel, NULL);
     entangle_camera_set_progress(priv->camera, NULL);
 
-    entangle_image_display_set_filename(priv->imageDisplay, NULL);
-    entangle_image_display_set_pixbuf(priv->imageDisplay, NULL);
+    do_select_image(manager, NULL);
 
     g_signal_handler_disconnect(priv->camera, priv->sigFilePreview);
     g_signal_handler_disconnect(priv->camera, priv->sigFileDownload);
@@ -925,6 +948,7 @@ static void entangle_camera_manager_new_session(EntangleCameraManager *manager)
 
     if (gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT) {
         EntangleSession *session;
+        do_select_image(manager, NULL);
         dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
         session = entangle_session_new(dir, entangle_preferences_filename_pattern(priv->prefs));
         entangle_session_load(session);
@@ -969,6 +993,7 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
 
     if (gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT) {
         EntangleSession *session;
+        do_select_image(manager, NULL);
         dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
         session = entangle_session_new(dir, entangle_preferences_filename_pattern(priv->prefs));
         entangle_session_load(session);
@@ -1361,8 +1386,8 @@ static void do_menu_presentation(GtkCheckMenuItem *src,
         if (!priv->imagePresentation) {
             priv->imagePresentation = entangle_image_popup_new();
             g_signal_connect(priv->imagePresentation, "popup-close", G_CALLBACK(do_presentation_end), manager);
-            g_object_set(priv->imagePresentation, "image-loader", priv->imageLoader, NULL);
         }
+        entangle_image_popup_set_image(priv->imagePresentation, priv->currentImage);
         entangle_image_popup_show_on_monitor(priv->imagePresentation,
                                              priv->presentationMonitor);
     } else if (priv->imagePresentation) {
@@ -1449,8 +1474,7 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
     ENTANGLE_DEBUG("Image selection changed");
     if (img) {
         ENTANGLE_DEBUG("Try load");
-        entangle_image_display_set_filename(priv->imageDisplay,
-                                            entangle_image_get_filename(img));
+        do_select_image(manager, img);
         g_object_unref(img);
     }
 }
@@ -1486,8 +1510,7 @@ static void do_drag_failed(GtkWidget *widget,
             EntangleImagePopup *pol;
             if (!(pol = g_hash_table_lookup(priv->popups, filename))) {
                 pol = entangle_image_popup_new();
-                g_object_set(pol, "image-loader", priv->imageLoader, NULL);
-                g_object_set(pol, "image", img, NULL);
+                entangle_image_popup_set_image(pol, img);
                 g_object_unref(img);
                 g_hash_table_insert(priv->popups, g_strdup(filename), pol);
             }
@@ -1495,6 +1518,16 @@ static void do_drag_failed(GtkWidget *widget,
             entangle_image_popup_show(pol, GTK_WINDOW(win), x, y);
         }
     }
+}
+
+static void do_pixbuf_loaded(EntanglePixbufLoader *loader,
+                             EntangleImage *image)
+{
+    GdkPixbuf *pixbuf = entangle_pixbuf_loader_get_pixbuf(loader, image);
+
+    gdk_threads_enter();
+    entangle_image_set_pixbuf(image, pixbuf);
+    gdk_threads_leave();
 }
 
 static void entangle_camera_manager_init(EntangleCameraManager *manager)
@@ -1578,11 +1611,12 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     priv->imageLoader = entangle_image_loader_new();
     priv->thumbLoader = entangle_thumbnail_loader_new(96, 96);
 
+    g_signal_connect(priv->imageLoader, "pixbuf-loaded", G_CALLBACK(do_pixbuf_loaded), NULL);
+
     priv->imageDisplay = entangle_image_display_new();
     priv->sessionBrowser = entangle_session_browser_new();
     priv->controlPanel = entangle_control_panel_new();
 
-    entangle_image_display_set_image_loader(priv->imageDisplay, priv->imageLoader);
     g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
 
     g_signal_connect(priv->sessionBrowser, "selection-changed",

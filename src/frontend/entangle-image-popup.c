@@ -28,15 +28,12 @@
 
 #include "entangle-debug.h"
 #include "entangle-image-popup.h"
-#include "entangle-image.h"
 #include "entangle-image-display.h"
-#include "entangle-image-loader.h"
 
 #define ENTANGLE_IMAGE_POPUP_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_POPUP, EntangleImagePopupPrivate))
 
 struct _EntangleImagePopupPrivate {
-    EntangleImageLoader *imageLoader;
     EntangleImage *image;
     EntangleImageDisplay *display;
     GladeXML *glade;
@@ -47,7 +44,6 @@ G_DEFINE_TYPE(EntangleImagePopup, entangle_image_popup, G_TYPE_OBJECT);
 enum {
     PROP_0,
     PROP_IMAGE,
-    PROP_IMAGE_LOADER,
 };
 
 static void entangle_image_popup_get_property(GObject *object,
@@ -62,10 +58,6 @@ static void entangle_image_popup_get_property(GObject *object,
         {
         case PROP_IMAGE:
             g_value_set_object(value, priv->image);
-            break;
-
-        case PROP_IMAGE_LOADER:
-            g_value_set_object(value, priv->imageLoader);
             break;
 
         default:
@@ -91,18 +83,7 @@ static void entangle_image_popup_set_property(GObject *object,
             priv->image = g_value_get_object(value);
             g_object_ref(priv->image);
 
-            entangle_image_display_set_filename(priv->display,
-                                                entangle_image_get_filename(priv->image));
-        } break;
-
-        case PROP_IMAGE_LOADER: {
-            if (priv->imageLoader)
-                g_object_unref(priv->imageLoader);
-            priv->imageLoader = g_value_get_object(value);
-            g_object_ref(priv->imageLoader);
-
-            entangle_image_display_set_image_loader(priv->display,
-                                                priv->imageLoader);
+            entangle_image_display_set_image(priv->display, priv->image);
         } break;
 
         default:
@@ -196,17 +177,6 @@ static void entangle_image_popup_class_init(EntangleImagePopupClass *klass)
                                                         "Image",
                                                         "Image to be displayed",
                                                         ENTANGLE_TYPE_IMAGE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
-
-    g_object_class_install_property(object_class,
-                                    PROP_IMAGE_LOADER,
-                                    g_param_spec_object("image-loader",
-                                                        "Image loader",
-                                                        "Image loader",
-                                                        ENTANGLE_TYPE_IMAGE_LOADER,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
@@ -351,6 +321,19 @@ void entangle_image_popup_hide(EntangleImagePopup *popup)
     GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
 
     gtk_widget_hide(win);
+}
+
+
+void entangle_image_popup_set_image(EntangleImagePopup *popup, EntangleImage *image)
+{
+    g_object_set(popup, "image", image, NULL);
+}
+
+
+EntangleImage *entangle_image_popup_get_image(EntangleImagePopup *popup)
+{
+    EntangleImagePopupPrivate *priv = popup->priv;
+    return priv->image;
 }
 
 

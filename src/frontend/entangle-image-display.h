@@ -56,29 +56,18 @@ GType entangle_image_display_get_type(void) G_GNUC_CONST;
 
 EntangleImageDisplay* entangle_image_display_new(void);
 
-
-void entangle_image_display_set_image_loader(EntangleImageDisplay *display,
-                                         EntangleImageLoader *loader);
-EntangleImageLoader *entangle_image_display_get_image_loader(EntangleImageDisplay *display);
-
-
-void entangle_image_display_set_filename(EntangleImageDisplay *display,
-                                     const gchar *filename);
-const gchar *entangle_image_display_get_filename(EntangleImageDisplay *display);
-
-
-void entangle_image_display_set_pixbuf(EntangleImageDisplay *display,
-                                   GdkPixbuf *pixbuf);
-GdkPixbuf *entangle_image_display_get_pixbuf(EntangleImageDisplay *display);
+void entangle_image_display_set_image(EntangleImageDisplay *display,
+                                         EntangleImage *image);
+EntangleImage *entangle_image_display_get_image(EntangleImageDisplay *display);
 
 
 void entangle_image_display_set_autoscale(EntangleImageDisplay *displsy,
-                                      gboolean autoscale);
+                                          gboolean autoscale);
 gboolean entangle_image_display_get_autoscale(EntangleImageDisplay *display);
 
 
 void entangle_image_display_set_scale(EntangleImageDisplay *display,
-                                  gfloat scale);
+                                      gfloat scale);
 gfloat entangle_image_display_get_scale(EntangleImageDisplay *display);
 
 void entangle_image_display_set_infohint(EntangleImageDisplay *display,

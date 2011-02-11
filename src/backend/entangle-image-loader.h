@@ -22,6 +22,7 @@
 #define __ENTANGLE_IMAGE_LOADER_H__
 
 #include "entangle-pixbuf-loader.h"
+#include "entangle-image.h"
 
 G_BEGIN_DECLS
 
@@ -51,6 +52,8 @@ GType entangle_image_loader_get_type(void) G_GNUC_CONST;
 
 EntangleImageLoader *entangle_image_loader_new(void);
 
+void entangle_image_loader_add(EntangleImageLoader *loader, EntangleImage *image);
+void entangle_image_loader_remove(EntangleImageLoader *loader, EntangleImage *image);
 
 G_END_DECLS
 

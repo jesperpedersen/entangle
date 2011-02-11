@@ -32,6 +32,7 @@
 
 struct _EntangleImagePrivate {
     char *filename;
+    GdkPixbuf *pixbuf;
 
     gboolean dirty;
     struct stat st;
@@ -42,6 +43,7 @@ G_DEFINE_TYPE(EntangleImage, entangle_image, G_TYPE_OBJECT);
 enum {
     PROP_0,
     PROP_FILENAME,
+    PROP_PIXBUF,
 };
 
 static void entangle_image_get_property(GObject *object,
@@ -56,6 +58,10 @@ static void entangle_image_get_property(GObject *object,
         {
         case PROP_FILENAME:
             g_value_set_string(value, priv->filename);
+            break;
+
+        case PROP_PIXBUF:
+            g_value_set_object(value, priv->pixbuf);
             break;
 
         default:
@@ -79,6 +85,14 @@ static void entangle_image_set_property(GObject *object,
             priv->dirty = TRUE;
             break;
 
+        case PROP_PIXBUF:
+            if (priv->pixbuf)
+                g_object_unref(priv->pixbuf);
+            priv->pixbuf = g_value_get_object(value);
+            if (priv->pixbuf)
+                g_object_ref(priv->pixbuf);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -91,6 +105,9 @@ static void entangle_image_finalize(GObject *object)
     EntangleImagePrivate *priv = image->priv;
 
     ENTANGLE_DEBUG("Finalize image %p", object);
+
+    if (priv->pixbuf)
+        g_object_unref(priv->pixbuf);
 
     g_free(priv->filename);
 
@@ -118,15 +135,34 @@ static void entangle_image_class_init(EntangleImageClass *klass)
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_PIXBUF,
+                                    g_param_spec_object("pixbuf",
+                                                        "Image pixbuf",
+                                                        "Image pixbuf",
+                                                        GDK_TYPE_PIXBUF,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntangleImagePrivate));
 }
 
 
-EntangleImage *entangle_image_new(const char *filename)
+EntangleImage *entangle_image_new_file(const char *filename)
 {
     return ENTANGLE_IMAGE(g_object_new(ENTANGLE_TYPE_IMAGE,
-                                   "filename", filename,
-                                   NULL));
+                                       "filename", filename,
+                                       NULL));
+}
+
+
+EntangleImage *entangle_image_new_pixbuf(GdkPixbuf *pixbuf)
+{
+    return ENTANGLE_IMAGE(g_object_new(ENTANGLE_TYPE_IMAGE,
+                                       "pixbuf", pixbuf,
+                                       NULL));
 }
 
 
@@ -145,22 +181,6 @@ const char *entangle_image_get_filename(EntangleImage *image)
     EntangleImagePrivate *priv = image->priv;
     return priv->filename;
 }
-
-
-char *entangle_image_get_basename(EntangleImage *image)
-{
-    EntangleImagePrivate *priv = image->priv;
-    return g_path_get_basename(priv->filename);
-}
-
-
-char *entangle_image_get_dirname(EntangleImage *image)
-{
-    EntangleImagePrivate *priv = image->priv;
-    return g_path_get_dirname(priv->filename);
-}
-
-
 
 
 static gboolean entangle_image_load(EntangleImage *image)
@@ -197,6 +217,19 @@ off_t entangle_image_get_file_size(EntangleImage *image)
         return 0;
 
     return priv->st.st_size;
+}
+
+
+GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image)
+{
+    EntangleImagePrivate *priv = image->priv;
+    return priv->pixbuf;
+}
+
+void entangle_image_set_pixbuf(EntangleImage *image,
+                               GdkPixbuf *pixbuf)
+{
+    g_object_set(image, "pixbuf", pixbuf, NULL);
 }
 
 

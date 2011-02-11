@@ -555,6 +555,9 @@ native pixel size</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
+                <child>
+                  <placeholder/>
+                </child>
               </widget>
               <packing>
                 <property name="resize">False</property>
@@ -626,7 +629,6 @@ native pixel size</property>
     <property name="default_height">200</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">camera-manager</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
@@ -1442,7 +1444,6 @@ copy of the Program in return for a fee.
     <property name="type_hint">normal</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="transient_for">camera-manager</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox3">
         <property name="visible">True</property>
@@ -1512,7 +1513,6 @@ copy of the Program in return for a fee.
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Entangle Preferences</property>
     <property name="type_hint">normal</property>
-    <property name="has_separator">False</property>
     <signal name="close" handler="preferences_close"/>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox5">

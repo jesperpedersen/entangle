@@ -30,10 +30,8 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_DISPLAY, EntangleImageDisplayPrivate))
 
 struct _EntangleImageDisplayPrivate {
-    EntangleImageLoader *imageLoader;
-    gulong imageLoaderNotifyID;
-    char *filename;
-    GdkPixbuf *pixbuf;
+    gulong imageNotifyID;
+    EntangleImage *image;
 
     GdkPixmap *pixmap;
 
@@ -46,9 +44,7 @@ G_DEFINE_TYPE(EntangleImageDisplay, entangle_image_display, GTK_TYPE_DRAWING_ARE
 
 enum {
     PROP_O,
-    PROP_IMAGE_LOADER,
-    PROP_FILENAME,
-    PROP_PIXBUF,
+    PROP_IMAGE,
     PROP_AUTOSCALE,
     PROP_SCALE,
     PROP_INFOHINT,
@@ -58,6 +54,7 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
     int pw, ph;
+    GdkPixbuf *pixbuf = NULL;
 
     if (!GTK_WIDGET_REALIZED(display)) {
         ENTANGLE_DEBUG("Skipping setup for non-realized widget");
@@ -70,14 +67,17 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
         g_object_unref(priv->pixmap);
         priv->pixmap = NULL;
     }
-    if (!priv->pixbuf)
+
+    if (priv->image)
+        pixbuf = entangle_image_get_pixbuf(priv->image);
+    if (!pixbuf)
         return;
 
-    pw = gdk_pixbuf_get_width(priv->pixbuf);
-    ph = gdk_pixbuf_get_height(priv->pixbuf);
+    pw = gdk_pixbuf_get_width(pixbuf);
+    ph = gdk_pixbuf_get_height(pixbuf);
     priv->pixmap = gdk_pixmap_new(GTK_WIDGET(display)->window,
                                   pw, ph, -1);
-    gdk_draw_pixbuf(priv->pixmap, NULL, priv->pixbuf,
+    gdk_draw_pixbuf(priv->pixmap, NULL, pixbuf,
                     0, 0, 0, 0, pw, ph,
                     GDK_RGB_DITHER_NORMAL, 0, 0);
 }
@@ -89,18 +89,20 @@ static void entangle_image_display_update_hint(EntangleImageDisplay *display)
     gchar *fileInfo = NULL;
     gchar *pixmapInfo = NULL;
     gchar *hint;
+    const gchar *filename;
+    GdkPixbuf *pixbuf;
 
     if (!priv->infoHint) {
         gtk_widget_set_tooltip_markup(GTK_WIDGET(display), "");
         return;
     }
 
-    if (priv->filename) {
-        EntangleImage *image = entangle_image_new(priv->filename);
-        gchar *base = entangle_image_get_basename(image);
-        gchar *dir = entangle_image_get_dirname(image);
-        time_t lastMod = entangle_image_get_last_modified(image);
-        off_t size = entangle_image_get_file_size(image);
+    if (priv->image &&
+        (filename = entangle_image_get_filename(priv->image))) {
+        gchar *base = g_path_get_basename(filename);
+        gchar *dir = g_path_get_dirname(filename);
+        time_t lastMod = entangle_image_get_last_modified(priv->image);
+        off_t size = entangle_image_get_file_size(priv->image);
         GTimeVal tv = { .tv_sec = lastMod, .tv_usec = 0 };
         gchar *datestr = g_time_val_to_iso8601(&tv);
 
@@ -114,15 +116,14 @@ static void entangle_image_display_update_hint(EntangleImageDisplay *display)
         g_free(base);
         g_free(dir);
         g_free(datestr);
-
-        g_object_unref(image);
     }
 
-    if (priv->pixbuf) {
+    if (priv->image &&
+        (pixbuf = entangle_image_get_pixbuf(priv->image))) {
         pixmapInfo = g_strdup_printf("<b>Width:</b> %d\n"
                                      "<b>Height:</b> %d\n",
-                                     gdk_pixbuf_get_width(priv->pixbuf),
-                                     gdk_pixbuf_get_height(priv->pixbuf));
+                                     gdk_pixbuf_get_width(pixbuf),
+                                     gdk_pixbuf_get_height(pixbuf));
     }
 
 
@@ -139,7 +140,6 @@ static void entangle_image_display_update_hint(EntangleImageDisplay *display)
     } else {
         gtk_widget_set_tooltip_markup(GTK_WIDGET(display), "");
     }
-
 }
 
 
@@ -153,16 +153,8 @@ static void entangle_image_display_get_property(GObject *object,
 
     switch (prop_id)
         {
-        case PROP_IMAGE_LOADER:
-            g_value_set_object(value, priv->imageLoader);
-            break;
-
-        case PROP_FILENAME:
-            g_value_set_string(value, priv->filename);
-            break;
-
-        case PROP_PIXBUF:
-            g_value_set_object(value, priv->pixbuf);
+        case PROP_IMAGE:
+            g_value_set_object(value, priv->image);
             break;
 
         case PROP_AUTOSCALE:
@@ -195,16 +187,8 @@ static void entangle_image_display_set_property(GObject *object,
 
     switch (prop_id)
         {
-        case PROP_IMAGE_LOADER:
-            entangle_image_display_set_image_loader(display, g_value_get_object(value));
-            break;
-
-        case PROP_FILENAME:
-            entangle_image_display_set_filename(display, g_value_get_string(value));
-            break;
-
-        case PROP_PIXBUF:
-            entangle_image_display_set_pixbuf(display, g_value_get_object(value));
+        case PROP_IMAGE:
+            entangle_image_display_set_image(display, g_value_get_object(value));
             break;
 
         case PROP_AUTOSCALE:
@@ -230,12 +214,11 @@ static void entangle_image_display_finalize (GObject *object)
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(object);
     EntangleImageDisplayPrivate *priv = display->priv;
 
-    if (priv->filename && priv->imageLoader)
-        entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-    if (priv->imageLoader)
-        g_object_unref(priv->imageLoader);
-    if (priv->pixbuf)
-        g_object_unref(priv->pixbuf);
+    if (priv->image) {
+        g_signal_handler_disconnect(priv->image, priv->imageNotifyID);
+        g_object_unref(priv->image);
+    }
+
     if (priv->pixmap)
         g_object_unref(priv->pixmap);
 
@@ -352,8 +335,12 @@ static void entangle_image_display_size_request(GtkWidget *widget,
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
     EntangleImageDisplayPrivate *priv = display->priv;
+    GdkPixbuf *pixbuf = NULL;
 
-    if (!priv->pixbuf) {
+    if (priv->image)
+        pixbuf = entangle_image_get_pixbuf(priv->image);
+
+    if (!pixbuf) {
         requisition->width = 100;
         requisition->height = 100;
         ENTANGLE_DEBUG("No image, size request 100,100");
@@ -368,8 +355,8 @@ static void entangle_image_display_size_request(GtkWidget *widget,
         requisition->height = 100;
     } else {
         /* Start a 1-to-1 mode */
-        requisition->width = gdk_pixbuf_get_width(priv->pixbuf);
-        requisition->height = gdk_pixbuf_get_height(priv->pixbuf);
+        requisition->width = gdk_pixbuf_get_width(pixbuf);
+        requisition->height = gdk_pixbuf_get_height(pixbuf);
         if (priv->scale > 0) {
             /* Scaling mode */
             requisition->width = (int)((double)requisition->width * priv->scale);
@@ -394,31 +381,11 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
     widget_class->size_request = entangle_image_display_size_request;
 
     g_object_class_install_property(object_class,
-                                    PROP_IMAGE_LOADER,
-                                    g_param_spec_object("image-loader",
-                                                        "Image loader",
-                                                        "Image loader",
-                                                        ENTANGLE_TYPE_IMAGE_LOADER,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
-    g_object_class_install_property(object_class,
-                                    PROP_FILENAME,
-                                    g_param_spec_string("filename",
-                                                        "Filename",
-                                                        "Image filename",
-                                                        NULL,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
-    g_object_class_install_property(object_class,
-                                    PROP_PIXBUF,
-                                    g_param_spec_object("pixbuf",
-                                                        "Pixbuf",
-                                                        "Pixbuf for the image to be displayed",
-                                                        GDK_TYPE_PIXBUF,
+                                    PROP_IMAGE,
+                                    g_param_spec_object("image",
+                                                        "Image",
+                                                        "Image",
+                                                        ENTANGLE_TYPE_IMAGE,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
@@ -477,109 +444,49 @@ static void entangle_image_display_init(EntangleImageDisplay *display)
 }
 
 
-static void entangle_image_display_image_loaded(EntanglePixbufLoader *loader,
-                                                const char *filename,
-                                                gpointer opaque)
+static void entangle_image_display_image_pixbuf_notify(GObject *image G_GNUC_UNUSED,
+                                                       GParamSpec *pspec G_GNUC_UNUSED,
+                                                       gpointer opaque)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(opaque);
-    EntangleImageDisplayPrivate *priv = display->priv;
-
-    ENTANGLE_DEBUG("Loaded filename %s %s", filename, priv->filename);
-
-    if (!priv->filename ||
-        strcmp(filename, priv->filename) != 0)
-        return;
-
-    GdkPixbuf *pixbuf = entangle_pixbuf_loader_get_pixbuf(loader, filename);
-    entangle_image_display_set_pixbuf(display, pixbuf);
-}
-
-
-void entangle_image_display_set_image_loader(EntangleImageDisplay *display,
-                                             EntangleImageLoader *loader)
-{
-    EntangleImageDisplayPrivate *priv = display->priv;
-
-    if (priv->imageLoader) {
-        if (priv->filename)
-            entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-        g_signal_handler_disconnect(priv->imageLoader, priv->imageLoaderNotifyID);
-        g_object_unref(priv->imageLoader);
-    }
-    priv->imageLoader = loader;
-    if (priv->imageLoader) {
-        g_object_ref(priv->imageLoader);
-        priv->imageLoaderNotifyID = g_signal_connect(priv->imageLoader,
-                                                     "pixbuf-loaded",
-                                                     G_CALLBACK(entangle_image_display_image_loaded),
-                                                     display);
-        if (priv->filename)
-            entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-    }
-}
-
-
-EntangleImageLoader *entangle_image_display_get_image_loader(EntangleImageDisplay *display)
-{
-    EntangleImageDisplayPrivate *priv = display->priv;
-
-    return priv->imageLoader;
-}
-
-
-void entangle_image_display_set_filename(EntangleImageDisplay *display,
-                                     const gchar *filename)
-{
-    EntangleImageDisplayPrivate *priv = display->priv;
-
-    ENTANGLE_DEBUG("Update filename %s %s", filename, priv->filename);
-
-    if (priv->filename) {
-        if (priv->imageLoader)
-            entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-        g_free(priv->filename);
-    }
-    priv->filename = filename ? g_strdup(filename) : NULL;
-    if (priv->imageLoader && priv->filename)
-        entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader), priv->filename);
-
-    entangle_image_display_update_hint(display);
-}
-
-
-const gchar *entangle_image_display_get_filename(EntangleImageDisplay *display)
-{
-    EntangleImageDisplayPrivate *priv = display->priv;
-
-    return priv->filename;
-}
-
-
-void entangle_image_display_set_pixbuf(EntangleImageDisplay *display,
-                                       GdkPixbuf *pixbuf)
-{
-    EntangleImageDisplayPrivate *priv = display->priv;
-
-    if (priv->pixbuf)
-        g_object_unref(priv->pixbuf);
-    priv->pixbuf = pixbuf;
-    if (priv->pixbuf)
-        g_object_ref(priv->pixbuf);
 
     do_entangle_pixmap_setup(display);
-
-    if (GTK_WIDGET_VISIBLE(display))
-        gtk_widget_queue_resize(GTK_WIDGET(display));
-
     entangle_image_display_update_hint(display);
+    gtk_widget_queue_resize(GTK_WIDGET(display));
+    gtk_widget_queue_draw(GTK_WIDGET(display));
 }
 
 
-GdkPixbuf *entangle_image_display_get_pixbuf(EntangleImageDisplay *display)
+void entangle_image_display_set_image(EntangleImageDisplay *display,
+                                      EntangleImage *image)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
-    return priv->pixbuf;
+    if (priv->image) {
+        g_signal_handler_disconnect(priv->image, priv->imageNotifyID);
+        g_object_unref(priv->image);
+    }
+    priv->image = image;
+    if (priv->image) {
+        g_object_ref(priv->image);
+        priv->imageNotifyID = g_signal_connect(priv->image,
+                                               "notify::pixbuf",
+                                               G_CALLBACK(entangle_image_display_image_pixbuf_notify),
+                                               display);
+    }
+
+    do_entangle_pixmap_setup(display);
+    entangle_image_display_update_hint(display);
+    gtk_widget_queue_resize(GTK_WIDGET(display));
+    gtk_widget_queue_draw(GTK_WIDGET(display));
+}
+
+
+EntangleImage *entangle_image_display_get_image(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    return priv->image;
 }
 
 

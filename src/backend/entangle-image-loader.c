@@ -27,9 +27,9 @@ G_DEFINE_TYPE(EntangleImageLoader, entangle_image_loader, ENTANGLE_TYPE_PIXBUF_L
 
 
 static GdkPixbuf *entangle_image_loader_pixbuf_load(EntanglePixbufLoader *loader G_GNUC_UNUSED,
-                                                const char *filename)
+                                                    EntangleImage *image)
 {
-    GdkPixbuf *master = gdk_pixbuf_new_from_file(filename, NULL);
+    GdkPixbuf *master = gdk_pixbuf_new_from_file(entangle_image_get_filename(image), NULL);
     GdkPixbuf *result;
 
     if (!master)

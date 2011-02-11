@@ -270,18 +270,18 @@ static GdkPixbuf *entangle_thumbnail_loader_auto_rotate(GdkPixbuf *src)
 }
 
 static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *loader,
-                                                    const char *filename)
+                                                        EntangleImage *image)
 {
     EntangleThumbnailLoader *tloader = ENTANGLE_THUMBNAIL_LOADER(loader);
     EntangleThumbnailLoaderPrivate *priv = tloader->priv;
-    char *uri = entangle_thumbnail_loader_path_to_uri(filename);
+    char *uri = entangle_thumbnail_loader_path_to_uri(entangle_image_get_filename(image));
     char *thumbname = entangle_thumbnail_loader_uri_to_thumb(uri);
     GdkPixbuf *result = NULL;
     GdkPixbuf *thumb = NULL;
     struct stat sb;
 
-    if (stat(filename, &sb) < 0) {
-        ENTANGLE_DEBUG("File %s does not exist", filename);
+    if (stat(entangle_image_get_filename(image), &sb) < 0) {
+        ENTANGLE_DEBUG("File %s does not exist", entangle_image_get_filename(image));
         goto cleanup;
     }
 
@@ -311,8 +311,9 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
         unlink(thumbname);
         ENTANGLE_DEBUG("Generate thumbnail %s for %s %ld",
                    thumbname, uri, sb.st_mtime);
-        thumb = entangle_thumbnail_loader_generate(filename, uri, thumbname,
-                                               sb.st_mtime);
+        thumb = entangle_thumbnail_loader_generate(entangle_image_get_filename(image),
+                                                   uri, thumbname,
+                                                   sb.st_mtime);
     }
 
     if (thumb) {

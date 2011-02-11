@@ -417,7 +417,7 @@ gboolean entangle_session_load(EntangleSession *session)
             continue;
 
         char *filename = g_strdup_printf("%s/%s", priv->directory, ent->d_name);
-        EntangleImage *image = entangle_image_new(filename);
+        EntangleImage *image = entangle_image_new_file(filename);
 
         ENTANGLE_DEBUG("Adding '%s'", filename);
         entangle_session_add(session, image);

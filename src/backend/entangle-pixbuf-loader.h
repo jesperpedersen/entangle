@@ -25,6 +25,7 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "entangle-colour-profile.h"
+#include "entangle-image.h"
 
 G_BEGIN_DECLS
 
@@ -51,9 +52,9 @@ struct _EntanglePixbufLoaderClass
 {
     GObjectClass parent_class;
 
-    void (*pixbuf_loaded)(EntanglePixbufLoader *loader, const char *filename);
+    void (*pixbuf_loaded)(EntanglePixbufLoader *loader, EntangleImage *image);
 
-    GdkPixbuf *(*pixbuf_load)(EntanglePixbufLoader *loader, const char *filename);
+    GdkPixbuf *(*pixbuf_load)(EntanglePixbufLoader *loader, EntangleImage *image);
 };
 
 
@@ -63,24 +64,23 @@ EntanglePixbufLoader *entangle_pixbuf_loader_new(void);
 
 
 gboolean entangle_pixbuf_loader_is_ready(EntanglePixbufLoader *loader,
-                                     const char *filename);
-
+                                         EntangleImage *image);
 GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,
-                                         const char *filename);
+                                             EntangleImage *image);
 
 gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
-                                 const char *filename);
+                                     EntangleImage *image);
 
 gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
-                                   const char *filename);
+                                       EntangleImage *image);
 
 void entangle_pixbuf_loader_set_colour_transform(EntanglePixbufLoader *loader,
-                                             EntangleColourProfileTransform *transform);
+                                                 EntangleColourProfileTransform *transform);
 
 EntangleColourProfileTransform *entangle_pixbuf_loader_get_colour_transform(EntanglePixbufLoader *loader);
 
 void entangle_pixbuf_loader_set_workers(EntanglePixbufLoader *loader,
-                                    int count);
+                                        int count);
 
 int entangle_pixbuf_loader_get_workers(EntanglePixbufLoader *loader);
 

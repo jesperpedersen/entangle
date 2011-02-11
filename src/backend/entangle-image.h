@@ -22,6 +22,7 @@
 #define __ENTANGLE_IMAGE_H__
 
 #include <glib-object.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -56,16 +57,17 @@ struct _EntangleImageClass
 
 GType entangle_image_get_type(void) G_GNUC_CONST;
 
-EntangleImage *entangle_image_new(const char *filename);
+EntangleImage *entangle_image_new_file(const char *filename);
+EntangleImage *entangle_image_new_pixbuf(GdkPixbuf *pixbuf);
 
 const char *entangle_image_get_filename(EntangleImage *image);
 
 time_t entangle_image_get_last_modified(EntangleImage *image);
 off_t entangle_image_get_file_size(EntangleImage *image);
 
-char *entangle_image_get_basename(EntangleImage *image);
-char *entangle_image_get_dirname(EntangleImage *image);
-
+GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image);
+void entangle_image_set_pixbuf(EntangleImage *image,
+                               GdkPixbuf *pixbuf);
 
 G_END_DECLS
 
