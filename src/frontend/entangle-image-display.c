@@ -29,6 +29,13 @@
 #define ENTANGLE_IMAGE_DISPLAY_GET_PRIVATE(obj)                             \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_DISPLAY, EntangleImageDisplayPrivate))
 
+#if !GTK_CHECK_VERSION(2,20,0)
+#define gtk_widget_get_visible(win) \
+  GTK_WIDGET_VISIBLE(win)
+#define gtk_widget_get_realized(win) \
+  GTK_WIDGET_REALIZED(win)
+#endif
+
 struct _EntangleImageDisplayPrivate {
     gulong imageNotifyID;
     EntangleImage *image;
@@ -56,7 +63,7 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
     int pw, ph;
     GdkPixbuf *pixbuf = NULL;
 
-    if (!GTK_WIDGET_REALIZED(display)) {
+    if (!gtk_widget_get_realized(GTK_WIDGET(display))) {
         ENTANGLE_DEBUG("Skipping setup for non-realized widget");
         return;
     }
@@ -75,7 +82,7 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
 
     pw = gdk_pixbuf_get_width(pixbuf);
     ph = gdk_pixbuf_get_height(pixbuf);
-    priv->pixmap = gdk_pixmap_new(GTK_WIDGET(display)->window,
+    priv->pixmap = gdk_pixmap_new(gtk_widget_get_window(GTK_WIDGET(display)),
                                   pw, ph, -1);
     gdk_draw_pixbuf(priv->pixmap, NULL, pixbuf,
                     0, 0, 0, 0, pw, ph,
@@ -244,7 +251,7 @@ static gboolean entangle_image_display_expose(GtkWidget *widget,
     double sx = 1, sy = 1;  /* Amount to scale by */
     cairo_t *cr;
 
-    gdk_drawable_get_size(widget->window, &ww, &wh);
+    gdk_drawable_get_size(gtk_widget_get_window(widget), &ww, &wh);
 
     if (priv->pixmap)
         gdk_drawable_get_size(GDK_DRAWABLE(priv->pixmap), &pw, &ph);
@@ -293,7 +300,7 @@ static gboolean entangle_image_display_expose(GtkWidget *widget,
     ENTANGLE_DEBUG("Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf", iw, ih, mx, my, sx, sy);
 
 
-    cr = gdk_cairo_create(widget->window);
+    cr = gdk_cairo_create(gtk_widget_get_window(widget));
     cairo_rectangle(cr,
                     expose->area.x,
                     expose->area.y,
@@ -497,7 +504,7 @@ void entangle_image_display_set_autoscale(EntangleImageDisplay *display,
 
     priv->autoscale = autoscale;
 
-    if (GTK_WIDGET_VISIBLE(display))
+    if (gtk_widget_get_visible((GtkWidget*)display))
         gtk_widget_queue_resize(GTK_WIDGET(display));
 }
 
@@ -517,7 +524,7 @@ void entangle_image_display_set_scale(EntangleImageDisplay *display,
 
     priv->scale = scale;
 
-    if (GTK_WIDGET_VISIBLE(display))
+    if (gtk_widget_get_visible((GtkWidget*)display))
         gtk_widget_queue_resize(GTK_WIDGET(display));
 }
 

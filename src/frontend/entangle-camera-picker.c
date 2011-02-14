@@ -523,7 +523,11 @@ gboolean entangle_camera_picker_visible(EntangleCameraPicker *picker)
     EntangleCameraPickerPrivate *priv = picker->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-picker");
 
+#if GTK_CHECK_VERSION(2,20,0)
+    return gtk_widget_get_visible(win);
+#else
     return GTK_WIDGET_FLAGS(win) & GTK_VISIBLE;
+#endif
 }
 
 /*
