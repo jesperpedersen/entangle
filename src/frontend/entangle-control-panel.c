@@ -535,13 +535,21 @@ static void do_setup_camera(EntangleControlPanel *panel)
 
     gtk_container_foreach(GTK_CONTAINER(panel), do_control_remove, panel);
 
-    if (!priv->camera)
+    if (!priv->camera) {
+        GtkWidget *label = gtk_label_new("No camera connected");
+        gtk_container_add(GTK_CONTAINER(panel), label);
+        gtk_widget_show_all(GTK_WIDGET(panel));
         return;
+    }
 
     root = entangle_camera_get_controls(priv->camera, NULL);
 
-    if (!root)
+    if (!root) {
+        GtkWidget *label = gtk_label_new("No controls available");
+        gtk_container_add(GTK_CONTAINER(panel), label);
+        gtk_widget_show_all(GTK_WIDGET(panel));
         return;
+    }
 
     if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
                                                   "/main/status")))
@@ -662,6 +670,8 @@ static void entangle_control_panel_init(EntangleControlPanel *panel)
     panel->priv = ENTANGLE_CONTROL_PANEL_GET_PRIVATE(panel);
 
     gtk_container_set_border_width(GTK_CONTAINER(panel), 0);
+
+    do_setup_camera(panel);
 }
 
 

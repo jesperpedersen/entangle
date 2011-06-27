@@ -40,6 +40,7 @@
 #include "entangle-image-loader.h"
 #include "entangle-thumbnail-loader.h"
 #include "entangle-image-popup.h"
+#include "entangle-image-histogram.h"
 #include "entangle-help-about.h"
 #include "entangle-session-browser.h"
 #include "entangle-control-panel.h"
@@ -80,6 +81,7 @@ struct _EntangleCameraManagerPrivate {
     EntangleImage *sessionBrowserImage;
     EntangleControlPanel *controlPanel;
     EntanglePreferencesDisplay *prefsDisplay;
+    EntangleImageHistogram *imageHistogram;
 
     EntangleImage *currentImage;
 
@@ -427,32 +429,23 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *toolCapture;
     GtkWidget *toolPreview;
-    GtkWidget *settingsBox;
 
     GtkWidget *toolSession;
-    GtkWidget *toolSettings;
     GtkWidget *menuSession;
     GtkWidget *menuConnect;
     GtkWidget *menuDisconnect;
     GtkWidget *menuHelp;
-    GtkWidget *menuSettings;
 
     GtkWidget *cancel;
-    gboolean hasControls;
-
-    hasControls = entangle_control_panel_get_has_controls(priv->controlPanel);
 
     toolCapture = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-capture"));
     toolPreview = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-preview"));
-    settingsBox = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-box"));
 
     toolSession = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session"));
-    toolSettings = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-settings"));
     menuSession = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-session"));
     menuConnect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-connect"));
     menuDisconnect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-disconnect"));
     menuHelp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-help-camera"));
-    menuSettings = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-settings"));
 
     cancel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-cancel"));
 
@@ -489,21 +482,15 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
             gtk_widget_set_tooltip_text(toolPreview, "");
     }
 
+#if 0
     if (priv->camera &&
         hasControls) {
-        gtk_widget_show(settingsBox);
-        gtk_widget_set_sensitive(settingsBox, priv->cameraReady);
-        gtk_widget_set_sensitive(toolSettings, TRUE);
-        gtk_widget_set_sensitive(menuSettings, TRUE);
-        gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(toolSettings), TRUE);
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuSettings), TRUE);
+        gtk_widget_show(settingsScroll);
+        gtk_widget_set_sensitive(settingsScroll, priv->cameraReady);
     } else {
-        gtk_widget_hide(settingsBox);
-        gtk_widget_set_sensitive(toolSettings, FALSE);
-        gtk_widget_set_sensitive(menuSettings, FALSE);
-        gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(toolSettings), FALSE);
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuSettings), FALSE);
+        gtk_widget_hide(settingsScroll);
     }
+#endif
 
     if (priv->taskCapture) {
         gtk_widget_show(cancel);
@@ -539,6 +526,7 @@ static void do_select_image(EntangleCameraManager *manager,
 
     entangle_image_display_set_image(priv->imageDisplay, priv->currentImage);
     entangle_image_statusbar_set_image(priv->imageStatusbar, priv->currentImage);
+    entangle_image_histogram_set_image(priv->imageHistogram, priv->currentImage);
     if (priv->imagePresentation)
         entangle_image_popup_set_image(priv->imagePresentation, priv->currentImage);
 }
@@ -2603,6 +2591,8 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     priv->sessionBrowser = entangle_session_browser_new();
     priv->sessionBrowserMenu = GTK_MENU(gtk_builder_get_object(priv->builder, "menu-session-browser"));
     priv->controlPanel = entangle_control_panel_new();
+    priv->imageHistogram = entangle_image_histogram_new();
+    gtk_widget_show(GTK_WIDGET(priv->imageHistogram));
 
     g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
 
@@ -2658,6 +2648,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDrawer));
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
     gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));
+    gtk_container_add(GTK_CONTAINER(settingsBox), GTK_WIDGET(priv->imageHistogram));
 
     priv->monitorCancel = g_cancellable_new();
     priv->taskCancel = g_cancellable_new();

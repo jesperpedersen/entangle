@@ -103,6 +103,7 @@ libentangle_frontend_la_SOURCES = \
 	frontend/entangle-image-display.h frontend/entangle-image-display.c \
 	frontend/entangle-image-display-enums.h \
 	frontend/entangle-image-display-enums.c \
+	frontend/entangle-image-histogram.h frontend/entangle-image-histogram.c \
 	frontend/entangle-image-popup.h frontend/entangle-image-popup.c \
 	frontend/entangle-image-statusbar.h frontend/entangle-image-statusbar.c \
 	frontend/entangle-preferences-display.h frontend/entangle-preferences-display.c \
