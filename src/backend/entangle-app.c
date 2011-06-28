@@ -199,7 +199,8 @@ static void entangle_app_class_init(EntangleAppClass *klass)
                                                         "Application",
                                                         "Application",
                                                         G_TYPE_APPLICATION,
-                                                        G_PARAM_READABLE |
+                                                        G_PARAM_WRITABLE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));

@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     if (!gtk_init_check(NULL, NULL))
         return 1;
 
-    app = gtk_application_new("org.entangle-photo.manager", 0);
+    app = gtk_application_new("org.entangle_photo.Display", 0);
                               
     gdk_threads_enter();
     display = entangle_app_display_new(G_APPLICATION(app));

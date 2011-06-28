@@ -4,8 +4,14 @@ noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
 bin_PROGRAMS = entangle
 
-gladedir = $(pkgdatadir)
-glade_DATA = entangle.glade
+builderdir = $(pkgdatadir)
+builder_DATA = \
+	frontend/entangle-camera-info.xml \
+	frontend/entangle-camera-manager.xml \
+	frontend/entangle-camera-picker.xml \
+	frontend/entangle-help-about.xml \
+	frontend/entangle-image-popup.xml \
+	frontend/entangle-preferences.xml
 
 desktopdir = $(datadir)/applications
 desktop_DATA_IN = entangle.desktop.in
@@ -21,7 +27,7 @@ BUILT_SOURCES = \
 	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
 	backend/entangle-config-entry-enums.h backend/entangle-config-entry-enums.c
 
-EXTRA_DIST = $(glade_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
+EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-app.h backend/entangle-app.c \
@@ -64,7 +70,6 @@ libentangle_backend_la_SOURCES = \
 libentangle_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(GIO_LIBS) \
-	$(GMODULE_LIBS) \
 	$(GTHREAD_LIBS) \
 	$(GDK_PIXBUF_LIBS) \
 	$(GPHOTO2_LIBS) \
@@ -112,7 +117,6 @@ libentangle_frontend_la_LDFLAGS = \
 	$(GTHREAD_LIBS) \
 	$(GMODULE_LIBS) \
 	$(GTK_LIBS) \
-	$(GLADE2_LIBS) \
 	$(PEAS_LIBS) \
 	$(PEAS_UI_LIBS) \
 	$(WARNING_CFLAGS)
@@ -122,7 +126,6 @@ libentangle_frontend_la_CFLAGS = \
 	$(GTHREAD_CFLAGS) \
 	$(GMODULE_CFLAGS) \
 	$(GTK_CFLAGS) \
-	$(GLADE2_CFLAGS) \
 	$(PEAS_CFLAGS) \
 	$(PEAS_UI_CFLAGS) \
 	$(WARNING_CFLAGS) \
@@ -254,7 +257,6 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
                 --pkg=gobject-2.0 \
                 --pkg=gtk+-3.0 \
                 --pkg=libgphoto2 \
-                --pkg=libglade-2.0 \
                 --pkg=hal \
                 $(PLUGIN_PKG) \
                 --pkg=dbus-glib-1 \

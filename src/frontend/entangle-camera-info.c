@@ -21,8 +21,8 @@
 #include <config.h>
 
 #include <string.h>
-#include <glade/glade.h>
 #include <unistd.h>
+#include <gtk/gtk.h>
 
 #include "entangle-debug.h"
 #include "entangle-camera-info.h"
@@ -31,11 +31,17 @@
 #define ENTANGLE_CAMERA_INFO_GET_PRIVATE(obj)                               \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_INFO, EntangleCameraInfoPrivate))
 
+gboolean do_info_close(GtkButton *src,
+                       EntangleCameraInfo *info);
+gboolean do_info_delete(GtkWidget *src,
+                        GdkEvent *ev,
+                        EntangleCameraInfo *info);
+
 struct _EntangleCameraInfoPrivate {
     EntangleCamera *camera;
     int data;
 
-    GladeXML *glade;
+    GtkBuilder *builder;
 };
 
 G_DEFINE_TYPE(EntangleCameraInfo, entangle_camera_info, G_TYPE_OBJECT);
@@ -103,7 +109,7 @@ static void entangle_camera_info_finalize (GObject *object)
 
     if (priv->camera)
         g_object_unref(priv->camera);
-    g_object_unref(priv->glade);
+    g_object_unref(priv->builder);
 
     G_OBJECT_CLASS (entangle_camera_info_parent_class)->finalize (object);
 }
@@ -181,25 +187,25 @@ EntangleCameraInfo *entangle_camera_info_new(EntangleCamera *camera,
 }
 
 
-static gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
-                              EntangleCameraInfo *info)
+gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
+                       EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv = info->priv;
     ENTANGLE_DEBUG("info close");
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
     gtk_widget_hide(win);
     return TRUE;
 }
 
 
-static gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
-                               GdkEvent *ev G_GNUC_UNUSED,
-                               EntangleCameraInfo *info)
+gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
+                        GdkEvent *ev G_GNUC_UNUSED,
+                        EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv = info->priv;
     ENTANGLE_DEBUG("info delete");
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
     gtk_widget_hide(win);
     return FALSE;
@@ -210,18 +216,23 @@ static void entangle_camera_info_init(EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv;
     GtkWidget *txt;
+    GError *error = NULL;
 
     priv = info->priv = ENTANGLE_CAMERA_INFO_GET_PRIVATE(info);
 
-    if (access("./entangle.glade", R_OK) == 0)
-        priv->glade = glade_xml_new("entangle.glade", "camera-info", "entangle");
-    else
-        priv->glade = glade_xml_new(PKGDATADIR "/entangle.glade", "camera-info", "entangle");
+    priv->builder = gtk_builder_new();
 
-    glade_xml_signal_connect_data(priv->glade, "camera_info_close", G_CALLBACK(do_info_close), info);
-    glade_xml_signal_connect_data(priv->glade, "camera_info_delete", G_CALLBACK(do_info_delete), info);
+    if (access("./entangle", R_OK) == 0)
+        gtk_builder_add_from_file(priv->builder, "frontend/entangle-camera-info.xml", &error);
+    else 
+        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/frontend/entangle-camera-info.xml", &error);
 
-    txt = glade_xml_get_widget(priv->glade, "info-text");
+    if (error)
+        g_error("Couldn't load builder file: %s", error->message);
+
+    gtk_builder_connect_signals(priv->builder, info);
+
+    txt = GTK_WIDGET(gtk_builder_get_object(priv->builder, "info-text"));
 
     gtk_widget_set_sensitive(txt, FALSE);
 }
@@ -230,7 +241,7 @@ static void entangle_camera_info_init(EntangleCameraInfo *info)
 void entangle_camera_info_show(EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv = info->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
     gtk_widget_show(win);
     gtk_window_present(GTK_WINDOW(win));
@@ -240,7 +251,7 @@ void entangle_camera_info_show(EntangleCameraInfo *info)
 void entangle_camera_info_hide(EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv = info->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-info");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
     gtk_widget_hide(win);
 }
@@ -249,7 +260,7 @@ void entangle_camera_info_hide(EntangleCameraInfo *info)
 static void do_info_refresh(EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv = info->priv;
-    GtkWidget *text = glade_xml_get_widget(priv->glade, "info-text");
+    GtkWidget *text = GTK_WIDGET(gtk_builder_get_object(priv->builder, "info-text"));
     GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
 
 
@@ -314,7 +325,7 @@ void entangle_camera_info_set_camera(EntangleCameraInfo *info,
         title = g_strdup("Camera Info - Entangle");
     }
 
-    win = glade_xml_get_widget(priv->glade, "camera-info");
+    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
     gtk_window_set_title(GTK_WINDOW(win), title);
     g_free(title);
 

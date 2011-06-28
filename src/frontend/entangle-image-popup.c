@@ -22,7 +22,7 @@
 
 #include <unistd.h>
 #include <string.h>
-#include <glade/glade.h>
+#include <gtk/gtk.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -36,7 +36,7 @@
 struct _EntangleImagePopupPrivate {
     EntangleImage *image;
     EntangleImageDisplay *display;
-    GladeXML *glade;
+    GtkBuilder *builder;
 };
 
 G_DEFINE_TYPE(EntangleImagePopup, entangle_image_popup, G_TYPE_OBJECT);
@@ -98,7 +98,7 @@ static void entangle_image_popup_finalize (GObject *object)
 
     ENTANGLE_DEBUG("Remove popup");
 
-    g_object_unref(priv->glade);
+    g_object_unref(priv->builder);
 
     if (priv->image)
         g_object_unref(priv->image);
@@ -115,7 +115,7 @@ static gboolean entangle_image_popup_button_press(GtkWidget *widget G_GNUC_UNUSE
     GtkWidget *win;
     int w, h;
 
-    win = glade_xml_get_widget(priv->glade, "image-popup");
+    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     gtk_window_get_size(GTK_WINDOW(win), &w, &h);
 
@@ -202,7 +202,7 @@ static gboolean do_popup_delete(GtkWidget *src G_GNUC_UNUSED,
 {
     EntangleImagePopupPrivate *priv = popup->priv;
     ENTANGLE_DEBUG("popup delete");
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     gtk_widget_hide(win);
     return TRUE;
@@ -212,15 +212,23 @@ static void entangle_image_popup_init(EntangleImagePopup *popup)
 {
     EntangleImagePopupPrivate *priv;
     GtkWidget *win;
+    GError *error = NULL;
 
     priv = popup->priv = ENTANGLE_IMAGE_POPUP_GET_PRIVATE(popup);
 
-    if (access("./entangle.glade", R_OK) == 0)
-        priv->glade = glade_xml_new("entangle.glade", "image-popup", "entangle");
-    else
-        priv->glade = glade_xml_new(PKGDATADIR "/entangle.glade", "image-popup", "entangle");
+    priv->builder = gtk_builder_new();
 
-    win = glade_xml_get_widget(priv->glade, "image-popup");
+    if (access("./entangle", R_OK) == 0)
+        gtk_builder_add_from_file(priv->builder, "frontend/entangle-image-popup.xml", &error);
+    else 
+        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/frontend/entangle-image-popup.xml", &error);
+
+    if (error)
+        g_error("Couldn't load builder file: %s", error->message);
+
+    gtk_builder_connect_signals(priv->builder, popup);
+
+    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     g_signal_connect(win, "button-press-event",
                      G_CALLBACK(entangle_image_popup_button_press), popup);
@@ -238,9 +246,9 @@ void entangle_image_popup_show(EntangleImagePopup *popup,
                               int x, int y)
 {
     EntangleImagePopupPrivate *priv = popup->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
-    win = glade_xml_get_widget(priv->glade, "image-popup");
+    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     gtk_widget_realize(win);
 
@@ -256,7 +264,7 @@ void entangle_image_popup_show(EntangleImagePopup *popup,
 void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monitor)
 {
     EntangleImagePopupPrivate *priv = popup->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
     GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(win));
     GdkRectangle r;
 
@@ -274,10 +282,10 @@ void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monito
 void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monitor)
 {
     EntangleImagePopupPrivate *priv = popup->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
     GdkCursor *null_cursor = gdk_cursor_new(GDK_BLANK_CURSOR);
 
-    win = glade_xml_get_widget(priv->glade, "image-popup");
+    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     gtk_widget_realize(win);
 
@@ -297,7 +305,7 @@ void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monito
 void entangle_image_popup_hide(EntangleImagePopup *popup)
 {
     EntangleImagePopupPrivate *priv = popup->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     gtk_widget_hide(win);
 }

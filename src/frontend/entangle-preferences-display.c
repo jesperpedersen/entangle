@@ -22,7 +22,6 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <unistd.h>
 
 #if HAVE_PLUGINS
@@ -40,7 +39,7 @@
 static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *preferences);
 
 struct _EntanglePreferencesDisplayPrivate {
-    GladeXML *glade;
+    GtkBuilder *builder;
 
 #if HAVE_PLUGINS
     PeasEngine *pluginEngine;
@@ -59,6 +58,21 @@ enum {
     PROP_PLUGIN_ENGINE,
 #endif
 };
+
+void do_preferences_close(GtkButton *src, EntanglePreferencesDisplay *preferences);
+gboolean do_preferences_delete(GtkWidget *src,
+                               GdkEvent *ev,
+                               EntanglePreferencesDisplay *preferences);
+void do_page_changed(GtkTreeSelection *selection,
+                            EntanglePreferencesDisplay *preferences);
+void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);
+void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);
+void do_cms_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_cms_render_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
+void do_picture_folder_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);
+void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
+
 
 static void entangle_preferences_display_get_property(GObject *object,
                                                   guint prop_id,
@@ -96,7 +110,7 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
     if (strcmp(spec->name, "colour-managed-display") == 0) {
         gboolean newvalue;
         gboolean oldvalue;
-        tmp = glade_xml_get_widget(priv->glade, "cms-enabled");
+        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-enabled"));
 
         g_object_get(object, spec->name, &newvalue, NULL);
         oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
@@ -106,7 +120,7 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
     } else if (strcmp(spec->name, "detect-system-profile") == 0) {
         gboolean newvalue;
         gboolean oldvalue;
-        tmp = glade_xml_get_widget(priv->glade, "cms-system-profile");
+        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-system-profile"));
 
         g_object_get(object, spec->name, &newvalue, NULL);
         oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
@@ -117,7 +131,7 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
         EntangleColourProfile *profile;
         const gchar *oldvalue;
         const gchar *newvalue;
-        tmp = glade_xml_get_widget(priv->glade, "cms-rgb-profile");
+        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile"));
 
         g_object_get(object, spec->name, &profile, NULL);
 
@@ -135,7 +149,7 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
         EntangleColourProfile *profile;
         const gchar *oldvalue;
         const gchar *newvalue;
-        tmp = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
+        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
 
         g_object_get(object, spec->name, &profile, NULL);
 
@@ -152,7 +166,7 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
     } else if (strcmp(spec->name, "picture-dir") == 0) {
         gchar *newvalue;
         const gchar *oldvalue;
-        tmp = glade_xml_get_widget(priv->glade, "picture-folder");
+        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "picture-folder"));
 
         g_object_get(object, spec->name, &newvalue, NULL);
 
@@ -166,7 +180,7 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
     } else if (strcmp(spec->name, "filename-pattern") == 0) {
         gchar *newvalue;
         const gchar *oldvalue;
-        tmp = glade_xml_get_widget(priv->glade, "filename-pattern");
+        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "filename-pattern"));
 
         g_object_get(object, spec->name, &newvalue, NULL);
 
@@ -180,7 +194,7 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
     } else if (strcmp(spec->name, "profile-rendering-intent") == 0) {
         int newvalue;
         int oldvalue;
-        tmp = glade_xml_get_widget(priv->glade, "cms-render-intent");
+        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
 
         g_object_get(object, spec->name, &newvalue, NULL);
         oldvalue = gtk_combo_box_get_active(GTK_COMBO_BOX(tmp));
@@ -223,7 +237,7 @@ static void entangle_preferences_display_set_property(GObject *object,
                 g_object_unref(priv->pluginEngine);
             priv->pluginEngine = g_value_dup_object(value);
             if (priv->pluginEngine) {
-                GtkWidget *panel = glade_xml_get_widget(priv->glade, "plugins-panel");
+                GtkWidget *panel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-panel"));
                 priv->pluginManager = PEAS_GTK_PLUGIN_MANAGER(peas_gtk_plugin_manager_new(priv->pluginEngine));
                 GList *children = gtk_container_get_children(GTK_CONTAINER(priv->pluginManager));
                 GList *tmp = children;
@@ -256,30 +270,30 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     EntangleColourProfile *profile;
     const char *dir;
 
-    tmp = glade_xml_get_widget(priv->glade, "cms-enabled");
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-enabled"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_enable_color_management(priv->prefs));
 
-    tmp = glade_xml_get_widget(priv->glade, "cms-system-profile");
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-system-profile"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_detect_monitor_profile(priv->prefs));
 
-    tmp = glade_xml_get_widget(priv->glade, "cms-rgb-profile");
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile"));
     profile = entangle_preferences_rgb_profile(priv->prefs);
     if (profile)
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), entangle_colour_profile_filename(profile));
 
-    tmp = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
     profile = entangle_preferences_monitor_profile(priv->prefs);
     if (profile)
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), entangle_colour_profile_filename(profile));
 
-    tmp = glade_xml_get_widget(priv->glade, "cms-render-intent");
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
     gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), entangle_preferences_profile_rendering_intent(priv->prefs));
 
 
-    tmp = glade_xml_get_widget(priv->glade, "filename-pattern");
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "filename-pattern"));
     gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_filename_pattern(priv->prefs));
 
-    tmp = glade_xml_get_widget(priv->glade, "picture-folder");
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "picture-folder"));
     dir = entangle_preferences_picture_dir(priv->prefs);
     if (dir)
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), dir);
@@ -297,7 +311,7 @@ static void entangle_preferences_display_finalize (GObject *object)
 #if HAVE_PLUGINS
     g_object_unref(priv->pluginEngine);
 #endif
-    g_object_unref(priv->glade);
+    g_object_unref(priv->builder);
 }
 
 static void entangle_preferences_display_class_init(EntanglePreferencesDisplayClass *klass)
@@ -354,25 +368,25 @@ EntanglePreferencesDisplay *entangle_preferences_display_new(EntanglePreferences
 }
 #endif
 
-static void do_preferences_close(GtkButton *src G_GNUC_UNUSED, EntanglePreferencesDisplay *preferences)
+void do_preferences_close(GtkButton *src G_GNUC_UNUSED, EntanglePreferencesDisplay *preferences)
 {
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "preferences");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences"));
     gtk_widget_hide(win);
 }
 
 
-static gboolean do_preferences_delete(GtkWidget *src,
-                                      GdkEvent *ev G_GNUC_UNUSED,
-                                      EntanglePreferencesDisplay *preferences G_GNUC_UNUSED)
+gboolean do_preferences_delete(GtkWidget *src,
+                               GdkEvent *ev G_GNUC_UNUSED,
+                               EntanglePreferencesDisplay *preferences G_GNUC_UNUSED)
 {
     ENTANGLE_DEBUG("preferences delete");
     gtk_widget_hide(src);
     return TRUE;
 }
 
-static void do_page_changed(GtkTreeSelection *selection,
-                            EntanglePreferencesDisplay *preferences)
+void do_page_changed(GtkTreeSelection *selection,
+                     EntanglePreferencesDisplay *preferences)
 {
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *list;
@@ -384,7 +398,7 @@ static void do_page_changed(GtkTreeSelection *selection,
 
     ENTANGLE_DEBUG("select page");
 
-    list = glade_xml_get_widget(priv->glade, "preferences-switch");
+    list = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences-switch"));
 
     selected = gtk_tree_selection_get_selected(selection, NULL, &iter);
     if (!selected)
@@ -394,21 +408,21 @@ static void do_page_changed(GtkTreeSelection *selection,
     gtk_tree_model_get_value(gtk_tree_view_get_model(GTK_TREE_VIEW(list)),
                              &iter, 0, &val);
 
-    notebook = glade_xml_get_widget(priv->glade, "preferences-notebook");
+    notebook = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences-notebook"));
     page = g_value_get_int(&val);
     if (page >= 0)
         gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), page);
 }
 
 
-static void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     gboolean enabled = gtk_toggle_button_get_active(src);
-    GtkWidget *rgbProfile = glade_xml_get_widget(priv->glade, "cms-rgb-profile");
-    GtkWidget *monitorProfile = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
-    GtkWidget *systemProfile = glade_xml_get_widget(priv->glade, "cms-system-profile");
-    GtkWidget *renderIntent = glade_xml_get_widget(priv->glade, "cms-render-intent");
+    GtkWidget *rgbProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile"));
+    GtkWidget *monitorProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
+    GtkWidget *systemProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-system-profile"));
+    GtkWidget *renderIntent = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
 
     g_object_set(priv->prefs, "colour-managed-display", enabled, NULL);
     gtk_widget_set_sensitive(rgbProfile, enabled);
@@ -417,7 +431,7 @@ static void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisp
     gtk_widget_set_sensitive(monitorProfile, !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(systemProfile)));
 }
 
-static void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
+void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
@@ -427,7 +441,7 @@ static void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePrefe
     g_object_unref(profile);
 }
 
-static void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
+void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
@@ -437,16 +451,16 @@ static void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntangleP
     g_object_unref(profile);
 }
 
-static void do_cms_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_cms_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     gboolean enabled = gtk_toggle_button_get_active(src);
-    GtkWidget *monitorProfile = glade_xml_get_widget(priv->glade, "cms-monitor-profile");
+    GtkWidget *monitorProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
     g_object_set(priv->prefs, "detect-system-profile", enabled, NULL);
     gtk_widget_set_sensitive(monitorProfile, !enabled);
 }
 
-static void do_cms_render_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
+void do_cms_render_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     int option = gtk_combo_box_get_active(src);
@@ -455,7 +469,7 @@ static void do_cms_render_intent_changed(GtkComboBox *src, EntanglePreferencesDi
     g_object_set(priv->prefs, "profile-rendering-intent", option, NULL);
 }
 
-static void do_picture_folder_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
+void do_picture_folder_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
@@ -463,7 +477,7 @@ static void do_picture_folder_file_set(GtkFileChooserButton *src, EntanglePrefer
     g_free(filename);
 }
 
-static void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display)
+void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     const char *text = gtk_entry_get_text(src);
@@ -489,57 +503,54 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     GtkFileChooser *chooser;
     GtkFileFilter *allFilter;
     GtkFileFilter *iccFilter;
+    GError *error = NULL;
 
     priv = preferences->priv = ENTANGLE_PREFERENCES_DISPLAY_GET_PRIVATE(preferences);
 
-    if (access("./entangle.glade", R_OK) == 0) {
-        priv->glade = glade_xml_new("entangle.glade", "preferences", "entangle");
+    priv->builder = gtk_builder_new();
+
+    if (access("./entangle", R_OK) == 0) {
+        gtk_builder_add_from_file(priv->builder, "frontend/entangle-preferences.xml", &error);
         local = TRUE;
     } else {
-        priv->glade = glade_xml_new(PKGDATADIR "/entangle.glade", "preferences", "entangle");
+        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/frontend/entangle-preferences.xml", &error);
     }
 
-    glade_xml_signal_connect_data(priv->glade, "preferences_close", G_CALLBACK(do_preferences_close), preferences);
+    if (error)
+        g_error("Couldn't load builder file: %s", error->message);
 
-    glade_xml_signal_connect_data(priv->glade, "cms_enabled_toggled", G_CALLBACK(do_cms_enabled_toggled), preferences);
-    glade_xml_signal_connect_data(priv->glade, "cms_monitor_profile_file_set", G_CALLBACK(do_cms_monitor_profile_file_set), preferences);
-    glade_xml_signal_connect_data(priv->glade, "cms_rgb_profile_file_set", G_CALLBACK(do_cms_rgb_profile_file_set), preferences);
-    glade_xml_signal_connect_data(priv->glade, "cms_render_intent_changed", G_CALLBACK(do_cms_render_intent_changed), preferences);
-    glade_xml_signal_connect_data(priv->glade, "cms_system_profile_toggled", G_CALLBACK(do_cms_system_profile_toggled), preferences);
+    gtk_builder_connect_signals(priv->builder, preferences);
 
-    glade_xml_signal_connect_data(priv->glade, "filename_pattern_changed", G_CALLBACK(do_filename_pattern_changed), preferences);
-    glade_xml_signal_connect_data(priv->glade, "picture_folder_file_set", G_CALLBACK(do_picture_folder_file_set), preferences);
-
-    win = glade_xml_get_widget(priv->glade, "preferences");
+    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences"));
     g_signal_connect(win, "delete-event", G_CALLBACK(do_preferences_delete), preferences);
 
-    notebook = glade_xml_get_widget(priv->glade, "preferences-notebook");
+    notebook = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences-notebook"));
     gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), FALSE);
 
 #if !HAVE_PLUGINS
     gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), 2);
 #endif
 
-    box = glade_xml_get_widget(priv->glade, "cms-box");
+    box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
-    image = glade_xml_get_widget(priv->glade, "cms-image");
+    image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./color-management.png");
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/color-management.png");
 
-    box = glade_xml_get_widget(priv->glade, "folders-box");
+    box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "folders-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
-    image = glade_xml_get_widget(priv->glade, "folders-image");
+    image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "folders-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./folders.png");
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/folders.png");
 
 #if HAVE_PLUGINS
-    box = glade_xml_get_widget(priv->glade, "plugins-box");
+    box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
-    image = glade_xml_get_widget(priv->glade, "plugins-image");
+    image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./plugins.png");
     else
@@ -601,7 +612,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     g_object_set(colText, "expand", TRUE, NULL);
     g_object_set(colImage, "expand", FALSE, NULL);
 
-    tree = glade_xml_get_widget(priv->glade, "preferences-switch");
+    tree = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences-switch"));
     gtk_tree_view_set_model(GTK_TREE_VIEW(tree), GTK_TREE_MODEL(list));
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colImage);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tree), colText);
@@ -617,14 +628,14 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     gtk_file_filter_set_name(allFilter, "All files (*.*)");
     gtk_file_filter_add_pattern(allFilter, "*");
 
-    chooser = GTK_FILE_CHOOSER(glade_xml_get_widget(priv->glade, "cms-rgb-profile"));
+    chooser = GTK_FILE_CHOOSER(GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile")));
     g_object_ref(allFilter);
     gtk_file_chooser_add_filter(chooser, allFilter);
     g_object_ref(iccFilter);
     gtk_file_chooser_add_filter(chooser, iccFilter);
     gtk_file_chooser_set_filter(chooser, iccFilter);
 
-    chooser = GTK_FILE_CHOOSER(glade_xml_get_widget(priv->glade, "cms-monitor-profile"));
+    chooser = GTK_FILE_CHOOSER(GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile")));
     g_object_ref(allFilter);
     gtk_file_chooser_add_filter(chooser, allFilter);
     g_object_ref(iccFilter);
@@ -641,7 +652,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
 void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences)
 {
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "preferences");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences"));
 
     gtk_widget_show_all(win);
 }

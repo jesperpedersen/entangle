@@ -22,7 +22,7 @@
 
 #include <unistd.h>
 #include <string.h>
-#include <glade/glade.h>
+#include <gtk/gtk.h>
 
 #include "entangle-debug.h"
 #include "entangle-help-about.h"
@@ -31,7 +31,7 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_HELP_ABOUT, EntangleHelpAboutPrivate))
 
 struct _EntangleHelpAboutPrivate {
-    GladeXML *glade;
+    GtkBuilder *builder;
 };
 
 G_DEFINE_TYPE(EntangleHelpAbout, entangle_help_about, G_TYPE_OBJECT);
@@ -42,7 +42,7 @@ static void entangle_help_about_finalize (GObject *object)
     EntangleHelpAbout *about = ENTANGLE_HELP_ABOUT(object);
     EntangleHelpAboutPrivate *priv = about->priv;
 
-    g_object_unref(priv->glade);
+    g_object_unref(priv->builder);
 
     G_OBJECT_CLASS (entangle_help_about_parent_class)->finalize (object);
 }
@@ -67,7 +67,7 @@ static void do_about_response(GtkDialog *dialog G_GNUC_UNUSED,
 {
     EntangleHelpAboutPrivate *priv = about->priv;
     ENTANGLE_DEBUG("about response");
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "help-about");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
     gtk_widget_hide(win);
 }
@@ -78,7 +78,7 @@ static gboolean do_about_delete(GtkWidget *src G_GNUC_UNUSED,
 {
     EntangleHelpAboutPrivate *priv = about->priv;
     ENTANGLE_DEBUG("about delete");
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "help-about");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
     gtk_widget_hide(win);
     return TRUE;
@@ -89,15 +89,23 @@ static void entangle_help_about_init(EntangleHelpAbout *about)
     EntangleHelpAboutPrivate *priv;
     GtkWidget *win;
     GdkPixbuf *buf;
+    GError *error = NULL;
 
     priv = about->priv = ENTANGLE_HELP_ABOUT_GET_PRIVATE(about);
 
-    if (access("./entangle.glade", R_OK) == 0)
-        priv->glade = glade_xml_new("entangle.glade", "help-about", "entangle");
-    else
-        priv->glade = glade_xml_new(PKGDATADIR "/entangle.glade", "help-about", "entangle");
+    priv->builder = gtk_builder_new();
 
-    win = glade_xml_get_widget(priv->glade, "help-about");
+    if (access("./entangle", R_OK) == 0)
+        gtk_builder_add_from_file(priv->builder, "frontend/entangle-help-about.xml", &error);
+    else 
+        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/frontend/entangle-help-about.xml", &error);
+
+    if (error)
+        g_error("Couldn't load builder file: %s", error->message);
+
+    gtk_builder_connect_signals(priv->builder, about);
+
+    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
     g_signal_connect(win, "delete-event", G_CALLBACK(do_about_delete), about);
     g_signal_connect(win, "response", G_CALLBACK(do_about_response), about);
@@ -114,7 +122,7 @@ static void entangle_help_about_init(EntangleHelpAbout *about)
 void entangle_help_about_show(EntangleHelpAbout *about)
 {
     EntangleHelpAboutPrivate *priv = about->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "help-about");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
     gtk_widget_show(win);
     gtk_window_present(GTK_WINDOW(win));
@@ -123,7 +131,7 @@ void entangle_help_about_show(EntangleHelpAbout *about)
 void entangle_help_about_hide(EntangleHelpAbout *about)
 {
     EntangleHelpAboutPrivate *priv = about->priv;
-    GtkWidget *win = glade_xml_get_widget(priv->glade, "help-about");
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
     gtk_widget_hide(win);
 }
