@@ -57,10 +57,11 @@ struct _EntangleAppClass
 
 GType entangle_app_get_type(void) G_GNUC_CONST;
 
-EntangleApp *entangle_app_new(void);
+EntangleApp *entangle_app_new(GApplication *app);
 
 void entangle_app_refresh_cameras(EntangleApp *app);
 
+GApplication *entangle_app_get_application(EntangleApp *app);
 EntangleCameraList *entangle_app_get_cameras(EntangleApp *app);
 EntanglePreferences *entangle_app_get_preferences(EntangleApp *app);
 #if HAVE_PLUGINS

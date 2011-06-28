@@ -398,9 +398,7 @@ EntangleCamera *entangle_camera_new(const char *model,
 
 static void entangle_camera_init(EntangleCamera *picker)
 {
-    EntangleCameraPrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CAMERA_GET_PRIVATE(picker);
+    picker->priv = ENTANGLE_CAMERA_GET_PRIVATE(picker);
 }
 
 

@@ -69,9 +69,7 @@ EntangleControlButton *entangle_control_button_new(const char *path,
 
 static void entangle_control_button_init(EntangleControlButton *picker)
 {
-    EntangleControlButtonPrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CONTROL_BUTTON_GET_PRIVATE(picker);
+    picker->priv = ENTANGLE_CONTROL_BUTTON_GET_PRIVATE(picker);
 }
 
 /*

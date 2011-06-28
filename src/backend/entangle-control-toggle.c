@@ -124,9 +124,7 @@ EntangleControlToggle *entangle_control_toggle_new(const char *path,
 
 static void entangle_control_toggle_init(EntangleControlToggle *picker)
 {
-    EntangleControlTogglePrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CONTROL_TOGGLE_GET_PRIVATE(picker);
+    picker->priv = ENTANGLE_CONTROL_TOGGLE_GET_PRIVATE(picker);
 }
 
 /*

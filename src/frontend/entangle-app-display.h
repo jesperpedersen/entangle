@@ -55,9 +55,9 @@ struct _EntangleAppDisplayClass
 
 
 GType entangle_app_display_get_type(void) G_GNUC_CONST;
-EntangleAppDisplay* entangle_app_display_new(void);
+EntangleAppDisplay* entangle_app_display_new(GApplication *app);
 
-gboolean entangle_app_display_show(EntangleAppDisplay *display);
+void entangle_app_display_show(EntangleAppDisplay *display);
 
 G_END_DECLS
 

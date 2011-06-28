@@ -349,7 +349,7 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
                                            ntargets,
                                            GDK_ACTION_PRIVATE);
 
-    gtk_icon_view_set_orientation(GTK_ICON_VIEW(browser), GTK_ORIENTATION_VERTICAL);
+    gtk_icon_view_set_item_orientation(GTK_ICON_VIEW(browser), GTK_ORIENTATION_VERTICAL);
     /* XXX gross hack - GtkIconView doesn't seem to have a better
      * way to force everything into a single row. Perhaps we should
      * just right a new widget for our needs */

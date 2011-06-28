@@ -40,7 +40,7 @@ struct _EntangleImageDisplayPrivate {
     gulong imageNotifyID;
     EntangleImage *image;
 
-    GdkPixmap *pixmap;
+    cairo_surface_t *pixmap;
 
     gboolean autoscale;
     float scale;
@@ -71,7 +71,7 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
     ENTANGLE_DEBUG("Setting up server pixmap");
 
     if (priv->pixmap) {
-        g_object_unref(priv->pixmap);
+        cairo_surface_destroy(priv->pixmap);
         priv->pixmap = NULL;
     }
 
@@ -82,11 +82,12 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
 
     pw = gdk_pixbuf_get_width(pixbuf);
     ph = gdk_pixbuf_get_height(pixbuf);
-    priv->pixmap = gdk_pixmap_new(gtk_widget_get_window(GTK_WIDGET(display)),
-                                  pw, ph, -1);
-    gdk_draw_pixbuf(priv->pixmap, NULL, pixbuf,
-                    0, 0, 0, 0, pw, ph,
-                    GDK_RGB_DITHER_NORMAL, 0, 0);
+    priv->pixmap = cairo_image_surface_create(CAIRO_FORMAT_RGB24, pw, ph);
+
+    cairo_t *cr = cairo_create(priv->pixmap);
+    gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
+    cairo_paint(cr);
+    cairo_destroy(cr);
 }
 
 
@@ -239,8 +240,7 @@ static void entangle_image_display_realize(GtkWidget *widget)
     do_entangle_pixmap_setup(ENTANGLE_IMAGE_DISPLAY(widget));
 }
 
-static gboolean entangle_image_display_expose(GtkWidget *widget,
-                                              GdkEventExpose *expose)
+static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
     EntangleImageDisplayPrivate *priv = display->priv;
@@ -249,12 +249,14 @@ static gboolean entangle_image_display_expose(GtkWidget *widget,
     double iw, ih; /* Desired image size */
     double mx = 0, my = 0;  /* Offset of image within available area */
     double sx = 1, sy = 1;  /* Amount to scale by */
-    cairo_t *cr;
 
-    gdk_drawable_get_size(gtk_widget_get_window(widget), &ww, &wh);
+    ww = gdk_window_get_width(gtk_widget_get_window(widget));
+    wh = gdk_window_get_height(gtk_widget_get_window(widget));
 
-    if (priv->pixmap)
-        gdk_drawable_get_size(GDK_DRAWABLE(priv->pixmap), &pw, &ph);
+    if (priv->pixmap) {
+        pw = cairo_image_surface_get_width(priv->pixmap);
+        ph = cairo_image_surface_get_height(priv->pixmap);
+    }
 
     /* Decide what size we're going to draw the image */
     if (priv->autoscale) {
@@ -300,14 +302,6 @@ static gboolean entangle_image_display_expose(GtkWidget *widget,
     ENTANGLE_DEBUG("Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf", iw, ih, mx, my, sx, sy);
 
 
-    cr = gdk_cairo_create(gtk_widget_get_window(widget));
-    cairo_rectangle(cr,
-                    expose->area.x,
-                    expose->area.y,
-                    expose->area.width + 1,
-                    expose->area.height + 1);
-    cairo_clip(cr);
-
     /* We need to fill the background first */
     cairo_rectangle(cr, 0, 0, ww, wh);
     /* Next cut out the inner area where the pixmap
@@ -326,19 +320,18 @@ static gboolean entangle_image_display_expose(GtkWidget *widget,
     /* Draw the actual image */
     if (priv->pixmap) {
         cairo_scale(cr, sx, sy);
-        gdk_cairo_set_source_pixmap(cr,
-                                    priv->pixmap,
-                                    mx/sx, my/sy);
+        cairo_set_source_surface(cr,
+                                 priv->pixmap,
+                                 mx/sx, my/sy);
         cairo_paint(cr);
     }
-
-    cairo_destroy(cr);
 
     return TRUE;
 }
 
-static void entangle_image_display_size_request(GtkWidget *widget,
-                                                GtkRequisition *requisition)
+static void entangle_image_display_get_preferred_width(GtkWidget *widget,
+                                                       gint *minwidth,
+                                                       gint *natwidth)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
     EntangleImageDisplayPrivate *priv = display->priv;
@@ -348,8 +341,7 @@ static void entangle_image_display_size_request(GtkWidget *widget,
         pixbuf = entangle_image_get_pixbuf(priv->image);
 
     if (!pixbuf) {
-        requisition->width = 100;
-        requisition->height = 100;
+        *minwidth = *natwidth = 100;
         ENTANGLE_DEBUG("No image, size request 100,100");
         return;
     }
@@ -358,20 +350,47 @@ static void entangle_image_display_size_request(GtkWidget *widget,
         /* For best fit mode, we'll say 100x100 is the smallest we're happy
          * to draw to. Whatever the container allocates us beyond that will
          * be used filled with the image */
-        requisition->width = 100;
-        requisition->height = 100;
+        *minwidth = *natwidth = 100;
     } else {
         /* Start a 1-to-1 mode */
-        requisition->width = gdk_pixbuf_get_width(pixbuf);
-        requisition->height = gdk_pixbuf_get_height(pixbuf);
+        *minwidth = *natwidth = gdk_pixbuf_get_width(pixbuf);
         if (priv->scale > 0) {
             /* Scaling mode */
-            requisition->width = (int)((double)requisition->width * priv->scale);
-            requisition->height = (int)((double)requisition->height * priv->scale);
+            *minwidth = *natwidth = (int)((double)*minwidth * priv->scale);
         }
     }
+}
 
-    ENTANGLE_DEBUG("Size request %d %d", requisition->width, requisition->height);
+static void entangle_image_display_get_preferred_height(GtkWidget *widget,
+                                                        gint *minheight,
+                                                        gint *natheight)
+{
+    EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
+    EntangleImageDisplayPrivate *priv = display->priv;
+    GdkPixbuf *pixbuf = NULL;
+
+    if (priv->image)
+        pixbuf = entangle_image_get_pixbuf(priv->image);
+
+    if (!pixbuf) {
+        *minheight = *natheight = 100;
+        ENTANGLE_DEBUG("No image, size request 100,100");
+        return;
+    }
+
+    if (priv->autoscale) {
+        /* For best fit mode, we'll say 100x100 is the smallest we're happy
+         * to draw to. Whatever the container allocates us beyond that will
+         * be used filled with the image */
+        *minheight = *natheight = 100;
+    } else {
+        /* Start a 1-to-1 mode */
+        *minheight = *natheight = gdk_pixbuf_get_height(pixbuf);
+        if (priv->scale > 0) {
+            /* Scaling mode */
+            *minheight = *natheight = (int)((double)*minheight * priv->scale);
+        }
+    }
 }
 
 static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
@@ -384,8 +403,9 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
     object_class->set_property = entangle_image_display_set_property;
 
     widget_class->realize = entangle_image_display_realize;
-    widget_class->expose_event = entangle_image_display_expose;
-    widget_class->size_request = entangle_image_display_size_request;
+    widget_class->draw = entangle_image_display_draw;
+    widget_class->get_preferred_width = entangle_image_display_get_preferred_width;
+    widget_class->get_preferred_height = entangle_image_display_get_preferred_height;
 
     g_object_class_install_property(object_class,
                                     PROP_IMAGE,

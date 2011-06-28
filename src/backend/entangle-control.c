@@ -219,9 +219,7 @@ EntangleControl *entangle_control_new(const char *path, int id, const char *labe
 
 static void entangle_control_init(EntangleControl *control)
 {
-    EntangleControlPrivate *priv;
-
-    priv = control->priv = ENTANGLE_CONTROL_GET_PRIVATE(control);
+    control->priv = ENTANGLE_CONTROL_GET_PRIVATE(control);
 }
 
 

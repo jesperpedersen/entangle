@@ -163,9 +163,7 @@ EntangleCameraTask *entangle_camera_task_new(const char *name,
 
 static void entangle_camera_task_init(EntangleCameraTask *task)
 {
-    EntangleCameraTaskPrivate *priv;
-
-    priv = task->priv = ENTANGLE_CAMERA_TASK_GET_PRIVATE(task);
+    task->priv = ENTANGLE_CAMERA_TASK_GET_PRIVATE(task);
 }
 
 

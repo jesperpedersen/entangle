@@ -77,9 +77,7 @@ EntangleControlGroup *entangle_control_group_new(const char *path,
 
 static void entangle_control_group_init(EntangleControlGroup *picker)
 {
-    EntangleControlGroupPrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CONTROL_GROUP_GET_PRIVATE(picker);
+    picker->priv = ENTANGLE_CONTROL_GROUP_GET_PRIVATE(picker);
 }
 
 void entangle_control_group_add(EntangleControlGroup *group,

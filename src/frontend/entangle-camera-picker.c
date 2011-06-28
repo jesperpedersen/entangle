@@ -497,13 +497,6 @@ void entangle_camera_picker_show(EntangleCameraPicker *picker)
 {
     EntangleCameraPickerPrivate *priv = picker->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "camera-picker");
-    GtkWidget *list;
-    GtkTreeSelection *sel;
-
-    list = glade_xml_get_widget(priv->glade, "camera-list");
-    sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
-
-    //gtk_tree_selection_unselect_all(sel);
 
     ENTANGLE_DEBUG("Show");
     gtk_widget_show(win);

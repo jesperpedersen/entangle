@@ -27,10 +27,6 @@
 #include <girepository.h>
 #endif
 
-#define SN_API_NOT_YET_FROZEN
-#include <libsn/sn-launchee.h>
-#include <gdk/gdkx.h>
-
 #include "entangle-debug.h"
 #include "entangle-app-display.h"
 
@@ -38,41 +34,19 @@
 static gchar *ins = NULL;
 #endif
 
-static SnLauncheeContext *sn_context = NULL;
-static SnDisplay *sn_display = NULL;
-
-static void
-sn_error_trap_push(SnDisplay *display G_GNUC_UNUSED,
-                   Display *xdisplay G_GNUC_UNUSED)
+static void entangle_start(GApplication *app, gpointer opaque)
 {
-    gdk_error_trap_push();
+    EntangleAppDisplay *display = opaque;
+
+    entangle_app_display_show(display);
+    g_application_hold(app);
 }
 
-static void
-sn_error_trap_pop(SnDisplay *display G_GNUC_UNUSED,
-                  Display *xdisplay G_GNUC_UNUSED)
+static void entangle_stop(EntangleAppDisplay *display G_GNUC_UNUSED, gpointer opaque)
 {
-    gdk_error_trap_pop();
-}
+    GApplication *app = opaque;
 
-static void
-startup_notification_complete(void)
-{
-    Display *xdisplay;
-
-    xdisplay = GDK_DISPLAY();
-    sn_display = sn_display_new(xdisplay,
-                                sn_error_trap_push,
-                                sn_error_trap_pop);
-    sn_context =
-        sn_launchee_context_new_from_environment(sn_display,
-                                                 DefaultScreen(xdisplay));
-    if (sn_context != NULL) {
-        sn_launchee_context_complete(sn_context);
-        sn_launchee_context_unref(sn_context);
-
-        sn_display_unref(sn_display);
-    }
+    g_application_release(app);
 }
 
 
@@ -82,6 +56,7 @@ int main(int argc, char **argv)
     GOptionGroup *group;
     GOptionContext *context;
     GError *error = NULL;
+    GtkApplication *app;
     static const GOptionEntry entries[] = {
         { "debug-entangle", 'd', 0, G_OPTION_ARG_NONE, &entangle_debug_app, "Enable debugging of application code", NULL },
         { "debug-gphoto", 'g', 0, G_OPTION_ARG_NONE, &entangle_debug_gphoto, "Enable debugging of gphoto library", NULL },
@@ -91,7 +66,6 @@ int main(int argc, char **argv)
         { NULL, 0, 0, 0, NULL, NULL, NULL },
     };
     static const char *help_msg = "Run 'entangle --help' to see full list of options";
-    gboolean unique;
 
     g_thread_init(NULL);
     gdk_threads_init();
@@ -124,18 +98,16 @@ int main(int argc, char **argv)
     if (!gtk_init_check(NULL, NULL))
         return 1;
 
+    app = gtk_application_new("org.entangle-photo.manager", 0);
+                              
     gdk_threads_enter();
-    display = entangle_app_display_new();
+    display = entangle_app_display_new(G_APPLICATION(app));
 
-    g_signal_connect(display, "app-closed", gtk_main_quit, NULL);
+    g_signal_connect(display, "app-closed", G_CALLBACK(entangle_stop), app);
+    g_signal_connect(app, "activate", G_CALLBACK(entangle_start), display);
 
-    unique = entangle_app_display_show(display);
+    g_application_run(G_APPLICATION(app), argc, argv);
 
-    startup_notification_complete();
-
-    if (unique) {
-        gtk_main();
-    }
     gdk_threads_leave();
 
     g_object_unref(display);

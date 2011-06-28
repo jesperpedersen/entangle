@@ -135,10 +135,7 @@ EntangleControlChoice *entangle_control_choice_new(const char *path,
 
 static void entangle_control_choice_init(EntangleControlChoice *picker)
 {
-    EntangleControlChoicePrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CONTROL_CHOICE_GET_PRIVATE(picker);
-    memset(priv, 0, sizeof *priv);
+    picker->priv = ENTANGLE_CONTROL_CHOICE_GET_PRIVATE(picker);
 }
 
 void entangle_control_choice_add_entry(EntangleControlChoice *choice,

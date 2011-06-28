@@ -113,7 +113,6 @@ libentangle_frontend_la_LDFLAGS = \
 	$(GMODULE_LIBS) \
 	$(GTK_LIBS) \
 	$(GLADE2_LIBS) \
-	$(UNIQUE_LIBS) \
 	$(PEAS_LIBS) \
 	$(PEAS_UI_LIBS) \
 	$(WARNING_CFLAGS)
@@ -124,7 +123,6 @@ libentangle_frontend_la_CFLAGS = \
 	$(GMODULE_CFLAGS) \
 	$(GTK_CFLAGS) \
 	$(GLADE2_CFLAGS) \
-	$(UNIQUE_CFLAGS) \
 	$(PEAS_CFLAGS) \
 	$(PEAS_UI_CFLAGS) \
 	$(WARNING_CFLAGS) \
@@ -142,7 +140,6 @@ entangle_LDFLAGS = \
 	$(GTK_LIBS) \
 	$(GOBJECT_INTROSPECTION_LIBS) \
 	$(PEAS_LIBS) \
-	$(STARTUP_LIBS) \
 	$(WARNING_CFLAGS)
 
 entangle_CFLAGS = \
@@ -153,7 +150,6 @@ entangle_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(GOBJECT_INTROSPECTION_CFLAGS) \
 	$(PEAS_CFLAGS) \
-	$(STARTUP_CFLAGS) \
 	$(WARNING_CFLAGS)
 
 
@@ -243,7 +239,7 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
                 --namespace Entangle \
                 --nsversion 0.1 \
 		--include GObject-2.0 \
-		--include Gtk-2.0 \
+		--include Gtk-3.0 \
 		$(PLUGIN_INC) \
                 --program=$(builddir)/entangle \
                 --add-include-path=$(srcdir) \
@@ -256,7 +252,7 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
                 --pkg=gthread-2.0 \
                 --pkg=gdk-pixbuf-2.0 \
                 --pkg=gobject-2.0 \
-                --pkg=gtk+-2.0 \
+                --pkg=gtk+-3.0 \
                 --pkg=libgphoto2 \
                 --pkg=libglade-2.0 \
                 --pkg=hal \

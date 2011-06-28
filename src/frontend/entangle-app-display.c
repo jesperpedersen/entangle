@@ -24,7 +24,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
-#include <unique/unique.h>
 
 #include "entangle-debug.h"
 #include "entangle-app-display.h"
@@ -35,8 +34,6 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_APP_DISPLAY, EntangleAppDisplayPrivate))
 
 struct _EntangleAppDisplayPrivate {
-    UniqueApp *unique;
-
     EntangleCameraPicker *picker;
     EntangleCameraManager *manager;
 };
@@ -51,7 +48,6 @@ static void entangle_app_display_finalize (GObject *object)
 
     ENTANGLE_DEBUG("Finalize display");
 
-    g_object_unref(priv->unique);
     g_object_unref(priv->picker);
 
     G_OBJECT_CLASS (entangle_app_display_parent_class)->finalize (object);
@@ -76,9 +72,11 @@ static void entangle_app_display_class_init(EntangleAppDisplayClass *klass)
 }
 
 
-EntangleAppDisplay *entangle_app_display_new(void)
+EntangleAppDisplay *entangle_app_display_new(GApplication *app)
 {
-    return ENTANGLE_APP_DISPLAY(g_object_new(ENTANGLE_TYPE_APP_DISPLAY, NULL));
+    return ENTANGLE_APP_DISPLAY(g_object_new(ENTANGLE_TYPE_APP_DISPLAY,
+                                             "app", app,
+                                             NULL));
 }
 
 
@@ -243,21 +241,6 @@ static void do_set_icons(void)
     gtk_window_set_default_icon_list(icons);
 }
 
-static UniqueResponse
-do_unique_message(UniqueApp *app G_GNUC_UNUSED,
-                  UniqueCommand command,
-                  UniqueMessageData *message_data G_GNUC_UNUSED,
-                  guint time_ms G_GNUC_UNUSED,
-                  gpointer data)
-{
-    EntangleAppDisplay *display = ENTANGLE_APP_DISPLAY(data);
-    EntangleAppDisplayPrivate *priv = display->priv;
-
-    if (command == UNIQUE_ACTIVATE) {
-        entangle_camera_manager_show(priv->manager);
-    }
-    return UNIQUE_RESPONSE_OK;
-}
 
 static void do_camera_removed(EntangleCameraList *cameras G_GNUC_UNUSED,
                               EntangleCamera *camera,
@@ -307,23 +290,14 @@ static void entangle_app_display_init(EntangleAppDisplay *display)
     g_signal_connect(cameras, "camera-removed", G_CALLBACK(do_camera_removed), display);
     g_signal_connect(priv->manager, "manager-connect",
                      G_CALLBACK(do_manager_connect), display);
-
-    priv->unique = unique_app_new("org.entangle_project.Display", NULL);
-    g_signal_connect(priv->unique, "message-received",
-                     G_CALLBACK(do_unique_message), display);
 }
 
 
-gboolean entangle_app_display_show(EntangleAppDisplay *display)
+void entangle_app_display_show(EntangleAppDisplay *display)
 {
     EntangleAppDisplayPrivate *priv = display->priv;
     EntangleCameraList *cameras;
     gboolean choose = TRUE;
-
-    if (unique_app_is_running(priv->unique)) {
-        unique_app_send_message(priv->unique, UNIQUE_ACTIVATE, NULL);
-        return FALSE;
-    }
 
     cameras = entangle_app_get_cameras(ENTANGLE_APP(display));
 
@@ -342,8 +316,6 @@ gboolean entangle_app_display_show(EntangleAppDisplay *display)
     entangle_camera_manager_show(priv->manager);
     if (choose)
         entangle_camera_picker_show(priv->picker);
-
-    return TRUE;
 }
 
 /*

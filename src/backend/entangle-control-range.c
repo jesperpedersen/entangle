@@ -205,9 +205,7 @@ EntangleControlRange *entangle_control_range_new(const char *path,
 
 static void entangle_control_range_init(EntangleControlRange *picker)
 {
-    EntangleControlRangePrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CONTROL_RANGE_GET_PRIVATE(picker);
+    picker->priv = ENTANGLE_CONTROL_RANGE_GET_PRIVATE(picker);
 }
 
 

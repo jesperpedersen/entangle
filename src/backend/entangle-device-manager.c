@@ -291,9 +291,7 @@ static void entangle_device_manager_init_devices(EntangleDeviceManager *manager)
 
 static void entangle_device_manager_init(EntangleDeviceManager *manager)
 {
-    EntangleDeviceManagerPrivate *priv;
-
-    priv = manager->priv = ENTANGLE_DEVICE_MANAGER_GET_PRIVATE(manager);
+    manager->priv = ENTANGLE_DEVICE_MANAGER_GET_PRIVATE(manager);
 
     entangle_device_manager_init_devices(manager);
 }

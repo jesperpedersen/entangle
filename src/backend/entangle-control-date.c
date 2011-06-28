@@ -126,9 +126,7 @@ EntangleControlDate *entangle_control_date_new(const char *path,
 
 static void entangle_control_date_init(EntangleControlDate *picker)
 {
-    EntangleControlDatePrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CONTROL_DATE_GET_PRIVATE(picker);
+    picker->priv = ENTANGLE_CONTROL_DATE_GET_PRIVATE(picker);
 }
 
 

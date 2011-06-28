@@ -147,14 +147,10 @@ static gboolean entangle_image_popup_key_release(GtkWidget *widget G_GNUC_UNUSED
                                                 gpointer data)
 {
     EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(data);
-    EntangleImagePopupPrivate *priv = popup->priv;
-    GtkWidget *win;
 
-    win = glade_xml_get_widget(priv->glade, "image-popup");
-
-    if (ev->keyval == GDK_Escape ||
-        ev->keyval == GDK_KP_Enter ||
-        ev->keyval == GDK_Return) {
+    if (ev->keyval == GDK_KEY_Escape ||
+        ev->keyval == GDK_KEY_KP_Enter ||
+        ev->keyval == GDK_KEY_Return) {
         entangle_image_popup_hide(popup);
         g_signal_emit_by_name(popup, "popup-close");
         return TRUE;
@@ -256,23 +252,6 @@ void entangle_image_popup_show(EntangleImagePopup *popup,
     gtk_window_present(GTK_WINDOW(win));
 }
 
-static GdkCursor *create_null_cursor(void)
-{
-    GdkBitmap *image;
-    gchar data[4] = {0};
-    GdkColor fg = { 0, 0, 0, 0 };
-    GdkCursor *cursor;
-
-    image = gdk_bitmap_create_from_data(NULL, data, 1, 1);
-
-    cursor = gdk_cursor_new_from_pixmap(GDK_PIXMAP(image),
-                                        GDK_PIXMAP(image),
-                                        &fg, &fg, 0, 0);
-    g_object_unref(image);
-
-    return cursor;
-}
-
 
 void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monitor)
 {
@@ -296,7 +275,7 @@ void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monito
 {
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = glade_xml_get_widget(priv->glade, "image-popup");
-    GdkCursor *null_cursor = create_null_cursor();
+    GdkCursor *null_cursor = gdk_cursor_new(GDK_BLANK_CURSOR);
 
     win = glade_xml_get_widget(priv->glade, "image-popup");
 

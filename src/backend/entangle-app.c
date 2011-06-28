@@ -51,6 +51,8 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_APP, EntangleAppPrivate))
 
 struct _EntangleAppPrivate {
+    GApplication *app;
+
     GPContext *ctx;
     CameraAbilitiesList *caps;
     GPPortInfoList *ports;
@@ -70,6 +72,7 @@ G_DEFINE_TYPE(EntangleApp, entangle_app, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
+    PROP_APP,
     PROP_CAMERAS,
     PROP_PREFERENCES,
     PROP_DEVMANAGER,
@@ -85,6 +88,10 @@ static void entangle_app_get_property(GObject *object,
 
     switch (prop_id)
         {
+        case PROP_APP:
+            g_value_set_object(value, priv->app);
+            break;
+
         case PROP_CAMERAS:
             g_value_set_object(value, priv->cameras);
             break;
@@ -112,8 +119,14 @@ static void entangle_app_set_property(GObject *object,
 
     switch (prop_id)
         {
+        case PROP_APP:
+            if (priv->app)
+                g_object_unref(priv->app);
+            priv->app = g_value_get_object(value);
+            g_object_ref(priv->app);
+            break;
+
         case PROP_CAMERAS:
-            ENTANGLE_DEBUG("DAMN");
             if (priv->cameras)
                 g_object_unref(priv->cameras);
             priv->cameras = g_value_get_object(value);
@@ -147,6 +160,8 @@ static void entangle_app_finalize(GObject *object)
 
     ENTANGLE_DEBUG("Finalize app %p", object);
 
+    if (priv->app)
+        g_object_unref(priv->app);
     if (priv->cameras)
         g_object_unref(priv->cameras);
     if (priv->preferences)
@@ -177,6 +192,17 @@ static void entangle_app_class_init(EntangleAppClass *klass)
     object_class->finalize = entangle_app_finalize;
     object_class->get_property = entangle_app_get_property;
     object_class->set_property = entangle_app_set_property;
+
+    g_object_class_install_property(object_class,
+                                    PROP_APP,
+                                    g_param_spec_object("app",
+                                                        "Application",
+                                                        "Application",
+                                                        G_TYPE_APPLICATION,
+                                                        G_PARAM_READABLE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
 
     g_object_class_install_property(object_class,
                                     PROP_CAMERAS,
@@ -309,9 +335,11 @@ static void do_device_addremove(EntangleDeviceManager *manager G_GNUC_UNUSED,
     do_refresh_cameras(app);
 }
 
-EntangleApp *entangle_app_new(void)
+EntangleApp *entangle_app_new(GApplication *app)
 {
-    return ENTANGLE_APP(g_object_new(ENTANGLE_TYPE_APP, NULL));
+    return ENTANGLE_APP(g_object_new(ENTANGLE_TYPE_APP,
+                                     "app", app,
+                                     NULL));
 }
 
 #if HAVE_PLUGINS
@@ -386,8 +414,7 @@ static void entangle_app_init(EntangleApp *app)
 
     g_mkdir_with_parents(peasPath[0], 0777);
 
-    priv->pluginEngine = peas_engine_new("Entangle",
-                                         (const gchar **)peasPath);
+    priv->pluginEngine = peas_engine_get_default();
 
     priv->pluginExt = peas_extension_set_new(priv->pluginEngine,
                                              PEAS_TYPE_ACTIVATABLE,

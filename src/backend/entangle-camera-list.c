@@ -93,9 +93,7 @@ EntangleCameraList *entangle_camera_list_new(void)
 
 static void entangle_camera_list_init(EntangleCameraList *list)
 {
-    EntangleCameraListPrivate *priv;
-
-    priv = list->priv = ENTANGLE_CAMERA_LIST_GET_PRIVATE(list);
+    list->priv = ENTANGLE_CAMERA_LIST_GET_PRIVATE(list);
 }
 
 
@@ -123,11 +121,9 @@ void entangle_camera_list_remove(EntangleCameraList *list,
                              EntangleCamera *cam)
 {
     EntangleCameraListPrivate *priv = list->priv;
-    gboolean removed = FALSE;
 
     for (int i = 0 ; i < priv->ncamera ; i++) {
         if (priv->cameras[i] == cam) {
-            removed = TRUE;
             if (i < (priv->ncamera-1))
                 memmove(priv->cameras + i,
                         priv->cameras + i + 1,

@@ -131,9 +131,7 @@ EntangleControlText *entangle_control_text_new(const char *path,
 
 static void entangle_control_text_init(EntangleControlText *picker)
 {
-    EntangleControlTextPrivate *priv;
-
-    priv = picker->priv = ENTANGLE_CONTROL_TEXT_GET_PRIVATE(picker);
+    picker->priv = ENTANGLE_CONTROL_TEXT_GET_PRIVATE(picker);
 }
 
 /*

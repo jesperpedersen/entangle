@@ -283,7 +283,6 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *toolCapture;
     GtkWidget *settingsBox;
-    GtkWidget *iconScroll;
 
     GtkWidget *toolNew;
     GtkWidget *toolOpen;
@@ -304,7 +303,6 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 
     toolCapture = glade_xml_get_widget(priv->glade, "toolbar-capture");
     settingsBox = glade_xml_get_widget(priv->glade, "settings-box");
-    iconScroll = glade_xml_get_widget(priv->glade, "icon-scroll");
 
     toolNew = glade_xml_get_widget(priv->glade, "toolbar-new");
     toolOpen = glade_xml_get_widget(priv->glade, "toolbar-open");
@@ -386,7 +384,6 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     }
 
     gtk_widget_set_sensitive(settingsBox, !priv->task);
-    /*gtk_widget_set_sensitive(iconScroll, !priv->task)*/
 
     if (priv->task) {
         if (ENTANGLE_IS_CANCELLABLE(priv->task))
@@ -1542,8 +1539,6 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     GtkWidget *win;
     GtkWidget *menu;
     GtkWidget *monitorMenu;
-    XID xid;
-    GdkDragProtocol protocol;
     GtkTargetEntry targets[] = {
         { g_strdup("demo"), GTK_TARGET_SAME_APP, 0,}
     };
@@ -1633,13 +1628,6 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
                                            targets,
                                            1,
                                            GDK_ACTION_PRIVATE);
-
-    xid = gdk_x11_drawable_get_xid(GDK_DRAWABLE(gdk_get_default_root_window()));
-    if (gdk_drag_get_protocol(xid, &protocol))
-        gtk_drag_dest_set_proxy(win,
-                                gdk_get_default_root_window(),
-                                protocol, TRUE);
-
 
     g_signal_connect(priv->sessionBrowser, "drag-failed", G_CALLBACK(do_drag_failed), manager);
 

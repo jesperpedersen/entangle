@@ -112,9 +112,13 @@ static void do_update_control_combo(GtkComboBox *widget,
 {
     EntangleControlPanel *panel = data;
     EntangleControlChoice *control = g_object_get_data(G_OBJECT(widget), "control");
-    char *text;
+    GtkTreeIter iter;
+    char *text = NULL;
+    GtkTreeModel *model = gtk_combo_box_get_model(widget);
 
-    text = gtk_combo_box_get_active_text(widget);
+    if (gtk_combo_box_get_active_iter(widget, &iter))
+        gtk_tree_model_get(model, &iter, 0, &text, -1);
+
     ENTANGLE_DEBUG("combo [%s]", text);
     do_scheduler_pause(panel);
     g_object_set(control, "value", text, NULL);
@@ -176,6 +180,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                 gtk_widget_set_sensitive(value, FALSE);
             gtk_container_add(GTK_CONTAINER(box), value);
         } else if (ENTANGLE_IS_CONTROL_CHOICE(control)) {
+            GtkCellRenderer *cell;
+            GtkListStore *store;
             GtkWidget *label;
             GtkWidget *value;
             char *text;
@@ -200,13 +206,25 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_widget_set_tooltip_text(label, entangle_control_info(control));
             gtk_container_add(GTK_CONTAINER(box), label);
 
-            value = gtk_combo_box_new_text();
+            store = gtk_list_store_new(1, G_TYPE_STRING);
+            value = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
+            g_object_unref (store);
+
+            cell = gtk_cell_renderer_text_new();
+            gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(value), cell, TRUE);
+            gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(value), cell,
+                                           "text", 0,
+                                           NULL);
+            
             g_object_get(control, "value", &text, NULL);
             for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)) ; n++) {
+                GtkTreeIter iter;
                 if (strcmp(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n)) == 0)
                     active = n;
-                gtk_combo_box_append_text(GTK_COMBO_BOX(value),
-                                          entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n));
+                gtk_list_store_append(store, &iter);
+                gtk_list_store_set(store, &iter, 0,
+                                   entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n),
+                                   -1);
             }
 
             if (entangle_control_get_readonly(control))

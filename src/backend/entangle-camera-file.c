@@ -207,9 +207,7 @@ EntangleCameraFile *entangle_camera_file_new(const char *folder,
 
 static void entangle_camera_file_init(EntangleCameraFile *file)
 {
-    EntangleCameraFilePrivate *priv;
-
-    priv = file->priv = ENTANGLE_CAMERA_FILE_GET_PRIVATE(file);
+    file->priv = ENTANGLE_CAMERA_FILE_GET_PRIVATE(file);
 }
 
 

@@ -108,9 +108,7 @@ EntangleCameraTaskCapture *entangle_camera_task_capture_new(void)
 
 static void entangle_camera_task_capture_init(EntangleCameraTaskCapture *task)
 {
-    EntangleCameraTaskCapturePrivate *priv;
-
-    priv = task->priv = ENTANGLE_CAMERA_TASK_CAPTURE_GET_PRIVATE(task);
+    task->priv = ENTANGLE_CAMERA_TASK_CAPTURE_GET_PRIVATE(task);
 }
 
 
