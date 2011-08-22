@@ -356,6 +356,9 @@
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <dc:title></dc:title>
+        <dc:source>http://www.openclipart.org/detail/20295/camera-lens-by-rg1024-20295</dc:source>
+        <cc:license
+           rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/" />
       </cc:Work>
     </rdf:RDF>
   </metadata>

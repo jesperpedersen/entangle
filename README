@@ -7,7 +7,9 @@ graphical interface for tethered photography with digital cameras.
 It includes control over camera shooting and configuration settings
 and 'hands off' shooting directly from the controlling computer.
 
-Entangle is distributed under the terms of the GNU GPL v3+
+Entangle is distributed under the terms of the GNU GPL v3+, except
+for the Logo which is under the the Creative Commons 1.0 Public
+Domain Dedication
 
 For further information visit
 
