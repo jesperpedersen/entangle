@@ -266,15 +266,21 @@ static void do_info_refresh(EntangleCameraInfo *info)
 
     if (priv->camera) {
         switch (priv->data) {
-        case ENTANGLE_CAMERA_INFO_DATA_SUMMARY:
-            gtk_text_buffer_set_text(buf, entangle_camera_get_summary(priv->camera), -1);
-            break;
-        case ENTANGLE_CAMERA_INFO_DATA_MANUAL:
-            gtk_text_buffer_set_text(buf, entangle_camera_get_manual(priv->camera), -1);
-            break;
-        case ENTANGLE_CAMERA_INFO_DATA_DRIVER:
-            gtk_text_buffer_set_text(buf, entangle_camera_get_driver(priv->camera), -1);
-            break;
+        case ENTANGLE_CAMERA_INFO_DATA_SUMMARY: {
+            char *str = entangle_camera_get_summary(priv->camera);
+            gtk_text_buffer_set_text(buf, str, -1);
+            g_free(str);
+        }   break;
+        case ENTANGLE_CAMERA_INFO_DATA_MANUAL: {
+            char *str = entangle_camera_get_manual(priv->camera);
+            gtk_text_buffer_set_text(buf, str, -1);
+            g_free(str);
+        }   break;
+        case ENTANGLE_CAMERA_INFO_DATA_DRIVER: {
+            char *str = entangle_camera_get_driver(priv->camera);
+            gtk_text_buffer_set_text(buf, str, -1);
+            g_free(str);
+        }   break;
         case ENTANGLE_CAMERA_INFO_DATA_SUPPORTED:
             gtk_text_buffer_set_text(buf, "supported", -1);
             break;

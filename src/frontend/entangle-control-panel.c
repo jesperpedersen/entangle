@@ -328,6 +328,7 @@ static void do_setup_camera(EntangleControlPanel *panel)
 
     do_setup_control_group(panel, GTK_VBOX(panel), grp);
     gtk_widget_show_all(GTK_WIDGET(panel));
+    g_object_unref(grp);
 }
 
 static void entangle_control_panel_get_property(GObject *object,

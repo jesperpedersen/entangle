@@ -77,9 +77,9 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
 gboolean entangle_camera_disconnect(EntangleCamera *cam);
 gboolean entangle_camera_get_connected(EntangleCamera *cam);
 
-const char *entangle_camera_get_summary(EntangleCamera *cam);
-const char *entangle_camera_get_manual(EntangleCamera *cam);
-const char *entangle_camera_get_driver(EntangleCamera *cam);
+char *entangle_camera_get_summary(EntangleCamera *cam);
+char *entangle_camera_get_manual(EntangleCamera *cam);
+char *entangle_camera_get_driver(EntangleCamera *cam);
 
 EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
                                                   GError **error);
