@@ -475,7 +475,8 @@ static void do_entangle_camera_error(GPContext *ctx G_GNUC_UNUSED,
 }
 
 
-gboolean entangle_camera_connect(EntangleCamera *cam)
+gboolean entangle_camera_connect(EntangleCamera *cam,
+                                 GError **error)
 {
     EntangleCameraPrivate *priv = cam->priv;
     int i;
@@ -490,17 +491,25 @@ gboolean entangle_camera_connect(EntangleCamera *cam)
 
     priv->ctx = gp_context_new();
 
-    if (gp_abilities_list_new(&priv->caps) != GP_OK)
-        g_error("Cannot initialize gphoto2 abilities");
+    if (gp_abilities_list_new(&priv->caps) != GP_OK) {
+        ENTANGLE_ERROR(error, "Cannot initialize gphoto2 abilities");
+        return FALSE;
+    }
 
-    if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK)
-        g_error("Cannot load gphoto2 abilities");
+    if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK) {
+        ENTANGLE_ERROR(error, "Cannot load gphoto2 abilities");
+        return FALSE;
+    }
 
-    if (gp_port_info_list_new(&priv->ports) != GP_OK)
-        g_error("Cannot initialize gphoto2 ports");
+    if (gp_port_info_list_new(&priv->ports) != GP_OK) {
+        ENTANGLE_ERROR(error, "Cannot initialize gphoto2 ports");
+        return FALSE;
+    }
 
-    if (gp_port_info_list_load(priv->ports) != GP_OK)
-        g_error("Cannot load gphoto2 ports");
+    if (gp_port_info_list_load(priv->ports) != GP_OK) {
+        ENTANGLE_ERROR(error, "Cannot load gphoto2 ports");
+        return FALSE;
+    }
 
     gp_context_set_error_func(priv->ctx,
                               do_entangle_camera_error,
@@ -524,7 +533,7 @@ gboolean entangle_camera_connect(EntangleCamera *cam)
     if (gp_camera_init(priv->cam, priv->ctx) != GP_OK) {
         gp_camera_unref(priv->cam);
         priv->cam = NULL;
-        ENTANGLE_DEBUG("failed");
+        ENTANGLE_ERROR(error, "Unable to initialize camera");
         return FALSE;
     }
 

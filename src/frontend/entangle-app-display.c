@@ -185,18 +185,20 @@ static void do_picker_connect(EntangleCameraPicker *picker G_GNUC_UNUSED,
                               EntangleAppDisplay *display)
 {
     EntangleAppDisplayPrivate *priv = display->priv;
+    GError *error = NULL;
     ENTANGLE_DEBUG("emit connect %p %s", cam, entangle_camera_get_model(cam));
     if (need_camera_unmount(cam))
         do_camera_unmount(cam);
 
-    while (!entangle_camera_connect(cam)) {
+    while (!entangle_camera_connect(cam, &error)) {
         int response;
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_NONE,
-                                                "%s",
-                                                "Unable to connect to camera");
+                                                "Unable to connect to camera: %s",
+                                                error->message);
+        g_error_free(error);
 
         gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
                                                    "%s",
@@ -307,7 +309,7 @@ void entangle_app_display_show(EntangleAppDisplay *display)
         if (need_camera_unmount(cam))
             do_camera_unmount(cam);
 
-        if (entangle_camera_connect(cam)) {
+        if (entangle_camera_connect(cam, NULL)) {
             entangle_camera_manager_set_camera(priv->manager, cam);
             choose = FALSE;
         }

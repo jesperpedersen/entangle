@@ -64,15 +64,16 @@ struct _EntangleCameraClass
 GType entangle_camera_get_type(void) G_GNUC_CONST;
 
 EntangleCamera *entangle_camera_new(const char *model,
-                            const char *port,
-                            gboolean hasCapture,
-                            gboolean hasPreview,
-                            gboolean hasSettings);
+                                    const char *port,
+                                    gboolean hasCapture,
+                                    gboolean hasPreview,
+                                    gboolean hasSettings);
 
 const char *entangle_camera_get_model(EntangleCamera *cam);
 const char *entangle_camera_get_port(EntangleCamera *cam);
 
-gboolean entangle_camera_connect(EntangleCamera *cam);
+gboolean entangle_camera_connect(EntangleCamera *cam,
+                                 GError **error);
 gboolean entangle_camera_disconnect(EntangleCamera *cam);
 gboolean entangle_camera_get_connected(EntangleCamera *cam);
 
