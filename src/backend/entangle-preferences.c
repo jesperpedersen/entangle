@@ -293,7 +293,7 @@ static void entangle_preferences_init(EntanglePreferences *picker)
     priv->enableColourManagement = TRUE;
     priv->detectSystemProfile = TRUE;
     priv->renderingIntent = ENTANGLE_COLOUR_PROFILE_INTENT_PERCEPTUAL;
-    if (access("./entangle.glade", R_OK) == 0)
+    if (access("./frontend/entangle-camera-manager.xml", R_OK) == 0)
         priv->rgbProfile = entangle_colour_profile_new_file(g_strdup("./sRGB.icc"));
     else
         priv->rgbProfile = entangle_colour_profile_new_file(g_strdup(PKGDATADIR "/sRGB.icc"));
