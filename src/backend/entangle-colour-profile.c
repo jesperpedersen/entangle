@@ -33,6 +33,7 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_COLOUR_PROFILE_TRANSFORM, EntangleColourProfileTransformPrivate))
 
 struct _EntangleColourProfilePrivate {
+    GMutex *lock;
     GByteArray *data;
     char *filename;
     cmsHPROFILE *profile;
@@ -183,6 +184,7 @@ static void entangle_colour_profile_finalize (GObject *object)
     g_free(priv->filename);
     if (priv->profile)
         cmsCloseProfile(priv->profile);
+    g_mutex_free(priv->lock);
 
     G_OBJECT_CLASS (entangle_colour_profile_parent_class)->finalize (object);
 }
@@ -308,24 +310,32 @@ EntangleColourProfile *entangle_colour_profile_new_data(GByteArray *data)
 static gboolean entangle_colour_profile_load(EntangleColourProfile *profile)
 {
     EntangleColourProfilePrivate *priv = profile->priv;
+    gboolean ret;
 
-    if (!priv->dirty)
-        return TRUE;
+    g_mutex_lock(priv->lock);
+
+    if (!priv->dirty) {
+        goto cleanup;
+    }
 
     if (priv->profile) {
         cmsCloseProfile(priv->profile);
         priv->profile = NULL;
     }
     if (priv->filename) {
-        priv->profile = cmsOpenProfileFromFile(priv->filename, "r");
+        if (!(priv->profile = cmsOpenProfileFromFile(priv->filename, "r")))
+            ENTANGLE_DEBUG("Unable to load profile from %s", priv->filename);
     } else if (priv->data) {
-        priv->profile = cmsOpenProfileFromMem(priv->data->data, priv->data->len);
-    } else {
-        return FALSE;
+        if (!(priv->profile = cmsOpenProfileFromMem(priv->data->data, priv->data->len)))
+            ENTANGLE_DEBUG("Unable to load profile from %p", priv->data);
     }
 
     priv->dirty = FALSE;
-    return TRUE;
+
+ cleanup:
+    ret = priv->profile ? TRUE : FALSE;
+    g_mutex_unlock(priv->lock);
+    return ret;
 }
 
 static void entangle_colour_profile_init(EntangleColourProfile *profile)
@@ -333,8 +343,7 @@ static void entangle_colour_profile_init(EntangleColourProfile *profile)
     EntangleColourProfilePrivate *priv;
 
     priv = profile->priv = ENTANGLE_COLOUR_PROFILE_GET_PRIVATE(profile);
-
-    memset(priv, 0, sizeof(*priv));
+    priv->lock = g_mutex_new();
 }
 
 static void entangle_colour_profile_transform_init(EntangleColourProfileTransform *profile)
