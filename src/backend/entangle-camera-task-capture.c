@@ -85,16 +85,18 @@ static void do_camera_file_downloaded(GObject *src,
 }
 
 
-static gboolean entangle_camera_task_capture_execute(EntangleCameraTask *task G_GNUC_UNUSED,
-                                                     EntangleCamera *camera,
-                                                     GError **error)
+static void do_camera_file_captured(GObject *src,
+                                    GAsyncResult *res,
+                                    gpointer user_data G_GNUC_UNUSED)
 {
+    EntangleCamera *camera = ENTANGLE_CAMERA(src);
     EntangleCameraFile *file;
+    GError *error = NULL;
 
-    ENTANGLE_DEBUG("Starting capture");
-    if (!(file = entangle_camera_capture_image(camera, error))) {
-        ENTANGLE_DEBUG("Failed capture");
-        return FALSE;
+    if (!(file = entangle_camera_capture_image_finish(camera, res, &error))) {
+        ENTANGLE_DEBUG("Failed capture %s", error ? error->message : NULL);
+        g_error_free(error);
+        return;
     }
 
     entangle_camera_download_file_async(camera,
@@ -102,6 +104,19 @@ static gboolean entangle_camera_task_capture_execute(EntangleCameraTask *task G_
                                         NULL,
                                         do_camera_file_downloaded,
                                         file);
+
+}
+
+
+static gboolean entangle_camera_task_capture_execute(EntangleCameraTask *task G_GNUC_UNUSED,
+                                                     EntangleCamera *camera,
+                                                     GError **error G_GNUC_UNUSED)
+{
+
+    ENTANGLE_DEBUG("Starting capture");
+    entangle_camera_capture_image_async(camera, NULL,
+                                        do_camera_file_captured,
+                                        NULL);
 
     return TRUE;
 }

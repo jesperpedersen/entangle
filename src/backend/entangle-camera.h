@@ -83,9 +83,23 @@ char *entangle_camera_get_driver(EntangleCamera *cam);
 
 EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
                                                   GError **error);
+void entangle_camera_capture_image_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data);
+EntangleCameraFile *entangle_camera_capture_image_finish(EntangleCamera *cam,
+                                                         GAsyncResult *result,
+                                                         GError **error);
 
 EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
                                                   GError **error);
+void entangle_camera_preview_image_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data);
+EntangleCameraFile *entangle_camera_preview_image_finish(EntangleCamera *cam,
+                                                         GAsyncResult *result,
+                                                         GError **error);
 
 gboolean entangle_camera_download_file(EntangleCamera *cam,
                                        EntangleCameraFile *file,

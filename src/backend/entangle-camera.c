@@ -769,6 +769,55 @@ EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
 }
 
 
+static void entangle_camera_capture_image_helper(GSimpleAsyncResult *result,
+                                                 GObject *object,
+                                                 GCancellable *cancellable G_GNUC_UNUSED)
+{
+    EntangleCameraFile *file;
+    GError *error = NULL;
+
+    if (!(file = entangle_camera_capture_image(ENTANGLE_CAMERA(object), &error))) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+
+    g_simple_async_result_set_op_res_gpointer(result, file, NULL);
+}
+
+
+void entangle_camera_capture_image_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data)
+{
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_capture_image_async);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_capture_image_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+EntangleCameraFile *entangle_camera_capture_image_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                                         GAsyncResult *result,
+                                                         GError **error)
+{
+    EntangleCameraFile *file;
+    if (g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                              error))
+        return NULL;
+
+    file = g_simple_async_result_get_op_res_gpointer(G_SIMPLE_ASYNC_RESULT(result));
+
+    return file;
+}
+
+
 EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
                                                   GError **error)
 {
@@ -832,6 +881,55 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
     if (datafile)
         gp_file_unref(datafile);
     g_mutex_unlock(priv->lock);
+    return file;
+}
+
+
+static void entangle_camera_preview_image_helper(GSimpleAsyncResult *result,
+                                                 GObject *object,
+                                                 GCancellable *cancellable G_GNUC_UNUSED)
+{
+    EntangleCameraFile *file;
+    GError *error = NULL;
+
+    if (!(file = entangle_camera_preview_image(ENTANGLE_CAMERA(object), &error))) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+
+    g_simple_async_result_set_op_res_gpointer(result, file, NULL);
+}
+
+
+void entangle_camera_preview_image_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data)
+{
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_preview_image_async);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_preview_image_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+EntangleCameraFile *entangle_camera_preview_image_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                                         GAsyncResult *result,
+                                                         GError **error)
+{
+    EntangleCameraFile *file;
+    if (g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                              error))
+        return NULL;
+
+    file = g_simple_async_result_get_op_res_gpointer(G_SIMPLE_ASYNC_RESULT(result));
+
     return file;
 }
 

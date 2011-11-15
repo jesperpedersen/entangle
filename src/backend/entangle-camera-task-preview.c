@@ -105,6 +105,51 @@ static void do_camera_file_downloaded(GObject *src,
 }
 
 
+static void do_camera_file_captured(GObject *src,
+                                    GAsyncResult *res,
+                                    gpointer user_data G_GNUC_UNUSED)
+{
+    EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    EntangleCameraFile *file;
+    GError *error = NULL;
+
+    if (!(file = entangle_camera_capture_image_finish(camera, res, &error))) {
+        ENTANGLE_DEBUG("Failed capture %s", error ? error->message : NULL);
+        g_error_free(error);
+        return;
+    }
+
+    entangle_camera_download_file_async(camera,
+                                        file,
+                                        NULL,
+                                        do_camera_file_downloaded,
+                                        file);
+
+}
+
+
+static void do_camera_file_discarded(GObject *src,
+                                     GAsyncResult *res,
+                                     gpointer user_data G_GNUC_UNUSED)
+{
+    EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    EntangleCameraFile *file;
+    GError *error = NULL;
+
+    if (!(file = entangle_camera_capture_image_finish(camera, res, &error))) {
+        ENTANGLE_DEBUG("Failed capture %s", error ? error->message : NULL);
+        g_error_free(error);
+        return;
+    }
+
+    entangle_camera_delete_file_async(camera,
+                                      file,
+                                      NULL,
+                                      do_camera_file_deleted,
+                                      file);
+}
+
+
 static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task,
                                                      EntangleCamera *camera,
                                                      GError **error)
@@ -122,11 +167,9 @@ static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task,
             g_mutex_unlock(priv->lock);
             /* To cancel live view mode we need to capture
              * an image and discard it */
-            if ((file = entangle_camera_capture_image(camera, error)) &&
-                (!entangle_camera_delete_file(camera, file, error))) {
-                ENTANGLE_DEBUG("Failed delete preview capture");
-                goto error;
-            }
+            entangle_camera_capture_image_async(camera, NULL,
+                                                do_camera_file_discarded,
+                                                NULL);
             goto done;
         }
         g_mutex_unlock(priv->lock);
@@ -154,16 +197,9 @@ static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task,
     g_mutex_unlock(priv->lock);
 
     ENTANGLE_DEBUG("Starting capture");
-    if (!(file = entangle_camera_capture_image(camera, error))) {
-        ENTANGLE_DEBUG("Failed preview");
-        goto error;
-    }
-
-    entangle_camera_download_file_async(camera,
-                                        file,
-                                        NULL,
-                                        do_camera_file_downloaded,
-                                        file);
+    entangle_camera_capture_image_async(camera, NULL,
+                                        do_camera_file_captured,
+                                        NULL);
 
  done:
     return TRUE;
