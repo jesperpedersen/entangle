@@ -1066,9 +1066,7 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
     donems = 0;
     do {
         entangle_camera_begin_job(cam);
-        fprintf(stderr, "Wait %llu\n", (unsigned long long)waitms - donems);
         err = gp_camera_wait_for_event(priv->cam, waitms - donems, &eventType, &eventData, priv->ctx);
-        fprintf(stderr, "Wait done %llu\n", (unsigned long long)waitms - donems);
         entangle_camera_end_job(cam);
 
         if (err != GP_OK) { 
