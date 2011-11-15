@@ -473,7 +473,7 @@ static void do_select_image(EntangleCameraManager *manager,
     EntangleCameraManagerPrivate *priv = manager->priv;
 
     ENTANGLE_DEBUG("Select image %p", image);
-    if (priv->currentImage) {
+    if (priv->currentImage && entangle_image_get_filename(priv->currentImage)) {
         entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
                                       priv->currentImage);
         g_object_unref(priv->currentImage);
@@ -481,7 +481,7 @@ static void do_select_image(EntangleCameraManager *manager,
 
     priv->currentImage = image;
 
-    if (priv->currentImage) {
+    if (priv->currentImage && entangle_image_get_filename(priv->currentImage)) {
         g_object_ref(priv->currentImage);
         entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
                                     priv->currentImage);

@@ -395,6 +395,10 @@ gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
     EntanglePixbufLoaderEntry *entry;
 
     ENTANGLE_DEBUG("Queue load %p %p", loader, image);
+
+    if (!entangle_image_get_filename(image))
+        return FALSE;
+
     g_mutex_lock(priv->lock);
     entry = g_hash_table_lookup(priv->pixbufs, entangle_image_get_filename(image));
     if (entry) {
@@ -418,6 +422,9 @@ gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
 {
     EntanglePixbufLoaderPrivate *priv = loader->priv;
     EntanglePixbufLoaderEntry *entry;
+
+    if (!entangle_image_get_filename(image))
+        return FALSE;
 
     ENTANGLE_DEBUG("Unqueue load %p %p", loader, image);
     g_mutex_lock(priv->lock);
