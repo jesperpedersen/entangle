@@ -836,9 +836,9 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
 }
 
 
-gboolean entangle_camera_download_file(EntangleCamera *cam,
-                                       EntangleCameraFile *file,
-                                       GError **error)
+static gboolean entangle_camera_download_file(EntangleCamera *cam,
+                                              EntangleCameraFile *file,
+                                              GError **error)
 {
     EntangleCameraPrivate *priv = cam->priv;
     CameraFile *datafile = NULL;
@@ -899,6 +899,53 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
         gp_file_unref(datafile);
     g_mutex_unlock(priv->lock);
     return ret;
+}
+
+
+static void entangle_camera_download_file_helper(GSimpleAsyncResult *result,
+                                                 GObject *object,
+                                                 GCancellable *cancellable G_GNUC_UNUSED)
+{
+    EntangleCameraFile *file;
+    GError *error = NULL;
+
+    file = g_simple_async_result_get_op_res_gpointer(result);
+
+    if (!entangle_camera_download_file(ENTANGLE_CAMERA(object), file, &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_download_file_async(EntangleCamera *cam,
+                                         EntangleCameraFile *file,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data)
+{
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_download_file_async);
+
+    g_object_ref(file);
+    g_simple_async_result_set_op_res_gpointer(result, file, g_object_unref);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_download_file_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+
+}
+
+gboolean entangle_camera_download_file_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                              GAsyncResult *result,
+                                              GError **err)
+{
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  err);
 }
 
 

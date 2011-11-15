@@ -87,9 +87,14 @@ EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
 EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
                                                   GError **error);
 
-gboolean entangle_camera_download_file(EntangleCamera *cam,
-                                       EntangleCameraFile *file,
-                                       GError **error);
+void entangle_camera_download_file_async(EntangleCamera *cam,
+                                         EntangleCameraFile *file,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data);
+gboolean entangle_camera_download_file_finish(EntangleCamera *cam,
+                                              GAsyncResult *result,
+                                              GError **err);
 
 gboolean entangle_camera_delete_file(EntangleCamera *cam,
                                      EntangleCameraFile *file,

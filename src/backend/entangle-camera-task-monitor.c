@@ -56,15 +56,39 @@ static void entangle_camera_task_monitor_finalize(GObject *object)
     G_OBJECT_CLASS (entangle_camera_task_monitor_parent_class)->finalize (object);
 }
 
+
+static void do_camera_file_downloaded(GObject *src,
+                                      GAsyncResult *res,
+                                      gpointer user_data)
+{
+    EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    EntangleCameraFile *file = ENTANGLE_CAMERA_FILE(user_data);
+    GError *error = NULL;
+
+    if (!entangle_camera_download_file_finish(camera, res, &error)) {
+        ENTANGLE_DEBUG("Failed to download file %s", error->message);
+        g_error_free(error);
+        return;
+    }
+
+
+    if (!entangle_camera_delete_file(camera, file, NULL)) {
+        ENTANGLE_DEBUG("Failed delete file");
+    }    
+    g_object_unref(file);
+}
+
+
 static void do_camera_file_added(EntangleCamera *camera,
                                  EntangleCameraFile *file,
                                  EntangleCameraTask *task G_GNUC_UNUSED)
 {
-    entangle_camera_download_file(camera, file, NULL);
-
-    if (!entangle_camera_delete_file(camera, file, NULL)) {
-        ENTANGLE_DEBUG("Failed delete file");
-    }
+    g_object_ref(file);
+    entangle_camera_download_file_async(camera,
+                                        file,
+                                        NULL,
+                                        do_camera_file_downloaded,
+                                        file);
 }
 
 static gboolean entangle_camera_task_monitor_execute(EntangleCameraTask *task,

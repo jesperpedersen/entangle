@@ -65,6 +65,31 @@ static void entangle_camera_task_preview_finalize(GObject *object)
 
 #define FRAMES_PER_SECOND 15
 
+
+static void do_camera_file_downloaded(GObject *src,
+                                      GAsyncResult *res,
+                                      gpointer user_data)
+{
+    EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    EntangleCameraFile *file = ENTANGLE_CAMERA_FILE(user_data);
+    GError *error = NULL;
+
+    if (!entangle_camera_download_file_finish(camera, res, &error)) {
+        ENTANGLE_DEBUG("Failed to download file %s", error->message);
+        g_error_free(error);
+        error = NULL;
+        /* Fallthrough to delete file anyway */
+    }
+
+    if (!entangle_camera_delete_file(camera, file, &error)) {
+        ENTANGLE_DEBUG("Failed delete file %s", error->message);
+        g_error_free(error);
+    }
+
+    g_object_unref(file);
+}
+
+
 static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task,
                                                      EntangleCamera *camera,
                                                      GError **error)
@@ -119,25 +144,14 @@ static gboolean entangle_camera_task_preview_execute(EntangleCameraTask *task,
         goto error;
     }
 
-    if (!entangle_camera_download_file(camera, file, error)) {
-        ENTANGLE_DEBUG("Failed download");
-        goto error_delete;
-    }
-
-    if (!entangle_camera_delete_file(camera, file, error)) {
-        ENTANGLE_DEBUG("Failed delete file");
-        goto error;
-    }
-
-    g_object_unref(file);
+    entangle_camera_download_file_async(camera,
+                                        file,
+                                        NULL,
+                                        do_camera_file_downloaded,
+                                        file);
 
  done:
     return TRUE;
-
- error_delete:
-    if (!entangle_camera_delete_file(camera, file, NULL)) {
-        goto error;
-    }
 
  error:
     if (file)
