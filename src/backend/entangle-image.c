@@ -91,8 +91,6 @@ static void entangle_image_set_property(GObject *object,
             priv->pixbuf = g_value_get_object(value);
             if (priv->pixbuf)
                 g_object_ref(priv->pixbuf);
-            if (!priv->filename && priv->pixbuf)
-                priv->filename = g_strdup_printf("anonymous-%p", object);
             break;
 
         default:
