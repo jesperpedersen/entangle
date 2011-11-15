@@ -24,7 +24,6 @@
 #include <gtk/gtk.h>
 
 #include "entangle-camera.h"
-#include "entangle-camera-scheduler.h"
 
 G_BEGIN_DECLS
 
@@ -61,10 +60,6 @@ EntangleControlPanel* entangle_control_panel_new(void);
 void entangle_control_panel_set_camera(EntangleControlPanel *panel,
                                        EntangleCamera *cam);
 EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel);
-
-void entangle_control_panel_set_camera_scheduler(EntangleControlPanel *panel,
-                                                 EntangleCameraScheduler *sched);
-EntangleCameraScheduler *entangle_control_panel_get_camera_scheduler(EntangleControlPanel *panel);
 
 gboolean entangle_control_panel_get_has_controls(EntangleControlPanel *panel);
 
