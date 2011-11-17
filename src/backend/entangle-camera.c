@@ -634,11 +634,16 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam)
     g_free(priv->summary);
     priv->driver = priv->manual = priv->summary = NULL;
 
-    if (priv->ports)
+    if (priv->ports) {
         gp_port_info_list_free(priv->ports);
-    if (priv->caps)
+        priv->ports = NULL;
+    }
+    if (priv->caps) {
         gp_abilities_list_free(priv->caps);
+        priv->caps = NULL;
+    }
     gp_context_unref(priv->ctx);
+    priv->ctx = NULL;
 
     gp_camera_unref(priv->cam);
     priv->cam = NULL;
