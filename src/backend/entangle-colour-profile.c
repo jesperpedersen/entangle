@@ -63,9 +63,9 @@ enum {
 };
 
 static void entangle_colour_profile_get_property(GObject *object,
-                                             guint prop_id,
-                                             GValue *value,
-                                             GParamSpec *pspec)
+                                                 guint prop_id,
+                                                 GValue *value,
+                                                 GParamSpec *pspec)
 {
     EntangleColourProfile *picker = ENTANGLE_COLOUR_PROFILE(object);
     EntangleColourProfilePrivate *priv = picker->priv;
@@ -86,9 +86,9 @@ static void entangle_colour_profile_get_property(GObject *object,
 }
 
 static void entangle_colour_profile_set_property(GObject *object,
-                                             guint prop_id,
-                                             const GValue *value,
-                                             GParamSpec *pspec)
+                                                 guint prop_id,
+                                                 const GValue *value,
+                                                 GParamSpec *pspec)
 {
     EntangleColourProfile *picker = ENTANGLE_COLOUR_PROFILE(object);
     EntangleColourProfilePrivate *priv = picker->priv;
@@ -115,9 +115,9 @@ static void entangle_colour_profile_set_property(GObject *object,
 
 
 static void entangle_colour_profile_transform_get_property(GObject *object,
-                                                       guint prop_id,
-                                                       GValue *value,
-                                                       GParamSpec *pspec)
+                                                           guint prop_id,
+                                                           GValue *value,
+                                                           GParamSpec *pspec)
 {
     EntangleColourProfileTransform *picker = ENTANGLE_COLOUR_PROFILE_TRANSFORM(object);
     EntangleColourProfileTransformPrivate *priv = picker->priv;
@@ -138,9 +138,9 @@ static void entangle_colour_profile_transform_get_property(GObject *object,
 }
 
 static void entangle_colour_profile_transform_set_property(GObject *object,
-                                                       guint prop_id,
-                                                       const GValue *value,
-                                                       GParamSpec *pspec)
+                                                           guint prop_id,
+                                                           const GValue *value,
+                                                           GParamSpec *pspec)
 {
     EntangleColourProfileTransform *picker = ENTANGLE_COLOUR_PROFILE_TRANSFORM(object);
     EntangleColourProfileTransformPrivate *priv = picker->priv;
@@ -173,7 +173,7 @@ static void entangle_colour_profile_transform_set_property(GObject *object,
 }
 
 
-static void entangle_colour_profile_finalize (GObject *object)
+static void entangle_colour_profile_finalize(GObject *object)
 {
     EntangleColourProfile *profile = ENTANGLE_COLOUR_PROFILE(object);
     EntangleColourProfilePrivate *priv = profile->priv;
@@ -190,7 +190,7 @@ static void entangle_colour_profile_finalize (GObject *object)
 }
 
 
-static void entangle_colour_profile_transform_finalize (GObject *object)
+static void entangle_colour_profile_transform_finalize(GObject *object)
 {
     EntangleColourProfileTransform *profile = ENTANGLE_COLOUR_PROFILE_TRANSFORM(object);
     EntangleColourProfileTransformPrivate *priv = profile->priv;
@@ -459,18 +459,18 @@ entangle_colour_profile_pixel_type(GdkPixbuf *pixbuf)
 
 
 EntangleColourProfileTransform *entangle_colour_profile_transform_new(EntangleColourProfile *src,
-                                                              EntangleColourProfile *dst,
-                                                              EntangleColourProfileIntent intent)
+                                                                      EntangleColourProfile *dst,
+                                                                      EntangleColourProfileIntent intent)
 {
     return ENTANGLE_COLOUR_PROFILE_TRANSFORM(g_object_new(ENTANGLE_TYPE_COLOUR_PROFILE_TRANSFORM,
-                                                      "src-profile", src,
-                                                      "dst-profile", dst,
-                                                      "rendering-intent", intent,
-                                                      NULL));
+                                                          "src-profile", src,
+                                                          "dst-profile", dst,
+                                                          "rendering-intent", intent,
+                                                          NULL));
 }
 
 GdkPixbuf *entangle_colour_profile_transform_apply(EntangleColourProfileTransform *trans,
-                                               GdkPixbuf *srcpixbuf)
+                                                   GdkPixbuf *srcpixbuf)
 {
     EntangleColourProfileTransformPrivate *priv = trans->priv;
     EntangleColourProfilePrivate *srcpriv = priv->srcProfile->priv;
@@ -514,12 +514,16 @@ GdkPixbuf *entangle_colour_profile_transform_apply(EntangleColourProfileTransfor
         break;
     }
 
+    g_mutex_lock(srcpriv->lock);
+    g_mutex_lock(dstpriv->lock);
     transform = cmsCreateTransform(srcpriv->profile,
                                    type,
                                    dstpriv->profile,
                                    type,
                                    intent,
                                    0);
+    g_mutex_unlock(srcpriv->lock);
+    g_mutex_unlock(dstpriv->lock);
 
     srcpixels = gdk_pixbuf_get_pixels(srcpixbuf);
     dstpixels = gdk_pixbuf_get_pixels(dstpixbuf);
