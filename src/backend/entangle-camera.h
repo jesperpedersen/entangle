@@ -125,11 +125,17 @@ gboolean entangle_camera_delete_file_finish(EntangleCamera *cam,
                                             GAsyncResult *result,
                                             GError **error);
 
-gboolean entangle_camera_event_flush(EntangleCamera *cam,
-                                     GError **error);
-gboolean entangle_camera_event_wait(EntangleCamera *cam,
-                                    guint64 waitms,
-                                    GError **error);
+gboolean entangle_camera_process_events(EntangleCamera *cam,
+                                        guint64 waitms,
+                                        GError **error);
+void entangle_camera_process_events_async(EntangleCamera *cam,
+                                          guint64 waitms,
+                                          GCancellable *cancellable,
+                                          GAsyncReadyCallback callback,
+                                          gpointer user_data);
+gboolean entangle_camera_process_events_finish(EntangleCamera *cam,
+                                               GAsyncResult *result, 
+                                               GError **error);
 
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);

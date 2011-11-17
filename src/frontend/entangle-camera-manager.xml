@@ -370,6 +370,7 @@
               <object class="GtkSeparatorToolItem" id="separatortoolitem2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="is_important">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -393,9 +394,21 @@
               </packing>
             </child>
             <child>
-              <object class="GtkMenuToolButton" id="toolbar-capture">
+              <object class="GtkSeparatorToolItem" id="separatortoolitem4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="is_important">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbar-capture">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Capture an image</property>
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Capture</property>
                 <property name="use_underline">True</property>
@@ -404,6 +417,23 @@
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="toolbar-preview">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Continuous capture preview</property>
+                <property name="use_action_appearance">False</property>
+                <property name="label" translatable="yes">Preview</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-find</property>
+                <signal name="toggled" handler="do_toolbar_preview" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -443,24 +473,10 @@ executing camera operation</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToolButton" id="toolbar-confirm">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
-                <property name="label" translatable="yes">Confirm</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-ok</property>
-                <signal name="clicked" handler="do_toolbar_confirm_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkSeparatorToolItem" id="separatortoolitem1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="is_important">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>

@@ -1129,7 +1129,6 @@ void entangle_camera_delete_file_async(EntangleCamera *cam,
                                         G_PRIORITY_DEFAULT,
                                         cancellable);
     g_object_unref(result);
-
 }
 
 gboolean entangle_camera_delete_file_finish(EntangleCamera *cam G_GNUC_UNUSED,
@@ -1141,56 +1140,9 @@ gboolean entangle_camera_delete_file_finish(EntangleCamera *cam G_GNUC_UNUSED,
 }
 
 
-gboolean entangle_camera_event_flush(EntangleCamera *cam,
-                                     GError **error)
-{
-    EntangleCameraPrivate *priv = cam->priv;
-    CameraEventType eventType;
-    void *eventData;
-    int err;
-    gboolean ret = FALSE;
-
-    g_mutex_lock(priv->lock);
-
-    if (!priv->cam) {
-        ENTANGLE_ERROR(error, "Cannot flush events while not connected");
-        goto cleanup;
-    }
-
-    ENTANGLE_DEBUG("Flushing events");
-
-    entangle_camera_reset_last_error(cam);
-    do {
-        entangle_camera_begin_job(cam);
-        err = gp_camera_wait_for_event(priv->cam, 10, &eventType, &eventData, priv->ctx);
-        entangle_camera_end_job(cam);
-
-        if (err != GP_OK) {
-            /* Some drivers (eg canon native) can't do events */
-            if (err == GP_ERROR_NOT_SUPPORTED) {
-                ENTANGLE_DEBUG("Event wait not supported, nothing to flush");
-                ret = TRUE;
-                goto cleanup;
-            }
-
-            ENTANGLE_ERROR(error, "Unable to wait for events: %s", priv->lastError);
-            goto cleanup;
-        }
-
-    } while (eventType != GP_EVENT_TIMEOUT);
-
-    ENTANGLE_DEBUG("Done flushing events");
-    ret = TRUE;
-
- cleanup:
-    g_mutex_unlock(priv->lock);
-    return ret;
-}
-
-
-gboolean entangle_camera_event_wait(EntangleCamera *cam,
-                                    guint64 waitms,
-                                    GError **error)
+gboolean entangle_camera_process_events(EntangleCamera *cam,
+                                        guint64 waitms,
+                                        GError **error)
 {
     EntangleCameraPrivate *priv = cam->priv;
     CameraEventType eventType = 0;
@@ -1282,6 +1234,54 @@ gboolean entangle_camera_event_wait(EntangleCamera *cam,
  cleanup:
     g_mutex_unlock(priv->lock);
     return ret;
+}
+
+
+static void entangle_camera_process_events_helper(GSimpleAsyncResult *result,
+                                                  GObject *object,
+                                                  GCancellable *cancellable G_GNUC_UNUSED)
+{
+    guint64 *waitptr;
+    GError *error = NULL;
+
+    waitptr = g_simple_async_result_get_op_res_gpointer(result);
+
+    if (!entangle_camera_process_events(ENTANGLE_CAMERA(object), *waitptr, &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_process_events_async(EntangleCamera *cam,
+                                          guint64 waitms,
+                                          GCancellable *cancellable,
+                                          GAsyncReadyCallback callback,
+                                          gpointer user_data)
+{
+    guint64 *waitptr = g_new0(guint64, 1);
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_process_events_async);
+
+    *waitptr = waitms;
+    g_simple_async_result_set_op_res_gpointer(result, waitptr, g_free);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_process_events_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_process_events_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                               GAsyncResult *result, 
+                                               GError **error)
+{
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
 }
 
 
