@@ -1309,9 +1309,10 @@ static void do_update_control_text(GObject *object,
         ENTANGLE_DEBUG("cannot set widget id %d to %s", id, text);
     }
 
+    entangle_camera_begin_job(cam);
     if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
-        ENTANGLE_DEBUG("cannot set config %s", gp_result_as_string(ret));
-
+        ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
+    entangle_camera_end_job(cam);
 }
 
 static void do_update_control_float(GObject *object,
@@ -1324,6 +1325,7 @@ static void do_update_control_float(GObject *object,
     char *path;
     int id;
     CameraWidget *widget;
+    int ret;
 
     g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
     ENTANGLE_DEBUG("update of widget %s", path);
@@ -1337,9 +1339,10 @@ static void do_update_control_float(GObject *object,
         ENTANGLE_DEBUG("cannot set widget id %d to %f", id, value);
     }
 
-    if (gp_camera_set_config(priv->cam, priv->widgets, priv->ctx) != GP_OK)
-        ENTANGLE_DEBUG("cannot set config");
-
+    entangle_camera_begin_job(cam);
+    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
+        ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
+    entangle_camera_end_job(cam);
 }
 
 static void do_update_control_boolean(GObject *object,
@@ -1352,6 +1355,7 @@ static void do_update_control_boolean(GObject *object,
     char *path;
     int id;
     CameraWidget *widget;
+    int ret;
 
     g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
     ENTANGLE_DEBUG("update of widget %s", path);
@@ -1365,9 +1369,10 @@ static void do_update_control_boolean(GObject *object,
         ENTANGLE_DEBUG("cannot set widget id %d to %d", id, value);
     }
 
-    if (gp_camera_set_config(priv->cam, priv->widgets, priv->ctx) != GP_OK)
-        ENTANGLE_DEBUG("cannot set config");
-
+    entangle_camera_begin_job(cam);
+    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
+        ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
+    entangle_camera_end_job(cam);
 }
 
 static EntangleControl *do_build_controls(EntangleCamera *cam,
