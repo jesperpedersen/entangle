@@ -1,13 +1,5 @@
 # -*- rpm-spec -*-
 
-%define with_introspection 0
-%define with_plugins 0
-
-%if 0%{?fedora} >= 14
-%define with_introspection 1
-%define with_plugins 1
-%endif
-
 Summary: Tethered shooting & control of digital cameras
 Name: entangle
 Version: @VERSION@
@@ -21,20 +13,12 @@ URL: http://entangle-photo.org/
 BuildRequires: glib2-devel >= 2.26.0
 BuildRequires: gtk3-devel >= 3.0
 BuildRequires: libgphoto2-devel >= 2.4.8
-%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 BuildRequires: libgudev1-devel >= 145
-%else
-BuildRequires: hal-devel >= 0.5.10
-%endif
 BuildRequires: dbus-glib-devel >= 0.60
 BuildRequires: lcms-devel >= 1.18
 BuildRequires: /usr/bin/tpage
-%if %{with_introspection}
 BuildRequires: gobject-introspection-devel
-%endif
-%if %{with_plugins}
 BuildRequires: libpeas-devel >= 0.5.5
-%endif
 BuildRequires: startup-notification-devel >= 0.5
 BuildRequires: unique-devel >= 1.0.0
 
@@ -53,18 +37,7 @@ and 'hands off' shooting directly from the controlling computer.
 
 %build
 
-%if %{with_introspection}
-%define introspection_arg --enable-introspection
-%else
-%define introspection_arg --disable-introspection
-%endif
-%if %{with_plugins}
-%define plugins_arg --with-plugins
-%else
-%define plugins_arg --without-plugins
-%endif
-
-%configure %{introspection_arg} %{plugins_arg}
+%configure
 make %{?_smp_mflags}
 
 %install
@@ -111,15 +84,11 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %{_datadir}/gtk-doc/html/Entangle
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/glib-2.0/schemas/org.entangle-photo.manager.gschema.xml
-%if %{with_introspection}
 %{_datadir}/gir-1.0/Entangle-0.1.gir
 %{_libdir}/girepository-1.0/Entangle-0.1.typelib
-%endif
-%if %{with_plugins}
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/plugins
 %dir %{_datadir}/%{name}/plugins
-%endif
 
 %changelog
 * Fri Apr  9 2010 Daniel P. Berrange <berrange@redhat.com> - 0.1.0-2

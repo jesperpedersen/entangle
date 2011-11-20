@@ -276,12 +276,8 @@ static void entangle_app_display_init(EntangleAppDisplay *display)
     do_set_icons();
 
     priv->picker = entangle_camera_picker_new(entangle_app_get_cameras(ENTANGLE_APP(display)));
-#if HAVE_PLUGINS
     priv->manager = entangle_camera_manager_new(entangle_app_get_preferences(ENTANGLE_APP(display)),
                                                 entangle_app_get_plugin_engine(ENTANGLE_APP(display)));
-#else
-    priv->manager = entangle_camera_manager_new(entangle_app_get_preferences(ENTANGLE_APP(display)));
-#endif
 
     cameras = entangle_app_get_cameras(ENTANGLE_APP(display));
 

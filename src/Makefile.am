@@ -63,7 +63,6 @@ libentangle_backend_la_LDFLAGS = \
 	$(GDK_PIXBUF_LIBS) \
 	$(GPHOTO2_LIBS) \
 	$(LCMS_LIBS) \
-	$(HAL_LIBS) \
 	$(GUDEV_LIBS) \
 	$(DBUS_GLIB_LIBS) \
 	$(PEAS_LIBS) \
@@ -77,7 +76,6 @@ libentangle_backend_la_CFLAGS = \
 	$(GDK_PIXBUF_CFLAGS) \
 	$(GPHOTO2_CFLAGS) \
 	$(LCMS_CFLAGS) \
-	$(HAL_CFLAGS) \
 	$(GUDEV_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
 	$(PEAS_CFLAGS) \
@@ -204,10 +202,6 @@ backend/entangle-config-entry-enums.h: backend/entangle-config-entry.h Makefile.
 
 CLEANFILES = *~ $(desktop_DATA) $(BUILT_SOURCES)
 
-if HAVE_PLUGINS
-PLUGIN_INC=--include Peas-1.0
-PLUGIN_PKG=--pkg=libpeas-1.0
-
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/entangle/plugins
 	$(MKDIR_P) $(DESTDIR)$(datadir)/entangle/plugins
@@ -218,19 +212,13 @@ uninstall-local::
 	rmdir $(DESTDIR)$(datadir)/entangle/plugins ||:
 	rmdir $(DESTDIR)$(datadir)/entangle ||:
 
-else
-PLUGIN_INC=
-PLUGIN_PKG=
-endif
-
-if WITH_GOBJECT_INTROSPECTION
 Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
 	$(AM_V_GEN)$(G_IR_SCANNER) -v --quiet \
                 --namespace Entangle \
                 --nsversion 0.1 \
 		--include GObject-2.0 \
 		--include Gtk-3.0 \
-		$(PLUGIN_INC) \
+		--include Peas-1.0 \
                 --program=$(builddir)/entangle \
                 --add-include-path=$(srcdir) \
                 --add-include-path=$(builddir) \
@@ -244,8 +232,7 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
                 --pkg=gobject-2.0 \
                 --pkg=gtk+-3.0 \
                 --pkg=libgphoto2 \
-                --pkg=hal \
-                $(PLUGIN_PKG) \
+                --pkg=libpeas-1.0 \
                 --pkg=dbus-glib-1 \
                 $(libentangle_backend_la_SOURCES:%=$(srcdir)/%) \
                 $(libentangle_frontend_la_SOURCES:%=$(srcdir)/%) \
@@ -264,7 +251,5 @@ typelibs_DATA = Entangle-0.1.typelib
 		-o $@ $<
 
 CLEANFILES += Entangle-0.1.gir $(typelibs_DATA)
-
-endif # WITH_GOBJECT_INTROSPECTION
 
 -include $(top_srcdir)/git.mk

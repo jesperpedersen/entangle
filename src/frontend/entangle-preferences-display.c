@@ -24,9 +24,7 @@
 #include <gtk/gtk.h>
 #include <unistd.h>
 
-#if HAVE_PLUGINS
 #include <libpeas-gtk/peas-gtk.h>
-#endif
 
 #include "entangle-debug.h"
 #include "entangle-preferences-display.h"
@@ -41,10 +39,8 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 struct _EntanglePreferencesDisplayPrivate {
     GtkBuilder *builder;
 
-#if HAVE_PLUGINS
     PeasEngine *pluginEngine;
     PeasGtkPluginManager *pluginManager;
-#endif
     EntanglePreferences *prefs;
     gulong prefsID;
 };
@@ -54,9 +50,7 @@ G_DEFINE_TYPE(EntanglePreferencesDisplay, entangle_preferences_display, G_TYPE_O
 enum {
     PROP_0,
     PROP_PREFERENCES,
-#if HAVE_PLUGINS
     PROP_PLUGIN_ENGINE,
-#endif
 };
 
 void do_preferences_close(GtkButton *src, EntanglePreferencesDisplay *preferences);
@@ -88,11 +82,9 @@ static void entangle_preferences_display_get_property(GObject *object,
             g_value_set_object(value, priv->prefs);
             break;
 
-#if HAVE_PLUGINS
         case PROP_PLUGIN_ENGINE:
             g_value_set_object(value, priv->pluginEngine);
             break;
-#endif
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -231,7 +223,6 @@ static void entangle_preferences_display_set_property(GObject *object,
                                              object);
         } break;
 
-#if HAVE_PLUGINS
         case PROP_PLUGIN_ENGINE: {
             if (priv->pluginEngine)
                 g_object_unref(priv->pluginEngine);
@@ -256,7 +247,6 @@ static void entangle_preferences_display_set_property(GObject *object,
                 gtk_box_pack_start(GTK_BOX(panel), GTK_WIDGET(priv->pluginManager), TRUE, TRUE, 0);
             }
         } break;
-#endif
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -308,9 +298,7 @@ static void entangle_preferences_display_finalize (GObject *object)
 
     g_signal_handler_disconnect(priv->prefs, priv->prefsID);
     g_object_unref(priv->prefs);
-#if HAVE_PLUGINS
     g_object_unref(priv->pluginEngine);
-#endif
     g_object_unref(priv->builder);
 }
 
@@ -333,7 +321,6 @@ static void entangle_preferences_display_class_init(EntanglePreferencesDisplayCl
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
-#if HAVE_PLUGINS
     g_object_class_install_property(object_class,
                                     PROP_PLUGIN_ENGINE,
                                     g_param_spec_object("plugin-engine",
@@ -344,13 +331,11 @@ static void entangle_preferences_display_class_init(EntanglePreferencesDisplayCl
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
-#endif
 
     g_type_class_add_private(klass, sizeof(EntanglePreferencesDisplayPrivate));
 }
 
 
-#if HAVE_PLUGINS
 EntanglePreferencesDisplay *entangle_preferences_display_new(EntanglePreferences *preferences,
                                                              PeasEngine *pluginEngine)
 {
@@ -359,14 +344,6 @@ EntanglePreferencesDisplay *entangle_preferences_display_new(EntanglePreferences
                                                      "plugin-engine", pluginEngine,
                                                      NULL));
 }
-#else
-EntanglePreferencesDisplay *entangle_preferences_display_new(EntanglePreferences *preferences)
-{
-    return ENTANGLE_PREFERENCES_DISPLAY(g_object_new(ENTANGLE_TYPE_PREFERENCES_DISPLAY,
-                                                     "preferences", preferences,
-                                                     NULL));
-}
-#endif
 
 void do_preferences_close(GtkButton *src G_GNUC_UNUSED, EntanglePreferencesDisplay *preferences)
 {
@@ -527,9 +504,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     notebook = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences-notebook"));
     gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), FALSE);
 
-#if !HAVE_PLUGINS
-    gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), 2);
-#endif
+    //gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), 2);
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
@@ -547,7 +522,6 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/folders.png");
 
-#if HAVE_PLUGINS
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-image"));
@@ -555,7 +529,6 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
         gtk_image_set_from_file(GTK_IMAGE(image), "./plugins.png");
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/plugins.png");
-#endif
 
     list = gtk_list_store_new(3, G_TYPE_INT, G_TYPE_STRING, GDK_TYPE_PIXBUF, -1);
 
@@ -587,7 +560,6 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/color-management-22.png", NULL),
                            -1);
 
-#if HAVE_PLUGINS
     gtk_list_store_append(list, &iter);
     if (local)
         gtk_list_store_set(list, &iter,
@@ -601,7 +573,6 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
                            1, "Plugins",
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/plugins-22.png", NULL),
                            -1);
-#endif
 
     cellText = gtk_cell_renderer_text_new();
     cellImage = gtk_cell_renderer_pixbuf_new();

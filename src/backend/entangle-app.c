@@ -62,10 +62,8 @@ struct _EntangleAppPrivate {
 
     EntanglePreferences *preferences;
 
-#if HAVE_PLUGINS
     PeasEngine *pluginEngine;
     PeasExtensionSet *pluginExt;
-#endif
 };
 
 G_DEFINE_TYPE(EntangleApp, entangle_app, G_TYPE_OBJECT);
@@ -168,12 +166,10 @@ static void entangle_app_finalize(GObject *object)
         g_object_unref(priv->preferences);
     if (priv->devManager)
         g_object_unref(priv->devManager);
-#if HAVE_PLUGINS
     if (priv->pluginEngine)
         g_object_unref(priv->pluginEngine);
     if (priv->pluginExt)
         g_object_unref(priv->pluginExt);
-#endif
 
     if (priv->ports)
         gp_port_info_list_free(priv->ports);
@@ -343,7 +339,6 @@ EntangleApp *entangle_app_new(GApplication *app)
                                      NULL));
 }
 
-#if HAVE_PLUGINS
 static void
 on_extension_added(PeasExtensionSet *set G_GNUC_UNUSED,
                    PeasPluginInfo *info G_GNUC_UNUSED,
@@ -361,7 +356,6 @@ on_extension_removed(PeasExtensionSet *set G_GNUC_UNUSED,
 {
     peas_extension_call(exten, "deactivate");
 }
-#endif
 
 static void do_entangle_log(GPLogLevel level G_GNUC_UNUSED,
                             const char *domain,
@@ -376,10 +370,8 @@ static void do_entangle_log(GPLogLevel level G_GNUC_UNUSED,
 static void entangle_app_init(EntangleApp *app)
 {
     EntangleAppPrivate *priv;
-#if HAVE_PLUGINS
     gchar **peasPath;
     int i;
-#endif
 
     priv = app->priv = ENTANGLE_APP_GET_PRIVATE(app);
 
@@ -405,7 +397,6 @@ static void entangle_app_init(EntangleApp *app)
     if (gp_port_info_list_load(priv->ports) != GP_OK)
         g_error("Cannot load gphoto2 ports");
 
-#if HAVE_PLUGINS
     peasPath = g_new0(gchar *, 5);
     peasPath[0] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
     peasPath[1] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
@@ -435,20 +426,17 @@ static void entangle_app_init(EntangleApp *app)
     g_free(peasPath[3]);
     g_free(peasPath[4]);
     g_free(peasPath);
-#endif
 
     g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), app);
     g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), app);
 
     do_refresh_cameras(app);
 
-#if HAVE_PLUGINS
     const GList *plugins = peas_engine_get_plugin_list(priv->pluginEngine);
     for (i = 0 ; i < g_list_length((GList *)plugins) ; i++) {
         PeasPluginInfo *plugin = g_list_nth_data((GList*)plugins, i);
         peas_engine_load_plugin(priv->pluginEngine, plugin);
     }
-#endif
 }
 
 
@@ -488,7 +476,6 @@ EntanglePreferences *entangle_app_get_preferences(EntangleApp *app)
     return priv->preferences;
 }
 
-#if HAVE_PLUGINS
 /**
  * entangle_app_get_plugin_engine: Retrieve the plugin manager
  *
@@ -499,7 +486,6 @@ PeasEngine *entangle_app_get_plugin_engine(EntangleApp *app)
     EntangleAppPrivate *priv = app->priv;
     return priv->pluginEngine;
 }
-#endif
 
 
 /*

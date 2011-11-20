@@ -30,8 +30,6 @@ GTK_REQUIRED=3.0.0
 AC_SUBST(GTK_REQUIRED)
 GPHOTO2_REQUIRED=2.4.8
 AC_SUBST(GPHOTO2_REQUIRED)
-HAL_REQUIRED=0.5.0
-AC_SUBST(HAL_REQUIRED)
 GUDEV_REQUIRED=145
 AC_SUBST(GUDEV_REQUIRED)
 DBUS_GLIB_REQUIRED=0.60
@@ -81,21 +79,9 @@ PKG_CHECK_MODULES(GPHOTO2, libgphoto2 >= $GPHOTO2_REQUIRED)
 AC_SUBST(GPHOTO2_CFLAGS)
 AC_SUBST(GPHOTO2_LIBS)
 
-with_hal=0
-with_gudev=0
-PKG_CHECK_MODULES(GUDEV, gudev-1.0 >= $GUDEV_REQUIRED, [
-          AC_SUBST(GUDEV_CFLAGS)
-          AC_SUBST(GUDEV_LIBS)
-          with_gudev=1
-        ], [
-          PKG_CHECK_MODULES(HAL, hal >= $HAL_REQUIRED, [
-            AC_SUBST(HAL_CFLAGS)
-            AC_SUBST(HAL_LIBS)
-            with_hal=1
-          ])
-    ])
-AC_DEFINE_UNQUOTED([WITH_GUDEV], [$with_gudev], [Whether gudev is available])
-AC_DEFINE_UNQUOTED([WITH_HAL], [$with_hal], [Whether HAL is available])
+PKG_CHECK_MODULES(GUDEV, gudev-1.0 >= $GUDEV_REQUIRED)
+AC_SUBST(GUDEV_CFLAGS)
+AC_SUBST(GUDEV_LIBS)
 
 PKG_CHECK_MODULES(DBUS_GLIB, dbus-glib-1 >= $DBUS_GLIB_REQUIRED)
 AC_SUBST(DBUS_GLIB_CFLAGS)
@@ -107,65 +93,24 @@ AC_SUBST(LCMS_LIBS)
 
 GTK_DOC_CHECK(1.9)
 
+PKG_CHECK_MODULES([GOBJECT_INTROSPECTION],
+                  [gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQUIRED],
+                  [enable_introspection=yes],
+                  [AC_MSG_ERROR([gobject-introspection is not available])])
+AC_DEFINE([WITH_GOBJECT_INTROSPECTION], [1], [enable GObject introspection support])
+AC_SUBST(GOBJECT_INTROSPECTION_CFLAGS)
+AC_SUBST(GOBJECT_INTROSPECTION_LIBS)
+AC_SUBST([G_IR_SCANNER], [$($PKG_CONFIG --variable=g_ir_scanner gobject-introspection-1.0)])
+AC_SUBST([G_IR_COMPILER], [$($PKG_CONFIG --variable=g_ir_compiler gobject-introspection-1.0)])
 
-AC_ARG_ENABLE([introspection],
-        AS_HELP_STRING([--enable-introspection], [enable GObject introspection]),
-        [], [enable_introspection=check])
-
-if test "x$enable_introspection" != "xno" ; then
-        PKG_CHECK_MODULES([GOBJECT_INTROSPECTION],
-                          [gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQUIRED],
-                          [enable_introspection=yes],
-                          [
-                             if test "x$enable_introspection" = "xcheck"; then
-			       enable_introspection=no
-                             else
-                               AC_MSG_ERROR([gobject-introspection is not available])
-                             fi
-                          ])
-        if test "x$enable_introspection" = "xyes" ; then
-          AC_DEFINE([WITH_GOBJECT_INTROSPECTION], [1], [enable GObject introspection support])
-          AC_SUBST(GOBJECT_INTROSPECTION_CFLAGS)
-          AC_SUBST(GOBJECT_INTROSPECTION_LIBS)
-          AC_SUBST([G_IR_SCANNER], [$($PKG_CONFIG --variable=g_ir_scanner gobject-introspection-1.0)])
-          AC_SUBST([G_IR_COMPILER], [$($PKG_CONFIG --variable=g_ir_compiler gobject-introspection-1.0)])
-        fi
-fi
-AM_CONDITIONAL([WITH_GOBJECT_INTROSPECTION], [test "x$enable_introspection" = "xyes"])
-
-AC_ARG_WITH([plugins],
-      AS_HELP_STRING([--with-plugins],[enable libPeas plugins]),
-      [], [with_plugins=check])
-
-if test "x$with_plugins" != "xno" ; then
-  PKG_CHECK_MODULES(PEAS, libpeas-1.0 >= $LIBPEAS_REQUIRED,
-                    [],[
-                      if test "$with_plugins" = "check"; then
-                         with_plugins=no
-                      else
-                         AC_MSG_ERROR([libpeas >= $LIBPEAS_REQUIRED is required for plugins])
-                      fi
-                    ])
-  if test "$with_plugins" != "no"; then
-    PKG_CHECK_MODULES(PEAS_UI, libpeas-gtk-1.0 >= $LIBPEAS_REQUIRED,
-                      [with_plugins=yes],[
-                        if test "$with_plugins" = "check"; then
-                          with_plugins=no
-                        else
-                           AC_MSG_ERROR([libpeas-gtk >= $LIBPEAS_REQUIRED is required for plugins])
-                        fi
-                      ])
-  fi
-  if test "$with_plugins" = "yes" ; then
-     AC_DEFINE_UNQUOTED([HAVE_PLUGINS], 1,
-          [whether plugins are enabled])
-  fi
-fi
+PKG_CHECK_MODULES(PEAS, libpeas-1.0 >= $LIBPEAS_REQUIRED,
+                  [],[AC_MSG_ERROR([libpeas >= $LIBPEAS_REQUIRED is required for plugins])])
+PKG_CHECK_MODULES(PEAS_UI, libpeas-gtk-1.0 >= $LIBPEAS_REQUIRED,
+                  [],[AC_MSG_ERROR([libpeas-gtk >= $LIBPEAS_REQUIRED is required for plugins])])
 AC_SUBST(LIBPEAS_CFLAGS)
 AC_SUBST(LIBPEAS_LIBS)
 AC_SUBST(LIBPEAS_UI_CFLAGS)
 AC_SUBST(LIBPEAS_UI_LIBS)
-AM_CONDITIONAL([HAVE_PLUGINS], [test "$with_plugins" = "yes"])
 
 ENTANGLE_COMPILE_WARNINGS
 
