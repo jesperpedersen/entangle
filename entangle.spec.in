@@ -16,11 +16,8 @@ BuildRequires: libgphoto2-devel >= 2.4.8
 BuildRequires: libgudev1-devel >= 145
 BuildRequires: dbus-glib-devel >= 0.60
 BuildRequires: lcms-devel >= 1.18
-BuildRequires: /usr/bin/tpage
 BuildRequires: gobject-introspection-devel
 BuildRequires: libpeas-devel >= 0.5.5
-BuildRequires: startup-notification-devel >= 0.5
-BuildRequires: unique-devel >= 1.0.0
 
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
