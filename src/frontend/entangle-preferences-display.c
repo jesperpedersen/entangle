@@ -39,9 +39,9 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 struct _EntanglePreferencesDisplayPrivate {
     GtkBuilder *builder;
 
-    PeasEngine *pluginEngine;
+    EntangleContext *context;
+
     PeasGtkPluginManager *pluginManager;
-    EntanglePreferences *prefs;
     gulong prefsID;
 };
 
@@ -49,8 +49,7 @@ G_DEFINE_TYPE(EntanglePreferencesDisplay, entangle_preferences_display, G_TYPE_O
 
 enum {
     PROP_0,
-    PROP_PREFERENCES,
-    PROP_PLUGIN_ENGINE,
+    PROP_CONTEXT,
 };
 
 void do_preferences_close(GtkButton *src, EntanglePreferencesDisplay *preferences);
@@ -69,21 +68,17 @@ void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *disp
 
 
 static void entangle_preferences_display_get_property(GObject *object,
-                                                  guint prop_id,
-                                                  GValue *value,
-                                                  GParamSpec *pspec)
+                                                      guint prop_id,
+                                                      GValue *value,
+                                                      GParamSpec *pspec)
 {
     EntanglePreferencesDisplay *display = ENTANGLE_PREFERENCES_DISPLAY(object);
     EntanglePreferencesDisplayPrivate *priv = display->priv;
 
     switch (prop_id)
         {
-        case PROP_PREFERENCES:
-            g_value_set_object(value, priv->prefs);
-            break;
-
-        case PROP_PLUGIN_ENGINE:
-            g_value_set_object(value, priv->pluginEngine);
+        case PROP_CONTEXT:
+            g_value_set_object(value, priv->context);
             break;
 
         default:
@@ -92,7 +87,9 @@ static void entangle_preferences_display_get_property(GObject *object,
 }
 
 
-static void entangle_preferences_display_notify(GObject *object, GParamSpec *spec, gpointer opaque)
+static void entangle_preferences_display_notify(GObject *object,
+                                                GParamSpec *spec,
+                                                gpointer opaque)
 {
     EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(opaque);
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
@@ -198,55 +195,28 @@ static void entangle_preferences_display_notify(GObject *object, GParamSpec *spe
 
 
 static void entangle_preferences_display_set_property(GObject *object,
-                                                  guint prop_id,
-                                                  const GValue *value,
-                                                  GParamSpec *pspec)
+                                                      guint prop_id,
+                                                      const GValue *value,
+                                                      GParamSpec *pspec)
 {
     EntanglePreferencesDisplay *display = ENTANGLE_PREFERENCES_DISPLAY(object);
     EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs;
 
     ENTANGLE_DEBUG("Set prop on preferences display %d", prop_id);
 
     switch (prop_id)
         {
-        case PROP_PREFERENCES: {
-            if (priv->prefs) {
-                g_signal_handler_disconnect(priv->prefs, priv->prefsID);
-                g_object_unref(priv->prefs);
-            }
-            priv->prefs = g_value_get_object(value);
-            g_object_ref(priv->prefs);
+        case PROP_CONTEXT:
+            priv->context = g_value_get_object(value);
+            g_object_ref(priv->context);
             entangle_preferences_display_refresh(display);
-            priv->prefsID = g_signal_connect(priv->prefs,
+            prefs = entangle_context_get_preferences(priv->context);
+            priv->prefsID = g_signal_connect(prefs,
                                              "notify",
                                              G_CALLBACK(entangle_preferences_display_notify),
                                              object);
-        } break;
-
-        case PROP_PLUGIN_ENGINE: {
-            if (priv->pluginEngine)
-                g_object_unref(priv->pluginEngine);
-            priv->pluginEngine = g_value_dup_object(value);
-            if (priv->pluginEngine) {
-                GtkWidget *panel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-panel"));
-                priv->pluginManager = PEAS_GTK_PLUGIN_MANAGER(peas_gtk_plugin_manager_new(priv->pluginEngine));
-                GList *children = gtk_container_get_children(GTK_CONTAINER(priv->pluginManager));
-                GList *tmp = children;
-                /* XXX hack. We don't want the generic 'Plugins:' label, since
-                 * we already have our own. There isn't an official API to kill
-                 * it though. Lets hope this doesn't break too bad...
-                 */
-                while (tmp) {
-                    GtkWidget *child = tmp->data;
-                    if (GTK_IS_LABEL(child)) {
-                        gtk_container_remove(GTK_CONTAINER(priv->pluginManager), child);
-                    }
-                    tmp = tmp->next;
-                }
-                g_list_free(children);
-                gtk_box_pack_start(GTK_BOX(panel), GTK_WIDGET(priv->pluginManager), TRUE, TRUE, 0);
-            }
-        } break;
+            break;
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -259,32 +229,33 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     GtkWidget *tmp;
     EntangleColourProfile *profile;
     const char *dir;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-enabled"));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_enabled(priv->prefs));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_enabled(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-system-profile"));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_detect_system_profile(priv->prefs));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_detect_system_profile(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile"));
-    profile = entangle_preferences_cms_rgb_profile(priv->prefs);
+    profile = entangle_preferences_cms_rgb_profile(prefs);
     if (profile)
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), entangle_colour_profile_filename(profile));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
-    profile = entangle_preferences_cms_monitor_profile(priv->prefs);
+    profile = entangle_preferences_cms_monitor_profile(prefs);
     if (profile)
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), entangle_colour_profile_filename(profile));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
-    gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), entangle_preferences_cms_rendering_intent(priv->prefs));
+    gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), entangle_preferences_cms_rendering_intent(prefs));
 
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "filename-pattern"));
-    gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_folder_filename_pattern(priv->prefs));
+    gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_folder_filename_pattern(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "picture-folder"));
-    dir = entangle_preferences_folder_picture_dir(priv->prefs);
+    dir = entangle_preferences_folder_picture_dir(prefs);
     if (dir)
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), dir);
 }
@@ -293,12 +264,12 @@ static void entangle_preferences_display_finalize (GObject *object)
 {
     EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(object);
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
 
     ENTANGLE_DEBUG("Finalize preferences");
 
-    g_signal_handler_disconnect(priv->prefs, priv->prefsID);
-    g_object_unref(priv->prefs);
-    g_object_unref(priv->pluginEngine);
+    g_signal_handler_disconnect(prefs, priv->prefsID);
+    g_object_unref(priv->context);
     g_object_unref(priv->builder);
 }
 
@@ -311,37 +282,26 @@ static void entangle_preferences_display_class_init(EntanglePreferencesDisplayCl
     object_class->set_property = entangle_preferences_display_set_property;
 
     g_object_class_install_property(object_class,
-                                    PROP_PREFERENCES,
-                                    g_param_spec_object("preferences",
-                                                        "Preferences",
-                                                        "Preferences to be displayed",
-                                                        ENTANGLE_TYPE_PREFERENCES,
+                                    PROP_CONTEXT,
+                                    g_param_spec_object("context",
+                                                        "Context",
+                                                        "Application context",
+                                                        ENTANGLE_TYPE_CONTEXT,
                                                         G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
-    g_object_class_install_property(object_class,
-                                    PROP_PLUGIN_ENGINE,
-                                    g_param_spec_object("plugin-engine",
-                                                        "Plugin engine",
-                                                        "Plugin engine",
-                                                        PEAS_TYPE_ENGINE,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntanglePreferencesDisplayPrivate));
 }
 
 
-EntanglePreferencesDisplay *entangle_preferences_display_new(EntanglePreferences *preferences,
-                                                             PeasEngine *pluginEngine)
+EntanglePreferencesDisplay *entangle_preferences_display_new(EntangleContext *context)
 {
     return ENTANGLE_PREFERENCES_DISPLAY(g_object_new(ENTANGLE_TYPE_PREFERENCES_DISPLAY,
-                                                     "preferences", preferences,
-                                                     "plugin-engine", pluginEngine,
+                                                     "context", context,
                                                      NULL));
 }
 
@@ -400,8 +360,9 @@ void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *di
     GtkWidget *monitorProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
     GtkWidget *systemProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-system-profile"));
     GtkWidget *renderIntent = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
 
-    g_object_set(priv->prefs, "cms-enabled", enabled, NULL);
+    g_object_set(prefs, "cms-enabled", enabled, NULL);
     gtk_widget_set_sensitive(rgbProfile, enabled);
     gtk_widget_set_sensitive(systemProfile, enabled);
     gtk_widget_set_sensitive(renderIntent, enabled);
@@ -411,9 +372,11 @@ void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *di
 void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     EntangleColourProfile *profile = entangle_colour_profile_new_file(filename);
-    g_object_set(priv->prefs, "cms-rgb-profile", profile, NULL);
+
+    g_object_set(prefs, "cms-rgb-profile", profile, NULL);
     g_free(filename);
     g_object_unref(profile);
 }
@@ -421,9 +384,11 @@ void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesD
 void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     EntangleColourProfile *profile = entangle_colour_profile_new_file(filename);
-    g_object_set(priv->prefs, "cms-monitor-profile", profile, NULL);
+
+    g_object_set(prefs, "cms-monitor-profile", profile, NULL);
     g_free(filename);
     g_object_unref(profile);
 }
@@ -431,34 +396,42 @@ void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferen
 void do_cms_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     gboolean enabled = gtk_toggle_button_get_active(src);
     GtkWidget *monitorProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
-    g_object_set(priv->prefs, "cms-detect-system-profile", enabled, NULL);
+
+    g_object_set(prefs, "cms-detect-system-profile", enabled, NULL);
     gtk_widget_set_sensitive(monitorProfile, !enabled);
 }
 
 void do_cms_render_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     int option = gtk_combo_box_get_active(src);
+
     if (option < 0)
         option = ENTANGLE_COLOUR_PROFILE_INTENT_PERCEPTUAL;
-    g_object_set(priv->prefs, "cms-rendering-intent", option, NULL);
+    g_object_set(prefs, "cms-rendering-intent", option, NULL);
 }
 
 void do_picture_folder_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
-    g_object_set(priv->prefs, "folder-picture-dir", filename, NULL);
+
+    g_object_set(prefs, "folder-picture-dir", filename, NULL);
     g_free(filename);
 }
 
 void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     const char *text = gtk_entry_get_text(src);
-    g_object_set(priv->prefs, "folder-filename-pattern", text, NULL);
+
+    g_object_set(prefs, "folder-filename-pattern", text, NULL);
 }
 
 static void entangle_preferences_display_init(EntanglePreferencesDisplay *preferences)
@@ -627,6 +600,16 @@ void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences)
 
     gtk_widget_show_all(win);
 }
+
+
+
+EntangleContext *entangle_camera_preferences_get_context(EntanglePreferencesDisplay *preferences)
+{
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+
+    return priv->context;
+}
+
 
 /*
  * Local variables:

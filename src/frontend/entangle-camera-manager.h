@@ -24,8 +24,7 @@
 #include <glib-object.h>
 
 #include "entangle-camera.h"
-#include "entangle-preferences.h"
-#include <libpeas/peas.h>
+#include "entangle-context.h"
 
 G_BEGIN_DECLS
 
@@ -58,8 +57,7 @@ struct _EntangleCameraManagerClass
 
 
 GType entangle_camera_manager_get_type(void) G_GNUC_CONST;
-EntangleCameraManager* entangle_camera_manager_new(EntanglePreferences *prefs,
-                                                   PeasEngine *pluginEngine);
+EntangleCameraManager* entangle_camera_manager_new(EntangleContext *context);
 
 void entangle_camera_manager_show(EntangleCameraManager *manager);
 void entangle_camera_manager_hide(EntangleCameraManager *manager);
@@ -70,8 +68,7 @@ void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
                                         EntangleCamera *cam);
 EntangleCamera *entangle_camera_manager_get_camera(EntangleCameraManager *manager);
 
-EntanglePreferences *entangle_camera_manager_get_preferences(EntangleCameraManager *manager);
-PeasEngine *entangle_camera_manager_get_plugin_engine(EntangleCameraManager *manager);
+EntangleContext *entangle_camera_manager_get_context(EntangleCameraManager *manager);
 
 G_END_DECLS
 

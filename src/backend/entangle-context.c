@@ -26,16 +26,16 @@
 #include <string.h>
 
 #include "entangle-debug.h"
-#include "entangle-app.h"
+#include "entangle-context.h"
 #include "entangle-device-manager.h"
 #include "entangle-preferences.h"
 
 /**
  * @Short_description: Global application state base class
- * @Title: EntangleApp
+ * @Title: EntangleContext
  *
  * <para>
- * EntangleApp maintains some global application state. At this time,
+ * EntangleContext maintains some global application state. At this time,
  * the list of currently attached cameras, the application preferences
  * and the plugin manager.
  * </para>
@@ -47,11 +47,11 @@
  */
 
 
-#define ENTANGLE_APP_GET_PRIVATE(obj)                                       \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_APP, EntangleAppPrivate))
+#define ENTANGLE_CONTEXT_GET_PRIVATE(obj)                                       \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CONTEXT, EntangleContextPrivate))
 
-struct _EntangleAppPrivate {
-    GApplication *app;
+struct _EntangleContextPrivate {
+    GApplication *context;
 
     GPContext *ctx;
     CameraAbilitiesList *caps;
@@ -66,28 +66,28 @@ struct _EntangleAppPrivate {
     PeasExtensionSet *pluginExt;
 };
 
-G_DEFINE_TYPE(EntangleApp, entangle_app, G_TYPE_OBJECT);
+G_DEFINE_TYPE(EntangleContext, entangle_context, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
-    PROP_APP,
+    PROP_CONTEXT,
     PROP_CAMERAS,
     PROP_PREFERENCES,
     PROP_DEVMANAGER,
 };
 
-static void entangle_app_get_property(GObject *object,
+static void entangle_context_get_property(GObject *object,
                                   guint prop_id,
                                   GValue *value,
                                   GParamSpec *pspec)
 {
-    EntangleApp *app = ENTANGLE_APP(object);
-    EntangleAppPrivate *priv = app->priv;
+    EntangleContext *context = ENTANGLE_CONTEXT(object);
+    EntangleContextPrivate *priv = context->priv;
 
     switch (prop_id)
         {
-        case PROP_APP:
-            g_value_set_object(value, priv->app);
+        case PROP_CONTEXT:
+            g_value_set_object(value, priv->context);
             break;
 
         case PROP_CAMERAS:
@@ -107,21 +107,21 @@ static void entangle_app_get_property(GObject *object,
         }
 }
 
-static void entangle_app_set_property(GObject *object,
+static void entangle_context_set_property(GObject *object,
                                   guint prop_id,
                                   const GValue *value,
                                   GParamSpec *pspec)
 {
-    EntangleApp *app = ENTANGLE_APP(object);
-    EntangleAppPrivate *priv = app->priv;
+    EntangleContext *context = ENTANGLE_CONTEXT(object);
+    EntangleContextPrivate *priv = context->priv;
 
     switch (prop_id)
         {
-        case PROP_APP:
-            if (priv->app)
-                g_object_unref(priv->app);
-            priv->app = g_value_get_object(value);
-            g_object_ref(priv->app);
+        case PROP_CONTEXT:
+            if (priv->context)
+                g_object_unref(priv->context);
+            priv->context = g_value_get_object(value);
+            g_object_ref(priv->context);
             break;
 
         case PROP_CAMERAS:
@@ -151,15 +151,15 @@ static void entangle_app_set_property(GObject *object,
 }
 
 
-static void entangle_app_finalize(GObject *object)
+static void entangle_context_finalize(GObject *object)
 {
-    EntangleApp *app = ENTANGLE_APP(object);
-    EntangleAppPrivate *priv = app->priv;
+    EntangleContext *context = ENTANGLE_CONTEXT(object);
+    EntangleContextPrivate *priv = context->priv;
 
-    ENTANGLE_DEBUG("Finalize app %p", object);
+    ENTANGLE_DEBUG("Finalize context %p", object);
 
-    if (priv->app)
-        g_object_unref(priv->app);
+    if (priv->context)
+        g_object_unref(priv->context);
     if (priv->cameras)
         g_object_unref(priv->cameras);
     if (priv->preferences)
@@ -177,21 +177,21 @@ static void entangle_app_finalize(GObject *object)
         gp_abilities_list_free(priv->caps);
     gp_context_unref(priv->ctx);
 
-    G_OBJECT_CLASS (entangle_app_parent_class)->finalize (object);
+    G_OBJECT_CLASS (entangle_context_parent_class)->finalize (object);
 }
 
 
-static void entangle_app_class_init(EntangleAppClass *klass)
+static void entangle_context_class_init(EntangleContextClass *klass)
 {
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-    object_class->finalize = entangle_app_finalize;
-    object_class->get_property = entangle_app_get_property;
-    object_class->set_property = entangle_app_set_property;
+    object_class->finalize = entangle_context_finalize;
+    object_class->get_property = entangle_context_get_property;
+    object_class->set_property = entangle_context_set_property;
 
     g_object_class_install_property(object_class,
-                                    PROP_APP,
-                                    g_param_spec_object("app",
+                                    PROP_CONTEXT,
+                                    g_param_spec_object("context",
                                                         "Application",
                                                         "Application",
                                                         G_TYPE_APPLICATION,
@@ -235,13 +235,13 @@ static void entangle_app_class_init(EntangleAppClass *klass)
                                                         G_PARAM_STATIC_BLURB));
 
 
-    g_type_class_add_private(klass, sizeof(EntangleAppPrivate));
+    g_type_class_add_private(klass, sizeof(EntangleContextPrivate));
 }
 
 
-static void do_refresh_cameras(EntangleApp *app)
+static void do_refresh_cameras(EntangleContext *context)
 {
-    EntangleAppPrivate *priv = app->priv;
+    EntangleContextPrivate *priv = context->priv;
     CameraList *cams = NULL;
     GHashTable *toRemove;
     GHashTableIter iter;
@@ -327,15 +327,15 @@ static void do_refresh_cameras(EntangleApp *app)
 
 static void do_device_addremove(EntangleDeviceManager *manager G_GNUC_UNUSED,
                                 char *port G_GNUC_UNUSED,
-                                EntangleApp *app)
+                                EntangleContext *context)
 {
-    do_refresh_cameras(app);
+    do_refresh_cameras(context);
 }
 
-EntangleApp *entangle_app_new(GApplication *app)
+EntangleContext *entangle_context_new(GApplication *context)
 {
-    return ENTANGLE_APP(g_object_new(ENTANGLE_TYPE_APP,
-                                     "app", app,
+    return ENTANGLE_CONTEXT(g_object_new(ENTANGLE_TYPE_CONTEXT,
+                                     "context", context,
                                      NULL));
 }
 
@@ -367,13 +367,13 @@ static void do_entangle_log(GPLogLevel level G_GNUC_UNUSED,
     g_debug("%s: %s", domain, msg);
 }
 
-static void entangle_app_init(EntangleApp *app)
+static void entangle_context_init(EntangleContext *context)
 {
-    EntangleAppPrivate *priv;
+    EntangleContextPrivate *priv;
     gchar **peasPath;
     int i;
 
-    priv = app->priv = ENTANGLE_APP_GET_PRIVATE(app);
+    priv = context->priv = ENTANGLE_CONTEXT_GET_PRIVATE(context);
 
     priv->preferences = entangle_preferences_new();
     priv->cameras = entangle_camera_list_new();
@@ -410,15 +410,15 @@ static void entangle_app_init(EntangleApp *app)
 
     priv->pluginExt = peas_extension_set_new(priv->pluginEngine,
                                              PEAS_TYPE_ACTIVATABLE,
-                                             "object", app,
+                                             "object", context,
                                              NULL);
 
     peas_extension_set_call(priv->pluginExt, "activate");
 
     g_signal_connect(priv->pluginExt, "extension-added",
-                     G_CALLBACK(on_extension_added), app);
+                     G_CALLBACK(on_extension_added), context);
     g_signal_connect(priv->pluginExt, "extension-removed",
-                     G_CALLBACK(on_extension_removed), app);
+                     G_CALLBACK(on_extension_removed), context);
 
     g_free(peasPath[0]);
     g_free(peasPath[1]);
@@ -427,10 +427,10 @@ static void entangle_app_init(EntangleApp *app)
     g_free(peasPath[4]);
     g_free(peasPath);
 
-    g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), app);
-    g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), app);
+    g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), context);
+    g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), context);
 
-    do_refresh_cameras(app);
+    do_refresh_cameras(context);
 
     const GList *plugins = peas_engine_get_plugin_list(priv->pluginEngine);
     for (i = 0 ; i < g_list_length((GList *)plugins) ; i++) {
@@ -441,49 +441,49 @@ static void entangle_app_init(EntangleApp *app)
 
 
 /*
- * entangle_app_refresh_cameras: Refresh the camera list
+ * entangle_context_refresh_cameras: Refresh the camera list
  *
  * Rescans all attached devices to look for new cameras.
  * This method is unneccessary if only interested in USB
  * cameras, since those are automatically detected via the
  * device manager when plugged in.
  */
-void entangle_app_refresh_cameras(EntangleApp *app)
+void entangle_context_refresh_cameras(EntangleContext *context)
 {
-    do_refresh_cameras(app);
+    do_refresh_cameras(context);
 }
 
 /**
- * entangle_app_get_cameras: Retrieve the camera list
+ * entangle_context_get_cameras: Retrieve the camera list
  *
  * Returns: (transfer none): the camera list
  */
-EntangleCameraList *entangle_app_get_cameras(EntangleApp *app)
+EntangleCameraList *entangle_context_get_cameras(EntangleContext *context)
 {
-    EntangleAppPrivate *priv = app->priv;
+    EntangleContextPrivate *priv = context->priv;
     return priv->cameras;
 }
 
 
 /**
- * entangle_app_get_preferences: Retrieve the application preferences object
+ * entangle_context_get_preferences: Retrieve the application preferences object
  *
  * Returns: (transfer none): the application preferences
  */
-EntanglePreferences *entangle_app_get_preferences(EntangleApp *app)
+EntanglePreferences *entangle_context_get_preferences(EntangleContext *context)
 {
-    EntangleAppPrivate *priv = app->priv;
+    EntangleContextPrivate *priv = context->priv;
     return priv->preferences;
 }
 
 /**
- * entangle_app_get_plugin_engine: Retrieve the plugin manager
+ * entangle_context_get_plugin_engine: Retrieve the plugin manager
  *
  * Returns: (transfer none): the plugin engine
  */
-PeasEngine *entangle_app_get_plugin_engine(EntangleApp *app)
+PeasEngine *entangle_context_get_plugin_engine(EntangleContext *context)
 {
-    EntangleAppPrivate *priv = app->priv;
+    EntangleContextPrivate *priv = context->priv;
     return priv->pluginEngine;
 }
 

@@ -26,31 +26,24 @@
 #include <girepository.h>
 
 #include "entangle-debug.h"
-#include "entangle-app-display.h"
+#include "entangle-context.h"
+#include "entangle-camera-manager.h"
 
 static gchar *ins = NULL;
 
 static void entangle_start(GApplication *app, gpointer opaque)
 {
-    EntangleAppDisplay *display = opaque;
+    EntangleCameraManager *manager = opaque;
 
-    entangle_app_display_show(display);
+    entangle_camera_manager_show(manager);
     g_application_hold(app);
-}
-
-static void entangle_stop(EntangleAppDisplay *display G_GNUC_UNUSED, gpointer opaque)
-{
-    GApplication *app = opaque;
-
-    g_application_release(app);
 }
 
 
 int main(int argc, char **argv)
 {
-    EntangleAppDisplay *display;
     GOptionGroup *group;
-    GOptionContext *context;
+    GOptionContext *optContext;
     GError *error = NULL;
     GtkApplication *app;
     static const GOptionEntry entries[] = {
@@ -60,6 +53,8 @@ int main(int argc, char **argv)
         { NULL, 0, 0, 0, NULL, NULL, NULL },
     };
     static const char *help_msg = "Run 'entangle --help' to see full list of options";
+    EntangleCameraManager *manager;
+    EntangleContext *context;
 
     g_thread_init(NULL);
     gdk_threads_init();
@@ -72,10 +67,10 @@ int main(int argc, char **argv)
     g_option_group_add_entries(group, entries);
 
     /* Setup command line options */
-    context = g_option_context_new("");
-    g_option_context_add_group(context, gtk_get_option_group(FALSE));
-    g_option_context_add_group(context, group);
-    g_option_context_parse(context, &argc, &argv, &error);
+    optContext = g_option_context_new("");
+    g_option_context_add_group(optContext, gtk_get_option_group(FALSE));
+    g_option_context_add_group(optContext, group);
+    g_option_context_parse(optContext, &argc, &argv, &error);
     if (error) {
         g_print ("%s\n%s\n", error->message, help_msg);
         g_error_free (error);
@@ -90,19 +85,20 @@ int main(int argc, char **argv)
     if (!gtk_init_check(NULL, NULL))
         return 1;
 
-    app = gtk_application_new("org.entangle_photo.Display", 0);
-                              
-    gdk_threads_enter();
-    display = entangle_app_display_new(G_APPLICATION(app));
+    app = gtk_application_new("org.entangle_photo.Manager", 0);
 
-    g_signal_connect(display, "app-closed", G_CALLBACK(entangle_stop), app);
-    g_signal_connect(app, "activate", G_CALLBACK(entangle_start), display);
+    gdk_threads_enter();
+    context = entangle_context_new(G_APPLICATION(app));
+    manager = entangle_camera_manager_new(context);
+
+    g_signal_connect(app, "activate", G_CALLBACK(entangle_start), manager);
 
     g_application_run(G_APPLICATION(app), argc, argv);
 
     gdk_threads_leave();
 
-    g_object_unref(display);
+    g_object_unref(context);
+    g_object_unref(manager);
     return 0;
 }
 

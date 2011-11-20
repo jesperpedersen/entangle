@@ -23,9 +23,7 @@
 
 #include <glib-object.h>
 
-#include "entangle-app.h"
-#include "entangle-preferences.h"
-#include <libpeas/peas.h>
+#include "entangle-context.h"
 
 G_BEGIN_DECLS
 
@@ -56,10 +54,11 @@ struct _EntanglePreferencesDisplayClass
 
 
 GType entangle_preferences_display_get_type(void) G_GNUC_CONST;
-EntanglePreferencesDisplay* entangle_preferences_display_new(EntanglePreferences *prefs,
-                                                             PeasEngine *pluginEngine);
+EntanglePreferencesDisplay* entangle_preferences_display_new(EntangleContext *context);
 
 void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences);
+
+EntangleContext *entangle_camera_preferences_get_context(EntanglePreferencesDisplay *preferences);
 
 G_END_DECLS
 
