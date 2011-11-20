@@ -21,7 +21,7 @@
 #ifndef __ENTANGLE_CAMERA_PICKER_H__
 #define __ENTANGLE_CAMERA_PICKER_H__
 
-#include <glib-object.h>
+#include <gtk/gtk.h>
 
 #include "entangle-camera.h"
 #include "entangle-camera-list.h"
@@ -59,6 +59,8 @@ struct _EntangleCameraPickerClass
 
 GType entangle_camera_picker_get_type(void) G_GNUC_CONST;
 EntangleCameraPicker* entangle_camera_picker_new(EntangleCameraList *cameras);
+
+GtkWindow *entangle_camera_picker_get_window(EntangleCameraPicker *picker);
 
 void entangle_camera_picker_show(EntangleCameraPicker *picker);
 void entangle_camera_picker_hide(EntangleCameraPicker *picker);

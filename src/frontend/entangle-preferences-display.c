@@ -593,6 +593,14 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
 }
 
 
+GtkWindow *entangle_preferences_display_get_window(EntanglePreferencesDisplay *preferences)
+{
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+
+    return GTK_WINDOW(gtk_builder_get_object(priv->builder, "preferences"));
+}
+
+
 void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences)
 {
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;

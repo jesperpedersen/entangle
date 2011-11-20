@@ -21,7 +21,7 @@
 #ifndef __ENTANGLE_PREFERENCES_DISPLAY_H__
 #define __ENTANGLE_PREFERENCES_DISPLAY_H__
 
-#include <glib-object.h>
+#include <gtk/gtk.h>
 
 #include "entangle-context.h"
 
@@ -55,6 +55,8 @@ struct _EntanglePreferencesDisplayClass
 
 GType entangle_preferences_display_get_type(void) G_GNUC_CONST;
 EntanglePreferencesDisplay* entangle_preferences_display_new(EntangleContext *context);
+
+GtkWindow *entangle_preferences_display_get_window(EntanglePreferencesDisplay *preferences);
 
 void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences);
 

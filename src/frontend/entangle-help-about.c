@@ -119,6 +119,15 @@ static void entangle_help_about_init(EntangleHelpAbout *about)
     gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(win), VERSION);
 }
 
+
+GtkWindow *entangle_help_about_get_window(EntangleHelpAbout *about)
+{
+    EntangleHelpAboutPrivate *priv = about->priv;
+
+    return GTK_WINDOW(gtk_builder_get_object(priv->builder, "help-about"));
+}
+
+
 void entangle_help_about_show(EntangleHelpAbout *about)
 {
     EntangleHelpAboutPrivate *priv = about->priv;

@@ -338,9 +338,18 @@ static void entangle_camera_picker_class_init(EntangleCameraPickerClass *klass)
 EntangleCameraPicker *entangle_camera_picker_new(EntangleCameraList *cameras)
 {
     return ENTANGLE_CAMERA_PICKER(g_object_new(ENTANGLE_TYPE_CAMERA_PICKER,
-                                           "cameras", cameras,
-                                           NULL));
+                                               "cameras", cameras,
+                                               NULL));
 }
+
+
+GtkWindow *entangle_camera_picker_get_window(EntangleCameraPicker *picker)
+{
+    EntangleCameraPickerPrivate *priv = picker->priv;
+    
+    return GTK_WINDOW(gtk_builder_get_object(priv->builder, "camera-picker"));
+}
+
 
 void do_picker_close(GtkButton *src G_GNUC_UNUSED,
                      EntangleCameraPicker *picker)

@@ -238,6 +238,13 @@ static void entangle_camera_info_init(EntangleCameraInfo *info)
 }
 
 
+GtkWindow *entangle_camera_info_get_window(EntangleCameraInfo *info)
+{
+    EntangleCameraInfoPrivate *priv = info->priv;
+    return GTK_WINDOW(gtk_builder_get_object(priv->builder, "camera-info"));
+}
+
+
 void entangle_camera_info_show(EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv = info->priv;

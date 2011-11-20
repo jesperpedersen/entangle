@@ -25,7 +25,10 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Entangle Preferences</property>
+    <property name="window_position">center-on-parent</property>
     <property name="type_hint">normal</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="deletable">False</property>
     <signal name="close" handler="do_preferences_close" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox5">

@@ -21,7 +21,7 @@
 #ifndef __ENTANGLE_HELP_ABOUT_H__
 #define __ENTANGLE_HELP_ABOUT_H__
 
-#include <glib-object.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -55,6 +55,8 @@ struct _EntangleHelpAboutClass
 GType entangle_help_about_get_type(void) G_GNUC_CONST;
 
 EntangleHelpAbout* entangle_help_about_new(void);
+
+GtkWindow *entangle_help_about_get_window(EntangleHelpAbout *about);
 
 void entangle_help_about_show(EntangleHelpAbout *about);
 void entangle_help_about_hide(EntangleHelpAbout *about);

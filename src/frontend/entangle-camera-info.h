@@ -21,7 +21,7 @@
 #ifndef __ENTANGLE_CAMERA_INFO_H__
 #define __ENTANGLE_CAMERA_INFO_H__
 
-#include <glib-object.h>
+#include <gtk/gtk.h>
 
 #include "entangle-camera.h"
 
@@ -65,7 +65,9 @@ GType entangle_camera_info_get_type(void) G_GNUC_CONST;
 GType entangle_camera_info_data_get_type(void) G_GNUC_CONST;
 
 EntangleCameraInfo* entangle_camera_info_new(EntangleCamera *camera,
-                                     EntangleCameraInfoData data);
+                                             EntangleCameraInfoData data);
+
+GtkWindow *entangle_camera_info_get_window(EntangleCameraInfo *info);
 
 void entangle_camera_info_show(EntangleCameraInfo *info);
 void entangle_camera_info_hide(EntangleCameraInfo *info);
