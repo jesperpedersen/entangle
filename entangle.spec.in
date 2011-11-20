@@ -18,7 +18,7 @@ Source: http://entangle-photo.org/download/sources/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://entangle-photo.org/
 
-BuildRequires: glib2-devel >= 2.10.0
+BuildRequires: glib2-devel >= 2.26.0
 BuildRequires: gtk3-devel >= 3.0
 BuildRequires: libgphoto2-devel >= 2.4.8
 %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
@@ -26,7 +26,6 @@ BuildRequires: libgudev1-devel >= 145
 %else
 BuildRequires: hal-devel >= 0.5.10
 %endif
-BuildRequires: GConf2-devel >= 2.12.0
 BuildRequires: dbus-glib-devel >= 0.60
 BuildRequires: lcms-devel >= 1.18
 BuildRequires: /usr/bin/tpage
@@ -79,9 +78,11 @@ rm -fr %{buildroot}
 
 %post
 update-desktop-database %{_datadir}/applications
+glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 
 %postun
 update-desktop-database %{_datadir}/applications
+glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 
 %files
 %defattr(-, root, root)
@@ -109,6 +110,7 @@ update-desktop-database %{_datadir}/applications
 %{_datadir}/%{name}/sRGB.icc
 %{_datadir}/gtk-doc/html/Entangle
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/glib-2.0/schemas/org.entangle-photo.manager.gschema.xml
 %if %{with_introspection}
 %{_datadir}/gir-1.0/Entangle-0.1.gir
 %{_libdir}/girepository-1.0/Entangle-0.1.typelib

@@ -28,7 +28,7 @@
 #include "entangle-debug.h"
 #include "entangle-app.h"
 #include "entangle-device-manager.h"
-#include "entangle-preferences-gconf.h"
+#include "entangle-preferences.h"
 
 /**
  * @Short_description: Global application state base class
@@ -383,7 +383,7 @@ static void entangle_app_init(EntangleApp *app)
 
     priv = app->priv = ENTANGLE_APP_GET_PRIVATE(app);
 
-    priv->preferences = entangle_preferences_gconf_new();
+    priv->preferences = entangle_preferences_new();
     priv->cameras = entangle_camera_list_new();
     priv->devManager = entangle_device_manager_new();
 

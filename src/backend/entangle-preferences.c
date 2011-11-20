@@ -34,17 +34,32 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_PREFERENCES, EntanglePreferencesPrivate))
 
 struct _EntanglePreferencesPrivate {
-    char *pictureDir;
-    char *filenamePattern;
-
-    gboolean enableColourManagement;
-    EntangleColourProfile *rgbProfile;
-    EntangleColourProfile *monitorProfile;
-    gboolean detectSystemProfile;
-    EntangleColourProfileIntent renderingIntent;
+    GSettings *cmsSettings;
+    GSettings *folderSettings;
 };
 
 G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
+
+#define SETTING_FOLDER                     "folder"
+#define SETTING_CMS                        "cms"
+
+#define SETTING_FOLDER_FILENAME_PATTERN    "filename-pattern"
+#define SETTING_FOLDER_PICTURE_DIR         "picture-dir"
+
+#define SETTING_CMS_ENABLED                "enabled"
+#define SETTING_CMS_DETECT_SYSTEM_PROFILE  "detect-system-profile"
+#define SETTING_CMS_RGB_PROFILE            "rgb-profile"
+#define SETTING_CMS_MONITOR_PROFILE        "monitor-profile"
+#define SETTING_CMS_RENDERING_INTENT       "rendering-intent"
+
+#define PROP_NAME_FOLDER_FILENAME_PATTERN SETTING_FOLDER "-" SETTING_FOLDER_FILENAME_PATTERN
+#define PROP_NAME_FOLDER_PICTURE_DIR      SETTING_FOLDER "-" SETTING_FOLDER_PICTURE_DIR
+
+#define PROP_NAME_CMS_ENABLED                SETTING_CMS "-" SETTING_CMS_ENABLED
+#define PROP_NAME_CMS_DETECT_SYSTEM_PROFILE  SETTING_CMS "-" SETTING_CMS_DETECT_SYSTEM_PROFILE
+#define PROP_NAME_CMS_RGB_PROFILE            SETTING_CMS "-" SETTING_CMS_RGB_PROFILE
+#define PROP_NAME_CMS_MONITOR_PROFILE        SETTING_CMS "-" SETTING_CMS_MONITOR_PROFILE
+#define PROP_NAME_CMS_RENDERING_INTENT       SETTING_CMS "-" SETTING_CMS_RENDERING_INTENT
 
 enum {
     PROP_0,
@@ -72,41 +87,63 @@ static char *entangle_find_picture_dir(void)
 }
 
 static void entangle_preferences_get_property(GObject *object,
-                                          guint prop_id,
-                                          GValue *value,
-                                          GParamSpec *pspec)
+                                              guint prop_id,
+                                              GValue *value,
+                                              GParamSpec *pspec)
 {
     EntanglePreferences *picker = ENTANGLE_PREFERENCES(object);
     EntanglePreferencesPrivate *priv = picker->priv;
+    EntangleColourProfile *prof;
+    gchar *dir;
 
     switch (prop_id)
         {
         case PROP_PICTURE_DIR:
-            g_value_set_string(value, priv->pictureDir);
+            dir = g_settings_get_string(priv->folderSettings,
+                                        SETTING_FOLDER_PICTURE_DIR);
+            if (!dir)
+                dir = entangle_find_picture_dir();
+            g_value_set_string(value, dir);
             break;
 
         case PROP_FILENAME_PATTERN:
-            g_value_set_string(value, priv->filenamePattern);
+            g_value_set_string(value,
+                               g_settings_get_string(priv->folderSettings,
+                                                     SETTING_FOLDER_FILENAME_PATTERN));
             break;
 
         case PROP_COLOUR_MANAGED_DISPLAY:
-            g_value_set_boolean(value, priv->enableColourManagement);
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->cmsSettings,
+                                                       SETTING_CMS_ENABLED));
             break;
 
         case PROP_RGB_PROFILE:
-            g_value_set_object(value, priv->rgbProfile);
+            prof = entangle_colour_profile_new_file(
+                               g_settings_get_string(priv->cmsSettings,
+                                                     SETTING_CMS_RGB_PROFILE));
+            g_value_set_object(value, prof);
+            g_object_unref(prof);
             break;
 
         case PROP_MONITOR_PROFILE:
-            g_value_set_object(value, priv->monitorProfile);
+            prof = entangle_colour_profile_new_file(
+                               g_settings_get_string(priv->cmsSettings,
+                                                     SETTING_CMS_MONITOR_PROFILE));
+            g_value_set_object(value, prof);
+            g_object_unref(prof);
             break;
 
         case PROP_DETECT_SYSTEM_PROFILE:
-            g_value_set_boolean(value, priv->detectSystemProfile);
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->cmsSettings,
+                                                       SETTING_CMS_DETECT_SYSTEM_PROFILE));
             break;
 
         case PROP_PROFILE_RENDERING_INTENT:
-            g_value_set_enum(value, priv->renderingIntent);
+            g_value_set_enum(value,
+                             g_settings_get_enum(priv->cmsSettings,
+                                                 SETTING_CMS_RENDERING_INTENT));
             break;
 
         default:
@@ -115,49 +152,68 @@ static void entangle_preferences_get_property(GObject *object,
 }
 
 static void entangle_preferences_set_property(GObject *object,
-                                          guint prop_id,
-                                          const GValue *value,
-                                          GParamSpec *pspec)
+                                              guint prop_id,
+                                              const GValue *value,
+                                              GParamSpec *pspec)
 {
     EntanglePreferences *picker = ENTANGLE_PREFERENCES(object);
     EntanglePreferencesPrivate *priv = picker->priv;
+    EntangleColourProfile *prof;
 
     switch (prop_id)
         {
         case PROP_PICTURE_DIR:
-            g_free(priv->pictureDir);
-            priv->pictureDir = g_value_dup_string(value);
+            g_settings_set_string(priv->folderSettings,
+                                  SETTING_FOLDER_PICTURE_DIR,
+                                  g_value_get_string(value));
             break;
 
         case PROP_FILENAME_PATTERN:
-            g_free(priv->filenamePattern);
-            priv->filenamePattern = g_value_dup_string(value);
+            g_settings_set_string(priv->folderSettings,
+                                  SETTING_FOLDER_FILENAME_PATTERN,
+                                  g_value_get_string(value));
             break;
 
         case PROP_COLOUR_MANAGED_DISPLAY:
-            priv->enableColourManagement = g_value_get_boolean(value);
+            g_settings_set_boolean(priv->cmsSettings,
+                                   SETTING_CMS_ENABLED,
+                                   g_value_get_boolean(value));
             break;
 
         case PROP_RGB_PROFILE:
-            if (priv->rgbProfile)
-                g_object_unref(priv->rgbProfile);
-            priv->rgbProfile = g_value_get_object(value);
-            g_object_ref(priv->rgbProfile);
+            prof = g_value_get_object(value);
+            if (prof)
+                g_settings_set_string(priv->cmsSettings,
+                                      SETTING_CMS_RGB_PROFILE,
+                                      entangle_colour_profile_filename(prof));
+            else
+                g_settings_set_string(priv->cmsSettings,
+                                      SETTING_CMS_RGB_PROFILE,
+                                      NULL);
             break;
 
         case PROP_MONITOR_PROFILE:
-            if (priv->monitorProfile)
-                g_object_unref(priv->monitorProfile);
-            priv->monitorProfile = g_value_get_object(value);
-            g_object_ref(priv->monitorProfile);
+            prof = g_value_get_object(value);
+            if (prof)
+                g_settings_set_string(priv->cmsSettings,
+                                      SETTING_CMS_MONITOR_PROFILE,
+                                      entangle_colour_profile_filename(prof));
+            else
+                g_settings_set_string(priv->cmsSettings,
+                                      SETTING_CMS_MONITOR_PROFILE,
+                                      NULL);
             break;
 
         case PROP_DETECT_SYSTEM_PROFILE:
-            priv->detectSystemProfile = g_value_get_boolean(value);
+            g_settings_set_boolean(priv->cmsSettings,
+                                   SETTING_CMS_DETECT_SYSTEM_PROFILE,
+                                   g_value_get_boolean(value));
             break;
 
         case PROP_PROFILE_RENDERING_INTENT:
-            priv->renderingIntent = g_value_get_enum(value);
+            g_settings_set_enum(priv->cmsSettings,
+                                SETTING_CMS_RENDERING_INTENT,
+                                g_value_get_enum(value));
             break;
 
         default:
@@ -173,12 +229,8 @@ static void entangle_preferences_finalize(GObject *object)
 
     ENTANGLE_DEBUG("Finalize preferences %p", object);
 
-    g_free(priv->pictureDir);
-    g_free(priv->filenamePattern);
-    if (priv->rgbProfile)
-        g_object_unref(priv->rgbProfile);
-    if (priv->monitorProfile)
-        g_object_unref(priv->monitorProfile);
+    g_object_unref(priv->folderSettings);
+    g_object_unref(priv->cmsSettings);
 
     G_OBJECT_CLASS (entangle_preferences_parent_class)->finalize (object);
 }
@@ -194,7 +246,7 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_PICTURE_DIR,
-                                    g_param_spec_string("picture-dir",
+                                    g_param_spec_string(PROP_NAME_FOLDER_PICTURE_DIR,
                                                         "Pictures directory",
                                                         "Directory to store pictures in",
                                                         NULL,
@@ -205,7 +257,7 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_FILENAME_PATTERN,
-                                    g_param_spec_string("filename-pattern",
+                                    g_param_spec_string(PROP_NAME_FOLDER_FILENAME_PATTERN,
                                                         "Filename pattern",
                                                         "Pattern for creating new filenames",
                                                         NULL,
@@ -216,7 +268,7 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_COLOUR_MANAGED_DISPLAY,
-                                    g_param_spec_boolean("colour-managed-display",
+                                    g_param_spec_boolean(PROP_NAME_CMS_ENABLED,
                                                          "Colour managed display",
                                                          "Whether to enable colour management on display",
                                                          FALSE,
@@ -227,7 +279,7 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_RGB_PROFILE,
-                                    g_param_spec_object("rgb-profile",
+                                    g_param_spec_object(PROP_NAME_CMS_RGB_PROFILE,
                                                         "RGB Profile",
                                                         "Colour profile for workspace",
                                                         ENTANGLE_TYPE_COLOUR_PROFILE,
@@ -238,7 +290,7 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_MONITOR_PROFILE,
-                                    g_param_spec_object("monitor-profile",
+                                    g_param_spec_object(PROP_NAME_CMS_MONITOR_PROFILE,
                                                         "Monitor profile",
                                                         "Colour profile for monitor",
                                                         ENTANGLE_TYPE_COLOUR_PROFILE,
@@ -249,7 +301,7 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_DETECT_SYSTEM_PROFILE,
-                                    g_param_spec_boolean("detect-system-profile",
+                                    g_param_spec_boolean(PROP_NAME_CMS_DETECT_SYSTEM_PROFILE,
                                                          "Detect system profile",
                                                          "Detect the monitor colour profile",
                                                          TRUE,
@@ -260,7 +312,7 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_PROFILE_RENDERING_INTENT,
-                                    g_param_spec_enum("profile-rendering-intent",
+                                    g_param_spec_enum(PROP_NAME_CMS_RENDERING_INTENT,
                                                       "Profile rendering intent",
                                                       "Rendering intent for images",
                                                       ENTANGLE_TYPE_COLOUR_PROFILE_INTENT,
@@ -283,10 +335,18 @@ EntanglePreferences *entangle_preferences_new(void)
 static void entangle_preferences_init(EntanglePreferences *picker)
 {
     EntanglePreferencesPrivate *priv;
+    GSettings *settings;
 
     priv = picker->priv = ENTANGLE_PREFERENCES_GET_PRIVATE(picker);
-    memset(priv, 0, sizeof(*priv));
 
+    settings = g_settings_new("org.entangle-photo.manager");
+    priv->folderSettings = g_settings_get_child(settings,
+                                                SETTING_FOLDER);
+    priv->cmsSettings = g_settings_get_child(settings,
+                                             SETTING_CMS);
+    g_object_unref(settings);
+
+#if 0
     priv->pictureDir = entangle_find_picture_dir();
     priv->filenamePattern = g_strdup("captureXXXXXX");
 
@@ -297,61 +357,77 @@ static void entangle_preferences_init(EntanglePreferences *picker)
         priv->rgbProfile = entangle_colour_profile_new_file(g_strdup("./sRGB.icc"));
     else
         priv->rgbProfile = entangle_colour_profile_new_file(g_strdup(PKGDATADIR "/sRGB.icc"));
+#endif
 }
 
 
-const char *entangle_preferences_picture_dir(EntanglePreferences *prefs)
+char *entangle_preferences_folder_picture_dir(EntanglePreferences *prefs)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
-
-    return priv->pictureDir;
+    char *dir = g_settings_get_string(priv->folderSettings,
+                                      SETTING_FOLDER_PICTURE_DIR);
+    if (!dir)
+        dir = entangle_find_picture_dir();
+    return dir;
 }
 
 
-const char *entangle_preferences_filename_pattern(EntanglePreferences *prefs)
+char *entangle_preferences_folder_filename_pattern(EntanglePreferences *prefs)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
 
-    return priv->filenamePattern;
+    return g_settings_get_string(priv->folderSettings,
+                                 SETTING_FOLDER_FILENAME_PATTERN);
 }
 
 
-EntangleColourProfile *entangle_preferences_rgb_profile(EntanglePreferences *prefs)
+EntangleColourProfile *entangle_preferences_cms_rgb_profile(EntanglePreferences *prefs)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
+    EntangleColourProfile *prof;
 
-    return priv->rgbProfile;
+    prof = entangle_colour_profile_new_file(g_settings_get_string(priv->cmsSettings,
+                                                                  SETTING_CMS_RGB_PROFILE));
+
+    return prof;
 }
 
 
-EntangleColourProfile *entangle_preferences_monitor_profile(EntanglePreferences *prefs)
+EntangleColourProfile *entangle_preferences_cms_monitor_profile(EntanglePreferences *prefs)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
+    EntangleColourProfile *prof;
 
-    return priv->monitorProfile;
+    prof = entangle_colour_profile_new_file(g_settings_get_string(priv->cmsSettings,
+                                                                  SETTING_CMS_MONITOR_PROFILE));
+
+    return prof;
 }
 
 
-gboolean entangle_preferences_enable_color_management(EntanglePreferences *prefs)
+gboolean entangle_preferences_cms_enabled(EntanglePreferences *prefs)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
 
-    return priv->enableColourManagement;
+    return g_settings_get_boolean(priv->cmsSettings,
+                                  SETTING_CMS_ENABLED);
 }
 
-gboolean entangle_preferences_detect_monitor_profile(EntanglePreferences *prefs)
+gboolean entangle_preferences_cms_detect_system_profile(EntanglePreferences *prefs)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
 
-    return priv->detectSystemProfile;
+    return g_settings_get_boolean(priv->cmsSettings,
+                                  SETTING_CMS_DETECT_SYSTEM_PROFILE);
 }
 
 
-EntangleColourProfileIntent entangle_preferences_profile_rendering_intent(EntanglePreferences *prefs)
+EntangleColourProfileIntent entangle_preferences_cms_rendering_intent(EntanglePreferences *prefs)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
 
-    return priv->renderingIntent;
+    return g_settings_get_enum(priv->cmsSettings,
+                               SETTING_CMS_RENDERING_INTENT);
 }
 
 /*

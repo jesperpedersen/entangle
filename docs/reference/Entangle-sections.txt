@@ -416,22 +416,6 @@ ENTANGLE_CONTROL_GROUP_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>entangle-preferences-gconf</FILE>
-EntanglePreferencesGConfPrivate
-<TITLE>EntanglePreferencesGConf</TITLE>
-EntanglePreferencesGConf
-entangle_preferences_gconf_new
-<SUBSECTION Standard>
-ENTANGLE_PREFERENCES_GCONF
-ENTANGLE_IS_PREFERENCES_GCONF
-ENTANGLE_TYPE_PREFERENCES_GCONF
-entangle_preferences_gconf_get_type
-ENTANGLE_PREFERENCES_GCONF_CLASS
-ENTANGLE_IS_PREFERENCES_GCONF_CLASS
-ENTANGLE_PREFERENCES_GCONF_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>entangle-control-date</FILE>
 EntangleControlDatePrivate
 <TITLE>EntangleControlDate</TITLE>

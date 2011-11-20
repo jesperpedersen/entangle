@@ -223,18 +223,18 @@ static EntangleColourProfileTransform *entangle_camera_manager_colour_transform(
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntangleColourProfileTransform *transform = NULL;
 
-    if (entangle_preferences_enable_color_management(priv->prefs)) {
+    if (entangle_preferences_cms_enabled(priv->prefs)) {
         EntangleColourProfile *rgbProfile;
         EntangleColourProfile *monitorProfile;
         EntangleColourProfileIntent intent;
 
-        rgbProfile = entangle_preferences_rgb_profile(priv->prefs);
-        intent = entangle_preferences_profile_rendering_intent(priv->prefs);
-        if (entangle_preferences_detect_monitor_profile(priv->prefs)) {
+        rgbProfile = entangle_preferences_cms_rgb_profile(priv->prefs);
+        intent = entangle_preferences_cms_rendering_intent(priv->prefs);
+        if (entangle_preferences_cms_detect_system_profile(priv->prefs)) {
             GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
             monitorProfile = entangle_camera_manager_monitor_profile(GTK_WINDOW(window));
         } else {
-            monitorProfile = entangle_preferences_monitor_profile(priv->prefs);
+            monitorProfile = entangle_preferences_cms_monitor_profile(priv->prefs);
         }
 
         if (monitorProfile)
@@ -314,16 +314,16 @@ static GtkWidget *entangle_camera_manager_monitor_menu(EntangleCameraManager *ma
 
 
 static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
-                                              GParamSpec *spec,
-                                              gpointer opaque)
+                                                  GParamSpec *spec,
+                                                  gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
 
-    if (strcmp(spec->name, "colour-managed-display") == 0 ||
-        strcmp(spec->name, "rgb-profile") == 0 ||
-        strcmp(spec->name, "monitor-profile") == 0 ||
-        strcmp(spec->name, "detect-system-profile") == 0 ||
-        strcmp(spec->name, "profile-rendering-intent") == 0) {
+    if (strcmp(spec->name, "cms-enabled") == 0 ||
+        strcmp(spec->name, "cms-rgb-profile") == 0 ||
+        strcmp(spec->name, "cms-monitor-profile") == 0 ||
+        strcmp(spec->name, "cms-detect-system-profile") == 0 ||
+        strcmp(spec->name, "cms-rendering-intent") == 0) {
         entangle_camera_manager_update_colour_transform(manager);
     }
 }
@@ -890,11 +890,11 @@ static void do_add_camera(EntangleCameraManager *manager)
                                              G_CALLBACK(do_camera_file_add), manager);
 
     directory = g_strdup_printf("%s/%s/Default Session",
-                                entangle_preferences_picture_dir(priv->prefs),
+                                entangle_preferences_folder_picture_dir(priv->prefs),
                                 entangle_camera_get_model(priv->camera));
 
     priv->session = entangle_session_new(directory,
-                                         entangle_preferences_filename_pattern(priv->prefs));
+                                         entangle_preferences_folder_filename_pattern(priv->prefs));
     entangle_session_load(priv->session);
 
     entangle_camera_set_progress(priv->camera, ENTANGLE_PROGRESS(manager));
@@ -1168,7 +1168,7 @@ static void entangle_camera_manager_new_session(EntangleCameraManager *manager)
     gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(chooser), TRUE);
 
     dir = g_strdup_printf("%s/%s",
-                          entangle_preferences_picture_dir(priv->prefs),
+                          entangle_preferences_folder_picture_dir(priv->prefs),
                           entangle_camera_get_model(priv->camera));
     g_mkdir_with_parents(dir, 0777);
     ENTANGLE_DEBUG("Set curent folder '%s'", dir);
@@ -1181,7 +1181,7 @@ static void entangle_camera_manager_new_session(EntangleCameraManager *manager)
         EntangleSession *session;
         do_select_image(manager, NULL);
         dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
-        session = entangle_session_new(dir, entangle_preferences_filename_pattern(priv->prefs));
+        session = entangle_session_new(dir, entangle_preferences_folder_filename_pattern(priv->prefs));
         entangle_session_load(session);
         if (priv->session)
             g_object_unref(priv->session);
@@ -1213,7 +1213,7 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
     gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(chooser), FALSE);
 
     dir = g_strdup_printf("%s/%s",
-                          entangle_preferences_picture_dir(priv->prefs),
+                          entangle_preferences_folder_picture_dir(priv->prefs),
                           entangle_camera_get_model(priv->camera));
     g_mkdir_with_parents(dir, 0777);
 
@@ -1226,7 +1226,7 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
         EntangleSession *session;
         do_select_image(manager, NULL);
         dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
-        session = entangle_session_new(dir, entangle_preferences_filename_pattern(priv->prefs));
+        session = entangle_session_new(dir, entangle_preferences_folder_filename_pattern(priv->prefs));
         entangle_session_load(session);
         if (priv->session)
             g_object_unref(priv->session);

@@ -57,15 +57,14 @@ GType entangle_preferences_get_type(void) G_GNUC_CONST;
 
 EntanglePreferences *entangle_preferences_new(void);
 
-const char *entangle_preferences_picture_dir(EntanglePreferences *prefs);
+char *entangle_preferences_folder_picture_dir(EntanglePreferences *prefs);
+char *entangle_preferences_folder_filename_pattern(EntanglePreferences *prefs);
 
-const char *entangle_preferences_filename_pattern(EntanglePreferences *prefs);
-
-EntangleColourProfile *entangle_preferences_rgb_profile(EntanglePreferences *prefs);
-EntangleColourProfile *entangle_preferences_monitor_profile(EntanglePreferences *prefs);
-gboolean entangle_preferences_detect_monitor_profile(EntanglePreferences *prefs);
-gboolean entangle_preferences_enable_color_management(EntanglePreferences *prefs);
-EntangleColourProfileIntent entangle_preferences_profile_rendering_intent(EntanglePreferences *prefs);
+gboolean entangle_preferences_cms_enabled(EntanglePreferences *prefs);
+EntangleColourProfile *entangle_preferences_cms_rgb_profile(EntanglePreferences *prefs);
+EntangleColourProfile *entangle_preferences_cms_monitor_profile(EntanglePreferences *prefs);
+gboolean entangle_preferences_cms_detect_system_profile(EntanglePreferences *prefs);
+EntangleColourProfileIntent entangle_preferences_cms_rendering_intent(EntanglePreferences *prefs);
 
 
 

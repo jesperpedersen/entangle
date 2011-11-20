@@ -20,14 +20,16 @@ desktop_DATA = entangle.desktop
 icondir = $(pkgdatadir)
 icon_DATA = $(PACKAGE).svg $(wildcard *.png)
 
+gsettingsdir = $(datadir)/glib-2.0/schemas
+gsettings_DATA = org.entangle-photo.manager.gschema.xml
+
 iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
 
 BUILT_SOURCES = \
-	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
-	backend/entangle-config-entry-enums.h backend/entangle-config-entry-enums.c
+	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c
 
-EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA)
+EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA) $(gsettings_DATA)
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-app.h backend/entangle-app.c \
@@ -44,18 +46,12 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-control-range.h backend/entangle-control-range.c \
 	backend/entangle-control-text.h backend/entangle-control-text.c \
 	backend/entangle-control-toggle.h backend/entangle-control-toggle.c \
-	backend/entangle-config-entry.h backend/entangle-config-entry.c \
-	backend/entangle-config-entry-enums.h backend/entangle-config-entry-enums.c \
-	backend/entangle-config-set.h backend/entangle-config-set.c \
-	backend/entangle-config-store.h backend/entangle-config-store.c \
-	backend/entangle-config-store-gconf.h backend/entangle-config-store-gconf.c \
 	backend/entangle-debug.h backend/entangle-debug.c \
 	backend/entangle-device-manager.h backend/entangle-device-manager.c \
 	backend/entangle-image.h backend/entangle-image.c \
 	backend/entangle-image-loader.h backend/entangle-image-loader.c \
 	backend/entangle-pixbuf-loader.h backend/entangle-pixbuf-loader.c \
 	backend/entangle-preferences.h backend/entangle-preferences.c \
-	backend/entangle-preferences-gconf.h backend/entangle-preferences-gconf.c \
 	backend/entangle-progress.h backend/entangle-progress.c \
 	backend/entangle-session.h backend/entangle-session.c \
 	backend/entangle-thumbnail-loader.h backend/entangle-thumbnail-loader.c
@@ -66,7 +62,6 @@ libentangle_backend_la_LDFLAGS = \
 	$(GTHREAD_LIBS) \
 	$(GDK_PIXBUF_LIBS) \
 	$(GPHOTO2_LIBS) \
-	$(GCONF2_LIBS) \
 	$(LCMS_LIBS) \
 	$(HAL_LIBS) \
 	$(GUDEV_LIBS) \
@@ -81,7 +76,6 @@ libentangle_backend_la_CFLAGS = \
 	$(GTHREAD_CFLAGS) \
 	$(GDK_PIXBUF_CFLAGS) \
 	$(GPHOTO2_CFLAGS) \
-	$(GCONF2_CFLAGS) \
 	$(LCMS_CFLAGS) \
 	$(HAL_CFLAGS) \
 	$(GUDEV_CFLAGS) \

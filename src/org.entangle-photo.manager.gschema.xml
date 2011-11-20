@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+
+  <enum id="org.entangle-photo.manager.cms.rendering-intent">
+    <value value="0" nick="perceptual"/>
+    <value value="1" nick="relative-colourimetric"/>
+    <value value="2" nick="saturation"/>
+    <value value="3" nick="absolute-colourimetric"/>
+  </enum>
+
+  <schema path="/org/entangle-photo/manager/" id="org.entangle-photo.manager" gettext-domain="entangle-photo">
+    <child schema="org.entangle-photo.manager.folder" name="folder"/>
+    <child schema="org.entangle-photo.manager.cms" name="cms"/>
+  </schema>
+
+  <schema path="/org/entangle-photo/manager/folder/" id="org.entangle-photo.manager.folder" gettext-domain="entangle-photo">
+    <key type="s" name="filename-pattern">
+      <default>'captureXXXXXX'</default>
+      <summary>Filename pattern</summary>
+      <description>Image filename pattern</description>
+    </key>
+
+    <key type="s" name="picture-dir">
+      <default>''</default>
+      <summary>Picture dir</summary>
+      <description>Directory in which image sessions are created</description>
+    </key>
+  </schema>
+
+  <schema path="/org/entangle-photo/manager/cms/" id="org.entangle-photo.manager.cms" gettext-domain="entangle-photo">
+    <key type="b" name="enabled">
+      <default>true</default>
+      <summary>Enable colour management</summary>
+      <description>Enable colour managed display of images</description>
+    </key>
+
+    <key type="b" name="detect-system-profile">
+      <default>true</default>
+      <summary>Detect system monitor profile</summary>
+      <description>Automatically detexct colour profile for monitors</description>
+    </key>
+
+    <key name="rendering-intent" enum="org.entangle-photo.manager.cms.rendering-intent">
+      <default>'perceptual'</default>
+      <summary>Rendering intent</summary>
+      <description>Rendering intent</description>
+    </key>
+
+    <key type="s" name="monitor-profile">
+      <default>''</default>
+      <summary>Monitor profile</summary>
+      <description>Path to monitor colour profile</description>
+    </key>
+
+    <key type="s" name="rgb-profile">
+      <default>''</default>
+      <summary>RGB profile</summary>
+      <description>Path to RGB colour profile</description>
+    </key>
+  </schema>
+</schemalist>
