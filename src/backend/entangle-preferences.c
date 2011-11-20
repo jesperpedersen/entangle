@@ -86,6 +86,17 @@ static char *entangle_find_picture_dir(void)
     return ret;
 }
 
+
+static char *entangle_find_srgb_profile(void)
+{
+    gchar *filename;
+    if (access("./sRGB.icc", R_OK) == 0)
+        filename = g_strdup("./sRGB.icc");
+    else
+        filename = g_strdup(PKGDATADIR "/sRGB.icc");
+    return filename;
+}
+
 static void entangle_preferences_get_property(GObject *object,
                                               guint prop_id,
                                               GValue *value,
@@ -95,6 +106,7 @@ static void entangle_preferences_get_property(GObject *object,
     EntanglePreferencesPrivate *priv = picker->priv;
     EntangleColourProfile *prof;
     gchar *dir;
+    gchar *file;
 
     switch (prop_id)
         {
@@ -107,9 +119,10 @@ static void entangle_preferences_get_property(GObject *object,
             break;
 
         case PROP_FILENAME_PATTERN:
-            g_value_set_string(value,
-                               g_settings_get_string(priv->folderSettings,
-                                                     SETTING_FOLDER_FILENAME_PATTERN));
+            file = g_settings_get_string(priv->folderSettings,
+                                         SETTING_FOLDER_FILENAME_PATTERN);
+            g_value_set_string(value, file);
+            g_free(file);
             break;
 
         case PROP_COLOUR_MANAGED_DISPLAY:
@@ -119,19 +132,26 @@ static void entangle_preferences_get_property(GObject *object,
             break;
 
         case PROP_RGB_PROFILE:
-            prof = entangle_colour_profile_new_file(
-                               g_settings_get_string(priv->cmsSettings,
-                                                     SETTING_CMS_RGB_PROFILE));
+            file = g_settings_get_string(priv->cmsSettings,
+                                         SETTING_CMS_RGB_PROFILE);
+            if (!file)
+                file = entangle_find_srgb_profile();
+            prof = entangle_colour_profile_new_file(file);
             g_value_set_object(value, prof);
             g_object_unref(prof);
+            g_free(file);
             break;
 
         case PROP_MONITOR_PROFILE:
-            prof = entangle_colour_profile_new_file(
-                               g_settings_get_string(priv->cmsSettings,
-                                                     SETTING_CMS_MONITOR_PROFILE));
+            file = g_settings_get_string(priv->cmsSettings,
+                                         SETTING_CMS_MONITOR_PROFILE);
+            if (file)
+                prof = entangle_colour_profile_new_file(file);
+            else
+                prof = NULL;
             g_value_set_object(value, prof);
             g_object_unref(prof);
+            g_free(file);
             break;
 
         case PROP_DETECT_SYSTEM_PROFILE:
@@ -345,19 +365,6 @@ static void entangle_preferences_init(EntanglePreferences *picker)
     priv->cmsSettings = g_settings_get_child(settings,
                                              SETTING_CMS);
     g_object_unref(settings);
-
-#if 0
-    priv->pictureDir = entangle_find_picture_dir();
-    priv->filenamePattern = g_strdup("captureXXXXXX");
-
-    priv->enableColourManagement = TRUE;
-    priv->detectSystemProfile = TRUE;
-    priv->renderingIntent = ENTANGLE_COLOUR_PROFILE_INTENT_PERCEPTUAL;
-    if (access("./frontend/entangle-camera-manager.xml", R_OK) == 0)
-        priv->rgbProfile = entangle_colour_profile_new_file(g_strdup("./sRGB.icc"));
-    else
-        priv->rgbProfile = entangle_colour_profile_new_file(g_strdup(PKGDATADIR "/sRGB.icc"));
-#endif
 }
 
 
