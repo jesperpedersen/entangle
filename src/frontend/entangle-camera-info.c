@@ -215,7 +215,6 @@ gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
 static void entangle_camera_info_init(EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv;
-    GtkWidget *txt;
     GError *error = NULL;
 
     priv = info->priv = ENTANGLE_CAMERA_INFO_GET_PRIVATE(info);
@@ -231,10 +230,6 @@ static void entangle_camera_info_init(EntangleCameraInfo *info)
         g_error("Couldn't load builder file: %s", error->message);
 
     gtk_builder_connect_signals(priv->builder, info);
-
-    txt = GTK_WIDGET(gtk_builder_get_object(priv->builder, "info-text"));
-
-    gtk_widget_set_sensitive(txt, FALSE);
 }
 
 
@@ -268,35 +263,33 @@ static void do_info_refresh(EntangleCameraInfo *info)
 {
     EntangleCameraInfoPrivate *priv = info->priv;
     GtkWidget *text = GTK_WIDGET(gtk_builder_get_object(priv->builder, "info-text"));
-    GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
-
 
     if (priv->camera) {
         switch (priv->data) {
         case ENTANGLE_CAMERA_INFO_DATA_SUMMARY: {
             char *str = entangle_camera_get_summary(priv->camera);
-            gtk_text_buffer_set_text(buf, str, -1);
+            gtk_label_set_text(GTK_LABEL(text), str);
             g_free(str);
         }   break;
         case ENTANGLE_CAMERA_INFO_DATA_MANUAL: {
             char *str = entangle_camera_get_manual(priv->camera);
-            gtk_text_buffer_set_text(buf, str, -1);
+            gtk_label_set_text(GTK_LABEL(text), str);
             g_free(str);
         }   break;
         case ENTANGLE_CAMERA_INFO_DATA_DRIVER: {
             char *str = entangle_camera_get_driver(priv->camera);
-            gtk_text_buffer_set_text(buf, str, -1);
+            gtk_label_set_text(GTK_LABEL(text), str);
             g_free(str);
         }   break;
         case ENTANGLE_CAMERA_INFO_DATA_SUPPORTED:
-            gtk_text_buffer_set_text(buf, "supported", -1);
+            gtk_label_set_text(GTK_LABEL(text), "Cannot list supported cameras yet");
             break;
         default:
-            gtk_text_buffer_set_text(buf, "unknown", -1);
+            gtk_label_set_text(GTK_LABEL(text), "unknown");
             break;
         }
     } else {
-        gtk_text_buffer_set_text(buf, "", -1);
+        gtk_label_set_text(GTK_LABEL(text), "");
     }
 }
 

@@ -120,6 +120,8 @@ void do_menu_help_manual(GtkMenuItem *src,
                          EntangleCameraManager *manager);
 void do_menu_help_driver(GtkMenuItem *src,
                          EntangleCameraManager *manager);
+void do_menu_help_supported(GtkMenuItem *src,
+                            EntangleCameraManager *manager);
 void do_menu_new_session(GtkImageMenuItem *src,
                          EntangleCameraManager *manager);
 void do_menu_open_session(GtkImageMenuItem *src,
@@ -1127,6 +1129,22 @@ void do_menu_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
 
     entangle_camera_info_show(priv->driver);
 }
+
+void do_menu_help_supported(GtkMenuItem *src G_GNUC_UNUSED,
+                            EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (!priv->supported) {
+        priv->supported = entangle_camera_info_new(priv->camera,
+                                                 ENTANGLE_CAMERA_INFO_DATA_SUPPORTED);
+        gtk_window_set_transient_for(entangle_camera_info_get_window(priv->supported),
+                                     entangle_camera_manager_get_window(manager));
+    }
+
+    entangle_camera_info_show(priv->supported);
+}
+
 
 static void entangle_camera_manager_new_session(EntangleCameraManager *manager)
 {
