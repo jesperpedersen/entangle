@@ -94,8 +94,12 @@ libentangle_frontend_la_SOURCES = \
 	frontend/entangle-help-about.h frontend/entangle-help-about.c \
 	frontend/entangle-image-display.h frontend/entangle-image-display.c \
 	frontend/entangle-image-popup.h frontend/entangle-image-popup.c \
+	frontend/entangle-image-statusbar.h frontend/entangle-image-statusbar.c \
 	frontend/entangle-preferences-display.h frontend/entangle-preferences-display.c \
-	frontend/entangle-session-browser.h frontend/entangle-session-browser.c
+	frontend/entangle-session-browser.h frontend/entangle-session-browser.c \
+	frontend/view/autoDrawer.c frontend/view/autoDrawer.h \
+	frontend/view/ovBox.c frontend/view/ovBox.h \
+	frontend/view/drawer.c frontend/view/drawer.h
 
 libentangle_frontend_la_LIBADD = libentangle_backend.la
 

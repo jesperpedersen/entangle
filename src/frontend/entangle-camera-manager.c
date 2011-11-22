@@ -34,6 +34,7 @@
 #include "entangle-camera-picker.h"
 #include "entangle-session.h"
 #include "entangle-image-display.h"
+#include "entangle-image-statusbar.h"
 #include "entangle-image-loader.h"
 #include "entangle-thumbnail-loader.h"
 #include "entangle-image-popup.h"
@@ -43,7 +44,7 @@
 #include "entangle-colour-profile.h"
 #include "entangle-preferences-display.h"
 #include "entangle-progress.h"
-
+#include "view/autoDrawer.h"
 
 #define ENTANGLE_CAMERA_MANAGER_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_MANAGER, EntangleCameraManagerPrivate))
@@ -66,6 +67,9 @@ struct _EntangleCameraManagerPrivate {
     EntangleThumbnailLoader *thumbLoader;
     EntangleColourProfileTransform *colourTransform;
     EntangleImageDisplay *imageDisplay;
+    EntangleImageStatusbar *imageStatusbar;
+    ViewAutoDrawer *imageDrawer;
+    gulong imageDrawerTimer;
     EntangleSessionBrowser *sessionBrowser;
     EntangleControlPanel *controlPanel;
     EntanglePreferencesDisplay *prefsDisplay;
@@ -449,6 +453,7 @@ static void do_select_image(EntangleCameraManager *manager,
     }
 
     entangle_image_display_set_image(priv->imageDisplay, priv->currentImage);
+    entangle_image_statusbar_set_image(priv->imageStatusbar, priv->currentImage);
     if (priv->imagePresentation)
         entangle_image_popup_set_image(priv->imagePresentation, priv->currentImage);
 }
@@ -1867,6 +1872,43 @@ static void do_pixbuf_loaded(EntanglePixbufLoader *loader,
     gdk_threads_leave();
 }
 
+static void do_metadata_loaded(EntanglePixbufLoader *loader,
+                               EntangleImage *image)
+{
+    GExiv2Metadata *metadata = entangle_pixbuf_loader_get_metadata(loader, image);
+
+    gdk_threads_enter();
+    entangle_image_set_metadata(image, metadata);
+    gdk_threads_leave();
+}
+
+
+static gboolean do_image_status_hide(gpointer opaque)
+{
+    EntangleCameraManager *manager = opaque;
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    ViewAutoDrawer_SetPinned(VIEW_AUTODRAWER(priv->imageDrawer), FALSE);
+    priv->imageDrawerTimer = 0;
+    return FALSE;
+}
+
+static void do_image_status_show(GtkWidget *widget G_GNUC_UNUSED,
+                                 GdkEvent *event G_GNUC_UNUSED,
+                                 gpointer opaque)
+{
+    EntangleCameraManager *manager = opaque;
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    ViewAutoDrawer_SetPinned(VIEW_AUTODRAWER(priv->imageDrawer), TRUE);
+    if (priv->imageDrawerTimer)
+        g_source_remove(priv->imageDrawerTimer);
+    priv->imageDrawerTimer = g_timeout_add_seconds(3,
+                                                   do_image_status_hide,
+                                                   manager);
+}
+
+
 static void entangle_camera_manager_init(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv;
@@ -1912,8 +1954,11 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     priv->thumbLoader = entangle_thumbnail_loader_new(96, 96);
 
     g_signal_connect(priv->imageLoader, "pixbuf-loaded", G_CALLBACK(do_pixbuf_loaded), NULL);
+    g_signal_connect(priv->imageLoader, "metadata-loaded", G_CALLBACK(do_metadata_loaded), NULL);
 
     priv->imageDisplay = entangle_image_display_new();
+    priv->imageStatusbar = entangle_image_statusbar_new();
+    priv->imageDrawer = VIEW_AUTODRAWER(ViewAutoDrawer_New());
     priv->sessionBrowser = entangle_session_browser_new();
     priv->controlPanel = entangle_control_panel_new();
 
@@ -1952,8 +1997,27 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
                                             g_free,
                                             do_popup_remove);
 
+    
+    ViewOvBox_SetOver(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageStatusbar));
+    ViewOvBox_SetUnder(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageDisplay));
+    ViewAutoDrawer_SetOffset(VIEW_AUTODRAWER(priv->imageDrawer), -1);
+    ViewAutoDrawer_SetFill(VIEW_AUTODRAWER(priv->imageDrawer), TRUE);
+    ViewAutoDrawer_SetOverlapPixels(VIEW_AUTODRAWER(priv->imageDrawer), 1);
+    ViewAutoDrawer_SetNoOverlapPixels(VIEW_AUTODRAWER(priv->imageDrawer), 0);
+    ViewDrawer_SetSpeed(VIEW_DRAWER(priv->imageDrawer), 20, 0.05);
+    gtk_widget_show(GTK_WIDGET(priv->imageDrawer));
+    gtk_widget_show(GTK_WIDGET(priv->imageStatusbar));
+    ViewAutoDrawer_SetActive(priv->imageDrawer, TRUE);
+
+    gtk_widget_realize(win);
+    GdkWindow *imgWin = gtk_widget_get_window(win);
+    gdk_window_set_events(imgWin,
+                          gdk_window_get_events(imgWin) | GDK_POINTER_MOTION_MASK);
+    g_signal_connect(GTK_WIDGET(win), "motion-notify-event",
+                     G_CALLBACK(do_image_status_show), manager);
+
     ENTANGLE_DEBUG("Adding %p to %p", priv->imageDisplay, viewport);
-    gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDisplay));
+    gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDrawer));
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
     gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));
 
