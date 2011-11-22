@@ -123,12 +123,18 @@ static void do_setup_control_group(EntangleControlPanel *panel,
         priv->hasControls = TRUE;
 
         ENTANGLE_DEBUG("Build control %d %s",
-                   entangle_control_id(control),
-                   entangle_control_label(control));
+                   entangle_control_get_id(control),
+                   entangle_control_get_label(control));
 
         if (ENTANGLE_IS_CONTROL_GROUP(control)) {
-            GtkWidget *frame = gtk_expander_new(entangle_control_label(control));
-            //GtkWidget *frame = gtk_frame_new(entangle_control_label(control));
+            const gchar *path = entangle_control_get_path(control);
+
+            if (g_str_equal(path, "/main/actions") ||
+                g_str_equal(path, "/main/other"))
+                continue;
+
+            GtkWidget *frame = gtk_expander_new(entangle_control_get_label(control));
+            //GtkWidget *frame = gtk_frame_new(entangle_control_get_label(control));
             GtkWidget *subbox = gtk_vbox_new(FALSE, 6);
 
             gtk_container_add(GTK_CONTAINER(box), frame);
@@ -144,7 +150,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
         } else if (ENTANGLE_IS_CONTROL_BUTTON(control)) {
             GtkWidget *value;
 
-            value = gtk_button_new_with_label(entangle_control_label(control));
+            value = gtk_button_new_with_label(entangle_control_get_label(control));
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
             gtk_container_add(GTK_CONTAINER(box), value);
@@ -169,10 +175,10 @@ static void do_setup_control_group(EntangleControlPanel *panel,
              *   eg Shutter speed 0.00025 should be presented 1/4000
              */
 
-            label = gtk_label_new(entangle_control_label(control));
+            label = gtk_label_new(entangle_control_get_label(control));
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
-            gtk_widget_set_tooltip_text(label, entangle_control_info(control));
+            gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
             gtk_container_add(GTK_CONTAINER(box), label);
 
             store = gtk_list_store_new(1, G_TYPE_STRING);
@@ -209,10 +215,10 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             GtkWidget *value;
             int date;
 
-            label = gtk_label_new(entangle_control_label(control));
+            label = gtk_label_new(entangle_control_get_label(control));
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
-            gtk_widget_set_tooltip_text(label, entangle_control_info(control));
+            gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
             gtk_container_add(GTK_CONTAINER(box), label);
 
             value = gtk_entry_new();
@@ -226,10 +232,10 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             GtkWidget *value;
             float offset;
 
-            label = gtk_label_new(entangle_control_label(control));
+            label = gtk_label_new(entangle_control_get_label(control));
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
-            gtk_widget_set_tooltip_text(label, entangle_control_info(control));
+            gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
             gtk_container_add(GTK_CONTAINER(box), label);
 
             value = gtk_hscale_new_with_range(entangle_control_range_get_min(ENTANGLE_CONTROL_RANGE(control)),
@@ -248,10 +254,10 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             GtkWidget *value;
             const char *text;
 
-            label = gtk_label_new(entangle_control_label(control));
+            label = gtk_label_new(entangle_control_get_label(control));
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
-            gtk_widget_set_tooltip_text(label, entangle_control_info(control));
+            gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
             gtk_container_add(GTK_CONTAINER(box), label);
 
             value = gtk_entry_new();
@@ -267,7 +273,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             GtkWidget *value;
             gboolean active;
 
-            value = gtk_check_button_new_with_label(entangle_control_label(control));
+            value = gtk_check_button_new_with_label(entangle_control_get_label(control));
             g_object_get(control, "value", &active, NULL);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
             if (entangle_control_get_readonly(control))

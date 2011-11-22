@@ -205,7 +205,11 @@ static void entangle_control_class_init(EntangleControlClass *klass)
 }
 
 
-EntangleControl *entangle_control_new(const char *path, int id, const char *label, const char *info, gboolean readonly)
+EntangleControl *entangle_control_new(const gchar *path,
+                                      gint id,
+                                      const gchar *label,
+                                      const gchar *info,
+                                      gboolean readonly)
 {
     return ENTANGLE_CONTROL(g_object_new(ENTANGLE_TYPE_CONTROL,
                                          "path", path,
@@ -223,21 +227,28 @@ static void entangle_control_init(EntangleControl *control)
 }
 
 
-int entangle_control_id(EntangleControl *control)
+gint entangle_control_get_id(EntangleControl *control)
 {
     EntangleControlPrivate *priv = control->priv;
 
     return priv->id;
 }
 
-const char *entangle_control_label(EntangleControl *control)
+const gchar *entangle_control_get_path(EntangleControl *control)
+{
+    EntangleControlPrivate *priv = control->priv;
+
+    return priv->path;
+}
+
+const gchar *entangle_control_get_label(EntangleControl *control)
 {
     EntangleControlPrivate *priv = control->priv;
 
     return priv->label;
 }
 
-const char *entangle_control_info(EntangleControl *control)
+const gchar *entangle_control_get_info(EntangleControl *control)
 {
     EntangleControlPrivate *priv = control->priv;
 

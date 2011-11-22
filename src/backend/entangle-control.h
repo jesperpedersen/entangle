@@ -51,16 +51,17 @@ struct _EntangleControlClass
 
 
 GType entangle_control_get_type(void) G_GNUC_CONST;
-EntangleControl* entangle_control_new(const char *path,
-                                      int id,
-                                      const char *label,
-                                      const char *info,
+EntangleControl* entangle_control_new(const gchar *path,
+                                      gint id,
+                                      const gchar *label,
+                                      const gchar *info,
                                       gboolean readonly);
 
 
-int entangle_control_id(EntangleControl *control);
-const char *entangle_control_label(EntangleControl *control);
-const char *entangle_control_info(EntangleControl *control);
+gint entangle_control_get_id(EntangleControl *control);
+const gchar *entangle_control_get_path(EntangleControl *control);
+const gchar *entangle_control_get_label(EntangleControl *control);
+const gchar *entangle_control_get_info(EntangleControl *control);
 
 gboolean entangle_control_get_readonly(EntangleControl *control);
 
