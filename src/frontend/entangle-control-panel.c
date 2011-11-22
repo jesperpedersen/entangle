@@ -117,6 +117,15 @@ static void do_setup_control_group(EntangleControlPanel *panel,
     EntangleControlPanelPrivate *priv = panel->priv;
     int i;
 
+    GtkWidget *frame = gtk_expander_new(entangle_control_get_label(ENTANGLE_CONTROL(grp)));
+    GtkWidget *subbox = gtk_vbox_new(FALSE, 6);
+
+    gtk_container_add(GTK_CONTAINER(frame), subbox);
+    gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
+
+    gtk_expander_set_expanded(GTK_EXPANDER(frame), TRUE);
+    gtk_container_set_border_width(GTK_CONTAINER(subbox), 6);
+
     for (i = 0 ; i < entangle_control_group_count(grp) ; i++) {
         EntangleControl *control = entangle_control_group_get(grp, i);
 
@@ -126,34 +135,13 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                    entangle_control_get_id(control),
                    entangle_control_get_label(control));
 
-        if (ENTANGLE_IS_CONTROL_GROUP(control)) {
-            const gchar *path = entangle_control_get_path(control);
-
-            if (g_str_equal(path, "/main/actions") ||
-                g_str_equal(path, "/main/other"))
-                continue;
-
-            GtkWidget *frame = gtk_expander_new(entangle_control_get_label(control));
-            //GtkWidget *frame = gtk_frame_new(entangle_control_get_label(control));
-            GtkWidget *subbox = gtk_vbox_new(FALSE, 6);
-
-            gtk_container_add(GTK_CONTAINER(box), frame);
-            //gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_ETCHED_IN);
-            gtk_expander_set_expanded(GTK_EXPANDER(frame), TRUE);
-            gtk_container_set_border_width(GTK_CONTAINER(subbox), 6);
-            //g_object_unref(frame);
-
-            gtk_container_add(GTK_CONTAINER(frame), subbox);
-            //g_object_unref(subbox);
-
-            do_setup_control_group(panel, GTK_VBOX(subbox), ENTANGLE_CONTROL_GROUP(control));
-        } else if (ENTANGLE_IS_CONTROL_BUTTON(control)) {
+        if (ENTANGLE_IS_CONTROL_BUTTON(control)) {
             GtkWidget *value;
 
             value = gtk_button_new_with_label(entangle_control_get_label(control));
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
-            gtk_container_add(GTK_CONTAINER(box), value);
+            gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_CHOICE(control)) {
             GtkCellRenderer *cell;
             GtkListStore *store;
@@ -179,7 +167,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
-            gtk_container_add(GTK_CONTAINER(box), label);
+            gtk_container_add(GTK_CONTAINER(subbox), label);
 
             store = gtk_list_store_new(1, G_TYPE_STRING);
             value = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
@@ -209,7 +197,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "changed",
                              G_CALLBACK(do_update_control_combo), panel);
-            gtk_container_add(GTK_CONTAINER(box), value);
+            gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_DATE(control)) {
             GtkWidget *label;
             GtkWidget *value;
@@ -219,14 +207,14 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
-            gtk_container_add(GTK_CONTAINER(box), label);
+            gtk_container_add(GTK_CONTAINER(subbox), label);
 
             value = gtk_entry_new();
             g_object_get(control, "value", &date, NULL);
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
             //gtk_entry_set_text(GTK_ENTRY(value), text);
-            gtk_container_add(GTK_CONTAINER(box), value);
+            gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_RANGE(control)) {
             GtkWidget *label;
             GtkWidget *value;
@@ -236,7 +224,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
-            gtk_container_add(GTK_CONTAINER(box), label);
+            gtk_container_add(GTK_CONTAINER(subbox), label);
 
             value = gtk_hscale_new_with_range(entangle_control_range_get_min(ENTANGLE_CONTROL_RANGE(control)),
                                               entangle_control_range_get_max(ENTANGLE_CONTROL_RANGE(control)),
@@ -248,7 +236,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "change-value",
                              G_CALLBACK(do_update_control_range), panel);
-            gtk_container_add(GTK_CONTAINER(box), value);
+            gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_TEXT(control)) {
             GtkWidget *label;
             GtkWidget *value;
@@ -258,7 +246,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
-            gtk_container_add(GTK_CONTAINER(box), label);
+            gtk_container_add(GTK_CONTAINER(subbox), label);
 
             value = gtk_entry_new();
             g_object_get(control, "value", &text, NULL);
@@ -268,7 +256,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "focus-out-event",
                              G_CALLBACK(do_update_control_entry), panel);
-            gtk_container_add(GTK_CONTAINER(box), value);
+            gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_TOGGLE(control)) {
             GtkWidget *value;
             gboolean active;
@@ -281,29 +269,127 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "toggled",
                              G_CALLBACK(do_update_control_toggle), panel);
-            gtk_container_add(GTK_CONTAINER(box), value);
+            gtk_container_add(GTK_CONTAINER(subbox), value);
         }
+    }
+}
+
+static void do_setup_control_group_ro(EntangleControlPanel *panel,
+                                      GtkVBox *box,
+                                      EntangleControlGroup *grp)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+    int i;
+
+    GtkWidget *frame = gtk_expander_new(entangle_control_get_label(ENTANGLE_CONTROL(grp)));
+    GtkWidget *subbox = gtk_table_new(entangle_control_group_count(grp), 2, FALSE);
+
+    gtk_container_add(GTK_CONTAINER(frame), subbox);
+    gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
+
+    gtk_expander_set_expanded(GTK_EXPANDER(frame), TRUE);
+    gtk_container_set_border_width(GTK_CONTAINER(subbox), 6);
+
+    for (i = 0 ; i < entangle_control_group_count(grp) ; i++) {
+        EntangleControl *control = entangle_control_group_get(grp, i);
+        GtkWidget *label;
+        GtkWidget *value = NULL;
+
+        priv->hasControls = TRUE;
+
+        ENTANGLE_DEBUG("Build control %d %s",
+                   entangle_control_get_id(control),
+                   entangle_control_get_label(control));
+
+        if (ENTANGLE_IS_CONTROL_CHOICE(control)) {
+            char *text;
+
+            g_object_get(control, "value", &text, NULL);
+            value = gtk_label_new(text);
+            g_object_set_data(G_OBJECT(value), "control", control);
+        } else if (ENTANGLE_IS_CONTROL_DATE(control)) {
+            int date;
+            gchar *text;
+
+            value = gtk_entry_new();
+            g_object_get(control, "value", &date, NULL);
+            text = g_strdup_printf("%d", date);
+            value = gtk_label_new(text);
+            g_free(text);
+            g_object_set_data(G_OBJECT(value), "control", control);
+        } else if (ENTANGLE_IS_CONTROL_RANGE(control)) {
+            float offset;
+            gchar *text;
+
+            g_object_get(control, "value", &offset, NULL);
+            text = g_strdup_printf("%lf", offset);
+            value = gtk_label_new(text);
+            g_free(text);
+            g_object_set_data(G_OBJECT(value), "control", control);
+        } else if (ENTANGLE_IS_CONTROL_TEXT(control)) {
+            const gchar *text;
+
+            g_object_get(control, "value", &text, NULL);
+            value = gtk_label_new(text);
+            g_object_set_data(G_OBJECT(value), "control", control);
+        } else if (ENTANGLE_IS_CONTROL_TOGGLE(control)) {
+            gboolean active;
+            gchar *text;
+
+            g_object_get(control, "value", &active, NULL);
+            text = g_strdup_printf("%s", active ? "Yes" : "No");
+            value = gtk_label_new(text);
+            g_free(text);
+            g_object_set_data(G_OBJECT(value), "control", control);
+        }
+
+        if (value) {
+            label = gtk_label_new(entangle_control_get_label(control));
+            gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+            gtk_misc_set_alignment(GTK_MISC(value), 0, 0);
+            gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
+            gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
+            gtk_table_attach(GTK_TABLE(subbox), label, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_EXPAND, 0, 0);
+            gtk_table_attach(GTK_TABLE(subbox), value, 1, 2, i, i+1, GTK_FILL, GTK_EXPAND, 0, 0);
+        }
+
     }
 }
 
 static void do_setup_camera(EntangleControlPanel *panel)
 {
     EntangleControlPanelPrivate *priv = panel->priv;
-    EntangleControlGroup *grp;
+    EntangleControlGroup *root;
+    EntangleControl *grp;
 
     gtk_container_foreach(GTK_CONTAINER(panel), do_control_remove, panel);
 
     if (!priv->camera)
         return;
 
-    grp = entangle_camera_get_controls(priv->camera);
+    root = entangle_camera_get_controls(priv->camera);
 
-    if (!grp)
+    if (!root)
         return;
 
-    do_setup_control_group(panel, GTK_VBOX(panel), grp);
+    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
+                                                  "/main/status")))
+        do_setup_control_group_ro(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+
+    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
+                                                  "/main/settings")))
+        do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+
+    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
+                                                  "/main/imgsettings")))
+        do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+
+    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
+                                                  "/main/capturesettings")))
+        do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+
     gtk_widget_show_all(GTK_WIDGET(panel));
-    g_object_unref(grp);
+    g_object_unref(root);
 }
 
 static void entangle_control_panel_get_property(GObject *object,
@@ -402,12 +488,9 @@ EntangleControlPanel *entangle_control_panel_new(void)
 
 static void entangle_control_panel_init(EntangleControlPanel *panel)
 {
-    EntangleControlPanelPrivate *priv;
+    panel->priv = ENTANGLE_CONTROL_PANEL_GET_PRIVATE(panel);
 
-    priv = panel->priv = ENTANGLE_CONTROL_PANEL_GET_PRIVATE(panel);
-    memset(priv, 0, sizeof *priv);
-
-    //gtk_container_set_border_width(GTK_CONTAINER(panel), 6);
+    gtk_container_set_border_width(GTK_CONTAINER(panel), 0);
 }
 
 

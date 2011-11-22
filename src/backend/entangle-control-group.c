@@ -59,10 +59,10 @@ static void entangle_control_group_class_init(EntangleControlGroupClass *klass)
 }
 
 
-EntangleControlGroup *entangle_control_group_new(const char *path,
-                                                 int id,
-                                                 const char *label,
-                                                 const char *info,
+EntangleControlGroup *entangle_control_group_new(const gchar *path,
+                                                 gint id,
+                                                 const gchar *label,
+                                                 const gchar *info,
                                                  gboolean readonly)
 {
     return ENTANGLE_CONTROL_GROUP(g_object_new(ENTANGLE_TYPE_CONTROL_GROUP,
@@ -91,7 +91,7 @@ void entangle_control_group_add(EntangleControlGroup *group,
 }
 
 
-int entangle_control_group_count(EntangleControlGroup *group)
+guint entangle_control_group_count(EntangleControlGroup *group)
 {
     EntangleControlGroupPrivate *priv = group->priv;
 
@@ -99,7 +99,7 @@ int entangle_control_group_count(EntangleControlGroup *group)
 }
 
 
-EntangleControl *entangle_control_group_get(EntangleControlGroup *group, int idx)
+EntangleControl *entangle_control_group_get(EntangleControlGroup *group, gint idx)
 {
     EntangleControlGroupPrivate *priv = group->priv;
 
@@ -108,6 +108,22 @@ EntangleControl *entangle_control_group_get(EntangleControlGroup *group, int idx
 
     return priv->controls[idx];
 }
+
+
+EntangleControl *entangle_control_group_get_by_path(EntangleControlGroup *group,
+                                                    const gchar *path)
+{
+    EntangleControlGroupPrivate *priv = group->priv;
+    size_t i;
+
+    for (i = 0 ; i < priv->ncontrol ; i++) {
+        if (g_str_equal(path, entangle_control_get_path(priv->controls[i])))
+            return priv->controls[i];
+    }
+
+    return NULL;
+}
+
 
 /*
  * Local variables:

@@ -53,17 +53,19 @@ struct _EntangleControlGroupClass
 
 
 GType entangle_control_group_get_type(void) G_GNUC_CONST;
-EntangleControlGroup* entangle_control_group_new(const char *path,
-                                                 int id,
-                                                 const char *label,
-                                                 const char *info,
+EntangleControlGroup* entangle_control_group_new(const gchar *path,
+                                                 gint id,
+                                                 const gchar *label,
+                                                 const gchar *info,
                                                  gboolean readonly);
 
 void entangle_control_group_add(EntangleControlGroup *group,
                             EntangleControl *control);
 
-int entangle_control_group_count(EntangleControlGroup *group);
+guint entangle_control_group_count(EntangleControlGroup *group);
 EntangleControl *entangle_control_group_get(EntangleControlGroup *group, int idx);
+EntangleControl *entangle_control_group_get_by_path(EntangleControlGroup *group,
+                                                    const gchar *path);
 
 
 G_END_DECLS
