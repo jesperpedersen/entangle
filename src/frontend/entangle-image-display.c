@@ -44,7 +44,6 @@ struct _EntangleImageDisplayPrivate {
 
     gboolean autoscale;
     float scale;
-    gboolean infoHint;
 };
 
 G_DEFINE_TYPE(EntangleImageDisplay, entangle_image_display, GTK_TYPE_DRAWING_AREA);
@@ -54,7 +53,6 @@ enum {
     PROP_IMAGE,
     PROP_AUTOSCALE,
     PROP_SCALE,
-    PROP_INFOHINT,
 };
 
 static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
@@ -91,66 +89,6 @@ static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
 }
 
 
-static void entangle_image_display_update_hint(EntangleImageDisplay *display)
-{
-    EntangleImageDisplayPrivate *priv = display->priv;
-    gchar *fileInfo = NULL;
-    gchar *pixmapInfo = NULL;
-    gchar *hint;
-    const gchar *filename;
-    GdkPixbuf *pixbuf;
-
-    if (!priv->infoHint) {
-        gtk_widget_set_tooltip_markup(GTK_WIDGET(display), "");
-        return;
-    }
-
-    if (priv->image &&
-        (filename = entangle_image_get_filename(priv->image))) {
-        gchar *base = g_path_get_basename(filename);
-        gchar *dir = g_path_get_dirname(filename);
-        time_t lastMod = entangle_image_get_last_modified(priv->image);
-        off_t size = entangle_image_get_file_size(priv->image);
-        GTimeVal tv = { .tv_sec = lastMod, .tv_usec = 0 };
-        gchar *datestr = g_time_val_to_iso8601(&tv);
-
-        fileInfo = g_strdup_printf("<b>File:</b> %s\n"
-                                   "<b>Session:</b> %s\n"
-                                   "<b>Last modified:</b> %s\n"
-                                   "<b>Size:</b> %d kb\n",
-                                   base, dir,
-                                   datestr, (int)size/1024);
-
-        g_free(base);
-        g_free(dir);
-        g_free(datestr);
-    }
-
-    if (priv->image &&
-        (pixbuf = entangle_image_get_pixbuf(priv->image))) {
-        pixmapInfo = g_strdup_printf("<b>Width:</b> %d\n"
-                                     "<b>Height:</b> %d\n",
-                                     gdk_pixbuf_get_width(pixbuf),
-                                     gdk_pixbuf_get_height(pixbuf));
-    }
-
-
-    if (fileInfo || pixmapInfo) {
-        hint = g_strdup_printf("%s%s",
-                               fileInfo ? fileInfo : "",
-                               pixmapInfo ? pixmapInfo : "");
-
-        gtk_widget_set_tooltip_markup(GTK_WIDGET(display), hint);
-
-        g_free(fileInfo);
-        g_free(pixmapInfo);
-        g_free(hint);
-    } else {
-        gtk_widget_set_tooltip_markup(GTK_WIDGET(display), "");
-    }
-}
-
-
 static void entangle_image_display_get_property(GObject *object,
                                                 guint prop_id,
                                                 GValue *value,
@@ -173,10 +111,6 @@ static void entangle_image_display_get_property(GObject *object,
             g_value_set_float(value, priv->scale);
             break;
 
-        case PROP_INFOHINT:
-            g_value_set_boolean(value, priv->infoHint);
-            break;
-
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -189,7 +123,6 @@ static void entangle_image_display_set_property(GObject *object,
                                                 GParamSpec *pspec)
 {
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(object);
-    EntangleImageDisplayPrivate *priv = display->priv;
 
     ENTANGLE_DEBUG("Set prop on image display %d", prop_id);
 
@@ -205,11 +138,6 @@ static void entangle_image_display_set_property(GObject *object,
 
         case PROP_SCALE:
             entangle_image_display_set_scale(display, g_value_get_float(value));
-            break;
-
-        case PROP_INFOHINT:
-            priv->infoHint = g_value_get_boolean(value);
-            entangle_image_display_update_hint(display);
             break;
 
         default:
@@ -439,16 +367,6 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
                                                        G_PARAM_STATIC_NAME |
                                                        G_PARAM_STATIC_NICK |
                                                        G_PARAM_STATIC_BLURB));
-    g_object_class_install_property(object_class,
-                                    PROP_INFOHINT,
-                                    g_param_spec_boolean("infohint",
-                                                         "Image info hint",
-                                                         "Image information hint",
-                                                         TRUE,
-                                                         G_PARAM_READWRITE |
-                                                         G_PARAM_STATIC_NAME |
-                                                         G_PARAM_STATIC_NICK |
-                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntangleImageDisplayPrivate));
 }
@@ -478,7 +396,6 @@ static void entangle_image_display_image_pixbuf_notify(GObject *image G_GNUC_UNU
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(opaque);
 
     do_entangle_pixmap_setup(display);
-    entangle_image_display_update_hint(display);
     gtk_widget_queue_resize(GTK_WIDGET(display));
     gtk_widget_queue_draw(GTK_WIDGET(display));
 }
@@ -503,7 +420,6 @@ void entangle_image_display_set_image(EntangleImageDisplay *display,
     }
 
     do_entangle_pixmap_setup(display);
-    entangle_image_display_update_hint(display);
     gtk_widget_queue_resize(GTK_WIDGET(display));
     gtk_widget_queue_draw(GTK_WIDGET(display));
 }
@@ -554,21 +470,6 @@ gfloat entangle_image_display_get_scale(EntangleImageDisplay *display)
     EntangleImageDisplayPrivate *priv = display->priv;
 
     return priv->scale;
-}
-
-
-void entangle_image_display_set_infohint(EntangleImageDisplay *display,
-                                         gboolean hint)
-{
-    g_object_set(display, "infohint", hint, NULL);
-}
-
-
-gboolean entangle_image_display_get_infohint(EntangleImageDisplay *display)
-{
-    gboolean hint;
-    g_object_get(display, "infohint", &hint, NULL);
-    return hint;
 }
 
 

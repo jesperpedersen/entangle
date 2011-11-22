@@ -70,11 +70,6 @@ void entangle_image_display_set_scale(EntangleImageDisplay *display,
                                       gfloat scale);
 gfloat entangle_image_display_get_scale(EntangleImageDisplay *display);
 
-void entangle_image_display_set_infohint(EntangleImageDisplay *display,
-                                         gboolean hint);
-gboolean entangle_image_display_get_infohint(EntangleImageDisplay *display);
-
-
 G_END_DECLS
 
 #endif /* __ENTANGLE_IMAGE_DISPLAY_H__ */
