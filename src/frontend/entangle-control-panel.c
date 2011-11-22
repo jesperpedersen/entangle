@@ -68,7 +68,9 @@ static void do_update_control_entry(GtkWidget *widget,
     text = gtk_entry_get_text(GTK_ENTRY(widget));
 
     ENTANGLE_DEBUG("entry [%s]", text);
+    gdk_threads_leave();
     g_object_set(control, "value", text, NULL);
+    gdk_threads_enter();
 }
 
 static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
@@ -79,7 +81,9 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
     EntangleControlText *control = g_object_get_data(G_OBJECT(widget), "control");
 
     ENTANGLE_DEBUG("range [%lf]", value);
+    gdk_threads_leave();
     g_object_set(control, "value", (float)value, NULL);
+    gdk_threads_enter();
 }
 
 static void do_update_control_combo(GtkComboBox *widget,
@@ -94,7 +98,9 @@ static void do_update_control_combo(GtkComboBox *widget,
         gtk_tree_model_get(model, &iter, 0, &text, -1);
 
     ENTANGLE_DEBUG("combo [%s]", text);
+    gdk_threads_leave();
     g_object_set(control, "value", text, NULL);
+    gdk_threads_enter();
 
     g_free(text);
 }
@@ -107,7 +113,9 @@ static void do_update_control_toggle(GtkToggleButton *widget,
 
     active = gtk_toggle_button_get_active(widget);
     ENTANGLE_DEBUG("toggle [%d]", active);
+    gdk_threads_leave();
     g_object_set(control, "value", active, NULL);
+    gdk_threads_enter();
 }
 
 static void do_setup_control_group(EntangleControlPanel *panel,

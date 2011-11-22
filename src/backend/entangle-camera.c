@@ -47,7 +47,8 @@
 
 struct _EntangleCameraPrivate {
     GMutex *lock;
-    GMutex *jobLock;
+    GCond *jobCond;
+    gboolean jobActive;
 
     GPContext *ctx;
     CameraAbilitiesList *caps;
@@ -95,7 +96,12 @@ static void entangle_camera_begin_job(EntangleCamera *cam)
     EntangleCameraPrivate *priv = cam->priv;
 
     g_object_ref(cam);
-    g_mutex_lock(priv->jobLock);
+
+    while (priv->jobActive) {
+        g_cond_wait(priv->jobCond, priv->lock);
+    }
+
+    priv->jobActive = TRUE;
     g_mutex_unlock(priv->lock);
 }
 
@@ -104,7 +110,8 @@ static void entangle_camera_end_job(EntangleCamera *cam)
 {
     EntangleCameraPrivate *priv = cam->priv;
 
-    g_mutex_unlock(priv->jobLock);
+    priv->jobActive = FALSE;
+    g_cond_broadcast(priv->jobCond);
     g_mutex_lock(priv->lock);
     g_object_unref(cam);
 }
@@ -235,7 +242,7 @@ static void entangle_camera_finalize(GObject *object)
     g_free(priv->port);
     g_free(priv->lastError);
     g_mutex_free(priv->lock);
-    g_mutex_free(priv->jobLock);
+    g_cond_free(priv->jobCond);
 
     G_OBJECT_CLASS (entangle_camera_parent_class)->finalize (object);
 }
@@ -427,7 +434,7 @@ static void entangle_camera_init(EntangleCamera *cam)
 {
     cam->priv = ENTANGLE_CAMERA_GET_PRIVATE(cam);
     cam->priv->lock = g_mutex_new();
-    cam->priv->jobLock = g_mutex_new();
+    cam->priv->jobCond = g_cond_new();
 }
 
 
