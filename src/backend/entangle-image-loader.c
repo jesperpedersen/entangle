@@ -42,19 +42,34 @@ static GdkPixbuf *entangle_image_loader_pixbuf_load(EntanglePixbufLoader *loader
     return result;
 }
 
+static GExiv2Metadata *entangle_image_loader_metadata_load(EntanglePixbufLoader *loader G_GNUC_UNUSED,
+                                                           EntangleImage *image)
+{
+    GExiv2Metadata *metadata = gexiv2_metadata_new();
+
+    if (!gexiv2_metadata_open_path(metadata, entangle_image_get_filename(image), NULL)) {
+        g_object_unref(metadata);
+        metadata = NULL;
+    }
+
+    return metadata;
+}
+
 
 static void entangle_image_loader_class_init(EntangleImageLoaderClass *klass)
 {
     EntanglePixbufLoaderClass *loader_class = ENTANGLE_PIXBUF_LOADER_CLASS(klass);
 
     loader_class->pixbuf_load = entangle_image_loader_pixbuf_load;
+    loader_class->metadata_load = entangle_image_loader_metadata_load;
 }
 
 
 EntangleImageLoader *entangle_image_loader_new(void)
 {
     return ENTANGLE_IMAGE_LOADER(g_object_new(ENTANGLE_TYPE_IMAGE_LOADER,
-                                          NULL));
+                                              "with-metadata", TRUE,
+                                              NULL));
 }
 
 

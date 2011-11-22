@@ -33,6 +33,7 @@
 struct _EntangleImagePrivate {
     char *filename;
     GdkPixbuf *pixbuf;
+    GExiv2Metadata *metadata;
 
     gboolean dirty;
     struct stat st;
@@ -44,6 +45,7 @@ enum {
     PROP_0,
     PROP_FILENAME,
     PROP_PIXBUF,
+    PROP_METADATA,
 };
 
 static void entangle_image_get_property(GObject *object,
@@ -62,6 +64,10 @@ static void entangle_image_get_property(GObject *object,
 
         case PROP_PIXBUF:
             g_value_set_object(value, priv->pixbuf);
+            break;
+
+        case PROP_METADATA:
+            g_value_set_object(value, priv->metadata);
             break;
 
         default:
@@ -93,6 +99,14 @@ static void entangle_image_set_property(GObject *object,
                 g_object_ref(priv->pixbuf);
             break;
 
+        case PROP_METADATA:
+            if (priv->metadata)
+                g_object_unref(priv->metadata);
+            priv->metadata = g_value_get_object(value);
+            if (priv->metadata)
+                g_object_ref(priv->metadata);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -108,6 +122,8 @@ static void entangle_image_finalize(GObject *object)
 
     if (priv->pixbuf)
         g_object_unref(priv->pixbuf);
+    if (priv->metadata)
+        g_object_unref(priv->metadata);
 
     g_free(priv->filename);
 
@@ -141,6 +157,16 @@ static void entangle_image_class_init(EntangleImageClass *klass)
                                                         "Image pixbuf",
                                                         "Image pixbuf",
                                                         GDK_TYPE_PIXBUF,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_METADATA,
+                                    g_param_spec_object("metadata",
+                                                        "Image metadata",
+                                                        "Image metadata",
+                                                        GEXIV2_TYPE_METADATA,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
@@ -231,6 +257,20 @@ void entangle_image_set_pixbuf(EntangleImage *image,
 {
     g_object_set(image, "pixbuf", pixbuf, NULL);
 }
+
+
+GExiv2Metadata *entangle_image_get_metadata(EntangleImage *image)
+{
+    EntangleImagePrivate *priv = image->priv;
+    return priv->metadata;
+}
+
+void entangle_image_set_metadata(EntangleImage *image,
+                                 GExiv2Metadata *metadata)
+{
+    g_object_set(image, "metadata", metadata, NULL);
+}
+
 
 
 /*

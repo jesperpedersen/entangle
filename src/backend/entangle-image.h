@@ -23,6 +23,7 @@
 
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gexiv2.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -68,6 +69,10 @@ off_t entangle_image_get_file_size(EntangleImage *image);
 GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image);
 void entangle_image_set_pixbuf(EntangleImage *image,
                                GdkPixbuf *pixbuf);
+
+GExiv2Metadata *entangle_image_get_metadata(EntangleImage *image);
+void entangle_image_set_metadata(EntangleImage *image,
+                                 GExiv2Metadata *metadata);
 
 G_END_DECLS
 

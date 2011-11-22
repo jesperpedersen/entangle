@@ -18,6 +18,7 @@ BuildRequires: dbus-glib-devel >= 0.60
 BuildRequires: lcms-devel >= 1.18
 BuildRequires: gobject-introspection-devel
 BuildRequires: libpeas-devel >= 0.5.5
+BuildRequires: libgexiv2-devel >= 0.2.2
 
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils

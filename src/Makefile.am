@@ -66,6 +66,7 @@ libentangle_backend_la_LDFLAGS = \
 	$(GUDEV_LIBS) \
 	$(DBUS_GLIB_LIBS) \
 	$(PEAS_LIBS) \
+	$(GEXIV2_LIBS) \
 	$(WARNING_CFLAGS)
 
 libentangle_backend_la_CFLAGS = \
@@ -79,6 +80,7 @@ libentangle_backend_la_CFLAGS = \
 	$(GUDEV_CFLAGS) \
 	$(DBUS_GLIB_CFLAGS) \
 	$(PEAS_CFLAGS) \
+	$(GEXIV2_CFLAGS) \
 	$(WARNING_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
 	-DDATADIR="\"$(datadir)\"" \
@@ -103,6 +105,7 @@ libentangle_frontend_la_LDFLAGS = \
 	$(GTK_LIBS) \
 	$(PEAS_LIBS) \
 	$(PEAS_UI_LIBS) \
+	$(GEXIV2_LIBS) \
 	$(WARNING_CFLAGS)
 
 libentangle_frontend_la_CFLAGS = \
@@ -112,6 +115,7 @@ libentangle_frontend_la_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(PEAS_CFLAGS) \
 	$(PEAS_UI_CFLAGS) \
+	$(GEXIV2_CFLAGS) \
 	$(WARNING_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\""
 
@@ -233,6 +237,7 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
                 --pkg=libgphoto2 \
                 --pkg=libpeas-1.0 \
                 --pkg=dbus-glib-1 \
+                --pkg=gexiv2 \
                 $(libentangle_backend_la_SOURCES:%=$(srcdir)/%) \
                 $(libentangle_frontend_la_SOURCES:%=$(srcdir)/%) \
                 $(entangle_SOURCES:%=$(srcdir)/%)

@@ -36,12 +36,14 @@ typedef struct _EntanglePixbufLoaderEntry {
     gboolean processing;
     gboolean ready;
     GdkPixbuf *pixbuf;
+    GExiv2Metadata *metadata;
 } EntanglePixbufLoaderEntry;
 
 typedef struct _EntanglePixbufrLoaderResult {
     EntanglePixbufLoader *loader;
     EntangleImage *image;
     GdkPixbuf *pixbuf;
+    GExiv2Metadata *metadata;
 } EntanglePixbufLoaderResult;
 
 struct _EntanglePixbufLoaderPrivate {
@@ -50,6 +52,8 @@ struct _EntanglePixbufLoaderPrivate {
     
     GMutex *lock;
     GHashTable *pixbufs;
+
+    gboolean withMetadata;
 };
 
 G_DEFINE_ABSTRACT_TYPE(EntanglePixbufLoader, entangle_pixbuf_loader, G_TYPE_OBJECT);
@@ -58,6 +62,7 @@ enum {
     PROP_0,
     PROP_WORKERS,
     PROP_COLOUR_TRANSFORM,
+    PROP_WITH_METADATA,
 };
 
 
@@ -79,6 +84,10 @@ static void entangle_pixbuf_loader_get_property(GObject *object,
             g_value_set_object(value, priv->colourTransform);
             break;
 
+        case PROP_WITH_METADATA:
+            g_value_set_boolean(value, priv->withMetadata);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -91,6 +100,7 @@ static void entangle_pixbuf_loader_set_property(GObject *object,
                                                 GParamSpec *pspec)
 {
     EntanglePixbufLoader *loader = ENTANGLE_PIXBUF_LOADER(object);
+    EntanglePixbufLoaderPrivate *priv = loader->priv;
 
     switch (prop_id)
         {
@@ -100,6 +110,10 @@ static void entangle_pixbuf_loader_set_property(GObject *object,
 
         case PROP_COLOUR_TRANSFORM:
             entangle_pixbuf_loader_set_colour_transform(loader, g_value_get_object(value));
+            break;
+
+        case PROP_WITH_METADATA:
+            priv->withMetadata = g_value_get_boolean(value);
             break;
 
         default:
@@ -117,6 +131,8 @@ static void entangle_pixbuf_loader_entry_free(gpointer opaque)
         g_object_unref(entry->image);
     if (entry->pixbuf)
         g_object_unref(entry->pixbuf);
+    if (entry->metadata)
+        g_object_unref(entry->metadata);
     g_free(entry);
 }
 
@@ -173,6 +189,8 @@ static gboolean entangle_pixbuf_loader_result(gpointer data)
         if (result->pixbuf)
             g_object_unref(result->pixbuf);
         g_object_unref(result->image);
+        if (result->metadata)
+            g_object_unref(result->metadata);
         g_object_unref(result->loader);
         g_free(result);
         return FALSE;
@@ -181,13 +199,16 @@ static gboolean entangle_pixbuf_loader_result(gpointer data)
     if (entry->pixbuf)
         g_object_unref(entry->pixbuf);
     entry->pixbuf = result->pixbuf;
+    entry->metadata = result->metadata;
     entry->ready = TRUE;
     entry->processing = FALSE;
-
+    
     if (entry->refs) {
         g_mutex_unlock(priv->lock);
-        ENTANGLE_DEBUG("Emit loaded %p", result->image);
+        ENTANGLE_DEBUG("Emit loaded %p %p %p", result->image, result->pixbuf, result->metadata);
         g_signal_emit_by_name(loader, "pixbuf-loaded", result->image);
+        if (result->metadata)
+            g_signal_emit_by_name(loader, "metadata-loaded", result->image);
         g_mutex_lock(priv->lock);
     } else if (!entry->pending) {
         g_hash_table_remove(priv->pixbufs, entangle_image_get_filename(result->image));
@@ -205,6 +226,11 @@ static gboolean entangle_pixbuf_loader_result(gpointer data)
 static GdkPixbuf *entangle_pixbuf_load(EntanglePixbufLoader *loader, EntangleImage *image)
 {
     return ENTANGLE_PIXBUF_LOADER_GET_CLASS(loader)->pixbuf_load(loader, image);
+}
+
+static GExiv2Metadata *entangle_metadata_load(EntanglePixbufLoader *loader, EntangleImage *image)
+{
+    return ENTANGLE_PIXBUF_LOADER_GET_CLASS(loader)->metadata_load(loader, image);
 }
 
 static void entangle_pixbuf_loader_worker(gpointer data,
@@ -245,6 +271,9 @@ static void entangle_pixbuf_loader_worker(gpointer data,
         } else {
             result->pixbuf = pixbuf;
         }
+    }
+    if (priv->withMetadata) {
+        result->metadata = entangle_metadata_load(loader, image);
     }
 
     result->loader = loader;
@@ -310,6 +339,17 @@ static void entangle_pixbuf_loader_class_init(EntanglePixbufLoaderClass *klass)
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_WITH_METADATA,
+                                    g_param_spec_boolean("with-metadata",
+                                                         "With metadata",
+                                                         "Load image metadata",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     g_signal_new("pixbuf-loaded",
                  G_TYPE_FROM_CLASS(klass),
@@ -320,15 +360,17 @@ static void entangle_pixbuf_loader_class_init(EntanglePixbufLoaderClass *klass)
                  G_TYPE_NONE,
                  1,
                  ENTANGLE_TYPE_IMAGE);
+    g_signal_new("metadata-loaded",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(EntanglePixbufLoaderClass, metadata_loaded),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 ENTANGLE_TYPE_IMAGE);
 
     g_type_class_add_private(klass, sizeof(EntanglePixbufLoaderPrivate));
-}
-
-
-EntanglePixbufLoader *entangle_pixbuf_loader_new(void)
-{
-    return ENTANGLE_PIXBUF_LOADER(g_object_new(ENTANGLE_TYPE_PIXBUF_LOADER,
-                                               NULL));
 }
 
 
@@ -388,6 +430,26 @@ GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,
     return pixbuf;
 }
 
+
+GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader,
+                                                    EntangleImage *image)
+{
+    EntanglePixbufLoaderPrivate *priv = loader->priv;
+    EntanglePixbufLoaderEntry *entry;
+    GExiv2Metadata *metadata = NULL;
+
+    g_mutex_lock(priv->lock);
+    entry = g_hash_table_lookup(priv->pixbufs, entangle_image_get_filename(image));
+    if (!entry)
+        goto cleanup;
+    metadata = entry->metadata;
+
+ cleanup:
+    g_mutex_unlock(priv->lock);
+    return metadata;
+}
+
+
 gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
                                      EntangleImage *image)
 {
@@ -403,10 +465,13 @@ gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
     entry = g_hash_table_lookup(priv->pixbufs, entangle_image_get_filename(image));
     if (entry) {
         gboolean hasPixbuf = entry->pixbuf != NULL;
+        gboolean hasMetadata = entry->metadata != NULL;
         entry->refs++;
         g_mutex_unlock(priv->lock);
         if (hasPixbuf)
             g_signal_emit_by_name(loader, "pixbuf-loaded", image);
+        if (hasMetadata)
+            g_signal_emit_by_name(loader, "metadata-loaded", image);
         return TRUE;
     }
     entry = entangle_pixbuf_loader_entry_new(image);

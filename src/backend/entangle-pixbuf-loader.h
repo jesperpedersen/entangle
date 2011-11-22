@@ -23,6 +23,7 @@
 
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gexiv2.h>
 
 #include "entangle-colour-profile.h"
 #include "entangle-image.h"
@@ -53,20 +54,22 @@ struct _EntanglePixbufLoaderClass
     GObjectClass parent_class;
 
     void (*pixbuf_loaded)(EntanglePixbufLoader *loader, EntangleImage *image);
+    void (*metadata_loaded)(EntanglePixbufLoader *loader, EntangleImage *image);
 
     GdkPixbuf *(*pixbuf_load)(EntanglePixbufLoader *loader, EntangleImage *image);
+    GExiv2Metadata *(*metadata_load)(EntanglePixbufLoader *loader, EntangleImage *image);
 };
 
 
 GType entangle_pixbuf_loader_get_type(void) G_GNUC_CONST;
-
-EntanglePixbufLoader *entangle_pixbuf_loader_new(void);
 
 
 gboolean entangle_pixbuf_loader_is_ready(EntanglePixbufLoader *loader,
                                          EntangleImage *image);
 GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,
                                              EntangleImage *image);
+GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader,
+                                                    EntangleImage *image);
 
 gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
                                      EntangleImage *image);
