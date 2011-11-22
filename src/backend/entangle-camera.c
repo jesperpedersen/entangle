@@ -1297,11 +1297,14 @@ static void do_update_control_text(GObject *object,
     CameraWidget *widget;
     int ret;
 
+    g_mutex_lock(priv->lock);
+
     g_object_get(object, "path", &path, "id", &id, "value", &text, NULL);
     ENTANGLE_DEBUG("update of widget %s", path);
 
     if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
         ENTANGLE_DEBUG("cannot get widget id %d", id);
+        g_mutex_unlock(priv->lock);
         return;
     }
 
@@ -1313,6 +1316,7 @@ static void do_update_control_text(GObject *object,
     if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
         ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
     entangle_camera_end_job(cam);
+    g_mutex_unlock(priv->lock);
 }
 
 static void do_update_control_float(GObject *object,
@@ -1327,11 +1331,14 @@ static void do_update_control_float(GObject *object,
     CameraWidget *widget;
     int ret;
 
+    g_mutex_lock(priv->lock);
+
     g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
     ENTANGLE_DEBUG("update of widget %s", path);
 
     if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
         ENTANGLE_DEBUG("cannot get widget id %d", id);
+        g_mutex_unlock(priv->lock);
         return;
     }
 
@@ -1343,6 +1350,7 @@ static void do_update_control_float(GObject *object,
     if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
         ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
     entangle_camera_end_job(cam);
+    g_mutex_unlock(priv->lock);
 }
 
 static void do_update_control_boolean(GObject *object,
@@ -1357,11 +1365,14 @@ static void do_update_control_boolean(GObject *object,
     CameraWidget *widget;
     int ret;
 
+    g_mutex_lock(priv->lock);
+
     g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
     ENTANGLE_DEBUG("update of widget %s", path);
 
     if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
         ENTANGLE_DEBUG("cannot get widget id %d", id);
+        g_mutex_unlock(priv->lock);
         return;
     }
 
@@ -1373,6 +1384,7 @@ static void do_update_control_boolean(GObject *object,
     if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
         ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
     entangle_camera_end_job(cam);
+    g_mutex_unlock(priv->lock);
 }
 
 static EntangleControl *do_build_controls(EntangleCamera *cam,
