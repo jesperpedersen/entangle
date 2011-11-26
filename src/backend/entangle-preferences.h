@@ -57,15 +57,21 @@ GType entangle_preferences_get_type(void) G_GNUC_CONST;
 
 EntanglePreferences *entangle_preferences_new(void);
 
-char *entangle_preferences_folder_picture_dir(EntanglePreferences *prefs);
-char *entangle_preferences_folder_filename_pattern(EntanglePreferences *prefs);
+char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs);
+void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, const gchar *dir);
+char *entangle_preferences_capture_get_filename_pattern(EntanglePreferences *prefs);
+void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *prefs, const gchar *dir);
 
-gboolean entangle_preferences_cms_enabled(EntanglePreferences *prefs);
-EntangleColourProfile *entangle_preferences_cms_rgb_profile(EntanglePreferences *prefs);
-EntangleColourProfile *entangle_preferences_cms_monitor_profile(EntanglePreferences *prefs);
-gboolean entangle_preferences_cms_detect_system_profile(EntanglePreferences *prefs);
-EntangleColourProfileIntent entangle_preferences_cms_rendering_intent(EntanglePreferences *prefs);
-
+gboolean entangle_preferences_cms_get_enabled(EntanglePreferences *prefs);
+void entangle_preferences_cms_set_enabled(EntanglePreferences *prefs, gboolean enabled);
+EntangleColourProfile *entangle_preferences_cms_get_rgb_profile(EntanglePreferences *prefs);
+void entangle_preferences_cms_set_rgb_profile(EntanglePreferences *prefs, EntangleColourProfile *prof);
+EntangleColourProfile *entangle_preferences_cms_get_monitor_profile(EntanglePreferences *prefs);
+void entangle_preferences_cms_set_monitor_profile(EntanglePreferences *prefs, EntangleColourProfile *prof);
+gboolean entangle_preferences_cms_get_detect_system_profile(EntanglePreferences *prefs);
+void entangle_preferences_cms_set_detect_system_profile(EntanglePreferences *prefs, gboolean enabled);
+EntangleColourProfileIntent entangle_preferences_cms_get_rendering_intent(EntanglePreferences *prefs);
+void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs, EntangleColourProfileIntent intent);
 
 
 G_END_DECLS

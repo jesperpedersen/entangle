@@ -9,18 +9,18 @@
   </enum>
 
   <schema path="/org/entangle-photo/manager/" id="org.entangle-photo.manager" gettext-domain="entangle-photo">
-    <child schema="org.entangle-photo.manager.folder" name="folder"/>
+    <child schema="org.entangle-photo.manager.capture" name="capture"/>
     <child schema="org.entangle-photo.manager.cms" name="cms"/>
   </schema>
 
-  <schema path="/org/entangle-photo/manager/folder/" id="org.entangle-photo.manager.folder" gettext-domain="entangle-photo">
+  <schema path="/org/entangle-photo/manager/capture/" id="org.entangle-photo.manager.capture" gettext-domain="entangle-photo">
     <key type="s" name="filename-pattern">
       <default>'captureXXXXXX'</default>
       <summary>Filename pattern</summary>
       <description>Image filename pattern</description>
     </key>
 
-    <key type="s" name="picture-dir">
+    <key type="s" name="last-session">
       <default>''</default>
       <summary>Picture dir</summary>
       <description>Directory in which image sessions are created</description>

@@ -63,7 +63,6 @@ void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesD
 void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);
 void do_cms_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_cms_render_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
-void do_picture_folder_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);
 void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
 
 
@@ -152,21 +151,7 @@ static void entangle_preferences_display_notify(GObject *object,
 
         if (profile)
             g_object_unref(profile);
-    } else if (strcmp(spec->name, "cms-picture-dir") == 0) {
-        gchar *newvalue;
-        const gchar *oldvalue;
-        tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "picture-folder"));
-
-        g_object_get(object, spec->name, &newvalue, NULL);
-
-        oldvalue = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(tmp));
-        if ((newvalue && !oldvalue) ||
-            (!newvalue && oldvalue) ||
-            strcmp(newvalue, oldvalue) != 0)
-            gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), newvalue);
-
-        g_free(newvalue);
-    } else if (strcmp(spec->name, "cms-filename-pattern") == 0) {
+    } else if (strcmp(spec->name, "capture-filename-pattern") == 0) {
         gchar *newvalue;
         const gchar *oldvalue;
         tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "filename-pattern"));
@@ -180,7 +165,7 @@ static void entangle_preferences_display_notify(GObject *object,
             gtk_entry_set_text(GTK_ENTRY(tmp), newvalue);
 
         g_free(newvalue);
-    } else if (strcmp(spec->name, "cms-profile-rendering-intent") == 0) {
+    } else if (strcmp(spec->name, "cms-rendering-intent") == 0) {
         int newvalue;
         int oldvalue;
         tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
@@ -228,36 +213,33 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *tmp;
     EntangleColourProfile *profile;
-    const char *dir;
     EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-enabled"));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_enabled(prefs));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_get_enabled(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-system-profile"));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_detect_system_profile(prefs));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_get_detect_system_profile(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile"));
-    profile = entangle_preferences_cms_rgb_profile(prefs);
-    if (profile)
+    profile = entangle_preferences_cms_get_rgb_profile(prefs);
+    if (profile) {
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), entangle_colour_profile_filename(profile));
+        g_object_unref(profile);
+    }
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
-    profile = entangle_preferences_cms_monitor_profile(prefs);
-    if (profile)
+    profile = entangle_preferences_cms_get_monitor_profile(prefs);
+    if (profile) {
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), entangle_colour_profile_filename(profile));
+        g_object_unref(profile);
+    }
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
-    gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), entangle_preferences_cms_rendering_intent(prefs));
-
+    gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), entangle_preferences_cms_get_rendering_intent(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "filename-pattern"));
-    gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_folder_filename_pattern(prefs));
-
-    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "picture-folder"));
-    dir = entangle_preferences_folder_picture_dir(prefs);
-    if (dir)
-        gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(tmp), dir);
+    gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_capture_get_filename_pattern(prefs));
 }
 
 static void entangle_preferences_display_finalize (GObject *object)
@@ -362,7 +344,7 @@ void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *di
     GtkWidget *renderIntent = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-render-intent"));
     EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
 
-    g_object_set(prefs, "cms-enabled", enabled, NULL);
+    entangle_preferences_cms_set_enabled(prefs, enabled);
     gtk_widget_set_sensitive(rgbProfile, enabled);
     gtk_widget_set_sensitive(systemProfile, enabled);
     gtk_widget_set_sensitive(renderIntent, enabled);
@@ -376,7 +358,7 @@ void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesD
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     EntangleColourProfile *profile = entangle_colour_profile_new_file(filename);
 
-    g_object_set(prefs, "cms-rgb-profile", profile, NULL);
+    entangle_preferences_cms_set_rgb_profile(prefs, profile);
     g_free(filename);
     g_object_unref(profile);
 }
@@ -388,7 +370,7 @@ void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferen
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     EntangleColourProfile *profile = entangle_colour_profile_new_file(filename);
 
-    g_object_set(prefs, "cms-monitor-profile", profile, NULL);
+    entangle_preferences_cms_set_monitor_profile(prefs, profile);
     g_free(filename);
     g_object_unref(profile);
 }
@@ -400,7 +382,7 @@ void do_cms_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisp
     gboolean enabled = gtk_toggle_button_get_active(src);
     GtkWidget *monitorProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
 
-    g_object_set(prefs, "cms-detect-system-profile", enabled, NULL);
+    entangle_preferences_cms_set_detect_system_profile(prefs, enabled);
     gtk_widget_set_sensitive(monitorProfile, !enabled);
 }
 
@@ -412,18 +394,9 @@ void do_cms_render_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *
 
     if (option < 0)
         option = ENTANGLE_COLOUR_PROFILE_INTENT_PERCEPTUAL;
-    g_object_set(prefs, "cms-rendering-intent", option, NULL);
+    entangle_preferences_cms_set_rendering_intent(prefs, option);
 }
 
-void do_picture_folder_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
-{
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
-    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
-    char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
-
-    g_object_set(prefs, "folder-picture-dir", filename, NULL);
-    g_free(filename);
-}
 
 void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display)
 {
@@ -431,7 +404,7 @@ void do_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *disp
     EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     const char *text = gtk_entry_get_text(src);
 
-    g_object_set(prefs, "folder-filename-pattern", text, NULL);
+    entangle_preferences_capture_set_filename_pattern(prefs, text);
 }
 
 static void entangle_preferences_display_init(EntanglePreferencesDisplay *preferences)
@@ -509,13 +482,13 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     if (local)
         gtk_list_store_set(list, &iter,
                            0, 0,
-                           1, "Folders",
+                           1, "Capture",
                            2, gdk_pixbuf_new_from_file("./folders-22.png", NULL),
                            -1);
     else
         gtk_list_store_set(list, &iter,
                            0, 0,
-                           1, "Folders",
+                           1, "Capture",
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/folders-22.png", NULL),
                            -1);
 
