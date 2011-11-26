@@ -25,6 +25,18 @@
       <summary>Picture dir</summary>
       <description>Directory in which image sessions are created</description>
     </key>
+
+    <key type="b" name="continuous-preview">
+      <default>false</default>
+      <summary>Continuous preview</summary>
+      <description>Continue with preview after capture</description>
+    </key>
+
+    <key type="b" name="delete-file">
+      <default>true</default>
+      <summary>Delete files</summary>
+      <description>Delete files from camera after capture</description>
+    </key>
   </schema>
 
   <schema path="/org/entangle-photo/manager/cms/" id="org.entangle-photo.manager.cms" gettext-domain="entangle-photo">

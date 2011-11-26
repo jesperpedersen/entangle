@@ -45,6 +45,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
 #define SETTING_CAPTURE_FILENAME_PATTERN   "filename-pattern"
 #define SETTING_CAPTURE_LAST_SESSION       "last-session"
+#define SETTING_CAPTURE_CONTINUOUS_PREVIEW "continuous-preview"
+#define SETTING_CAPTURE_DELETE_FILE        "delete-file"
 
 #define SETTING_CMS_ENABLED                "enabled"
 #define SETTING_CMS_DETECT_SYSTEM_PROFILE  "detect-system-profile"
@@ -54,6 +56,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
 #define PROP_NAME_CAPTURE_FILENAME_PATTERN   SETTING_CAPTURE "-" SETTING_CAPTURE_FILENAME_PATTERN
 #define PROP_NAME_CAPTURE_LAST_SESSION       SETTING_CAPTURE "-" SETTING_CAPTURE_LAST_SESSION
+#define PROP_NAME_CAPTURE_CONTINUOUS_PREVIEW SETTING_CAPTURE "-" SETTING_CAPTURE_CONTINUOUS_PREVIEW
+#define PROP_NAME_CAPTURE_DELETE_FILE        SETTING_CAPTURE "-" SETTING_CAPTURE_DELETE_FILE
 
 #define PROP_NAME_CMS_ENABLED                SETTING_CMS "-" SETTING_CMS_ENABLED
 #define PROP_NAME_CMS_DETECT_SYSTEM_PROFILE  SETTING_CMS "-" SETTING_CMS_DETECT_SYSTEM_PROFILE
@@ -66,6 +70,8 @@ enum {
 
     PROP_CAPTURE_FILENAME_PATTERN,
     PROP_CAPTURE_LAST_SESSION,
+    PROP_CAPTURE_CONTINUOUS_PREVIEW,
+    PROP_CAPTURE_DELETE_FILE,
 
     PROP_CMS_ENABLED,
     PROP_CMS_RGB_PROFILE,
@@ -125,6 +131,18 @@ static void entangle_preferences_get_property(GObject *object,
                                          SETTING_CAPTURE_FILENAME_PATTERN);
             g_value_set_string(value, file);
             g_free(file);
+            break;
+
+        case PROP_CAPTURE_CONTINUOUS_PREVIEW:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->captureSettings,
+                                                       SETTING_CAPTURE_CONTINUOUS_PREVIEW));
+            break;
+
+        case PROP_CAPTURE_DELETE_FILE:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->captureSettings,
+                                                       SETTING_CAPTURE_DELETE_FILE));
             break;
 
         case PROP_CMS_ENABLED:
@@ -194,6 +212,18 @@ static void entangle_preferences_set_property(GObject *object,
             g_settings_set_string(priv->captureSettings,
                                   SETTING_CAPTURE_FILENAME_PATTERN,
                                   g_value_get_string(value));
+            break;
+
+        case PROP_CAPTURE_CONTINUOUS_PREVIEW:
+            g_settings_set_boolean(priv->captureSettings,
+                                   SETTING_CAPTURE_CONTINUOUS_PREVIEW,
+                                   g_value_get_boolean(value));
+            break;
+
+        case PROP_CAPTURE_DELETE_FILE:
+            g_settings_set_boolean(priv->captureSettings,
+                                   SETTING_CAPTURE_LAST_SESSION,
+                                   g_value_get_boolean(value));
             break;
 
         case PROP_CMS_ENABLED:
@@ -408,6 +438,42 @@ void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *pref
 
     g_settings_set_string(priv->captureSettings,
                           SETTING_CAPTURE_FILENAME_PATTERN, dir);
+}
+
+
+gboolean entangle_preferences_capture_get_continuous_preview(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->captureSettings,
+                                  SETTING_CAPTURE_CONTINUOUS_PREVIEW);
+}
+
+
+void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *prefs, gboolean enabled)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->captureSettings,
+                           SETTING_CAPTURE_CONTINUOUS_PREVIEW, enabled);
+}
+
+
+gboolean entangle_preferences_capture_get_delete_file(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->captureSettings,
+                                  SETTING_CAPTURE_DELETE_FILE);
+}
+
+
+void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gboolean enabled)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->captureSettings,
+                           SETTING_CAPTURE_DELETE_FILE, enabled);
 }
 
 

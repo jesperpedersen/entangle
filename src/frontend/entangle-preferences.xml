@@ -159,6 +159,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="border_width">6</property>
+                            <property name="n_rows">3</property>
                             <property name="n_columns">2</property>
                             <property name="column_spacing">6</property>
                             <property name="row_spacing">6</property>
@@ -171,15 +172,49 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="filename-pattern">
+                              <object class="GtkEntry" id="capture-filename-pattern">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="invisible_char">●</property>
-                                <signal name="changed" handler="do_filename_pattern_changed" swapped="no"/>
+                                <signal name="changed" handler="do_capture_filename_pattern_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="capture-continuous-preview">
+                                <property name="label" translatable="yes">Continue preview mode after capture</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="do_capture_continuous_preview_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="capture-delete-file">
+                                <property name="label" translatable="yes">Delete file from camera after downloading</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="do_capture_delete_file_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">2</property>
+                                <property name="bottom_attach">3</property>
                               </packing>
                             </child>
                           </object>
@@ -313,14 +348,14 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="cms-system-profile">
+                              <object class="GtkCheckButton" id="cms-detect-system-profile">
                                 <property name="label" translatable="yes">Detect the system monitor profile</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="do_cms_system_profile_toggled" swapped="no"/>
+                                <signal name="toggled" handler="do_cms_detect_system_profile_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -330,11 +365,11 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkComboBox" id="cms-render-intent">
+                              <object class="GtkComboBox" id="cms-rendering-intent">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="model">model1</property>
-                                <signal name="changed" handler="do_cms_render_intent_changed" swapped="no"/>
+                                <signal name="changed" handler="do_cms_rendering_intent_changed" swapped="no"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer1"/>
                                   <attributes>

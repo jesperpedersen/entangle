@@ -150,8 +150,6 @@ void do_toolbar_settings(GtkToggleToolButton *src,
                          EntangleCameraManager *manager);
 void do_toolbar_cancel_clicked(GtkToolButton *src,
                                EntangleCameraManager *manager);
-void do_toolbar_confirm_clicked(GtkToolButton *src,
-                                EntangleCameraManager *manager);
 void do_toolbar_capture(GtkToolButton *src,
                         EntangleCameraManager *manager);
 void do_toolbar_preview(GtkToggleToolButton *src,
@@ -514,6 +512,11 @@ static void do_camera_events_processed(GObject *src,
 }
 
 
+static void do_camera_file_previewed(GObject *src,
+                                     GAsyncResult *res,
+                                     gpointer opaque);
+
+
 static gboolean do_camera_task_begin(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -532,6 +535,7 @@ static gboolean do_camera_task_begin(EntangleCameraManager *manager)
 static void do_camera_task_complete(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     GtkWidget *preview;
     
     if (priv->taskFile) {
@@ -539,19 +543,30 @@ static void do_camera_task_complete(EntangleCameraManager *manager)
         priv->taskFile = NULL;
     }
 
-    priv->taskActive = priv->taskPreview = priv->taskCapture = FALSE;
+    if (priv->taskPreview &&
+        !g_cancellable_is_cancelled(priv->taskCancel) &&
+        entangle_preferences_capture_get_continuous_preview(prefs)) {
+        entangle_camera_preview_image_async(priv->camera,
+                                            priv->taskCancel,
+                                            do_camera_file_previewed,
+                                            manager);
+    } else {
+        gdk_threads_enter();
 
-    gdk_threads_enter();
+        preview = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-preview"));
+        gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(preview), FALSE);
 
-    preview = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-preview"));
-    gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(preview), FALSE);
-    do_capture_widget_sensitivity(manager);
-    gdk_threads_leave();
+        priv->taskActive = priv->taskPreview = priv->taskCapture = FALSE;
 
-    g_cancellable_reset(priv->monitorCancel);
-    entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                         do_camera_events_processed, manager);
-    
+        do_capture_widget_sensitivity(manager);
+        gdk_threads_leave();
+
+        g_cancellable_reset(priv->taskConfirm);
+        g_cancellable_reset(priv->taskCancel);
+        g_cancellable_reset(priv->monitorCancel);
+        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
+                                             do_camera_events_processed, manager);
+    }
 }
 
 
@@ -597,6 +612,7 @@ static void do_camera_file_deleted(GObject *src,
         g_error_free(error);
         /* Fallthrough to unref */
     }
+    
     do_camera_task_complete(manager);
 }
 
@@ -608,6 +624,7 @@ static void do_camera_file_downloaded(GObject *src,
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     GError *error = NULL;
 
     if (!entangle_camera_download_file_finish(camera, res, &error)) {
@@ -616,11 +633,15 @@ static void do_camera_file_downloaded(GObject *src,
         /* Fallthrough to delete anyway */
     }
 
-    entangle_camera_delete_file_async(camera,
-                                      priv->taskFile,
-                                      NULL,
-                                      do_camera_file_deleted,
-                                      manager);
+    if (entangle_preferences_capture_get_delete_file(prefs)) {
+        entangle_camera_delete_file_async(camera,
+                                          priv->taskFile,
+                                          NULL,
+                                          do_camera_file_deleted,
+                                          manager);
+    } else {
+        do_camera_task_complete(manager);
+    }
 }
 
 
@@ -631,6 +652,7 @@ static void do_camera_file_captured(GObject *src,
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     GError *error = NULL;
 
     if (!(priv->taskFile = entangle_camera_capture_image_finish(camera, res, &error))) {
@@ -641,11 +663,15 @@ static void do_camera_file_captured(GObject *src,
     }
 
     if (g_cancellable_is_cancelled(priv->taskCancel)) {
-        entangle_camera_delete_file_async(camera,
-                                          priv->taskFile,
-                                          NULL,
-                                          do_camera_file_deleted,
-                                          manager);
+        if (entangle_preferences_capture_get_delete_file(prefs)) {
+            entangle_camera_delete_file_async(camera,
+                                              priv->taskFile,
+                                              NULL,
+                                              do_camera_file_deleted,
+                                              manager);
+        } else {
+            do_camera_task_complete(manager);
+        }
     } else {
         entangle_camera_download_file_async(camera,
                                             priv->taskFile,
@@ -712,6 +738,7 @@ static void do_camera_file_previewed(GObject *src,
                                             do_camera_file_discarded,
                                             manager);
     } else if (g_cancellable_is_cancelled(priv->taskConfirm)) {
+        g_cancellable_reset(priv->taskConfirm);
         entangle_camera_capture_image_async(priv->camera,
                                             priv->taskCancel,
                                             do_camera_file_captured,
@@ -1315,16 +1342,6 @@ void do_toolbar_cancel_clicked(GtkToolButton *src G_GNUC_UNUSED,
 
     if (priv->taskCancel)
         g_cancellable_cancel(priv->taskCancel);
-}
-
-
-void do_toolbar_confirm_clicked(GtkToolButton *src G_GNUC_UNUSED,
-                                EntangleCameraManager *manager)
-{
-    EntangleCameraManagerPrivate *priv = manager->priv;
-
-    if (priv->taskConfirm)
-        g_cancellable_cancel(priv->taskConfirm);
 }
 
 
