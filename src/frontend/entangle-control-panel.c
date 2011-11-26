@@ -352,13 +352,17 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
         }
 
         if (value) {
-            label = gtk_label_new(entangle_control_get_label(control));
+            gchar *text = g_strdup_printf("<b>%s</b>",
+                                          entangle_control_get_label(control));
+            label = gtk_label_new("");
+            gtk_label_set_markup(GTK_LABEL(label), text);
+            g_free(text);
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
             gtk_misc_set_alignment(GTK_MISC(value), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
-            gtk_table_attach(GTK_TABLE(subbox), label, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_EXPAND, 0, 0);
-            gtk_table_attach(GTK_TABLE(subbox), value, 1, 2, i, i+1, GTK_FILL, GTK_EXPAND, 0, 0);
+            gtk_table_attach(GTK_TABLE(subbox), label, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_EXPAND, 3, 3);
+            gtk_table_attach(GTK_TABLE(subbox), value, 1, 2, i, i+1, GTK_FILL, GTK_EXPAND, 3, 3);
         }
 
     }
