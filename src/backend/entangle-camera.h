@@ -58,6 +58,9 @@ struct _EntangleCameraClass
     void (*camera_file_previewed)(EntangleCamera *cam, EntangleCameraFile *file);
     void (*camera_file_downloaded)(EntangleCamera *cam, EntangleCameraFile *file);
     void (*camera_file_deleted)(EntangleCamera *cam, EntangleCameraFile *file);
+
+    void (*camera_connected)(EntangleCamera *cam);
+    void (*camera_disconnected)(EntangleCamera *cam);
 };
 
 
@@ -72,9 +75,28 @@ EntangleCamera *entangle_camera_new(const char *model,
 const char *entangle_camera_get_model(EntangleCamera *cam);
 const char *entangle_camera_get_port(EntangleCamera *cam);
 
+
 gboolean entangle_camera_connect(EntangleCamera *cam,
                                  GError **error);
-gboolean entangle_camera_disconnect(EntangleCamera *cam);
+void entangle_camera_connect_async(EntangleCamera *cam,
+                                   GCancellable *cancellable,
+                                   GAsyncReadyCallback callback,
+                                   gpointer user_data);
+gboolean entangle_camera_connect_finish(EntangleCamera *cam,
+                                        GAsyncResult *result,
+                                        GError **error);
+
+gboolean entangle_camera_disconnect(EntangleCamera *cam,
+                                    GError **error);
+void entangle_camera_disconnect_async(EntangleCamera *cam,
+                                      GCancellable *cancellable,
+                                      GAsyncReadyCallback callback,
+                                      gpointer user_data);
+gboolean entangle_camera_disconnect_finish(EntangleCamera *cam,
+                                           GAsyncResult *result,
+                                           GError **error);
+
+
 gboolean entangle_camera_get_connected(EntangleCamera *cam);
 
 char *entangle_camera_get_summary(EntangleCamera *cam);
@@ -141,7 +163,30 @@ gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);
 gboolean entangle_camera_get_has_settings(EntangleCamera *cam);
 
-EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam);
+
+gboolean entangle_camera_load_controls(EntangleCamera *cam,
+                                       GError **error);
+void entangle_camera_load_controls_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data);
+gboolean entangle_camera_load_controls_finish(EntangleCamera *cam,
+                                              GAsyncResult *result,
+                                              GError **error);
+
+gboolean entangle_camera_save_controls(EntangleCamera *cam,
+                                       GError **error);
+void entangle_camera_save_controls_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data);
+gboolean entangle_camera_save_controls_finish(EntangleCamera *cam,
+                                              GAsyncResult *result,
+                                               GError **error);
+
+
+EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam,
+                                                   GError **error);
 
 void entangle_camera_set_progress(EntangleCamera *cam, EntangleProgress *prog);
 EntangleProgress *entangle_camera_get_progress(EntangleCamera *cam);

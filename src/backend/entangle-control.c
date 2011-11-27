@@ -262,6 +262,17 @@ gboolean entangle_control_get_readonly(EntangleControl *control)
     return priv->readonly;
 }
 
+void entangle_control_set_readonly(EntangleControl *control,
+                                   gboolean ro)
+{
+    EntangleControlPrivate *priv = control->priv;
+    gboolean changed = priv->readonly != ro;
+
+    priv->readonly = ro;
+    if (changed)
+        g_object_notify(G_OBJECT(control), "readonly");
+}
+
 /*
  * Local variables:
  *  c-indent-level: 4

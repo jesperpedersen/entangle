@@ -58,6 +58,7 @@ struct _EntangleCameraPrivate {
 
     CameraWidget *widgets;
     EntangleControlGroup *controls;
+    GHashTable *controlPaths;
 
     EntangleProgress *progress;
 
@@ -89,6 +90,60 @@ enum {
     PROP_HAS_PREVIEW,
     PROP_HAS_SETTINGS,
 };
+
+#define ENTANGLE_CAMERA_ERROR entangle_camera_error_quark ()
+
+static GQuark entangle_camera_error_quark(void)
+{
+  return g_quark_from_static_string("entangle-camera-error-quark");
+}
+
+
+static EntangleControl *do_build_controls(EntangleCamera *cam,
+                                          const char *path,
+                                          CameraWidget *widget,
+                                          GError **error);
+static gboolean do_load_controls(EntangleCamera *cam,
+                                 const char *path,
+                                 CameraWidget *widget,
+                                 GError **error);
+
+struct EntangleCameraEventData {
+    EntangleCamera *cam;
+    GObject *arg;
+    char *signame;
+};
+
+
+static gboolean entangle_camera_emit_idle(gpointer opaque)
+{
+    struct EntangleCameraEventData *data = opaque;
+
+    g_signal_emit_by_name(data->cam, data->signame, data->arg);
+
+    g_free(data->signame);
+    g_object_unref(data->cam);
+    if (data->arg)
+        g_object_unref(data->arg);
+    g_free(data);
+    return FALSE;
+}
+
+
+static void entangle_camera_emit_deferred(EntangleCamera *cam,
+                                          const char *signame,
+                                          GObject *arg)
+{
+    struct EntangleCameraEventData *data = g_new0(struct EntangleCameraEventData, 1);
+    data->cam = cam;
+    data->arg = arg;
+    data->signame = g_strdup(signame);
+    g_object_ref(cam);
+    if (arg)
+        g_object_ref(arg);
+
+    g_idle_add(entangle_camera_emit_idle, data);
+}
 
 
 static void entangle_camera_begin_job(EntangleCamera *cam)
@@ -215,8 +270,8 @@ static void entangle_camera_set_property(GObject *object,
 
 static void entangle_camera_finalize(GObject *object)
 {
-    EntangleCamera *camera = ENTANGLE_CAMERA(object);
-    EntangleCameraPrivate *priv = camera->priv;
+    EntangleCamera *cam = ENTANGLE_CAMERA(object);
+    EntangleCameraPrivate *priv = cam->priv;
 
     ENTANGLE_DEBUG("Finalize camera %p", object);
 
@@ -230,6 +285,8 @@ static void entangle_camera_finalize(GObject *object)
         gp_widget_unref(priv->widgets);
     if (priv->controls)
         g_object_unref(priv->controls);
+    if (priv->controlPaths)
+        g_hash_table_unref(priv->controlPaths);
     if (priv->ports)
         gp_port_info_list_free(priv->ports);
     if (priv->caps)
@@ -306,6 +363,24 @@ static void entangle_camera_class_init(EntangleCameraClass *klass)
                  G_TYPE_NONE,
                  1,
                  ENTANGLE_TYPE_CAMERA_FILE);
+
+    g_signal_new("camera-connected",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(EntangleCameraClass, camera_connected),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE,
+                 0);
+
+    g_signal_new("camera-disconnected",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(EntangleCameraClass, camera_disconnected),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE,
+                 0);
 
 
     g_object_class_install_property(object_class,
@@ -534,22 +609,26 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
     priv->ctx = gp_context_new();
 
     if (gp_abilities_list_new(&priv->caps) != GP_OK) {
-        ENTANGLE_ERROR(error, "Cannot initialize gphoto2 abilities");
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Cannot initialize gphoto2 abilities");
         goto cleanup;
     }
 
     if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK) {
-        ENTANGLE_ERROR(error, "Cannot load gphoto2 abilities");
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Cannot load gphoto2 abilities");
         goto cleanup;
     }
 
     if (gp_port_info_list_new(&priv->ports) != GP_OK) {
-        ENTANGLE_ERROR(error, "Cannot initialize gphoto2 ports");
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Cannot initialize gphoto2 ports");
         goto cleanup;
     }
 
     if (gp_port_info_list_load(priv->ports) != GP_OK) {
-        ENTANGLE_ERROR(error, "Cannot load gphoto2 ports");
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Cannot load gphoto2 ports");
         goto cleanup;
     }
 
@@ -579,11 +658,12 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
     if (err != GP_OK) {
         gp_camera_unref(priv->cam);
         priv->cam = NULL;
-        ENTANGLE_ERROR(error, "Unable to initialize camera");
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to initialize camera");
         goto cleanup;
     }
 
-    /* Update entanglebilities as a sanity-check against orignal constructor */
+    /* Update capabilities as a sanity-check against orignal constructor */
     priv->hasCapture = priv->hasPreview = priv->hasSettings = FALSE;
     if (cap.operations & GP_OPERATION_CAPTURE_IMAGE)
         priv->hasCapture = TRUE;
@@ -601,15 +681,60 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
     gp_camera_get_about(priv->cam, &txt, priv->ctx);
     priv->driver = g_strdup(txt.text);
 
-    g_mutex_unlock(priv->lock);
     ENTANGLE_DEBUG("ok");
     ret = TRUE;
 
  cleanup:
+    g_mutex_unlock(priv->lock);
+    if (ret)
+        entangle_camera_emit_deferred(cam, "camera-connected", NULL);
+    fprintf(stderr, "Connect %d %p %p %s", ret, error, *error, *error ? (*error)->message : NULL);
     return ret;
 }
 
-gboolean entangle_camera_disconnect(EntangleCamera *cam)
+
+static void entangle_camera_connect_helper(GSimpleAsyncResult *result,
+                                           GObject *object,
+                                           GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+
+    if (!entangle_camera_connect(ENTANGLE_CAMERA(object), &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_connect_async(EntangleCamera *cam,
+                                   GCancellable *cancellable,
+                                   GAsyncReadyCallback callback,
+                                   gpointer user_data)
+{
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_connect_async);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_connect_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_connect_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                        GAsyncResult *result,
+                                        GError **error)
+{
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
+
+gboolean entangle_camera_disconnect(EntangleCamera *cam,
+                                    GError **error G_GNUC_UNUSED)
 {
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret = FALSE;
@@ -634,6 +759,10 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam)
     if (priv->controls) {
         g_object_unref(priv->controls);
         priv->controls = NULL;
+    }
+    if (priv->controlPaths) {
+        g_hash_table_unref(priv->controlPaths);
+        priv->controlPaths = NULL;
     }
 
     g_free(priv->driver);
@@ -660,14 +789,61 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam)
     ret = TRUE;
  cleanup:
     g_mutex_unlock(priv->lock);
+    if (ret)
+        entangle_camera_emit_deferred(cam, "camera-disconnected", NULL);
     return ret;
 }
+
+
+static void entangle_camera_disconnect_helper(GSimpleAsyncResult *result,
+                                              GObject *object,
+                                              GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+
+    if (!entangle_camera_disconnect(ENTANGLE_CAMERA(object), &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_disconnect_async(EntangleCamera *cam,
+                                      GCancellable *cancellable,
+                                      GAsyncReadyCallback callback,
+                                      gpointer user_data)
+{
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_disconnect_async);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_disconnect_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_disconnect_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                           GAsyncResult *result,
+                                           GError **error)
+{
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
 
 gboolean entangle_camera_get_connected(EntangleCamera *cam)
 {
     EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret;
 
-    return priv->cam != NULL ? TRUE : FALSE;
+    g_mutex_lock(priv->lock);
+    ret = priv->cam != NULL ? TRUE : FALSE;
+    g_mutex_unlock(priv->lock);
+    return ret;
 }
 
 
@@ -709,38 +885,6 @@ char *entangle_camera_get_driver(EntangleCamera *cam)
     return ret;
 }
 
-struct EntangleCameraEventData {
-    EntangleCamera *cam;
-    EntangleCameraFile *file;
-    char *signame;
-};
-
-static gboolean entangle_camera_emit_idle(gpointer opaque)
-{
-    struct EntangleCameraEventData *data = opaque;
-
-    g_signal_emit_by_name(data->cam, data->signame, data->file);
-
-    g_free(data->signame);
-    g_object_unref(data->cam);
-    g_object_unref(data->file);
-    g_free(data);
-    return FALSE;
-}
-
-static void entangle_camera_emit_deferred(EntangleCamera *cam,
-                                          const char *signame,
-                                          EntangleCameraFile *file)
-{
-    struct EntangleCameraEventData *data = g_new0(struct EntangleCameraEventData, 1);
-    data->cam = cam;
-    data->file = file;
-    data->signame = g_strdup(signame);
-    g_object_ref(cam);
-    g_object_ref(file);
-
-    g_idle_add(entangle_camera_emit_idle, data);
-}
 
 EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
                                                   GError **error)
@@ -773,7 +917,7 @@ EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
     file = entangle_camera_file_new(camerapath.folder,
                                     camerapath.name);
 
-    entangle_camera_emit_deferred(cam, "camera-file-captured", file);
+    entangle_camera_emit_deferred(cam, "camera-file-captured", G_OBJECT(file));
 
  cleanup:
     g_mutex_unlock(priv->lock);
@@ -887,7 +1031,7 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
     entangle_camera_file_set_data(file, data);
     g_byte_array_unref(data);
 
-    entangle_camera_emit_deferred(cam, "camera-file-previewed", file);
+    entangle_camera_emit_deferred(cam, "camera-file-previewed", G_OBJECT(file));
 
  cleanup:
     if (datafile)
@@ -999,7 +1143,7 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
     entangle_camera_file_set_data(file, filedata);
     g_byte_array_unref(filedata);
 
-    entangle_camera_emit_deferred(cam, "camera-file-downloaded", file);
+    entangle_camera_emit_deferred(cam, "camera-file-downloaded", G_OBJECT(file));
 
     ret = TRUE;
 
@@ -1091,7 +1235,7 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
         goto cleanup;
     }
 
-    entangle_camera_emit_deferred(cam, "camera-file-deleted", file);
+    entangle_camera_emit_deferred(cam, "camera-file-deleted", G_OBJECT(file));
 
     ret = TRUE;
 
@@ -1208,7 +1352,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
             file = entangle_camera_file_new(camerapath->folder,
                                         camerapath->name);
 
-            entangle_camera_emit_deferred(cam, "camera-file-added", file);
+            entangle_camera_emit_deferred(cam, "camera-file-added", G_OBJECT(file));
 
             g_object_unref(file);
         }   break;
@@ -1291,7 +1435,7 @@ gboolean entangle_camera_process_events_finish(EntangleCamera *cam G_GNUC_UNUSED
                                                   error);
 }
 
-
+#if 0
 static void do_update_control_text(GObject *object,
                                    GParamSpec *param G_GNUC_UNUSED,
                                    void *data)
@@ -1393,11 +1537,15 @@ static void do_update_control_boolean(GObject *object,
     entangle_camera_end_job(cam);
     g_mutex_unlock(priv->lock);
 }
+#endif
+
 
 static EntangleControl *do_build_controls(EntangleCamera *cam,
                                           const char *path,
-                                          CameraWidget *widget)
+                                          CameraWidget *widget,
+                                          GError **error)
 {
+    EntangleCameraPrivate *priv = cam->priv;
     CameraWidgetType type;
     EntangleControl *ret = NULL;
     const char *name;
@@ -1407,11 +1555,17 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
     const char *info;
     int ro;
 
-    if (gp_widget_get_type(widget, &type) != GP_OK)
+    if (gp_widget_get_type(widget, &type) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to fetch widget type");
         return NULL;
+    }
 
-    if (gp_widget_get_name(widget, &name) != GP_OK)
+    if (gp_widget_get_name(widget, &name) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to fetch widget name");
         return NULL;
+    }
 
     gp_widget_get_id(widget, &id);
     gp_widget_get_label(widget, &label);
@@ -1437,7 +1591,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
                     g_object_unref(grp);
                     goto error;
                 }
-                if (!(subctl = do_build_controls(cam, fullpath, child))) {
+                if (!(subctl = do_build_controls(cam, fullpath, child, error))) {
                     g_object_unref(grp);
                     goto error;
                 }
@@ -1458,7 +1612,6 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
     case GP_WIDGET_RADIO:
     case GP_WIDGET_MENU:
         {
-            char *value = NULL;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_choice_new(fullpath, id, label, info, ro));
 
@@ -1467,60 +1620,49 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
                 gp_widget_get_choice(widget, i, &choice);
                 entangle_control_choice_add_entry(ENTANGLE_CONTROL_CHOICE(ret), choice);
             }
-
-            gp_widget_get_value(widget, &value);
-            g_object_set(ret, "value", value, NULL);
-            g_signal_connect(ret, "notify::value",
-                             G_CALLBACK(do_update_control_text), cam);
         } break;
 
     case GP_WIDGET_DATE:
         {
-            int value = 0;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_date_new(fullpath, id, label, info, ro));
-            g_object_set(ret, "value", value, NULL);
         } break;
 
     case GP_WIDGET_RANGE:
         {
             float min, max, step;
-            float value = 0.0;
             gp_widget_get_range(widget, &min, &max, &step);
             ENTANGLE_DEBUG("Add range %s %d %s %f %f %f", fullpath, id, label, min, max, step);
             ret = ENTANGLE_CONTROL(entangle_control_range_new(fullpath, id, label, info, ro,
                                                               min, max, step));
-
-            gp_widget_get_value(widget, &value);
-            g_object_set(ret, "value", value, NULL);
+#if 0
             g_signal_connect(ret, "notify::value",
                              G_CALLBACK(do_update_control_float), cam);
+#endif
         } break;
 
     case GP_WIDGET_TEXT:
         {
-            char *value = NULL;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_text_new(fullpath, id, label, info, ro));
-
-            gp_widget_get_value(widget, &value);
-            g_object_set(ret, "value", value, NULL);
+#if 0
             g_signal_connect(ret, "notify::value",
                              G_CALLBACK(do_update_control_text), cam);
+#endif
         } break;
 
     case GP_WIDGET_TOGGLE:
         {
-            int value = 0;
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_toggle_new(fullpath, id, label, info, ro));
-
-            gp_widget_get_value(widget, &value);
-            g_object_set(ret, "value", (gboolean)value, NULL);
+#if 0
             g_signal_connect(ret, "notify::value",
                              G_CALLBACK(do_update_control_boolean), cam);
+#endif
         } break;
     }
+
+    g_hash_table_insert(priv->controlPaths, g_strdup(fullpath), ret);
 
  error:
     g_free(fullpath);
@@ -1528,26 +1670,271 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
 }
 
 
-EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam)
+static gboolean do_load_controls(EntangleCamera *cam,
+                                 const char *path,
+                                 CameraWidget *widget,
+                                 GError **error)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+    CameraWidgetType type;
+    EntangleControl *ctrl = NULL;
+    const char *name;
+    char *fullpath;
+    int ro;
+    gboolean ret = FALSE;
+
+    if (gp_widget_get_type(widget, &type) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to fetch widget type");
+        return FALSE;
+    }
+
+    if (gp_widget_get_name(widget, &name) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to fetch widget name");
+        return FALSE;
+    }
+
+    gp_widget_get_readonly(widget, &ro);
+
+    fullpath = g_strdup_printf("%s/%s", path, name);
+    ctrl = g_hash_table_lookup(priv->controlPaths, fullpath);
+    entangle_control_set_readonly(ctrl, ro ? TRUE : FALSE);
+
+    switch (type) {
+        /* We treat both window and section as just groups */
+    case GP_WIDGET_WINDOW:
+    case GP_WIDGET_SECTION:
+        for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+            CameraWidget *child;
+            if (gp_widget_get_child(widget, i, &child) == GP_OK)
+                if (!do_load_controls(cam, fullpath, child, error))
+                    goto cleanup;
+        }
+        break;
+
+    case GP_WIDGET_BUTTON: {
+    }   break;
+
+        /* Unclear why these two are the same in libgphoto */
+    case GP_WIDGET_RADIO:
+    case GP_WIDGET_MENU: {
+        char *value = NULL;
+        gp_widget_get_value(widget, &value);
+        g_object_set(ctrl, "value", value, NULL);
+    }   break;
+
+    case GP_WIDGET_DATE: {
+        int value = 0;
+        g_object_set(ctrl, "value", value, NULL);
+    }   break;
+
+    case GP_WIDGET_RANGE: {
+        float value = 0.0;
+        gp_widget_get_value(widget, &value);
+        g_object_set(ctrl, "value", value, NULL);
+    }   break;
+
+    case GP_WIDGET_TEXT: {
+        char *value = NULL;
+        gp_widget_get_value(widget, &value);
+        g_object_set(ctrl, "value", value, NULL);
+    }   break;
+
+    case GP_WIDGET_TOGGLE: {
+        int value = 0;
+        gp_widget_get_value(widget, &value);
+        g_object_set(ctrl, "value", (gboolean)value, NULL);
+    }   break;
+    }
+
+    ret = TRUE;
+ cleanup:
+    g_free(fullpath);
+    return ret;
+}
+
+
+gboolean entangle_camera_load_controls(EntangleCamera *cam,
+                                       GError **error)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret = FALSE;
+    int err;
+
+    g_mutex_lock(priv->lock);
+
+    if (priv->cam == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to load controls, camera is not connected");
+        goto cleanup;
+    }
+
+    entangle_camera_begin_job(cam);
+    err = gp_camera_get_config(priv->cam, &priv->widgets, priv->ctx);
+    if (err != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to fetch camera control configuration");
+        goto endjob;
+    }
+
+    if (priv->controls == NULL) {
+        priv->controlPaths = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+        if (!(priv->controls = ENTANGLE_CONTROL_GROUP(do_build_controls(cam, "", priv->widgets, error)))) {
+            g_hash_table_unref(priv->controlPaths);
+            priv->controlPaths = NULL;
+            goto endjob;
+        }
+    }
+
+    ret = do_load_controls(cam, "", priv->widgets, error);
+
+ endjob:
+    entangle_camera_end_job(cam);
+
+ cleanup:
+    g_mutex_unlock(priv->lock);
+    return ret;
+}
+
+
+static void entangle_camera_load_controls_helper(GSimpleAsyncResult *result,
+                                                 GObject *object,
+                                                 GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+
+    if (!entangle_camera_load_controls(ENTANGLE_CAMERA(object), &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_load_controls_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data)
+{
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_load_controls_async);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_load_controls_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_load_controls_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                              GAsyncResult *result,
+                                              GError **error)
+{
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
+
+gboolean entangle_camera_save_controls(EntangleCamera *cam,
+                                       GError **error)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret = FALSE;
+    int err;
+
+    g_mutex_lock(priv->lock);
+
+    if (priv->cam == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to save controls, camera is not connected");
+        goto cleanup;
+    }
+
+    if (priv->controls == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to save controls, camera is not configurable");
+        goto cleanup;
+    }
+
+    entangle_camera_begin_job(cam);
+    err = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx);
+    entangle_camera_end_job(cam);
+
+    if (err != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to save camera control configuration");
+        goto cleanup;
+    }
+
+    ret = TRUE;
+
+ cleanup:
+    g_mutex_unlock(priv->lock);
+    return ret;
+}
+
+
+
+static void entangle_camera_save_controls_helper(GSimpleAsyncResult *result,
+                                                 GObject *object,
+                                                 GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+
+    if (!entangle_camera_save_controls(ENTANGLE_CAMERA(object), &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_save_controls_async(EntangleCamera *cam,
+                                         GCancellable *cancellable,
+                                         GAsyncReadyCallback callback,
+                                         gpointer user_data)
+{
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_save_controls_async);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_save_controls_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_save_controls_finish(EntangleCamera *cam G_GNUC_UNUSED,
+                                              GAsyncResult *result,
+                                              GError **error)
+{
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
+
+EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError **error)
 {
     EntangleCameraPrivate *priv = cam->priv;
     EntangleControlGroup *ret = NULL;
 
     g_mutex_lock(priv->lock);
 
-    if (priv->cam == NULL)
+    if (priv->cam == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Controls not available when camera is disconnected");
         goto cleanup;
+    }
 
     if (priv->controls == NULL) {
-        int err;
-        entangle_camera_begin_job(cam);
-        err = gp_camera_get_config(priv->cam, &priv->widgets, priv->ctx);
-        entangle_camera_end_job(cam);
-
-        if (err != GP_OK)
-            goto cleanup;
-
-        priv->controls = ENTANGLE_CONTROL_GROUP(do_build_controls(cam, "", priv->widgets));
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Controls not available for this camera");
+        goto cleanup;
     }
 
     ret = priv->controls;
@@ -1760,8 +2147,8 @@ gboolean entangle_camera_unmount_finish(EntangleCamera *cam G_GNUC_UNUSED,
                                         GAsyncResult *result,
                                         GError **err)
 {
-    return g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
-                                                 err);
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  err);
 }
 
 /*

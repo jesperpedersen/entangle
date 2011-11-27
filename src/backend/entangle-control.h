@@ -64,6 +64,8 @@ const gchar *entangle_control_get_label(EntangleControl *control);
 const gchar *entangle_control_get_info(EntangleControl *control);
 
 gboolean entangle_control_get_readonly(EntangleControl *control);
+void entangle_control_set_readonly(EntangleControl *control,
+                                   gboolean ro);
 
 G_END_DECLS
 

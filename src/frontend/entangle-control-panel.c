@@ -379,7 +379,7 @@ static void do_setup_camera(EntangleControlPanel *panel)
     if (!priv->camera)
         return;
 
-    root = entangle_camera_get_controls(priv->camera);
+    root = entangle_camera_get_controls(priv->camera, NULL);
 
     if (!root)
         return;
