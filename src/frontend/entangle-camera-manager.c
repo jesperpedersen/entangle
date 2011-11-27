@@ -1826,9 +1826,23 @@ void do_menu_disconnect(GtkMenuItem *src G_GNUC_UNUSED,
                         EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *mtr;
+    GtkWidget *operation;
 
     do_remove_camera(manager);
+    gdk_threads_leave();
     entangle_camera_disconnect(priv->camera);
+
+    gdk_threads_enter();
+
+    mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
+    operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
+    gtk_widget_set_tooltip_text(mtr, "");
+    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), "");
+    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
+
+    gtk_widget_hide(operation);
+
     g_object_unref(priv->camera);
     priv->camera = NULL;
     do_capture_widget_sensitivity(manager);
