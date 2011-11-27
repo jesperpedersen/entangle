@@ -52,6 +52,7 @@
 struct _EntangleCameraManagerPrivate {
     EntangleCamera *camera;
     gboolean cameraReady;
+    gboolean cameraChanged;
     EntangleSession *session;
 
     EntangleContext *context;
@@ -86,7 +87,7 @@ struct _EntangleCameraManagerPrivate {
     gulong sigFileDownload;
     gulong sigFilePreview;
     gulong sigFileAdd;
-
+    gulong sigChanged;
     gulong sigPrefsNotify;
 
     GCancellable *monitorCancel;
@@ -485,6 +486,49 @@ static void do_camera_task_error(EntangleCameraManager *manager G_GNUC_UNUSED,
 
 static void do_camera_events_processed(GObject *src,
                                        GAsyncResult *result,
+                                       gpointer opaque);
+
+
+static void do_camera_load_controls_refresh_finish(GObject *source,
+                                                   GAsyncResult *result,
+                                                   gpointer opaque)
+{
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    EntangleCamera *cam = ENTANGLE_CAMERA(source);
+    GError *error = NULL;
+
+    if (!entangle_camera_load_controls_finish(cam, result, &error)) {
+        gdk_threads_enter();
+        GtkWidget *msg = gtk_message_dialog_new(NULL,
+                                                0,
+                                                GTK_MESSAGE_ERROR,
+                                                GTK_BUTTONS_OK,
+                                                "Camera load controls failed");
+        gtk_window_set_title(GTK_WINDOW(msg),
+                             "Entangle: Camera load controls failed");
+        gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
+                                                 "%s",
+                                                 error->message);
+        g_signal_connect_swapped(msg,
+                                 "response",
+                                 G_CALLBACK (gtk_widget_destroy),
+                                 msg);
+        gtk_widget_show_all(msg);
+        gdk_threads_leave();
+
+        g_error_free(error);
+    }
+
+    g_cancellable_reset(priv->monitorCancel);
+    entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
+                                         do_camera_events_processed, manager);
+}
+
+
+static void do_camera_events_processed(GObject *src,
+                                       GAsyncResult *result,
                                        gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
@@ -504,15 +548,23 @@ static void do_camera_events_processed(GObject *src,
         return;
     }
 
-    entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                         do_camera_events_processed, manager);
-
     gdk_threads_enter();
     if (!priv->cameraReady) {
         priv->cameraReady = TRUE;
         do_capture_widget_sensitivity(manager);
     }
     gdk_threads_leave();
+
+    if (priv->cameraChanged) {
+        priv->cameraChanged = FALSE;
+        entangle_camera_load_controls_async(priv->camera,
+                                            NULL,
+                                            do_camera_load_controls_refresh_finish,
+                                            manager);
+    } else {
+        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
+                                             do_camera_events_processed, manager);
+    }
 }
 
 
@@ -1079,6 +1131,17 @@ static void do_camera_unmount_finish(GObject *source,
 }
 
 
+static void do_camera_control_changed(EntangleCamera *cam G_GNUC_UNUSED,
+                                      gpointer opaque)
+{
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    gdk_threads_enter();
+    priv->cameraChanged = TRUE;
+    gdk_threads_leave();
+}
+
 static void do_add_camera(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -1097,7 +1160,9 @@ static void do_add_camera(EntangleCameraManager *manager)
     priv->sigFileDownload = g_signal_connect(priv->camera, "camera-file-downloaded",
                                              G_CALLBACK(do_camera_file_download), manager);
     priv->sigFileAdd = g_signal_connect(priv->camera, "camera-file-added",
-                                             G_CALLBACK(do_camera_file_add), manager);
+                                        G_CALLBACK(do_camera_file_add), manager);
+    priv->sigChanged = g_signal_connect(priv->camera, "camera-controls-changed",
+                                        G_CALLBACK(do_camera_control_changed), manager);
 
     entangle_camera_set_progress(priv->camera, ENTANGLE_PROGRESS(manager));
 
@@ -2199,6 +2264,18 @@ gboolean entangle_camera_manager_visible(EntangleCameraManager *manager)
 }
 
 
+static void do_camera_disconnect_finish(GObject *source,
+                                        GAsyncResult *result,
+                                        gpointer opaque G_GNUC_UNUSED)
+{
+    EntangleCamera *cam = ENTANGLE_CAMERA(source);
+    GError *error = NULL;
+
+    if (entangle_camera_disconnect_finish(cam, result, &error)) {
+        ENTANGLE_DEBUG("Unable to disconnect from camera");
+    }
+}
+
 void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
                                         EntangleCamera *cam)
 {
@@ -2206,7 +2283,10 @@ void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
 
     if (priv->camera) {
         do_remove_camera(manager);
-        entangle_camera_disconnect(priv->camera, NULL);
+        entangle_camera_disconnect_async(priv->camera,
+                                         NULL,
+                                         do_camera_disconnect_finish,
+                                         manager);
         g_object_unref(priv->camera);
     }
     priv->camera = cam;

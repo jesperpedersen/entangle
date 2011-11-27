@@ -40,9 +40,9 @@ enum {
 };
 
 static void entangle_control_get_property(GObject *object,
-                                      guint prop_id,
-                                      GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControlText *picker = ENTANGLE_CONTROL_TEXT(object);
     EntangleControlTextPrivate *priv = picker->priv;
@@ -59,9 +59,9 @@ static void entangle_control_get_property(GObject *object,
 }
 
 static void entangle_control_set_property(GObject *object,
-                                      guint prop_id,
-                                      const GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          const GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControlText *picker = ENTANGLE_CONTROL_TEXT(object);
     EntangleControlTextPrivate *priv = picker->priv;
@@ -71,6 +71,7 @@ static void entangle_control_set_property(GObject *object,
         case PROP_VALUE:
             g_free(priv->value);
             priv->value = g_value_dup_string(value);
+            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
             break;
 
         default:
@@ -79,7 +80,7 @@ static void entangle_control_set_property(GObject *object,
 }
 
 
-static void entangle_control_text_finalize (GObject *object)
+static void entangle_control_text_finalize(GObject *object)
 {
     EntangleControlText *picker = ENTANGLE_CONTROL_TEXT(object);
     EntangleControlTextPrivate *priv = picker->priv;

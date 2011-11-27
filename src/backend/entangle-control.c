@@ -34,6 +34,7 @@ struct _EntangleControlPrivate {
     char *label;
     char *info;
     gboolean readonly;
+    gboolean dirty;
 };
 
 G_DEFINE_ABSTRACT_TYPE(EntangleControl, entangle_control, G_TYPE_OBJECT);
@@ -44,7 +45,8 @@ enum {
     PROP_ID,
     PROP_LABEL,
     PROP_INFO,
-    PROP_READONLY
+    PROP_READONLY,
+    PROP_DIRTY
 };
 
 static void entangle_control_get_property(GObject *object,
@@ -75,6 +77,10 @@ static void entangle_control_get_property(GObject *object,
 
         case PROP_READONLY:
             g_value_set_boolean(value, priv->readonly);
+            break;
+
+        case PROP_DIRTY:
+            g_value_set_boolean(value, priv->dirty);
             break;
 
         default:
@@ -113,6 +119,10 @@ static void entangle_control_set_property(GObject *object,
 
         case PROP_READONLY:
             priv->readonly = g_value_get_boolean(value);
+            break;
+
+        case PROP_DIRTY:
+            priv->dirty = g_value_get_boolean(value);
             break;
 
         default:
@@ -200,6 +210,17 @@ static void entangle_control_class_init(EntangleControlClass *klass)
                                                          G_PARAM_STATIC_NAME |
                                                          G_PARAM_STATIC_NICK |
                                                          G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_DIRTY,
+                                    g_param_spec_boolean("dirty",
+                                                         "Dirty",
+                                                         "Dirty if value has been changed",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntangleControlPrivate));
 }
@@ -253,6 +274,24 @@ const gchar *entangle_control_get_info(EntangleControl *control)
     EntangleControlPrivate *priv = control->priv;
 
     return priv->info;
+}
+
+gboolean entangle_control_get_dirty(EntangleControl *control)
+{
+    EntangleControlPrivate *priv = control->priv;
+
+    return priv->dirty;
+}
+
+void entangle_control_set_dirty(EntangleControl *control,
+                                   gboolean dirty)
+{
+    EntangleControlPrivate *priv = control->priv;
+    gboolean changed = priv->dirty != dirty;
+
+    priv->dirty = dirty;
+    if (changed)
+        g_object_notify(G_OBJECT(control), "dirty");
 }
 
 gboolean entangle_control_get_readonly(EntangleControl *control)

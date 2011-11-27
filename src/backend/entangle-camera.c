@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <gphoto2.h>
+#include <string.h>
 
 #include "entangle-debug.h"
 #include "entangle-camera.h"
@@ -382,6 +383,15 @@ static void entangle_camera_class_init(EntangleCameraClass *klass)
                  G_TYPE_NONE,
                  0);
 
+    g_signal_new("camera-controls-changed",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(EntangleCameraClass, camera_controls_changed),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE,
+                 0);
+
 
     g_object_class_install_property(object_class,
                                     PROP_MODEL,
@@ -688,7 +698,6 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
     g_mutex_unlock(priv->lock);
     if (ret)
         entangle_camera_emit_deferred(cam, "camera-connected", NULL);
-    fprintf(stderr, "Connect %d %p %p %s", ret, error, *error, *error ? (*error)->message : NULL);
     return ret;
 }
 
@@ -1336,7 +1345,19 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
 
         switch (eventType) {
         case GP_EVENT_UNKNOWN:
-            ENTANGLE_DEBUG("Unknown event '%s'", (char *)eventData);
+            if (eventData &&
+                strstr((char*)eventData, "PTP Property") &&
+                strstr((char*)eventData, "changed")) {
+                ENTANGLE_DEBUG("Config changed '%s'", (char *)eventData);
+                /* For some reason, every time we request the camera config
+                 * with gp_camera_get_config, it will be followed by an
+                 * event with key 'd10d'. So we must ignore that event
+                 */
+                if (strstr(eventData, "d10d") == NULL)
+                    entangle_camera_emit_deferred(cam, "camera-controls-changed", NULL);
+            } else {
+                ENTANGLE_DEBUG("Unknown event '%s'", (char *)eventData);
+            }
             break;
 
         case GP_EVENT_TIMEOUT:
@@ -1435,110 +1456,6 @@ gboolean entangle_camera_process_events_finish(EntangleCamera *cam G_GNUC_UNUSED
                                                   error);
 }
 
-#if 0
-static void do_update_control_text(GObject *object,
-                                   GParamSpec *param G_GNUC_UNUSED,
-                                   void *data)
-{
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
-    char *text;
-    char *path;
-    int id;
-    CameraWidget *widget;
-    int ret;
-
-    g_mutex_lock(priv->lock);
-
-    g_object_get(object, "path", &path, "id", &id, "value", &text, NULL);
-    ENTANGLE_DEBUG("update of widget %s", path);
-
-    if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
-        ENTANGLE_DEBUG("cannot get widget id %d", id);
-        g_mutex_unlock(priv->lock);
-        return;
-    }
-
-    if (gp_widget_set_value(widget, text) != GP_OK) {
-        ENTANGLE_DEBUG("cannot set widget id %d to %s", id, text);
-    }
-
-    entangle_camera_begin_job(cam);
-    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
-        ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
-    entangle_camera_end_job(cam);
-    g_mutex_unlock(priv->lock);
-}
-
-static void do_update_control_float(GObject *object,
-                                    GParamSpec *param G_GNUC_UNUSED,
-                                    void *data)
-{
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
-    float value;
-    char *path;
-    int id;
-    CameraWidget *widget;
-    int ret;
-
-    g_mutex_lock(priv->lock);
-
-    g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
-    ENTANGLE_DEBUG("update of widget %s", path);
-
-    if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
-        ENTANGLE_DEBUG("cannot get widget id %d", id);
-        g_mutex_unlock(priv->lock);
-        return;
-    }
-
-    if (gp_widget_set_value(widget, &value) != GP_OK) {
-        ENTANGLE_DEBUG("cannot set widget id %d to %f", id, value);
-    }
-
-    entangle_camera_begin_job(cam);
-    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
-        ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
-    entangle_camera_end_job(cam);
-    g_mutex_unlock(priv->lock);
-}
-
-static void do_update_control_boolean(GObject *object,
-                                      GParamSpec *param G_GNUC_UNUSED,
-                                      void *data)
-{
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
-    gboolean value;
-    char *path;
-    int id;
-    CameraWidget *widget;
-    int ret;
-
-    g_mutex_lock(priv->lock);
-
-    g_object_get(object, "path", &path, "id", &id, "value", &value, NULL);
-    ENTANGLE_DEBUG("update of widget %s", path);
-
-    if (gp_widget_get_child_by_id(priv->widgets, id, &widget) != GP_OK) {
-        ENTANGLE_DEBUG("cannot get widget id %d", id);
-        g_mutex_unlock(priv->lock);
-        return;
-    }
-
-    if (gp_widget_set_value(widget, &value) != GP_OK) {
-        ENTANGLE_DEBUG("cannot set widget id %d to %d", id, value);
-    }
-
-    entangle_camera_begin_job(cam);
-    if ((ret = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK)
-        ENTANGLE_DEBUG("cannot set config: %s", gp_result_as_string(ret));
-    entangle_camera_end_job(cam);
-    g_mutex_unlock(priv->lock);
-}
-#endif
-
 
 static EntangleControl *do_build_controls(EntangleCamera *cam,
                                           const char *path,
@@ -1635,30 +1552,18 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
             ENTANGLE_DEBUG("Add range %s %d %s %f %f %f", fullpath, id, label, min, max, step);
             ret = ENTANGLE_CONTROL(entangle_control_range_new(fullpath, id, label, info, ro,
                                                               min, max, step));
-#if 0
-            g_signal_connect(ret, "notify::value",
-                             G_CALLBACK(do_update_control_float), cam);
-#endif
         } break;
 
     case GP_WIDGET_TEXT:
         {
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_text_new(fullpath, id, label, info, ro));
-#if 0
-            g_signal_connect(ret, "notify::value",
-                             G_CALLBACK(do_update_control_text), cam);
-#endif
         } break;
 
     case GP_WIDGET_TOGGLE:
         {
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_toggle_new(fullpath, id, label, info, ro));
-#if 0
-            g_signal_connect(ret, "notify::value",
-                             G_CALLBACK(do_update_control_boolean), cam);
-#endif
         } break;
     }
 
@@ -1667,6 +1572,16 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
  error:
     g_free(fullpath);
     return ret;
+}
+
+
+static gboolean entangle_str_equal_null(gchar *a, gchar *b)
+{
+    if (!a && !b)
+        return TRUE;
+    if (!a || !b)
+        return FALSE;
+    return g_str_equal(a, b);
 }
 
 
@@ -1719,9 +1634,14 @@ static gboolean do_load_controls(EntangleCamera *cam,
         /* Unclear why these two are the same in libgphoto */
     case GP_WIDGET_RADIO:
     case GP_WIDGET_MENU: {
-        char *value = NULL;
-        gp_widget_get_value(widget, &value);
-        g_object_set(ctrl, "value", value, NULL);
+        gchar *newValue = NULL;
+        gchar *oldValue = NULL;
+        g_object_get(ctrl, "value", &oldValue, NULL);
+        gp_widget_get_value(widget, &newValue);
+        if (!entangle_str_equal_null(newValue, oldValue)) {
+            g_object_set(ctrl, "value", newValue, NULL);
+        }
+        g_free(oldValue);
     }   break;
 
     case GP_WIDGET_DATE: {
@@ -1730,22 +1650,129 @@ static gboolean do_load_controls(EntangleCamera *cam,
     }   break;
 
     case GP_WIDGET_RANGE: {
-        float value = 0.0;
-        gp_widget_get_value(widget, &value);
-        g_object_set(ctrl, "value", value, NULL);
+        float newValue = 0.0;
+        float oldValue = 0.0;
+        g_object_set(ctrl, "value", oldValue, NULL);
+        gp_widget_get_value(widget, &newValue);
+        if (newValue != oldValue)
+            g_object_set(ctrl, "value", newValue, NULL);
     }   break;
 
     case GP_WIDGET_TEXT: {
-        char *value = NULL;
-        gp_widget_get_value(widget, &value);
-        g_object_set(ctrl, "value", value, NULL);
+        gchar *newValue = NULL;
+        gchar *oldValue = NULL;
+        g_object_get(ctrl, "value", &oldValue, NULL);
+        gp_widget_get_value(widget, &newValue);
+        if (!entangle_str_equal_null(newValue, oldValue))
+            g_object_set(ctrl, "value", newValue, NULL);
+        g_free(oldValue);
     }   break;
 
     case GP_WIDGET_TOGGLE: {
-        int value = 0;
-        gp_widget_get_value(widget, &value);
-        g_object_set(ctrl, "value", (gboolean)value, NULL);
+        int i;
+        gboolean newValue = 0;
+        gboolean oldValue = 0;
+        g_object_get(ctrl, "value", &oldValue, NULL);
+        gp_widget_get_value(widget, &i);
+        newValue = i ? TRUE : FALSE;
+        if (newValue != oldValue)
+            g_object_set(ctrl, "value", newValue, NULL);
     }   break;
+    }
+
+    entangle_control_set_dirty(ctrl, FALSE);
+    ret = TRUE;
+ cleanup:
+    g_free(fullpath);
+    return ret;
+}
+
+static gboolean do_save_controls(EntangleCamera *cam,
+                                 const char *path,
+                                 CameraWidget *widget,
+                                 GError **error)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+    CameraWidgetType type;
+    EntangleControl *ctrl = NULL;
+    const char *name;
+    char *fullpath;
+    gboolean ret = FALSE;
+
+    if (gp_widget_get_type(widget, &type) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to fetch widget type");
+        return FALSE;
+    }
+
+    if (gp_widget_get_name(widget, &name) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    "Unable to fetch widget name");
+        return FALSE;
+    }
+
+    fullpath = g_strdup_printf("%s/%s", path, name);
+    ctrl = g_hash_table_lookup(priv->controlPaths, fullpath);
+
+    switch (type) {
+        /* We treat both window and section as just groups */
+    case GP_WIDGET_WINDOW:
+    case GP_WIDGET_SECTION:
+        for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+            CameraWidget *child;
+            if (gp_widget_get_child(widget, i, &child) == GP_OK)
+                if (!do_save_controls(cam, fullpath, child, error))
+                    goto cleanup;
+        }
+        break;
+
+    case GP_WIDGET_BUTTON: {
+    }   break;
+
+        /* Unclear why these two are the same in libgphoto */
+    case GP_WIDGET_RADIO:
+    case GP_WIDGET_MENU:
+        if (entangle_control_get_dirty(ctrl)) {
+            char *value = NULL;
+            g_object_get(ctrl, "value", &value, NULL);
+            gp_widget_set_value(widget, value);
+            g_free(value);
+        }
+        break;
+
+    case GP_WIDGET_DATE:
+        if (entangle_control_get_dirty(ctrl)) {
+            int value = 0;
+            g_object_get(ctrl, "value", &value, NULL);
+        }
+        break;
+
+    case GP_WIDGET_RANGE:
+        if (entangle_control_get_dirty(ctrl)) {
+            float value = 0.0;
+            g_object_get(ctrl, "value", &value, NULL); 
+            gp_widget_set_value(widget, &value);
+        }
+        break;
+
+    case GP_WIDGET_TEXT:
+        if (entangle_control_get_dirty(ctrl)) {
+            char *value = NULL;
+            g_object_get(ctrl, "value", &value, NULL);
+            gp_widget_set_value(widget, value);
+            g_free(value);
+        }
+        break;
+
+    case GP_WIDGET_TOGGLE:
+        if (entangle_control_get_dirty(ctrl)) {
+            gboolean value = 0;
+            int i;
+            g_object_get(ctrl, "value", &value, NULL);
+            i = value ? 1 : 0;
+            gp_widget_set_value(widget, &i);
+        }
+        break;
     }
 
     ret = TRUE;
@@ -1860,16 +1887,24 @@ gboolean entangle_camera_save_controls(EntangleCamera *cam,
     }
 
     entangle_camera_begin_job(cam);
-    err = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx);
-    entangle_camera_end_job(cam);
 
-    if (err != GP_OK) {
+    if (!do_save_controls(cam, "", priv->widgets, error))
+        goto endjob;
+
+    if ((err = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to save camera control configuration");
-        goto cleanup;
+                    "Unable to save camera control configuration: %s %d",
+                    gp_port_result_as_string(err), err);
+        goto endjob;
     }
 
+    if (!do_load_controls(cam, "", priv->widgets, error))
+        goto endjob;
+
     ret = TRUE;
+
+ endjob:
+    entangle_camera_end_job(cam);
 
  cleanup:
     g_mutex_unlock(priv->lock);

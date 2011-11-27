@@ -59,6 +59,8 @@ struct _EntangleCameraClass
     void (*camera_file_downloaded)(EntangleCamera *cam, EntangleCameraFile *file);
     void (*camera_file_deleted)(EntangleCamera *cam, EntangleCameraFile *file);
 
+    void (*camera_controls_changed)(EntangleCamera *cam);
+
     void (*camera_connected)(EntangleCamera *cam);
     void (*camera_disconnected)(EntangleCamera *cam);
 };

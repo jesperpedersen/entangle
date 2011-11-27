@@ -63,6 +63,10 @@ const gchar *entangle_control_get_path(EntangleControl *control);
 const gchar *entangle_control_get_label(EntangleControl *control);
 const gchar *entangle_control_get_info(EntangleControl *control);
 
+gboolean entangle_control_get_dirty(EntangleControl *control);
+void entangle_control_set_dirty(EntangleControl *control,
+                                gboolean dirty);
+
 gboolean entangle_control_get_readonly(EntangleControl *control);
 void entangle_control_set_readonly(EntangleControl *control,
                                    gboolean ro);

@@ -36,7 +36,7 @@ struct _EntangleControlGroupPrivate {
 G_DEFINE_TYPE(EntangleControlGroup, entangle_control_group, ENTANGLE_TYPE_CONTROL);
 
 
-static void entangle_control_group_finalize (GObject *object)
+static void entangle_control_group_finalize(GObject *object)
 {
     EntangleControlGroup *picker = ENTANGLE_CONTROL_GROUP(object);
     EntangleControlGroupPrivate *priv = picker->priv;

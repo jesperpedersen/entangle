@@ -46,9 +46,9 @@ enum {
 };
 
 static void entangle_control_range_get_property(GObject *object,
-                                            guint prop_id,
-                                            GValue *value,
-                                            GParamSpec *pspec)
+                                                guint prop_id,
+                                                GValue *value,
+                                                GParamSpec *pspec)
 {
     EntangleControlRange *picker = ENTANGLE_CONTROL_RANGE(object);
     EntangleControlRangePrivate *priv = picker->priv;
@@ -77,9 +77,9 @@ static void entangle_control_range_get_property(GObject *object,
 }
 
 static void entangle_control_range_set_property(GObject *object,
-                                            guint prop_id,
-                                            const GValue *value,
-                                            GParamSpec *pspec)
+                                                guint prop_id,
+                                                const GValue *value,
+                                                GParamSpec *pspec)
 {
     EntangleControlRange *picker = ENTANGLE_CONTROL_RANGE(object);
     EntangleControlRangePrivate *priv = picker->priv;
@@ -88,6 +88,7 @@ static void entangle_control_range_set_property(GObject *object,
         {
         case PROP_VALUE:
             priv->value = g_value_get_float(value);
+            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
             break;
 
         case PROP_RANGE_MIN:
@@ -108,7 +109,7 @@ static void entangle_control_range_set_property(GObject *object,
 }
 
 
-static void entangle_control_range_finalize (GObject *object)
+static void entangle_control_range_finalize(GObject *object)
 {
     G_OBJECT_CLASS (entangle_control_range_parent_class)->finalize (object);
 }

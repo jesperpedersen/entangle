@@ -43,9 +43,9 @@ enum {
 };
 
 static void entangle_control_get_property(GObject *object,
-                                      guint prop_id,
-                                      GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControlChoice *picker = ENTANGLE_CONTROL_CHOICE(object);
     EntangleControlChoicePrivate *priv = picker->priv;
@@ -62,9 +62,9 @@ static void entangle_control_get_property(GObject *object,
 }
 
 static void entangle_control_set_property(GObject *object,
-                                      guint prop_id,
-                                      const GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          const GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControlChoice *picker = ENTANGLE_CONTROL_CHOICE(object);
     EntangleControlChoicePrivate *priv = picker->priv;
@@ -74,6 +74,7 @@ static void entangle_control_set_property(GObject *object,
         case PROP_VALUE:
             g_free(priv->value);
             priv->value = g_value_dup_string(value);
+            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
             break;
 
         default:
@@ -139,7 +140,7 @@ static void entangle_control_choice_init(EntangleControlChoice *picker)
 }
 
 void entangle_control_choice_add_entry(EntangleControlChoice *choice,
-                                   const char *entry)
+                                       const char *entry)
 {
     EntangleControlChoicePrivate *priv = choice->priv;
 
@@ -155,7 +156,7 @@ int entangle_control_choice_entry_count(EntangleControlChoice *choice)
 }
 
 const char *entangle_control_choice_entry_get(EntangleControlChoice *choice,
-                                          int idx)
+                                              int idx)
 {
     EntangleControlChoicePrivate *priv = choice->priv;
 

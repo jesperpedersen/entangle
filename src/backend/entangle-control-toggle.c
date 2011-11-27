@@ -40,9 +40,9 @@ enum {
 };
 
 static void entangle_control_get_property(GObject *object,
-                                      guint prop_id,
-                                      GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControlToggle *picker = ENTANGLE_CONTROL_TOGGLE(object);
     EntangleControlTogglePrivate *priv = picker->priv;
@@ -59,9 +59,9 @@ static void entangle_control_get_property(GObject *object,
 }
 
 static void entangle_control_set_property(GObject *object,
-                                      guint prop_id,
-                                      const GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          const GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleControlToggle *picker = ENTANGLE_CONTROL_TOGGLE(object);
     EntangleControlTogglePrivate *priv = picker->priv;
@@ -70,6 +70,7 @@ static void entangle_control_set_property(GObject *object,
         {
         case PROP_VALUE:
             priv->value = g_value_get_boolean(value);
+            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
             break;
 
         default:
@@ -78,7 +79,7 @@ static void entangle_control_set_property(GObject *object,
 }
 
 
-static void entangle_control_toggle_finalize (GObject *object)
+static void entangle_control_toggle_finalize(GObject *object)
 {
     G_OBJECT_CLASS (entangle_control_toggle_parent_class)->finalize (object);
 }
