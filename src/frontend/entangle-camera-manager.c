@@ -885,8 +885,6 @@ static void do_remove_camera(EntangleCameraManager *manager)
     entangle_control_panel_set_camera(priv->controlPanel, NULL);
     entangle_camera_set_progress(priv->camera, NULL);
 
-    do_select_image(manager, NULL);
-
     g_signal_handler_disconnect(priv->camera, priv->sigFilePreview);
     g_signal_handler_disconnect(priv->camera, priv->sigFileDownload);
     g_signal_handler_disconnect(priv->camera, priv->sigFileAdd);
