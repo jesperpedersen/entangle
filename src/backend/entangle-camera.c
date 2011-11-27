@@ -2083,11 +2083,22 @@ static GMount *entangle_device_manager_find_mount(EntangleCamera *cam,
 }
 
 
+/*
+ * For some reason if we ever unref monitor, we get a 100%
+ * CPU burn loop in a bg thread from DBus messages. So we
+ * have made this static for now
+ */
+static GStaticMutex monitorLock = G_STATIC_MUTEX_INIT;
+static GVolumeMonitor *monitor;
+
 gboolean entangle_camera_is_mounted(EntangleCamera *cam)
 {
-    GVolumeMonitor *monitor = g_volume_monitor_get();
-    GMount *mount = entangle_device_manager_find_mount(cam, monitor);
+    GMount *mount;
     gboolean ret;
+    g_static_mutex_lock(&monitorLock);
+    if (!monitor)
+        monitor = g_volume_monitor_get();
+    mount = entangle_device_manager_find_mount(cam, monitor);
 
     if (mount) {
         g_object_unref(mount);
@@ -2095,8 +2106,8 @@ gboolean entangle_camera_is_mounted(EntangleCamera *cam)
     } else {
         ret = FALSE;
     }
+    g_static_mutex_unlock(&monitorLock);
 
-    g_object_unref(monitor);
     return ret;
 }
 #if 0
