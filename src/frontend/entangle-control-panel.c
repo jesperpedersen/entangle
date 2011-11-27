@@ -94,13 +94,14 @@ static void do_refresh_control_entry(GObject *object,
 {
     GtkWidget *widget = GTK_WIDGET(opaque);
     gchar *text;
-
+    gdk_threads_enter();
     g_object_get(object, "value", &text, NULL);
     if (GTK_IS_LABEL(widget))
         gtk_label_set_text(GTK_LABEL(widget), text);
     else
         gtk_entry_set_text(GTK_ENTRY(widget), text);
     g_free(text);
+    gdk_threads_leave();
 }
 
 
@@ -116,7 +117,9 @@ static void do_update_control_entry(GtkWidget *widget,
     text = gtk_entry_get_text(GTK_ENTRY(widget));
 
     ENTANGLE_DEBUG("entry [%s]", text);
+    gdk_threads_leave();
     g_object_set(control, "value", text, NULL);
+    gdk_threads_enter();
 
     entangle_camera_save_controls_async(priv->camera,
                                         NULL,
@@ -132,14 +135,16 @@ static void do_refresh_control_range(GObject *object,
     GtkWidget *widget = GTK_WIDGET(opaque);
     gfloat val;
 
+    gdk_threads_enter();
     g_object_get(object, "value", &val, NULL);
     if (GTK_IS_LABEL(widget)) {
-        gchar *text = g_strdup_printf("%f", val);
+        gchar *text = g_strdup_printf("%0.02f", val);
         gtk_label_set_text(GTK_LABEL(widget), text);
         g_free(text);
     } else {
         gtk_range_set_value(GTK_RANGE(widget), val);
     }
+    gdk_threads_leave();
 }
 
 
@@ -153,7 +158,9 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
     EntangleControlPanelPrivate *priv = panel->priv;
 
     ENTANGLE_DEBUG("range [%lf]", value);
+    gdk_threads_leave();
     g_object_set(control, "value", (float)value, NULL);
+    gdk_threads_enter();
 
     entangle_camera_save_controls_async(priv->camera,
                                         NULL,
@@ -169,6 +176,7 @@ static void do_refresh_control_combo(GObject *object,
     GtkWidget *widget = GTK_WIDGET(opaque);
     gchar *text;
 
+    gdk_threads_enter();
     g_object_get(object, "value", &text, NULL);
 
     if (GTK_IS_LABEL(widget)) {
@@ -181,7 +189,8 @@ static void do_refresh_control_combo(GObject *object,
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(widget), active);
     }
-    g_free(text);    
+    g_free(text);
+    gdk_threads_leave();
 }
 
 
@@ -199,7 +208,9 @@ static void do_update_control_combo(GtkComboBox *widget,
         gtk_tree_model_get(model, &iter, 0, &text, -1);
 
     ENTANGLE_DEBUG("combo [%s]", text);
+    gdk_threads_leave();
     g_object_set(control, "value", text, NULL);
+    gdk_threads_enter();
 
     g_free(text);
 
@@ -217,12 +228,14 @@ static void do_refresh_control_toggle(GObject *object,
     GtkWidget *widget = GTK_WIDGET(opaque);
     gboolean state;
 
+    gdk_threads_enter();
     g_object_get(object, "value", &state, NULL);
     if (GTK_IS_LABEL(widget))
         gtk_label_set_text(GTK_LABEL(widget), state ? "On" : "Off");
     else
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
                                      state);
+    gdk_threads_leave();
 }
 
 
@@ -236,7 +249,9 @@ static void do_update_control_toggle(GtkToggleButton *widget,
 
     active = gtk_toggle_button_get_active(widget);
     ENTANGLE_DEBUG("toggle [%d]", active);
+    gdk_threads_leave();
     g_object_set(control, "value", active, NULL);
+    gdk_threads_enter();
 
     entangle_camera_save_controls_async(priv->camera,
                                         NULL,
@@ -466,7 +481,7 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
             gchar *text;
 
             g_object_get(control, "value", &offset, NULL);
-            text = g_strdup_printf("%lf", offset);
+            text = g_strdup_printf("%0.02f", offset);
             value = gtk_label_new(text);
             g_free(text);
             g_object_set_data(G_OBJECT(value), "control", control);
