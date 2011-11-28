@@ -21,7 +21,6 @@
 #include <config.h>
 
 #include <glib.h>
-#include <glib/gthread.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <gphoto2.h>
