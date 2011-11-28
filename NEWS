@@ -1,6 +1,42 @@
       Entangle News
       =============
 
+Release 0.3.0
+-------------
+
+ * Switch to use Gtk3 for UI
+ * Switch to use GSettings for preferences
+ * Switch to use GtkBuilder for UI modelling
+ * Always enable GObject introspection
+ * Mandate libpeas for building
+ * Use gexiv2 for extracting metadata from images
+ * Rewrite internals for camera capture to be based on GIO
+   async invocation, instead of explicitly using threads
+ * Automatically detect change of config on camera and
+   propagate to UI (probably only works with Nikon cameras)
+ * Display basic image properties (aperture, iso, shutter
+   speed, size and focal length) in a popup
+ * Remove support for HAL, in favour of udev
+ * Avoid 100% cpu burn with GVolumeMonitor / DBus bug
+ * Remember last image directory across restarts
+ * Default to $PICTURE_DIR/Capture for images, instead of
+   creating a directory based on the camera model name
+ * Keep display of images in session even when no camera
+   is connected
+ * Remove "Other PTP properties" from control panel to
+   make the UI more scalable & improve speed of loading
+   the UI
+ * Preference to prevent deletion of images from camera
+   after download
+ * Preference to allow preview to continue after image
+   capture
+ * Continuously monitor for new images on the camera and
+   download as they appear.
+ * Setup transient window hints to assist window manager
+   in handling window placement
+ * Delete all website content which is now managed live
+
+
 Release 0.2.0
 -------------
 
