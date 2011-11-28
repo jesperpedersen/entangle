@@ -3,7 +3,7 @@
 Summary: Tethered shooting & control of digital cameras
 Name: entangle
 Version: @VERSION@
-Release: 1%{?dist}
+Release: 1%{?dist}%{?extra_release}
 License: GPLv3+
 Group: Applications/Multimedia
 Source: http://entangle-photo.org/download/sources/%{name}-%{version}.tar.gz
