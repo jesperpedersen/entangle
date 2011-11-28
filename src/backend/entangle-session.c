@@ -21,9 +21,9 @@
 #include <config.h>
 
 #include <glib.h>
+#include <gio/gio.h>
 #include <stdio.h>
 #include <string.h>
-#include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -405,26 +405,31 @@ void entangle_session_add(EntangleSession *session, EntangleImage *image)
 gboolean entangle_session_load(EntangleSession *session)
 {
     EntangleSessionPrivate *priv = session->priv;
-    DIR *dh;
-    struct dirent *ent;
+    GFile *dir = g_file_new_for_path(priv->directory);
+    GFileEnumerator *children = g_file_enumerate_children(dir,
+                                                          "standard::name,standard::type",
+                                                          G_FILE_QUERY_INFO_NONE,
+                                                          NULL,
+                                                          NULL);
+    GFileInfo *childinfo;
+    while ((childinfo = g_file_enumerator_next_file(children, NULL, NULL)) != NULL) {
+        const gchar *thisname = g_file_info_get_name(childinfo);
+        GFile *child = g_file_get_child(dir, thisname);
+        if (g_file_info_get_file_type(childinfo) == G_FILE_TYPE_REGULAR ||
+            g_file_info_get_file_type(childinfo) == G_FILE_TYPE_SYMBOLIC_LINK) {
 
-    dh = opendir(priv->directory);
-    if (!dh)
-        return FALSE;
+            EntangleImage *image = entangle_image_new_file(g_file_get_path(child));
 
-    while ((ent = readdir(dh)) != NULL) {
-        if (ent->d_name[0] == '.')
-            continue;
+            ENTANGLE_DEBUG("Adding '%s'", g_file_get_path(child));
+            entangle_session_add(session, image);
 
-        char *filename = g_strdup_printf("%s/%s", priv->directory, ent->d_name);
-        EntangleImage *image = entangle_image_new_file(filename);
-
-        ENTANGLE_DEBUG("Adding '%s'", filename);
-        entangle_session_add(session, image);
-
-        g_object_unref(image);
+            g_object_unref(image);
+        }
+        g_object_unref(child);
+        g_object_unref(childinfo);
     }
-    closedir(dh);
+
+    g_object_unref(children);
 
     priv->recalculateDigit = TRUE;
 
