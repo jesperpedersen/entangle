@@ -35,6 +35,7 @@ Release 0.3.0
  * Setup transient window hints to assist window manager
    in handling window placement
  * Delete all website content which is now managed live
+ * Skip directories / special files when loading sessions
 
 
 Release 0.2.0

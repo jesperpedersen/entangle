@@ -11,6 +11,20 @@ Entangle is distributed under the terms of the GNU GPL v3+, except
 for the Logo which is under the the Creative Commons 1.0 Public
 Domain Dedication
 
+Building entangle requires the following external packages to
+be present
+
+ glib2                 >= 2.26.0
+ gdk-pixbf             >= 2.12.0
+ gtk3                  >= 3.0.0
+ libgphoto2            >= 2.4.11
+ gudev                 >= 145
+ dbus-glib             >= 0.60
+ gobject-introspection >= 0.9.3
+ lcms                  >= 1.18
+ libpeas               >= 0.5.5
+ gexiv2                >= 0.2.2
+
 For further information visit
 
    http://entangle-photo.org/

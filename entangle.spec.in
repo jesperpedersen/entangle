@@ -89,8 +89,3 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %dir %{_datadir}/%{name}/plugins
 
 %changelog
-* Fri Apr  9 2010 Daniel P. Berrange <berrange@redhat.com> - 0.1.0-2
-- Remove redundant website content from RPM
-
-* Thu Apr  8 2010 Daniel P. Berrange <berrange@redhat.com> - 0.1.0-1
-- Initial release
