@@ -2128,7 +2128,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     if (access("./entangle", R_OK) == 0)
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-camera-manager.xml", &error);
     else 
-        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/frontend/entangle-camera-manager.xml", &error);
+        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-manager.xml", &error);
 
     if (error)
         g_error("Couldn't load builder file: %s", error->message);

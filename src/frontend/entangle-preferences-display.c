@@ -476,7 +476,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-preferences.xml", &error);
         local = TRUE;
     } else {
-        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/frontend/entangle-preferences.xml", &error);
+        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-preferences.xml", &error);
     }
 
     if (error)
