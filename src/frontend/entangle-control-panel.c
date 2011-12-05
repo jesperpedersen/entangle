@@ -184,7 +184,7 @@ static void do_refresh_control_combo(GObject *object,
     } else {
         int active = 0;
         for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(object)) ; n++) {
-            if (strcmp(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(object), n)) == 0)
+            if (g_strcmp0(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(object), n)) == 0)
                 active = n;
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(widget), active);
@@ -331,7 +331,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             g_object_get(control, "value", &text, NULL);
             for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)) ; n++) {
                 GtkTreeIter iter;
-                if (strcmp(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n)) == 0)
+                if (g_strcmp0(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n)) == 0)
                     active = n;
                 gtk_list_store_append(store, &iter);
                 gtk_list_store_set(store, &iter, 0,
