@@ -61,6 +61,14 @@ PKG_CHECK_MODULES([GIO], [glib-2.0 >= $GIO_REQUIRED])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
+AC_MSG_CHECKING([for glib-compile-schemas])
+AC_SUBST([GLIB_COMPILE_SCHEMAS], [$($PKG_CONFIG --variable=glib_compile_schemas gio-2.0)])
+if [ test -x $GLIB_COMPILE_SCHEMAS ]; then
+  AC_MSG_RESULT([$GLIB_COMPILE_SCHEMAS])
+else
+  AC_MSG_ERROR([The $GLIB_COMPILE_SCHEMAS binary must be installed before building entangle])
+fi
+
 PKG_CHECK_MODULES([GMODULE], [gmodule-2.0 >= $GLIB_REQUIRED])
 AC_SUBST(GMODULE_CFLAGS)
 AC_SUBST(GMODULE_LIBS)
@@ -124,4 +132,26 @@ AC_CONFIG_FILES(
   docs/reference/Makefile
   )
 
-AC_OUTPUT
+if test "$datadir" != "/usr/share" && test "$datadir" != "/usr/local/share"
+then
+  schemadir=`eval "echo $datadir/glib-2.0/schemas"`
+  AC_MSG_NOTICE([WARNING:])
+  AC_MSG_NOTICE([WARNING: GSettings schemas will be installed to])
+  AC_MSG_NOTICE([WARNING:])
+  AC_MSG_NOTICE([WARNING:      $schemadir])
+  AC_MSG_NOTICE([WARNING:])
+  AC_MSG_NOTICE([WARNING: GSettings will only look for configuration file schemas in])
+  AC_MSG_NOTICE([WARNING:])
+  if test -z "$XDG_DATA_DIRS"; then
+      AC_MSG_NOTICE([WARNING:      /usr/share:/usr/local/share])
+  else
+      AC_MSG_NOTICE([WARNING:      $XDG_DATA_DIRS])
+  fi
+  AC_MSG_NOTICE([WARNING:])
+  AC_MSG_NOTICE([WARNING: If you continue with this install location for schemas, you])
+  AC_MSG_NOTICE([WARNING: must ensure that the XDG_DATA_DIRS environment variable is])
+  AC_MSG_NOTICE([WARNING: set and includes $schemadir])
+  AC_MSG_NOTICE([WARNING:])
+  AC_MSG_NOTICE([WARNING: Failure to configure XDG_DATA_DIRS will result in entangle])
+  AC_MSG_NOTICE([WARNING: aborting upon startup])
+fi

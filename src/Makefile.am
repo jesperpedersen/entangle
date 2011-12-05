@@ -213,11 +213,17 @@ install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/entangle/plugins
 	$(MKDIR_P) $(DESTDIR)$(datadir)/entangle/plugins
 
+install-data-hook:
+	$(AM_V_GEN)$(GLIB_COMPILE_SCHEMAS) $(DESTDIR)$(gsettingsdir)
+
 uninstall-local::
 	rmdir $(DESTDIR)$(libdir)/entangle/plugins ||:
 	rmdir $(DESTDIR)$(libdir)/entangle ||:
 	rmdir $(DESTDIR)$(datadir)/entangle/plugins ||:
 	rmdir $(DESTDIR)$(datadir)/entangle ||:
+
+uninstall-hook:
+	$(AM_V_GEN)$(GLIB_COMPILE_SCHEMAS) $(DESTDIR)$(gsettingsdir)
 
 Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
 	$(AM_V_GEN)$(G_IR_SCANNER) -v --quiet \
