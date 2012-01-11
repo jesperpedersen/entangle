@@ -7,9 +7,29 @@ graphical interface for tethered photography with digital cameras.
 It includes control over camera shooting and configuration settings
 and 'hands off' shooting directly from the controlling computer.
 
-Entangle is distributed under the terms of the GNU GPL v3+, except
-for the Logo which is under the the Creative Commons 1.0 Public
-Domain Dedication
+Installation
+------------
+
+The libvirt-sandbox package uses GNU autotools, so the build install
+process follows the standard process documented in the INSTALL file.
+As a quick start you can do
+
+  ./configure --prefix=/usr --sysconfdir=/etc \
+        --localstatedir=/var --libdir=/usr/lib
+  make
+  sudo make install
+
+Or to install into a private user specific location
+
+  ./configure --prefix=$HOME/libvirt-sandbox
+  make
+  make install
+
+NB, if not installing in /usr, you need to set the XDG_DATA_DIRS env
+variable to point to the data directory, eg in the above example use:
+
+  XDG_DATA_DIRS=/usr/share:/usr/local/share:$HOME/libvirt-sandbox/share
+  export XDG_DATA_DIRS
 
 Building entangle requires the following external packages to
 be present
@@ -25,13 +45,38 @@ be present
  libpeas               >= 0.5.5
  gexiv2                >= 0.2.2
 
+
+Communication
+-------------
+
+To communicate with the development team, or to post patches
+there is a technical mailing list:
+
+   https://mail.gna.org/listinfo/entangle-devel/
+
+Bugs found when using an OS distribution's binary packages should
+be reported to the OS vendors' own bug tracker first. Otherwise
+they can be reported to
+
+   https://gna.org/bugs/?group=entangle
+
+The latest libvirt-sandbox code can be found in GIT at:
+
+   https://gitorious.org/entangle/entangle
+
 For further information visit
 
    http://entangle-photo.org/
 
-Or contact the author
 
-   Daniel P. Berrange  <dan-at-berrange-dot-com>
+License
+-------
 
+Entangle is distributed under the terms of the GNU GPL v3+, except
+for the Logo which is under the the Creative Commons 1.0 Public
+Domain Dedication.
+
+Please see the COPYING file for the complete GPLv3+ license
+terms, or visit <http://www.gnu.org/licenses/>.
 
 -- End
