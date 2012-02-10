@@ -484,9 +484,9 @@ static void do_camera_task_error(EntangleCameraManager *manager G_GNUC_UNUSED,
 }
 
 
-static void do_camera_events_processed(GObject *src,
-                                       GAsyncResult *result,
-                                       gpointer opaque);
+static void do_camera_process_events_finish(GObject *src,
+                                            GAsyncResult *result,
+                                            gpointer opaque);
 
 
 static void do_camera_load_controls_refresh_finish(GObject *source,
@@ -523,13 +523,13 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
 
     g_cancellable_reset(priv->monitorCancel);
     entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                         do_camera_events_processed, manager);
+                                         do_camera_process_events_finish, manager);
 }
 
 
-static void do_camera_events_processed(GObject *src,
-                                       GAsyncResult *result,
-                                       gpointer opaque)
+static void do_camera_process_events_finish(GObject *src,
+                                            GAsyncResult *result,
+                                            gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -563,14 +563,14 @@ static void do_camera_events_processed(GObject *src,
                                             manager);
     } else {
         entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                             do_camera_events_processed, manager);
+                                             do_camera_process_events_finish, manager);
     }
 }
 
 
-static void do_camera_file_previewed(GObject *src,
-                                     GAsyncResult *res,
-                                     gpointer opaque);
+static void do_camera_preview_image_finish(GObject *src,
+                                           GAsyncResult *res,
+                                           gpointer opaque);
 
 
 static gboolean do_camera_task_begin(EntangleCameraManager *manager)
@@ -604,7 +604,7 @@ static void do_camera_task_complete(EntangleCameraManager *manager)
         entangle_preferences_capture_get_continuous_preview(prefs)) {
         entangle_camera_preview_image_async(priv->camera,
                                             priv->taskCancel,
-                                            do_camera_file_previewed,
+                                            do_camera_preview_image_finish,
                                             manager);
     } else {
         gdk_threads_enter();
@@ -621,7 +621,7 @@ static void do_camera_task_complete(EntangleCameraManager *manager)
         g_cancellable_reset(priv->taskCancel);
         g_cancellable_reset(priv->monitorCancel);
         entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                             do_camera_events_processed, manager);
+                                             do_camera_process_events_finish, manager);
     }
 }
 
@@ -655,9 +655,9 @@ static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleC
     g_free(localpath);
 }
 
-static void do_camera_file_deleted(GObject *src,
-                                   GAsyncResult *res,
-                                   gpointer opaque)
+static void do_camera_delete_file_finish(GObject *src,
+                                         GAsyncResult *res,
+                                         gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
@@ -673,9 +673,9 @@ static void do_camera_file_deleted(GObject *src,
 }
 
 
-static void do_camera_file_downloaded(GObject *src,
-                                      GAsyncResult *res,
-                                      gpointer opaque)
+static void do_camera_download_file_finish(GObject *src,
+                                           GAsyncResult *res,
+                                           gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -693,7 +693,7 @@ static void do_camera_file_downloaded(GObject *src,
         entangle_camera_delete_file_async(camera,
                                           priv->taskFile,
                                           NULL,
-                                          do_camera_file_deleted,
+                                          do_camera_delete_file_finish,
                                           manager);
     } else {
         do_camera_task_complete(manager);
@@ -701,9 +701,9 @@ static void do_camera_file_downloaded(GObject *src,
 }
 
 
-static void do_camera_file_captured(GObject *src,
-                                    GAsyncResult *res,
-                                    gpointer opaque)
+static void do_camera_capture_image_finish(GObject *src,
+                                           GAsyncResult *res,
+                                           gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -723,7 +723,7 @@ static void do_camera_file_captured(GObject *src,
             entangle_camera_delete_file_async(camera,
                                               priv->taskFile,
                                               NULL,
-                                              do_camera_file_deleted,
+                                              do_camera_delete_file_finish,
                                               manager);
         } else {
             do_camera_task_complete(manager);
@@ -732,15 +732,15 @@ static void do_camera_file_captured(GObject *src,
         entangle_camera_download_file_async(camera,
                                             priv->taskFile,
                                             NULL,
-                                            do_camera_file_downloaded,
+                                            do_camera_download_file_finish,
                                             manager);
     }
 }
 
 
-static void do_camera_file_discarded(GObject *src,
-                                     GAsyncResult *res,
-                                     gpointer opaque)
+static void do_camera_capture_image_discard_finish(GObject *src,
+                                                   GAsyncResult *res,
+                                                   gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -757,14 +757,14 @@ static void do_camera_file_discarded(GObject *src,
     entangle_camera_delete_file_async(camera,
                                       priv->taskFile,
                                       NULL,
-                                      do_camera_file_deleted,
+                                      do_camera_delete_file_finish,
                                       manager);
 }
 
 
-static void do_camera_file_previewed(GObject *src,
-                                     GAsyncResult *res,
-                                     gpointer opaque)
+static void do_camera_preview_image_finish(GObject *src,
+                                           GAsyncResult *res,
+                                           gpointer opaque)
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -776,7 +776,7 @@ static void do_camera_file_previewed(GObject *src,
         if (g_cancellable_is_cancelled(priv->taskCancel)) {
             entangle_camera_capture_image_async(priv->camera,
                                                 NULL,
-                                                do_camera_file_discarded,
+                                                do_camera_capture_image_discard_finish,
                                                 manager);
         } else {
             do_camera_task_error(manager, "Preview", error);
@@ -791,18 +791,18 @@ static void do_camera_file_previewed(GObject *src,
     if (g_cancellable_is_cancelled(priv->taskCancel)) {
         entangle_camera_capture_image_async(priv->camera,
                                             NULL,
-                                            do_camera_file_discarded,
+                                            do_camera_capture_image_discard_finish,
                                             manager);
     } else if (g_cancellable_is_cancelled(priv->taskConfirm)) {
         g_cancellable_reset(priv->taskConfirm);
         entangle_camera_capture_image_async(priv->camera,
                                             priv->taskCancel,
-                                            do_camera_file_captured,
+                                            do_camera_capture_image_finish,
                                             manager);
     } else {
         entangle_camera_preview_image_async(priv->camera,
                                             priv->taskCancel,
-                                            do_camera_file_previewed,
+                                            do_camera_preview_image_finish,
                                             manager);
     }
 }
@@ -820,7 +820,7 @@ static void do_camera_file_add(EntangleCamera *camera, EntangleCameraFile *file,
     entangle_camera_download_file_async(camera,
                                         priv->taskFile,
                                         NULL,
-                                        do_camera_file_downloaded,
+                                        do_camera_download_file_finish,
                                         manager);
 
 }
@@ -1003,7 +1003,7 @@ static void do_camera_load_controls_finish(GObject *source,
 
     g_cancellable_reset(priv->monitorCancel);
     entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                         do_camera_events_processed, manager);
+                                         do_camera_process_events_finish, manager);
 }
 
 
@@ -1613,7 +1613,7 @@ void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
         do_capture_widget_sensitivity(manager);
         entangle_camera_capture_image_async(priv->camera,
                                             priv->taskCancel,
-                                            do_camera_file_captured,
+                                            do_camera_capture_image_finish,
                                             manager);
     }
 }
@@ -1632,7 +1632,7 @@ void do_toolbar_preview(GtkToggleToolButton *src,
         do_capture_widget_sensitivity(manager);
         entangle_camera_preview_image_async(priv->camera,
                                             priv->taskCancel,
-                                            do_camera_file_previewed,
+                                            do_camera_preview_image_finish,
                                             manager);
     } else if (priv->taskPreview) {
         ENTANGLE_DEBUG("Cancelling capture operation");
