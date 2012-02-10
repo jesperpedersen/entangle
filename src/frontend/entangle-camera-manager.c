@@ -375,10 +375,10 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 
 
     gtk_widget_set_sensitive(toolCapture,
-                             priv->cameraReady && !priv->taskCapture &&
+                             priv->cameraReady && !priv->taskCapture && priv->camera &&
                              entangle_camera_get_has_capture(priv->camera) ? TRUE : FALSE);
     gtk_widget_set_sensitive(toolPreview,
-                             priv->cameraReady && !priv->taskCapture &&
+                             priv->cameraReady && !priv->taskCapture && priv->camera &&
                              entangle_camera_get_has_capture(priv->camera) &&
                              entangle_camera_get_has_preview(priv->camera) &&
                              !priv->taskCapture ? TRUE : FALSE);
