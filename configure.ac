@@ -132,6 +132,8 @@ AC_CONFIG_FILES(
   docs/reference/Makefile
   )
 
+AC_OUTPUT
+
 if test "$datadir" != "/usr/share" && test "$datadir" != "/usr/local/share"
 then
   schemadir=`eval "echo $datadir/glib-2.0/schemas"`
