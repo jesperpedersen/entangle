@@ -24,7 +24,9 @@
 #include <stdio.h>
 
 #define G_UDEV_API_IS_SUBJECT_TO_CHANGE
+#ifdef G_UDEV_API_IS_SUBJECT_TO_CHANGE
 #include <gudev/gudev.h>
+#endif
 
 #include "entangle-debug.h"
 #include "entangle-device-manager.h"

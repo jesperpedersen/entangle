@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <gphoto2.h>
 #include <string.h>
+#include <math.h>
 
 #include "entangle-debug.h"
 #include "entangle-camera.h"
@@ -1564,6 +1565,10 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_toggle_new(fullpath, id, label, info, ro));
         } break;
+
+    default:
+        g_warn_if_reached();
+        break;
     }
 
     g_hash_table_insert(priv->controlPaths, g_strdup(fullpath), ret);
@@ -1653,7 +1658,7 @@ static gboolean do_load_controls(EntangleCamera *cam,
         float oldValue = 0.0;
         g_object_set(ctrl, "value", oldValue, NULL);
         gp_widget_get_value(widget, &newValue);
-        if (newValue != oldValue)
+        if (fabs(newValue - oldValue) < 0.0001)
             g_object_set(ctrl, "value", newValue, NULL);
     }   break;
 
@@ -1677,6 +1682,10 @@ static gboolean do_load_controls(EntangleCamera *cam,
         if (newValue != oldValue)
             g_object_set(ctrl, "value", newValue, NULL);
     }   break;
+
+    default:
+        g_warn_if_reached();
+        break;
     }
 
     entangle_control_set_dirty(ctrl, FALSE);
@@ -1771,6 +1780,10 @@ static gboolean do_save_controls(EntangleCamera *cam,
             i = value ? 1 : 0;
             gp_widget_set_value(widget, &i);
         }
+        break;
+
+    default:
+        g_warn_if_reached();
         break;
     }
 

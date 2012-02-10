@@ -28,7 +28,7 @@
  *      sliding smoothly, at constant speed, over another one.
  */
 
-
+#include <math.h>
 #include "drawer.h"
 
 
@@ -242,13 +242,7 @@ ViewDrawerOnTimer(gpointer data) // IN
    priv = that->priv;
 
    fraction = ViewOvBox_GetFraction(VIEW_OV_BOX(that));
-   /*
-    * Comparing double values with '==' is most of the time a bad idea, due to
-    * the inexact representation of values in binary (see
-    * http://www2.hursley.ibm.com/decimal/decifaq1.html and http://boost.org/libs/test/doc/components/test_tools/floating_point_comparison.html).
-    * But in this particular case it is legitimate. --hpreg
-    */
-   if (priv->goal == fraction) {
+   if (fabs(priv->goal - fraction) < 0.00001) {
       return priv->timer.pending = FALSE;
    }
 

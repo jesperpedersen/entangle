@@ -319,6 +319,28 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                         G_PARAM_STATIC_BLURB));
 
     g_object_class_install_property(object_class,
+                                    PROP_CAPTURE_DELETE_FILE,
+                                    g_param_spec_boolean(PROP_NAME_CAPTURE_DELETE_FILE,
+                                                         "Delete file",
+                                                         "Delete file after capturing",
+                                                         TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_CAPTURE_CONTINUOUS_PREVIEW,
+                                    g_param_spec_boolean(PROP_NAME_CAPTURE_CONTINUOUS_PREVIEW,
+                                                         "Continuous preview",
+                                                         "Continue preview after capturing",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
                                     PROP_CMS_ENABLED,
                                     g_param_spec_boolean(PROP_NAME_CMS_ENABLED,
                                                          "Colour managed display",

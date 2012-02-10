@@ -184,7 +184,7 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
     
     if (metadata) {
         gint nom, den;
-        gdouble fnum;
+        glong fnum;
         guint isonum;
         gdouble focalnum;
 
@@ -196,11 +196,11 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
         else
             shutter = g_strdup_printf("%0.0lf/%0.0lf secs", (double)nom/10.0, (double)den/10.0);
 
-        fnum = (double)gexiv2_metadata_get_exif_tag_long(metadata, "Exif.Photo.FNumber");
+        fnum = gexiv2_metadata_get_exif_tag_long(metadata, "Exif.Photo.FNumber");
         if (!fnum)
-            fnum = (double)gexiv2_metadata_get_exif_tag_long(metadata, "Exit.Photo.Aperture");
+            fnum = gexiv2_metadata_get_exif_tag_long(metadata, "Exit.Photo.Aperture");
         //fnum = gexiv2_metadata_get_fnumber(metadata);
-        aperture = g_strdup_printf("f/%0.0lf", fnum);
+        aperture = g_strdup_printf("f/%ld", fnum);
 
         isonum = gexiv2_metadata_get_iso_speed(metadata);
         iso = g_strdup_printf("ISO %d", isonum);

@@ -512,6 +512,9 @@ GdkPixbuf *entangle_colour_profile_transform_apply(EntangleColourProfileTransfor
     case ENTANGLE_COLOUR_PROFILE_INTENT_ABS_COLOURIMETRIC:
         intent = INTENT_ABSOLUTE_COLORIMETRIC;
         break;
+    default:
+        g_warn_if_reached();
+        break;
     }
 
     g_mutex_lock(srcpriv->lock);
