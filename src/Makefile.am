@@ -67,7 +67,7 @@ libentangle_backend_la_LDFLAGS = \
 	$(DBUS_GLIB_LIBS) \
 	$(LIBPEAS_LIBS) \
 	$(GEXIV2_LIBS) \
-	$(WARNING_CFLAGS)
+	$(WARN_LDFLAGS)
 
 libentangle_backend_la_CFLAGS = \
 	$(GLIB_CFLAGS) \
@@ -81,7 +81,7 @@ libentangle_backend_la_CFLAGS = \
 	$(DBUS_GLIB_CFLAGS) \
 	$(LIBPEAS_CFLAGS) \
 	$(GEXIV2_CFLAGS) \
-	$(WARNING_CFLAGS) \
+	$(WARN_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
 	-DDATADIR="\"$(datadir)\"" \
 	-DLIBDIR="\"$(libdir)\""
@@ -110,7 +110,7 @@ libentangle_frontend_la_LDFLAGS = \
 	$(LIBPEAS_LIBS) \
 	$(LIBPEAS_UI_LIBS) \
 	$(GEXIV2_LIBS) \
-	$(WARNING_CFLAGS)
+	$(WARN_LDFLAGS)
 
 libentangle_frontend_la_CFLAGS = \
 	-I$(srcdir)/backend \
@@ -120,7 +120,7 @@ libentangle_frontend_la_CFLAGS = \
 	$(LIBPEAS_CFLAGS) \
 	$(LIBPEAS_UI_CFLAGS) \
 	$(GEXIV2_CFLAGS) \
-	$(WARNING_CFLAGS) \
+	$(WARN_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\""
 
 
@@ -135,7 +135,7 @@ entangle_LDFLAGS = \
 	$(GTK_LIBS) \
 	$(GOBJECT_INTROSPECTION_LIBS) \
 	$(LIBPEAS_LIBS) \
-	$(WARNING_CFLAGS)
+	$(WARN_LDFLAGS)
 
 entangle_CFLAGS = \
 	-I$(srcdir)/backend \
@@ -145,7 +145,7 @@ entangle_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(GOBJECT_INTROSPECTION_CFLAGS) \
 	$(LIBPEAS_CFLAGS) \
-	$(WARNING_CFLAGS)
+	$(WARN_CFLAGS)
 
 
 %.desktop: $(srcdir)/%.desktop.in

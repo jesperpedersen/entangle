@@ -10,7 +10,7 @@ test -n "$1" && RESULTS=$1 || RESULTS=results.log
 test -f Makefile && make -k distclean || :
 
 ./autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
-  --enable-compile-warnings=error \
+  --enable-werror \
   --enable-gtk-doc
 
 # If the MAKEFLAGS envvar does not yet include a -j option,
