@@ -43,6 +43,7 @@ rm -fr %{buildroot}
 
 %makeinstall
 rm -rf %{buildroot}%{_datadir}/%{name}/website
+rm -f %{buildroot}%{_datadir}/glib-2.0/schemas/gschemas.compiled
 
 %clean
 rm -fr %{buildroot}
