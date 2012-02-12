@@ -1009,8 +1009,8 @@ static void do_camera_load_controls_finish(GObject *source,
 
     if (entangle_camera_load_controls_finish(cam, result, &error)) {
         gdk_threads_enter();
-        entangle_control_panel_set_camera(priv->controlPanel, priv->camera);
         do_capture_widget_sensitivity(manager);
+        entangle_control_panel_set_camera(priv->controlPanel, priv->camera);
         gdk_threads_leave();
     } else {
         gdk_threads_enter();
