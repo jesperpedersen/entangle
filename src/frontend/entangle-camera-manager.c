@@ -96,6 +96,7 @@ struct _EntangleCameraManagerPrivate {
     gboolean taskCapture;
     gboolean taskPreview;
     gboolean taskActive;
+    gboolean taskProcessEvents;
     float taskTarget;
 
     GtkBuilder *builder;
@@ -491,9 +492,7 @@ static void do_camera_task_error(EntangleCameraManager *manager G_GNUC_UNUSED,
 }
 
 
-static void do_camera_process_events_finish(GObject *src,
-                                            GAsyncResult *result,
-                                            gpointer opaque);
+static void do_camera_process_events(EntangleCameraManager *manager);
 
 
 static void do_camera_load_controls_refresh_finish(GObject *source,
@@ -529,9 +528,7 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
 
     g_cancellable_reset(priv->monitorCancel);
 
-    if (priv->camera)
-        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                             do_camera_process_events_finish, manager);
+    do_camera_process_events(manager);
 }
 
 
@@ -543,6 +540,8 @@ static void do_camera_process_events_finish(GObject *src,
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
     GError *error = NULL;
+
+    priv->taskProcessEvents = FALSE;
 
     if (!entangle_camera_process_events_finish(camera,
                                                result,
@@ -573,11 +572,26 @@ static void do_camera_process_events_finish(GObject *src,
                                             do_camera_load_controls_refresh_finish,
                                             manager);
     } else {
-        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                             do_camera_process_events_finish, manager);
+        do_camera_process_events(manager);
     }
 }
 
+
+static void do_camera_process_events(EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (!priv->camera)
+        return;
+
+    if (priv->taskProcessEvents)
+        return;
+
+    entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
+                                         do_camera_process_events_finish, manager);
+
+    priv->taskProcessEvents = TRUE;
+}
 
 static void do_camera_preview_image_finish(GObject *src,
                                            GAsyncResult *res,
@@ -637,9 +651,8 @@ static void do_camera_task_complete(EntangleCameraFileTaskData *data)
         g_cancellable_reset(priv->taskConfirm);
         g_cancellable_reset(priv->taskCancel);
         g_cancellable_reset(priv->monitorCancel);
-        if (priv->camera)
-            entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                                 do_camera_process_events_finish, data->manager);
+
+        do_camera_process_events(data->manager);
         g_object_unref(data->manager);
         g_free(data);
     }
@@ -1022,9 +1035,7 @@ static void do_camera_load_controls_finish(GObject *source,
     }
 
     g_cancellable_reset(priv->monitorCancel);
-    if (priv->camera)
-        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                             do_camera_process_events_finish, manager);
+    do_camera_process_events(manager);
 }
 
 
