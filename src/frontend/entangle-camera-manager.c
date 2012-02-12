@@ -502,11 +502,10 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraManagerPrivate *priv = manager->priv;
-
-    EntangleCamera *cam = ENTANGLE_CAMERA(source);
+    EntangleCamera *camera = ENTANGLE_CAMERA(source);
     GError *error = NULL;
 
-    if (!entangle_camera_load_controls_finish(cam, result, &error)) {
+    if (!entangle_camera_load_controls_finish(camera, result, &error)) {
         gdk_threads_enter();
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 0,
@@ -529,8 +528,10 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
     }
 
     g_cancellable_reset(priv->monitorCancel);
-    entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                         do_camera_process_events_finish, manager);
+
+    if (priv->camera)
+        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
+                                             do_camera_process_events_finish, manager);
 }
 
 
@@ -561,6 +562,9 @@ static void do_camera_process_events_finish(GObject *src,
         do_capture_widget_sensitivity(manager);
     }
     gdk_threads_leave();
+
+    if (!priv->camera)
+        return;
 
     if (priv->cameraChanged) {
         priv->cameraChanged = FALSE;
@@ -612,6 +616,7 @@ static void do_camera_task_complete(EntangleCameraFileTaskData *data)
     }
 
     if (priv->taskPreview &&
+        priv->camera &&
         !g_cancellable_is_cancelled(priv->taskCancel) &&
         entangle_preferences_capture_get_continuous_preview(prefs)) {
         entangle_camera_preview_image_async(priv->camera,
@@ -632,8 +637,9 @@ static void do_camera_task_complete(EntangleCameraFileTaskData *data)
         g_cancellable_reset(priv->taskConfirm);
         g_cancellable_reset(priv->taskCancel);
         g_cancellable_reset(priv->monitorCancel);
-        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                             do_camera_process_events_finish, data->manager);
+        if (priv->camera)
+            entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
+                                                 do_camera_process_events_finish, data->manager);
         g_object_unref(data->manager);
         g_free(data);
     }
@@ -786,7 +792,7 @@ static void do_camera_preview_image_finish(GObject *src,
     GError *error = NULL;
 
     if (!(file = entangle_camera_preview_image_finish(camera, res, &error))) {
-        if (g_cancellable_is_cancelled(priv->taskCancel)) {
+        if (g_cancellable_is_cancelled(priv->taskCancel) && priv->camera) {
             entangle_camera_capture_image_async(priv->camera,
                                                 NULL,
                                                 do_camera_capture_image_discard_finish,
@@ -1015,8 +1021,9 @@ static void do_camera_load_controls_finish(GObject *source,
     }
 
     g_cancellable_reset(priv->monitorCancel);
-    entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
-                                         do_camera_process_events_finish, manager);
+    if (priv->camera)
+        entangle_camera_process_events_async(priv->camera, 500, priv->monitorCancel,
+                                             do_camera_process_events_finish, manager);
 }
 
 
