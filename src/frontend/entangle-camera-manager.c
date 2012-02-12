@@ -798,6 +798,7 @@ static void do_camera_preview_image_finish(GObject *src,
                                                 do_camera_capture_image_discard_finish,
                                                 data);
         } else {
+            priv->taskPreview = FALSE;
             do_camera_task_error(data->manager, "Preview", error);
             do_camera_task_complete(data);
         }
