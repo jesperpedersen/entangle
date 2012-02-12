@@ -2106,7 +2106,9 @@ static gboolean do_image_status_hide(gpointer opaque)
     EntangleCameraManager *manager = opaque;
     EntangleCameraManagerPrivate *priv = manager->priv;
 
+    gdk_threads_enter();
     ViewAutoDrawer_SetPinned(VIEW_AUTODRAWER(priv->imageDrawer), FALSE);
+    gdk_threads_leave();
     priv->imageDrawerTimer = 0;
     return FALSE;
 }
