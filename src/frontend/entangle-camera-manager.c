@@ -1050,7 +1050,6 @@ static void do_camera_connect_finish(GObject *source,
                                                 GTK_BUTTONS_NONE,
                                                 "Unable to connect to camera: %s",
                                                 error->message);
-        g_error_free(error);
 
         gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
                                                    "%s",
