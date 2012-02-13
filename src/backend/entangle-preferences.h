@@ -1,7 +1,7 @@
 /*
  *  Entangle: Entangle Assists Photograph Aquisition
  *
- *  Copyright (C) 2009 Daniel P. Berrange
+ *  Copyright (C) 2009-2012 Daniel P. Berrange
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
