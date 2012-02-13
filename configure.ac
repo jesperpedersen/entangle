@@ -134,26 +134,38 @@ AC_CONFIG_FILES(
 
 AC_OUTPUT
 
-if test "$datadir" != "/usr/share" && test "$datadir" != "/usr/local/share"
+# Need to eval twice, to ensure we fully subsitute out all path variables
+rawdatadir=`eval "echo $datadir"`
+rawdatadir=`eval "echo $rawdatadir"`
+
+searchdirs="/usr/share:/usr/local/share"
+test -n "$XDG_DATA_DIRS" && searchdirs="$searchdirs:$XDG_DATA_DIRS"
+
+found=0
+oldIFS=$IFS
+IFS=:
+for i in $searchdirs
+do
+    test "$i" = "$rawdatadir" && found=1
+done
+IFS=$oldIFS
+
+if test "$found" = "0"
 then
-  schemadir=`eval "echo $datadir/glib-2.0/schemas"`
   AC_MSG_NOTICE([WARNING:])
-  AC_MSG_NOTICE([WARNING: GSettings schemas will be installed to])
+  AC_MSG_NOTICE([WARNING: GSettings schemas will be installed under:])
   AC_MSG_NOTICE([WARNING:])
-  AC_MSG_NOTICE([WARNING:      $schemadir])
+  AC_MSG_NOTICE([WARNING:      $rawdatadir])
   AC_MSG_NOTICE([WARNING:])
-  AC_MSG_NOTICE([WARNING: GSettings will only look for configuration file schemas in])
+  AC_MSG_NOTICE([WARNING: GSettings will only look for configuration file schemas under:])
   AC_MSG_NOTICE([WARNING:])
-  if test -z "$XDG_DATA_DIRS"; then
-      AC_MSG_NOTICE([WARNING:      /usr/share:/usr/local/share])
-  else
-      AC_MSG_NOTICE([WARNING:      $XDG_DATA_DIRS])
-  fi
+  AC_MSG_NOTICE([WARNING:      $searchdirs])
   AC_MSG_NOTICE([WARNING:])
   AC_MSG_NOTICE([WARNING: If you continue with this install location for schemas, you])
-  AC_MSG_NOTICE([WARNING: must ensure that the XDG_DATA_DIRS environment variable is])
-  AC_MSG_NOTICE([WARNING: set and includes $schemadir])
+  AC_MSG_NOTICE([WARNING: should set the following environment variable:])
   AC_MSG_NOTICE([WARNING:])
-  AC_MSG_NOTICE([WARNING: Failure to configure XDG_DATA_DIRS will result in entangle])
-  AC_MSG_NOTICE([WARNING: aborting upon startup])
+  AC_MSG_NOTICE([WARNING:      XDG_DATA_DIRS=$rawdatadir])
+  AC_MSG_NOTICE([WARNING:])
+  AC_MSG_NOTICE([WARNING: If XDG_DATA_DIRS is not set, Entangle will attempt to enable])
+  AC_MSG_NOTICE([WARNING: a workaround on startup to avoid crashes])
 fi

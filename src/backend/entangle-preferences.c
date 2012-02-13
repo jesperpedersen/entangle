@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include "entangle-debug.h"
 #include "entangle-preferences.h"
@@ -406,12 +407,31 @@ EntanglePreferences *entangle_preferences_new(void)
 }
 
 
+static void entangle_preferences_ensure_data_dir(void)
+{
+    const char *const *dirs;
+    const char *dir;
+
+    for (dirs = g_get_system_data_dirs (); *dirs; dirs++) {
+        if (g_str_equal(*dirs, DATADIR))
+            return;
+    }
+
+    if ((dir = getenv("GSETTINGS_SCHEMA_DIR")) &&
+        g_str_equal(dir, DATADIR "/glib-2.0/schemas"))
+        return;
+
+    setenv("GSETTINGS_SCHEMA_DIR", DATADIR "/glib-2.0/schemas", 1);
+}
+
 static void entangle_preferences_init(EntanglePreferences *picker)
 {
     EntanglePreferencesPrivate *priv;
     GSettings *settings;
 
     priv = picker->priv = ENTANGLE_PREFERENCES_GET_PRIVATE(picker);
+
+    entangle_preferences_ensure_data_dir();
 
     settings = g_settings_new("org.entangle-photo.manager");
     priv->captureSettings = g_settings_get_child(settings,
