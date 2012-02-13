@@ -1,8 +1,28 @@
       Entangle News
       =============
 
-Release 0.3.0
--------------
+Release 0.3.1 - 2012-02-13
+--------------------------
+
+ * Fix crash in handling camera control combo lists
+ * Add notice about need to set XDG_DATA_DIRS when
+   installing into unusual directories
+ * Add workaround to avoid immediate crash if schemas
+   were not found in XDG_DATA_DIRS
+ * Compile schema files after installation
+ * Fix crash updating widget sensitivity
+ * Fix crashes & race conditions during capture of images
+ * Fix infinite preview error message popups which can
+   hang the window manager
+ * Fix crash when retrying a failed connection attempt
+ * Fix thread locking when hiding status display
+ * Avoid running multiple threads for monitoring status
+ * Fix initial sensitivity of camera control panels
+ * Update README with new URLs for bugs/mailing lists
+
+
+Release 0.3.0 - 2011-11-28
+--------------------------
 
  * Switch to use Gtk3 for UI
  * Switch to use GSettings for preferences
@@ -38,8 +58,8 @@ Release 0.3.0
  * Skip directories / special files when loading sessions
 
 
-Release 0.2.0
--------------
+Release 0.2.0 - 2010-09-17
+--------------------------
 
  * Better compatibility with cameras not supporting events
  * Ability to unmount camera via GVFS
@@ -50,8 +70,8 @@ Release 0.2.0
  * Fixed crash with udev
 
 
-Release 0.1.0
--------------
+Release 0.1.0 - 2010-04-08
+--------------------------
 
  * First release !
 
