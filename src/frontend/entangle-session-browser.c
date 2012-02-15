@@ -322,7 +322,7 @@ EntangleSessionBrowser *entangle_session_browser_new(void)
 static void entangle_session_browser_init(EntangleSessionBrowser *browser)
 {
     EntangleSessionBrowserPrivate *priv;
-    const GtkTargetEntry const targets[] = {
+    const GtkTargetEntry targets[] = {
         { g_strdup("demo"), GTK_TARGET_OTHER_APP, 1 },
     };
     int ntargets = 1;
