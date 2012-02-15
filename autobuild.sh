@@ -28,6 +28,15 @@ esac
 make
 make install
 
+# set -o pipefail is a bashism; this use of exec is the POSIX alternative
+exec 3>&1
+st=$(
+  exec 4>&1 >&3
+  { make syntax-check 2>&1 3>&- 4>&-; echo $? >&4; } | tee "$RESULTS"
+)
+exec 3>&-
+test "$st" = 0
+
 rm -f *.tar.gz
 make distcheck
 
