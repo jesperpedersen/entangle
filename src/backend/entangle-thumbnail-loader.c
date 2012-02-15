@@ -51,9 +51,9 @@ enum {
 
 
 static void entangle_thumbnail_loader_get_property(GObject *object,
-					       guint prop_id,
-					       GValue *value,
-					       GParamSpec *pspec)
+                                                   guint prop_id,
+                                                   GValue *value,
+                                                   GParamSpec *pspec)
 {
     EntangleThumbnailLoader *loader = ENTANGLE_THUMBNAIL_LOADER(object);
     EntangleThumbnailLoaderPrivate *priv = loader->priv;
@@ -74,9 +74,9 @@ static void entangle_thumbnail_loader_get_property(GObject *object,
 }
 
 static void entangle_thumbnail_loader_set_property(GObject *object,
-                                               guint prop_id,
-                                               const GValue *value,
-                                               GParamSpec *pspec)
+                                                   guint prop_id,
+                                                   const GValue *value,
+                                                   GParamSpec *pspec)
 {
     EntangleThumbnailLoader *loader = ENTANGLE_THUMBNAIL_LOADER(object);
     EntangleThumbnailLoaderPrivate *priv = loader->priv;

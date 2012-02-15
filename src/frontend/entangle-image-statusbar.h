@@ -57,7 +57,7 @@ GType entangle_image_statusbar_get_type(void) G_GNUC_CONST;
 EntangleImageStatusbar* entangle_image_statusbar_new(void);
 
 void entangle_image_statusbar_set_image(EntangleImageStatusbar *statusbar,
-					EntangleImage *image);
+                                        EntangleImage *image);
 EntangleImage *entangle_image_statusbar_get_image(EntangleImageStatusbar *statusbar);
 
 G_END_DECLS

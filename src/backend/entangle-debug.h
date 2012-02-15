@@ -29,18 +29,27 @@ extern gboolean entangle_debug_app;
 extern gboolean entangle_debug_gphoto;
 extern gint64 entangle_debug_startms;
 
-#define ENTANGLE_DEBUG(fmt, ...)						\
-  do {									\
-    if (G_UNLIKELY(entangle_debug_app)) {					\
-      struct timeval now;						\
-      gint64 nowms;							\
-      gettimeofday(&now, NULL);						\
-      nowms = (now.tv_sec * 1000ll) + (now.tv_usec / 1000ll);		\
-      if (entangle_debug_startms == 0)					\
-	entangle_debug_startms = nowms;					\
-      nowms -= entangle_debug_startms;					\
-      g_debug("[%08" G_GINT64_FORMAT " %s:%s:%d] " fmt, nowms, __FILE__, __func__, __LINE__, ## __VA_ARGS__); \
-    }									\
-  } while (0)
+#define ENTANGLE_DEBUG(fmt, ...)                                        \
+    do {                                                                \
+        if (G_UNLIKELY(entangle_debug_app)) {                           \
+            struct timeval now;                                         \
+            gint64 nowms;                                               \
+            gettimeofday(&now, NULL);                                   \
+            nowms = (now.tv_sec * 1000ll) + (now.tv_usec / 1000ll);     \
+            if (entangle_debug_startms == 0)                            \
+                entangle_debug_startms = nowms;                         \
+            nowms -= entangle_debug_startms;                            \
+            g_debug("[%08" G_GINT64_FORMAT " %s:%s:%d] " fmt, nowms, __FILE__, __func__, __LINE__, ## __VA_ARGS__); \
+        }                                                               \
+    } while (0)
 
 #endif /* __ENTANGLE_DEBUG_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

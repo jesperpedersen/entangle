@@ -52,17 +52,17 @@ struct _EntangleCameraFileClass
 GType entangle_camera_file_get_type(void) G_GNUC_CONST;
 
 EntangleCameraFile *entangle_camera_file_new(const char *folder,
-				     const char *name);
+                                             const char *name);
 
 const char *entangle_camera_file_get_folder(EntangleCameraFile *file);
 const char *entangle_camera_file_get_name(EntangleCameraFile *file);
 
 gboolean entangle_camera_file_save_path(EntangleCameraFile *file,
-				    const char *localpath,
-				    GError **err);
+                                        const char *localpath,
+                                        GError **err);
 gboolean entangle_camera_file_save_uri(EntangleCameraFile *file,
-				   const char *uri,
-				   GError **err);
+                                       const char *uri,
+                                       GError **err);
 
 GByteArray *entangle_camera_file_get_data(EntangleCameraFile *file);
 void entangle_camera_file_set_data(EntangleCameraFile *file, GByteArray *data);

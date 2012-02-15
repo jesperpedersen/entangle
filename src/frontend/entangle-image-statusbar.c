@@ -238,7 +238,7 @@ static void entangle_image_statusbar_image_metadata_notify(GObject *image G_GNUC
 
 
 void entangle_image_statusbar_set_image(EntangleImageStatusbar *statusbar,
-					EntangleImage *image)
+                                        EntangleImage *image)
 {
     EntangleImageStatusbarPrivate *priv = statusbar->priv;
 
