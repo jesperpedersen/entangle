@@ -38,6 +38,7 @@ fi
 
 mkdir -p m4
 
+intltoolize --force
 gtkdocize || exit 1
 autoreconf -if
 

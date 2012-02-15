@@ -123,11 +123,18 @@ AC_SUBST(LIBPEAS_UI_LIBS)
 
 ENTANGLE_COMPILE_WARNINGS
 
+GETTEXT_PACKAGE=entangle
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE],"$GETTEXT_PACKAGE", [GETTEXT package name])
+AM_GLIB_GNU_GETTEXT
+IT_PROG_INTLTOOL([0.35.0])
+
 
 AC_CONFIG_FILES(
   Makefile
   entangle.spec
   src/Makefile
+  po/Makefile.in
   docs/Makefile
   docs/reference/Makefile
   )
