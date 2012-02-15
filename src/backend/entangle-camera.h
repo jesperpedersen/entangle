@@ -158,7 +158,7 @@ void entangle_camera_process_events_async(EntangleCamera *cam,
                                           GAsyncReadyCallback callback,
                                           gpointer user_data);
 gboolean entangle_camera_process_events_finish(EntangleCamera *cam,
-                                               GAsyncResult *result, 
+                                               GAsyncResult *result,
                                                GError **error);
 
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);

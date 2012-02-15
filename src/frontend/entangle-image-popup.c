@@ -220,7 +220,7 @@ static void entangle_image_popup_init(EntangleImagePopup *popup)
 
     if (access("./entangle", R_OK) == 0)
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-image-popup.xml", &error);
-    else 
+    else
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-image-popup.xml", &error);
 
     if (error)

@@ -225,7 +225,7 @@ static char *entangle_session_get_extension(EntangleCameraFile *file)
 {
     const char *name = entangle_camera_file_get_name(file);
     const char *ext;
-    
+
     ext = g_strrstr(name, ".");
 
     if (!ext)
@@ -323,7 +323,7 @@ static gint entangle_session_next_digit(EntangleSession *session)
     }
 
     g_free(prefix);
-    
+
     return maxDigit + 1;
 }
 
@@ -372,7 +372,7 @@ char *entangle_session_next_filename(EntangleSession *session,
     filename = g_strdup_printf(format, priv->directory,
                                prefix, priv->nextFilenameDigit,
                                postfix, ext);
-    
+
     ENTANGLE_DEBUG("Built '%s'", filename);
 
     if (access(filename, R_OK) == 0 || errno != ENOENT) {

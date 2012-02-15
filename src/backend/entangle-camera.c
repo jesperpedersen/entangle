@@ -55,7 +55,7 @@ struct _EntangleCameraPrivate {
     CameraAbilitiesList *caps;
     GPPortInfoList *ports;
     Camera *cam;
-    
+
 
     CameraWidget *widgets;
     EntangleControlGroup *controls;
@@ -1331,7 +1331,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
         err = gp_camera_wait_for_event(priv->cam, waitms - donems, &eventType, &eventData, priv->ctx);
         entangle_camera_end_job(cam);
 
-        if (err != GP_OK) { 
+        if (err != GP_OK) {
             /* Some drivers (eg canon native) can't do events, so just do a sleep */
             if (err == GP_ERROR_NOT_SUPPORTED) {
                 ENTANGLE_DEBUG("Event wait not supported, using usleep");
@@ -1449,7 +1449,7 @@ void entangle_camera_process_events_async(EntangleCamera *cam,
 
 
 gboolean entangle_camera_process_events_finish(EntangleCamera *cam G_GNUC_UNUSED,
-                                               GAsyncResult *result, 
+                                               GAsyncResult *result,
                                                GError **error)
 {
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
@@ -1758,7 +1758,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
     case GP_WIDGET_RANGE:
         if (entangle_control_get_dirty(ctrl)) {
             float value = 0.0;
-            g_object_get(ctrl, "value", &value, NULL); 
+            g_object_get(ctrl, "value", &value, NULL);
             gp_widget_set_value(widget, &value);
         }
         break;

@@ -49,7 +49,7 @@ typedef struct _EntanglePixbufrLoaderResult {
 struct _EntanglePixbufLoaderPrivate {
     GThreadPool *workers;
     EntangleColourProfileTransform *colourTransform;
-    
+
     GMutex *lock;
     GHashTable *pixbufs;
 
@@ -202,7 +202,7 @@ static gboolean entangle_pixbuf_loader_result(gpointer data)
     entry->metadata = result->metadata;
     entry->ready = TRUE;
     entry->processing = FALSE;
-    
+
     if (entry->refs) {
         g_mutex_unlock(priv->lock);
         ENTANGLE_DEBUG("Emit loaded %p %p %p", result->image, result->pixbuf, result->metadata);

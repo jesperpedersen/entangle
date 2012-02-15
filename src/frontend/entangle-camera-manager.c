@@ -183,7 +183,7 @@ void do_menu_connect(GtkMenuItem *src,
 void do_menu_disconnect(GtkMenuItem *src,
                         EntangleCameraManager *manager);
 
-    
+
 static EntangleColourProfile *entangle_camera_manager_monitor_profile(GtkWindow *window)
 {
     GdkScreen *screen;
@@ -623,7 +623,7 @@ static void do_camera_task_complete(EntangleCameraFileTaskData *data)
     EntangleCameraManagerPrivate *priv = data->manager->priv;
     EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
     GtkWidget *preview;
-    
+
     if (data->file) {
         g_object_unref(data->file);
         data->file = NULL;
@@ -701,7 +701,7 @@ static void do_camera_delete_file_finish(GObject *src,
         g_error_free(error);
         /* Fallthrough to unref */
     }
-    
+
     do_camera_task_complete(data);
 }
 
@@ -1282,7 +1282,7 @@ static void entangle_camera_manager_set_property(GObject *object,
             directory = entangle_preferences_capture_get_last_session(prefs);
             pattern = entangle_preferences_capture_get_filename_pattern(prefs);
             priv->session = entangle_session_new(directory, pattern);
-                                         
+
             entangle_session_load(priv->session);
             entangle_session_browser_set_session(priv->sessionBrowser, priv->session);
 
@@ -1629,7 +1629,7 @@ void do_toolbar_cancel_clicked(GtkToolButton *src G_GNUC_UNUSED,
 
 
 void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
-                        EntangleCameraManager *manager)                       
+                        EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
 
@@ -2164,7 +2164,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
 
     if (access("./entangle", R_OK) == 0)
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-camera-manager.xml", &error);
-    else 
+    else
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-manager.xml", &error);
 
     if (error)
@@ -2228,7 +2228,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
                                             g_free,
                                             do_popup_remove);
 
-    
+
     ViewOvBox_SetOver(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageStatusbar));
     ViewOvBox_SetUnder(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageDisplay));
     ViewAutoDrawer_SetOffset(VIEW_AUTODRAWER(priv->imageDrawer), -1);

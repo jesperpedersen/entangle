@@ -346,7 +346,7 @@ EntangleCameraPicker *entangle_camera_picker_new(EntangleCameraList *cameras)
 GtkWindow *entangle_camera_picker_get_window(EntangleCameraPicker *picker)
 {
     EntangleCameraPickerPrivate *priv = picker->priv;
-    
+
     return GTK_WINDOW(gtk_builder_get_object(priv->builder, "camera-picker"));
 }
 
@@ -475,7 +475,7 @@ static void entangle_camera_picker_init(EntangleCameraPicker *picker)
     priv->builder = gtk_builder_new();
     if (access("./entangle", R_OK) == 0)
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-camera-picker.xml", &error);
-    else 
+    else
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-picker.xml", &error);
     if (error)
         g_error("Couldn't load builder file: %s", error->message);

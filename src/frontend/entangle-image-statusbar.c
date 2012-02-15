@@ -181,7 +181,7 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
     gchar *focal = NULL;
     gchar *iso = NULL;
     gchar *dimensions = NULL;
-    
+
     if (metadata) {
         gint nom, den;
         glong fnum;
@@ -212,7 +212,7 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
                                      gexiv2_metadata_get_pixel_width(metadata),
                                      gexiv2_metadata_get_pixel_height(metadata));
     }
-        
+
     gtk_label_set_text(GTK_LABEL(priv->metaShutter), shutter ? shutter : "");
     gtk_label_set_text(GTK_LABEL(priv->metaAperture), aperture ? aperture : "");
     gtk_label_set_text(GTK_LABEL(priv->metaFocal), focal ? focal : "");

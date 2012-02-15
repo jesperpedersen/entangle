@@ -223,7 +223,7 @@ static void entangle_camera_info_init(EntangleCameraInfo *info)
 
     if (access("./entangle", R_OK) == 0)
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-camera-info.xml", &error);
-    else 
+    else
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-info.xml", &error);
 
     if (error)

@@ -97,7 +97,7 @@ static void entangle_help_about_init(EntangleHelpAbout *about)
 
     if (access("./entangle", R_OK) == 0)
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-help-about.xml", &error);
-    else 
+    else
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-help-about.xml", &error);
 
     if (error)

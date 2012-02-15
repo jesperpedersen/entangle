@@ -244,7 +244,7 @@ static void do_update_control_toggle(GtkToggleButton *widget,
 {
     EntangleControlChoice *control = g_object_get_data(G_OBJECT(widget), "control");
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(opaque);
-    EntangleControlPanelPrivate *priv = panel->priv; 
+    EntangleControlPanelPrivate *priv = panel->priv;
     gboolean active;
 
     active = gtk_toggle_button_get_active(widget);
@@ -327,7 +327,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(value), cell,
                                            "text", 0,
                                            NULL);
-            
+
             g_object_get(control, "value", &text, NULL);
             for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)) ; n++) {
                 GtkTreeIter iter;
