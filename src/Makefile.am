@@ -138,6 +138,7 @@ entangle_LDFLAGS = \
 	$(WARN_LDFLAGS)
 
 entangle_CFLAGS = \
+        -DLOCALE_DIR=\""$(datadir)/locale"\"            \
 	-I$(srcdir)/backend \
 	-I$(srcdir)/frontend \
 	$(GTHREAD_FLAGS) \

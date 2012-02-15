@@ -24,6 +24,7 @@
 
 #include <gtk/gtk.h>
 #include <girepository.h>
+#include <glib/gi18n.h>
 
 #include "entangle-debug.h"
 #include "entangle-context.h"
@@ -55,6 +56,13 @@ int main(int argc, char **argv)
     static const char *help_msg = "Run 'entangle --help' to see full list of options";
     EntangleCameraManager *manager;
     EntangleContext *context;
+
+    setlocale(LC_ALL, "");
+    bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
+    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+    textdomain(GETTEXT_PACKAGE);
+
+    g_set_application_name("Entangle");
 
     g_thread_init(NULL);
     gdk_threads_init();
