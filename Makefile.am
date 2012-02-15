@@ -4,7 +4,25 @@ SUBDIRS = src po docs
 ACLOCAL_AMFLAGS = -I m4
 
 # XXX figure out why these aren't detected by git.mk
-GITIGNOREFILES = aclocal.m4 entangle-*.tar.gz compile config.guess config.h.in config.sub depcomp install-sh missing ltmain.sh m4 gtk-doc.make INSTALL
+GITIGNOREFILES = \
+        aclocal.m4 \
+        entangle-*.tar.gz \
+        compile \
+        config.guess \
+        config.h.in \
+        config.sub \
+        depcomp \
+        install-sh \
+        missing \
+        ltmain.sh \
+        gtk-doc.make \
+        m4/gtk-doc.m4 \
+        m4/libtool.m4 \
+        m4/ltversion.m4 \
+        m4/ltoptions.m4 \
+        m4/ltsugar.m4 \
+        m4/lt~obsolete.m4 \
+        INSTALL
 
 EXTRA_DIST = \
 	$(PACKAGE).spec \
