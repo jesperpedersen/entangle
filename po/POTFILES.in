@@ -1,0 +1,6 @@
+[type: gettext/glade] src/frontend/entangle-camera-info.xml
+[type: gettext/glade] src/frontend/entangle-camera-manager.xml
+[type: gettext/glade] src/frontend/entangle-camera-picker.xml
+[type: gettext/glade] src/frontend/entangle-help-about.xml
+[type: gettext/glade] src/frontend/entangle-image-popup.xml
+[type: gettext/glade] src/frontend/entangle-preferences.xml
