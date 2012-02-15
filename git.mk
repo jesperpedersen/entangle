@@ -1,6 +1,6 @@
 # git.mk
 #
-# Copyright 2009, Red Hat, Inc.
+# Copyright (C) 2009 Red Hat, Inc.
 # Written by Behdad Esfahbod
 #
 # Copying and distribution of this file, with or without modification,
