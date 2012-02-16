@@ -18,8 +18,8 @@
     <property name="copyright" translatable="yes">Copyright (C) 2009-2012 Daniel P. Berrange</property>
     <property name="comments" translatable="yes">Tethered Camera Control &amp; Capture</property>
     <property name="website">http://entangle-photo.org/</property>
-    <property name="website_label" translatable="yes">entangle-photo.org</property>
-    <property name="license" translatable="yes">                    GNU GENERAL PUBLIC LICENSE
+    <property name="website_label">entangle-photo.org</property>
+    <property name="license">                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
