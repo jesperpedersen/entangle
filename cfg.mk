@@ -119,6 +119,32 @@ sc_check_author_list:
 	  && echo '$(ME): committer(s) not listed in AUTHORS' >&2;	\
 	test $$fail = 0
 
+msg_gen_function =
+msg_gen_function += g_error
+msg_gen_function += g_set_error
+msg_gen_function += ENTANGLE_ERROR
+
+
+func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')
+func_re := ($(func_or))
+
+# Look for diagnostics that aren't marked for translation.
+# This won't find any for which error's format string is on a separate line.
+# The sed filters eliminate false-positives like these:
+#    _("...: "
+#    "%s", _("no storage vol w..."
+sc_libvirt_unmarked_diagnostics:
+	@grep -nE                                                       \
+            '\<$(func_re) *\([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT)) \
+          | grep -v '_''(' &&                                           \
+          { echo '$(ME): found unmarked diagnostic(s)' 1>&2;            \
+            exit 1; } || :
+	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
+           grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
+           | sed 's/_("[^"][^"]*"//;s/[  ]"%s"//'                       \
+           | grep '[     ]"' &&                                         \
+          { echo '$(ME): found unmarked diagnostic(s)' 1>&2;            \
+            exit 1; } || :
 
 exclude_file_name_regexp--sc_prohibit_strcmp = ^*/*.[ch]
 

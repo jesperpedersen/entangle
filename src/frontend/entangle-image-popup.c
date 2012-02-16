@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -224,7 +225,7 @@ static void entangle_image_popup_init(EntangleImagePopup *popup)
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-image-popup.xml", &error);
 
     if (error)
-        g_error("Couldn't load builder file: %s", error->message);
+        g_error(_("Could not load user interface definition file: %s"), error->message);
 
     gtk_builder_connect_signals(priv->builder, popup);
 

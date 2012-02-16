@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <unistd.h>
 
 #include "entangle-debug.h"
@@ -119,7 +120,7 @@ static void entangle_camera_cell_data_capture_func(GtkTreeViewColumn *col G_GNUC
 
     ENTANGLE_DEBUG("Has %d", entangle_camera_get_has_capture(cam));
 
-    g_object_set(cell, "text", entangle_camera_get_has_capture(cam) ? "Yes" : "No", NULL);
+    g_object_set(cell, "text", entangle_camera_get_has_capture(cam) ? _("Yes") : _("No"), NULL);
 
     g_object_unref(cam);
 }
@@ -477,8 +478,9 @@ static void entangle_camera_picker_init(EntangleCameraPicker *picker)
         gtk_builder_add_from_file(priv->builder, "frontend/entangle-camera-picker.xml", &error);
     else
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-picker.xml", &error);
+
     if (error)
-        g_error("Couldn't load builder file: %s", error->message);
+        g_error(_("Could not load user interface definition file: %s"), error->message);
 
     gtk_builder_connect_signals(priv->builder, picker);
 
@@ -488,9 +490,9 @@ static void entangle_camera_picker_init(EntangleCameraPicker *picker)
     port = gtk_cell_renderer_text_new();
     capture = gtk_cell_renderer_text_new();
 
-    modelCol = gtk_tree_view_column_new_with_attributes("Model", model, NULL);
-    portCol = gtk_tree_view_column_new_with_attributes("Port", port, NULL);
-    captureCol = gtk_tree_view_column_new_with_attributes("Capture", capture, NULL);
+    modelCol = gtk_tree_view_column_new_with_attributes(_("Model"), model, NULL);
+    portCol = gtk_tree_view_column_new_with_attributes(_("Port"), port, NULL);
+    captureCol = gtk_tree_view_column_new_with_attributes(_("Capture"), capture, NULL);
 
     g_object_set(modelCol, "expand", TRUE, NULL);
     g_object_set(portCol, "expand", FALSE, NULL);

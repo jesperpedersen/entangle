@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "entangle-debug.h"
 #include "entangle-control-panel.h"
@@ -72,9 +73,9 @@ static void do_update_control_finish(GObject *src G_GNUC_UNUSED,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
-                                                "Camera control update failed");
+                                                _("Camera control update failed"));
         gtk_window_set_title(GTK_WINDOW(msg),
-                             "Entangle: Camera control update failed");
+                             _("Entangle: Camera control update failed"));
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
                                                  "%s",
                                                  error->message);
@@ -231,7 +232,7 @@ static void do_refresh_control_toggle(GObject *object,
     gdk_threads_enter();
     g_object_get(object, "value", &state, NULL);
     if (GTK_IS_LABEL(widget))
-        gtk_label_set_text(GTK_LABEL(widget), state ? "On" : "Off");
+        gtk_label_set_text(GTK_LABEL(widget), state ? _("On") : _("Off"));
     else
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
                                      state);

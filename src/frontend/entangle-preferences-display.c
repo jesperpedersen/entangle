@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <unistd.h>
 
 #include <libpeas-gtk/peas-gtk.h>
@@ -480,7 +481,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     }
 
     if (error)
-        g_error("Couldn't load builder file: %s", error->message);
+        g_error(_("Could not load user interface definition file: %s"), error->message);
 
     gtk_builder_connect_signals(priv->builder, preferences);
 
@@ -522,13 +523,13 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     if (local)
         gtk_list_store_set(list, &iter,
                            0, 0,
-                           1, "Capture",
+                           1, _("Capture"),
                            2, gdk_pixbuf_new_from_file("./folders-22.png", NULL),
                            -1);
     else
         gtk_list_store_set(list, &iter,
                            0, 0,
-                           1, "Capture",
+                           1, _("Capture"),
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/folders-22.png", NULL),
                            -1);
 
@@ -536,13 +537,13 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     if (local)
         gtk_list_store_set(list, &iter,
                            0, 1,
-                           1, "Color Management",
+                           1, _("Color Management"),
                            2, gdk_pixbuf_new_from_file("./color-management-22.png", NULL),
                            -1);
     else
         gtk_list_store_set(list, &iter,
                            0, 1,
-                           1, "Color Management",
+                           1, _("Color Management"),
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/color-management-22.png", NULL),
                            -1);
 
@@ -550,13 +551,13 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     if (local)
         gtk_list_store_set(list, &iter,
                            0, 2,
-                           1, "Plugins",
+                           1, _("Plugins"),
                            2, gdk_pixbuf_new_from_file("./plugins-22.png", NULL),
                            -1);
     else
         gtk_list_store_set(list, &iter,
                            0, 2,
-                           1, "Plugins",
+                           1, _("Plugins"),
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/plugins-22.png", NULL),
                            -1);
 
@@ -577,12 +578,12 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree));
 
     iccFilter = gtk_file_filter_new();
-    gtk_file_filter_set_name(iccFilter, "ICC profiles (*.icc, *.icm)");
+    gtk_file_filter_set_name(iccFilter, _("ICC profiles (*.icc, *.icm)"));
     gtk_file_filter_add_pattern(iccFilter, "*.[Ii][Cc][Cc]");
     gtk_file_filter_add_pattern(iccFilter, "*.[Ii][Cc][Mm]");
 
     allFilter = gtk_file_filter_new();
-    gtk_file_filter_set_name(allFilter, "All files (*.*)");
+    gtk_file_filter_set_name(allFilter, _("All files (*.*)"));
     gtk_file_filter_add_pattern(allFilter, "*");
 
     chooser = GTK_FILE_CHOOSER(GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile")));

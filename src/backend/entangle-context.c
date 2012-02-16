@@ -22,6 +22,7 @@
 
 #include <gphoto2.h>
 #include <glib.h>
+#include <glib/gi18n.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -386,16 +387,16 @@ static void entangle_context_init(EntangleContext *context)
     priv->ctx = gp_context_new();
 
     if (gp_abilities_list_new(&priv->caps) != GP_OK)
-        g_error("Cannot initialize gphoto2 abilities");
+        g_error(_("Cannot initialize gphoto2 abilities"));
 
     if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK)
-        g_error("Cannot load gphoto2 abilities");
+        g_error(_("Cannot load gphoto2 abilities"));
 
     if (gp_port_info_list_new(&priv->ports) != GP_OK)
-        g_error("Cannot initialize gphoto2 ports");
+        g_error(_("Cannot initialize gphoto2 ports"));
 
     if (gp_port_info_list_load(priv->ports) != GP_OK)
-        g_error("Cannot load gphoto2 ports");
+        g_error(_("Cannot load gphoto2 ports"));
 
     peasPath = g_new0(gchar *, 5);
     peasPath[0] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);

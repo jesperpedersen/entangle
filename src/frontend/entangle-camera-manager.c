@@ -23,6 +23,7 @@
 #include <string.h>
 #include <math.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <unistd.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
@@ -408,12 +409,12 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 
     if (priv->camera) {
         if (!entangle_camera_get_has_capture(priv->camera))
-            gtk_widget_set_tooltip_text(toolCapture, "This camera does not support image capture");
+            gtk_widget_set_tooltip_text(toolCapture, _("This camera does not support image capture"));
         else
             gtk_widget_set_tooltip_text(toolCapture, "");
         if (!entangle_camera_get_has_capture(priv->camera) ||
             !entangle_camera_get_has_preview(priv->camera))
-            gtk_widget_set_tooltip_text(toolPreview, "This camera does not support image preview");
+            gtk_widget_set_tooltip_text(toolPreview, _("This camera does not support image preview"));
         else
             gtk_widget_set_tooltip_text(toolPreview, "");
     }
@@ -477,9 +478,9 @@ static void do_camera_task_error(EntangleCameraManager *manager G_GNUC_UNUSED,
                                             0,
                                             GTK_MESSAGE_ERROR,
                                             GTK_BUTTONS_OK,
-                                            "Operation: %s", label);
+                                            _("Operation: %s"), label);
     gtk_window_set_title(GTK_WINDOW(msg),
-                         "Entangle: Operation failed");
+                         _("Entangle: Operation failed"));
     gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
                                              "%s",
                                              error->message);
@@ -510,9 +511,9 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
-                                                "Camera load controls failed");
+                                                _("Camera load controls failed"));
         gtk_window_set_title(GTK_WINDOW(msg),
-                             "Entangle: Camera load controls failed");
+                             _("Entangle: Camera load controls failed"));
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
                                                  "%s",
                                                  error->message);
@@ -549,7 +550,7 @@ static void do_camera_process_events_finish(GObject *src,
         if (g_cancellable_is_cancelled(priv->monitorCancel)) {
             g_cancellable_reset(priv->monitorCancel);
         } else {
-            do_camera_task_error(manager, "Monitor", error);
+            do_camera_task_error(manager, _("Monitor"), error);
         }
         g_error_free(error);
         return;
@@ -697,7 +698,7 @@ static void do_camera_delete_file_finish(GObject *src,
     GError *error = NULL;
 
     if (!entangle_camera_delete_file_finish(camera, res, &error)) {
-        do_camera_task_error(data->manager, "Delete", error);
+        do_camera_task_error(data->manager, _("Delete"), error);
         g_error_free(error);
         /* Fallthrough to unref */
     }
@@ -717,7 +718,7 @@ static void do_camera_download_file_finish(GObject *src,
     GError *error = NULL;
 
     if (!entangle_camera_download_file_finish(camera, res, &error)) {
-        do_camera_task_error(data->manager, "Download", error);
+        do_camera_task_error(data->manager, _("Download"), error);
         g_error_free(error);
         /* Fallthrough to delete anyway */
     }
@@ -745,7 +746,7 @@ static void do_camera_capture_image_finish(GObject *src,
     GError *error = NULL;
 
     if (!(data->file = entangle_camera_capture_image_finish(camera, res, &error))) {
-        do_camera_task_error(data->manager, "Capture", error);
+        do_camera_task_error(data->manager, _("Capture"), error);
         do_camera_task_complete(data);
         g_error_free(error);
         return;
@@ -780,7 +781,7 @@ static void do_camera_capture_image_discard_finish(GObject *src,
     GError *error = NULL;
 
     if (!(data->file = entangle_camera_capture_image_finish(camera, res, &error))) {
-        do_camera_task_error(data->manager, "Capture", error);
+        do_camera_task_error(data->manager, _("Capture"), error);
         do_camera_task_complete(data);
         g_error_free(error);
         return;
@@ -812,7 +813,7 @@ static void do_camera_preview_image_finish(GObject *src,
                                                 data);
         } else {
             priv->taskPreview = FALSE;
-            do_camera_task_error(data->manager, "Preview", error);
+            do_camera_task_error(data->manager, _("Preview"), error);
             do_camera_task_complete(data);
         }
         g_error_free(error);
@@ -969,7 +970,7 @@ static void do_remove_camera(EntangleCameraManager *manager)
     g_cancellable_cancel(priv->monitorCancel);
     g_cancellable_cancel(priv->taskCancel);
 
-    title = g_strdup_printf("Camera Manager - Entangle");
+    title = g_strdup_printf(_("Camera Manager - Entangle"));
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
     gtk_window_set_title(GTK_WINDOW(win), title);
     g_free(title);
@@ -1018,9 +1019,9 @@ static void do_camera_load_controls_finish(GObject *source,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
-                                                "Camera load controls failed");
+                                                _("Camera load controls failed"));
         gtk_window_set_title(GTK_WINDOW(msg),
-                             "Entangle: Camera load controls failed");
+                             _("Entangle: Camera load controls failed"));
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
                                                  "%s",
                                                  error->message);
@@ -1060,18 +1061,18 @@ static void do_camera_connect_finish(GObject *source,
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_NONE,
-                                                "Unable to connect to camera: %s",
+                                                _("Unable to connect to camera: %s"),
                                                 error->message);
 
         gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
                                                    "%s",
-                                                   "Check that the camera is not\n\n"
-                                                   " - opened by another photo <b>application</b>\n"
-                                                   " - mounted as a <b>filesystem</b> on the desktop\n"
-                                                   " - in <b>sleep mode</b> to save battery power\n");
+                                                   _("Check that the camera is not\n\n"
+                                                     " - opened by another photo <b>application</b>\n"
+                                                     " - mounted as a <b>filesystem</b> on the desktop\n"
+                                                     " - in <b>sleep mode</b> to save battery power\n"));
 
-        gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
-        gtk_dialog_add_button(GTK_DIALOG(msg), "Retry", GTK_RESPONSE_ACCEPT);
+        gtk_dialog_add_button(GTK_DIALOG(msg), _("Cancel"), GTK_RESPONSE_CANCEL);
+        gtk_dialog_add_button(GTK_DIALOG(msg), _("Retry"), GTK_RESPONSE_ACCEPT);
         gtk_dialog_set_default_response(GTK_DIALOG(msg), GTK_RESPONSE_ACCEPT);
         response = gtk_dialog_run(GTK_DIALOG(msg));
 
@@ -1100,16 +1101,16 @@ static gboolean need_camera_unmount(EntangleCamera *cam)
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_NONE,
                                                 "%s",
-                                                "Camera is in use");
+                                                _("Camera is in use"));
 
         gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
                                                    "%s",
-                                                   "The camera cannot be opened because it is "
-                                                   "currently mounted as a filesystem. Do you "
-                                                   "wish to umount it now ?");
+                                                   _("The camera cannot be opened because it is "
+                                                     "currently mounted as a filesystem. Do you "
+                                                     "wish to umount it now ?"));
 
-        gtk_dialog_add_button(GTK_DIALOG(msg), "No", GTK_RESPONSE_NO);
-        gtk_dialog_add_button(GTK_DIALOG(msg), "Yes", GTK_RESPONSE_YES);
+        gtk_dialog_add_button(GTK_DIALOG(msg), _("No"), GTK_RESPONSE_NO);
+        gtk_dialog_add_button(GTK_DIALOG(msg), _("Yes"), GTK_RESPONSE_YES);
         gtk_dialog_set_default_response(GTK_DIALOG(msg), GTK_RESPONSE_YES);
 
         response = gtk_dialog_run(GTK_DIALOG(msg));
@@ -1143,9 +1144,9 @@ static void do_camera_unmount_finish(GObject *source,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
-                                                "Camera connect failed");
+                                                _("Camera connect failed"));
         gtk_window_set_title(GTK_WINDOW(msg),
-                             "Entangle: Camera connect failed");
+                             _("Entangle: Camera connect failed"));
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
                                                  "%s",
                                                  error->message);
@@ -1179,7 +1180,7 @@ static void do_add_camera(EntangleCameraManager *manager)
     char *title;
     GtkWidget *win;
 
-    title = g_strdup_printf("%s Camera Manager - Entangle",
+    title = g_strdup_printf(_("%s Camera Manager - Entangle"),
                             entangle_camera_get_model(priv->camera));
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
@@ -1464,7 +1465,7 @@ static void entangle_camera_manager_new_session(EntangleCameraManager *manager)
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
 
-    chooser = gtk_file_chooser_dialog_new("Start new session",
+    chooser = gtk_file_chooser_dialog_new(_("Start new session"),
                                           GTK_WINDOW(win),
                                           GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
                                           GTK_STOCK_CANCEL,
@@ -1512,7 +1513,7 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
 
-    chooser = gtk_file_chooser_dialog_new("Open existing session",
+    chooser = gtk_file_chooser_dialog_new(_("Open existing session"),
                                           GTK_WINDOW(win),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
                                           GTK_STOCK_CANCEL,
@@ -1957,19 +1958,19 @@ static void do_picker_connect(EntangleCameraPicker *picker G_GNUC_UNUSED,
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_NONE,
-                                                "Unable to connect to camera: %s",
+                                                _("Unable to connect to camera: %s"),
                                                 error->message);
         g_error_free(error);
 
         gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG(msg),
                                                    "%s",
-                                                   "Check that the camera is not\n\n"
-                                                   " - opened by another photo <b>application</b>\n"
-                                                   " - mounted as a <b>filesystem</b> on the desktop\n"
-                                                   " - in <b>sleep mode</b> to save battery power\n");
+                                                   _("Check that the camera is not\n\n"
+                                                     " - opened by another photo <b>application</b>\n"
+                                                     " - mounted as a <b>filesystem</b> on the desktop\n"
+                                                     " - in <b>sleep mode</b> to save battery power\n"));
 
-        gtk_dialog_add_button(GTK_DIALOG(msg), "Cancel", GTK_RESPONSE_CANCEL);
-        gtk_dialog_add_button(GTK_DIALOG(msg), "Retry", GTK_RESPONSE_ACCEPT);
+        gtk_dialog_add_button(GTK_DIALOG(msg), _("Cancel"), GTK_RESPONSE_CANCEL);
+        gtk_dialog_add_button(GTK_DIALOG(msg), _("Retry"), GTK_RESPONSE_ACCEPT);
         gtk_dialog_set_default_response(GTK_DIALOG(msg), GTK_RESPONSE_ACCEPT);
 
         response = gtk_dialog_run(GTK_DIALOG(msg));
@@ -2168,7 +2169,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-manager.xml", &error);
 
     if (error)
-        g_error("Couldn't load builder file: %s", error->message);
+        g_error(_("Could not load user interface definition file: %s"), error->message);
 
     gtk_builder_connect_signals(priv->builder, manager);
 

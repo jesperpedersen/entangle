@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <glib.h>
+#include <glib/gi18n.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <gphoto2.h>
@@ -620,25 +621,25 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
 
     if (gp_abilities_list_new(&priv->caps) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Cannot initialize gphoto2 abilities");
+                    _("Cannot initialize gphoto2 abilities"));
         goto cleanup;
     }
 
     if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Cannot load gphoto2 abilities");
+                    _("Cannot load gphoto2 abilities"));
         goto cleanup;
     }
 
     if (gp_port_info_list_new(&priv->ports) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Cannot initialize gphoto2 ports");
+                    _("Cannot initialize gphoto2 ports"));
         goto cleanup;
     }
 
     if (gp_port_info_list_load(priv->ports) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Cannot load gphoto2 ports");
+                    _("Cannot load gphoto2 ports"));
         goto cleanup;
     }
 
@@ -669,7 +670,7 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
         gp_camera_unref(priv->cam);
         priv->cam = NULL;
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to initialize camera");
+                    _("Unable to initialize camera"));
         goto cleanup;
     }
 
@@ -906,7 +907,7 @@ EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
     g_mutex_lock(priv->lock);
 
     if (!priv->cam) {
-        ENTANGLE_ERROR(error, "Cannot capture image while not connected");
+        ENTANGLE_ERROR(error, _("Cannot capture image while not connected"));
         goto cleanup;
     }
 
@@ -919,7 +920,7 @@ EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
                             priv->ctx);
     entangle_camera_end_job(cam);
     if (err!= GP_OK) {
-        ENTANGLE_ERROR(error, "Unable to capture image: %s", priv->lastError);
+        ENTANGLE_ERROR(error, _("Unable to capture image: %s"), priv->lastError);
         goto cleanup;
     }
 
@@ -999,7 +1000,7 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
     g_mutex_lock(priv->lock);
 
     if (!priv->cam) {
-        ENTANGLE_ERROR(error, "Cannot preview image while not connected");
+        ENTANGLE_ERROR(error, _("Cannot preview image while not connected"));
         goto cleanup;
     }
 
@@ -1014,18 +1015,18 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
     entangle_camera_end_job(cam);
 
     if (err != GP_OK) {
-        ENTANGLE_ERROR(error, "Unable to capture preview: %s", priv->lastError);
+        ENTANGLE_ERROR(error, _("Unable to capture preview: %s"), priv->lastError);
         goto cleanup;
     }
 
 
     if (gp_file_get_data_and_size(datafile, &rawdata, &rawdatalen) != GP_OK) {
-        ENTANGLE_ERROR(error, "Unable to get file data: %s", priv->lastError);
+        ENTANGLE_ERROR(error, _("Unable to get file data: %s"), priv->lastError);
         goto cleanup;
     }
 
     if (gp_file_get_name(datafile, &name) != GP_OK) {
-        ENTANGLE_ERROR(error, "Unable to get filename: %s", priv->lastError);
+        ENTANGLE_ERROR(error, _("Unable to get filename: %s"), priv->lastError);
         goto cleanup;
     }
 
@@ -1114,7 +1115,7 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
     g_mutex_lock(priv->lock);
 
     if (!priv->cam) {
-        ENTANGLE_ERROR(error, "Cannot download file while not connected");
+        ENTANGLE_ERROR(error, _("Cannot download file while not connected"));
         goto cleanup;
     }
 
@@ -1136,13 +1137,13 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
     entangle_camera_end_job(cam);
 
     if (err != GP_OK) {
-        ENTANGLE_ERROR(error, "Unable to get camera file: %s", priv->lastError);
+        ENTANGLE_ERROR(error, _("Unable to get camera file: %s"), priv->lastError);
         goto cleanup;
     }
 
     ENTANGLE_DEBUG("Fetching data");
     if (gp_file_get_data_and_size(datafile, &data, &datalen) != GP_OK) {
-        ENTANGLE_ERROR(error, "Unable to get file data: %s", priv->lastError);
+        ENTANGLE_ERROR(error, _("Unable to get file data: %s"), priv->lastError);
         goto cleanup;
     }
 
@@ -1223,7 +1224,7 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
     g_mutex_lock(priv->lock);
 
     if (!priv->cam) {
-        ENTANGLE_ERROR(error, "Cannot delete file while not connected");
+        ENTANGLE_ERROR(error, _("Cannot delete file while not connected"));
         goto cleanup;
     }
 
@@ -1240,7 +1241,7 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
     entangle_camera_end_job(cam);
 
     if (err != GP_OK) {
-        ENTANGLE_ERROR(error, "Unable to delete file: %s", priv->lastError);
+        ENTANGLE_ERROR(error, _("Unable to delete file: %s"), priv->lastError);
         goto cleanup;
     }
 
@@ -1315,7 +1316,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
     g_mutex_lock(priv->lock);
 
     if (!priv->cam) {
-        ENTANGLE_ERROR(error, "Cannot wait for events while not connected");
+        ENTANGLE_ERROR(error, _("Cannot wait for events while not connected"));
         goto cleanup;
     }
 
@@ -1339,7 +1340,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
                 ret = TRUE;
                 goto cleanup;
             }
-            ENTANGLE_ERROR(error, "Unable to wait for events: %s", priv->lastError);
+            ENTANGLE_ERROR(error, _("Unable to wait for events: %s"), priv->lastError);
             goto cleanup;
         }
 
@@ -1474,13 +1475,13 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
 
     if (gp_widget_get_type(widget, &type) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to fetch widget type");
+                    _("Unable to fetch widget type"));
         return NULL;
     }
 
     if (gp_widget_get_name(widget, &name) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to fetch widget name");
+                    _("Unable to fetch widget name"));
         return NULL;
     }
 
@@ -1604,13 +1605,13 @@ static gboolean do_load_controls(EntangleCamera *cam,
 
     if (gp_widget_get_type(widget, &type) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to fetch widget type");
+                    _("Unable to fetch widget type"));
         return FALSE;
     }
 
     if (gp_widget_get_name(widget, &name) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to fetch widget name");
+                    _("Unable to fetch widget name"));
         return FALSE;
     }
 
@@ -1709,13 +1710,13 @@ static gboolean do_save_controls(EntangleCamera *cam,
 
     if (gp_widget_get_type(widget, &type) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to fetch widget type");
+                    _("Unable to fetch widget type"));
         return FALSE;
     }
 
     if (gp_widget_get_name(widget, &name) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to fetch widget name");
+                    _("Unable to fetch widget name"));
         return FALSE;
     }
 
@@ -1805,7 +1806,7 @@ gboolean entangle_camera_load_controls(EntangleCamera *cam,
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to load controls, camera is not connected");
+                    _("Unable to load controls, camera is not connected"));
         goto cleanup;
     }
 
@@ -1813,7 +1814,7 @@ gboolean entangle_camera_load_controls(EntangleCamera *cam,
     err = gp_camera_get_config(priv->cam, &priv->widgets, priv->ctx);
     if (err != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to fetch camera control configuration");
+                    _("Unable to fetch camera control configuration"));
         goto endjob;
     }
 
@@ -1888,13 +1889,13 @@ gboolean entangle_camera_save_controls(EntangleCamera *cam,
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to save controls, camera is not connected");
+                    _("Unable to save controls, camera is not connected"));
         goto cleanup;
     }
 
     if (priv->controls == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to save controls, camera is not configurable");
+                    _("Unable to save controls, camera is not configurable"));
         goto cleanup;
     }
 
@@ -1905,7 +1906,7 @@ gboolean entangle_camera_save_controls(EntangleCamera *cam,
 
     if ((err = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Unable to save camera control configuration: %s %d",
+                    _("Unable to save camera control configuration: %s %d"),
                     gp_port_result_as_string(err), err);
         goto endjob;
     }
@@ -1974,13 +1975,13 @@ EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError *
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Controls not available when camera is disconnected");
+                    _("Controls not available when camera is disconnected"));
         goto cleanup;
     }
 
     if (priv->controls == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    "Controls not available for this camera");
+                    _("Controls not available for this camera"));
         goto cleanup;
     }
 

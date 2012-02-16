@@ -23,6 +23,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include "entangle-debug.h"
 #include "entangle-camera-info.h"
@@ -227,7 +228,7 @@ static void entangle_camera_info_init(EntangleCameraInfo *info)
         gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-info.xml", &error);
 
     if (error)
-        g_error("Couldn't load builder file: %s", error->message);
+        g_error(_("Could not load user interface definition file: %s"), error->message);
 
     gtk_builder_connect_signals(priv->builder, info);
 }
@@ -282,10 +283,10 @@ static void do_info_refresh(EntangleCameraInfo *info)
             g_free(str);
         }   break;
         case ENTANGLE_CAMERA_INFO_DATA_SUPPORTED:
-            gtk_label_set_text(GTK_LABEL(text), "Cannot list supported cameras yet");
+            gtk_label_set_text(GTK_LABEL(text), _("Cannot list supported cameras yet"));
             break;
         default:
-            gtk_label_set_text(GTK_LABEL(text), "unknown");
+            gtk_label_set_text(GTK_LABEL(text), _("Unknown information"));
             break;
         }
     } else {
@@ -325,10 +326,10 @@ void entangle_camera_info_set_camera(EntangleCameraInfo *info,
     priv->camera = camera;
     if (priv->camera) {
         g_object_ref(priv->camera);
-        title = g_strdup_printf("%s Camera Info - Entangle",
+        title = g_strdup_printf(_("%s Camera Info - Entangle"),
                                 entangle_camera_get_model(priv->camera));
     } else {
-        title = g_strdup("Camera Info - Entangle");
+        title = g_strdup(_("Camera Info - Entangle"));
     }
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
