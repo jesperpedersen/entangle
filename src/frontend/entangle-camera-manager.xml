@@ -27,7 +27,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menu-new">
-                        <property name="label">New session</property>
+                        <property name="label" translatable="yes">New session</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
@@ -38,7 +38,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu-open">
-                        <property name="label">Open session</property>
+                        <property name="label" translatable="yes">Open session</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
