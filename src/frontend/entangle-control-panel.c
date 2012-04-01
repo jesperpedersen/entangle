@@ -282,8 +282,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
         priv->hasControls = TRUE;
 
         ENTANGLE_DEBUG("Build control %d %s",
-                   entangle_control_get_id(control),
-                   entangle_control_get_label(control));
+                       entangle_control_get_id(control),
+                       entangle_control_get_label(control));
 
         if (ENTANGLE_IS_CONTROL_BUTTON(control)) {
             GtkWidget *value;
@@ -456,8 +456,8 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
         priv->hasControls = TRUE;
 
         ENTANGLE_DEBUG("Build control %d %s",
-                   entangle_control_get_id(control),
-                   entangle_control_get_label(control));
+                       entangle_control_get_id(control),
+                       entangle_control_get_label(control));
 
         if (ENTANGLE_IS_CONTROL_CHOICE(control)) {
             char *text;
