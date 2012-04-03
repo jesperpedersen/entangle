@@ -4,14 +4,15 @@
 # 
 # Translators:
 # Daniel Cabrera <logan@fedoraproject.org>, 2012.
+# Dennis Tobar <dennis.tobar@gmail.com>, 2012.
 # Javier Galnares Arias <javigalnares@yahoo.es>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-01 13:16+0100\n"
-"PO-Revision-Date: 2012-04-01 12:17+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"PO-Revision-Date: 2012-04-03 14:35+0000\n"
+"Last-Translator: Dennis Tobar <dennis.tobar@gmail.com>\n"
 "Language-Team: Spanish (Castilian) <trans-es@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,26 +33,26 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:636 ../src/backend/entangle-context.c:396
 #, c-format
 msgid "Cannot initialize gphoto2 ports"
-msgstr ""
+msgstr "No se pudo iniciar puertos de gphoto2"
 
 #: ../src/backend/entangle-camera.c:642 ../src/backend/entangle-context.c:399
 #, c-format
 msgid "Cannot load gphoto2 ports"
-msgstr ""
+msgstr "No se pudo cargar puertos de gphoto2"
 
 #: ../src/backend/entangle-camera.c:673
 #, c-format
 msgid "Unable to initialize camera"
-msgstr ""
+msgstr "Incapaz de iniciar la cámara"
 
 #: ../src/backend/entangle-camera.c:910
 msgid "Cannot capture image while not connected"
-msgstr ""
+msgstr "No se puede capturar imagen mientras no esté conectada"
 
 #: ../src/backend/entangle-camera.c:923
 #, c-format
 msgid "Unable to capture image: %s"
-msgstr ""
+msgstr "Incapaz de capturar imagen: %s"
 
 #: ../src/backend/entangle-camera.c:1003
 msgid "Cannot preview image while not connected"
@@ -60,17 +61,17 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:1018
 #, c-format
 msgid "Unable to capture preview: %s"
-msgstr ""
+msgstr "Incapaz de capturar vista previa: %s"
 
 #: ../src/backend/entangle-camera.c:1024 ../src/backend/entangle-camera.c:1146
 #, c-format
 msgid "Unable to get file data: %s"
-msgstr ""
+msgstr "Incapaz de obtener datos del archivo: %s"
 
 #: ../src/backend/entangle-camera.c:1029
 #, c-format
 msgid "Unable to get filename: %s"
-msgstr ""
+msgstr "Incapaz de obtener nombre de archivo: %s"
 
 #: ../src/backend/entangle-camera.c:1118
 msgid "Cannot download file while not connected"
@@ -88,7 +89,7 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:1244
 #, c-format
 msgid "Unable to delete file: %s"
-msgstr ""
+msgstr "Incapaz de borrar archivo: %s"
 
 #: ../src/backend/entangle-camera.c:1319
 msgid "Cannot wait for events while not connected"
@@ -97,7 +98,7 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:1343
 #, c-format
 msgid "Unable to wait for events: %s"
-msgstr ""
+msgstr "Incapaz de esperar por eventos: %s"
 
 #: ../src/backend/entangle-camera.c:1478 ../src/backend/entangle-camera.c:1608
 #: ../src/backend/entangle-camera.c:1713
@@ -114,7 +115,7 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:1809
 #, c-format
 msgid "Unable to load controls, camera is not connected"
-msgstr ""
+msgstr "Incapaz de cargar controles, la cámara no está conectada"
 
 #: ../src/backend/entangle-camera.c:1817
 #, c-format
@@ -124,12 +125,12 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:1892
 #, c-format
 msgid "Unable to save controls, camera is not connected"
-msgstr ""
+msgstr "Incapaz de guardar controles, la cámara no está conectada"
 
 #: ../src/backend/entangle-camera.c:1898
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
-msgstr ""
+msgstr "Incapaz de guardar controles, la cámara no es configurable"
 
 #: ../src/backend/entangle-camera.c:1909
 #, c-format
@@ -139,7 +140,7 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:1978
 #, c-format
 msgid "Controls not available when camera is disconnected"
-msgstr ""
+msgstr "Controles no disponibles cuando la cámara está desconectada"
 
 #: ../src/backend/entangle-camera.c:1984
 #, c-format
@@ -320,7 +321,7 @@ msgstr "Abrir sesión existente"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Intentar cancelar la actual\noperación en ejecución en la cámara"
+msgstr "Intentar cancelar la operación\nactual en ejecución en la cámara"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:3
 msgid "Best Fit"
@@ -380,7 +381,7 @@ msgstr "Nuevo"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:20
 msgid "New session"
-msgstr ""
+msgstr "Nueva sesión"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:21
 msgid "Normal"
@@ -396,7 +397,7 @@ msgstr "Abrir una sesión de captura existente"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:24
 msgid "Open session"
-msgstr ""
+msgstr "Abrir sesión"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:25
 msgid "Present on"
@@ -547,7 +548,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:581
 msgid "ICC profiles (*.icc, *.icm)"
-msgstr ""
+msgstr "Perfiles ICC (*.icc, *.icm)"
 
 #: ../src/frontend/entangle-preferences-display.c:586
 msgid "All files (*.*)"
@@ -598,7 +599,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:11
 msgid "Filename pattern:"
-msgstr ""
+msgstr "Patrón de nombres:"
 
 #: ../src/frontend/entangle-preferences.xml.h:12
 msgid "Folders"
@@ -610,7 +611,7 @@ msgstr "Modo de operación:"
 
 #: ../src/frontend/entangle-preferences.xml.h:14
 msgid "Monitor profile:"
-msgstr ""
+msgstr "Perfil de monitor:"
 
 #: ../src/frontend/entangle-preferences.xml.h:15
 msgid "Perceptual"
@@ -618,7 +619,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:17
 msgid "RGB profile:"
-msgstr ""
+msgstr "Perfil RGB:"
 
 #: ../src/frontend/entangle-preferences.xml.h:18
 msgid "Relative colourimetric"
@@ -630,4 +631,4 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:20
 msgid "Saturation"
-msgstr ""
+msgstr "Saturación"
