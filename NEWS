@@ -1,6 +1,18 @@
       Entangle News
       =============
 
+Release 0.3.2 - 2012-04-03
+--------------------------
+
+ * Major code style cleanup
+ * Mark all translatable strings in code & UI files
+ * Register with Transifex for translations via Fedora team
+ * Pull in translations (German, Polish, Ukrainian,
+   Japanese: full, Spanish, Chinese: partial).
+ * Add m4 macros for compiler warnings, missing from
+   previous release dist.
+
+
 Release 0.3.1 - 2012-02-13
 --------------------------
 
