@@ -7,10 +7,16 @@ AC_DEFUN([ENTANGLE_COMPILE_WARNINGS],[
     dnl More compiler warnings
     dnl ******************************
 
-    AC_ARG_ENABLE(werror,
-                  [AC_HELP_STRING([--enable-werror=@<:@no/yes@:>@],
-                                 [Make compile warnings fatal])],,
-                  [enable_werror="m4_default([$1],[yes])"])
+    AC_ARG_ENABLE([werror],
+                  AS_HELP_STRING([--enable-werror], [Use -Werror (if supported)]),
+                  [set_werror="$enableval"],
+                  [if test -d $srcdir/.git; then
+                     is_git_version=true
+                     set_werror=yes
+                   else
+                     set_werror=no
+                   fi])
+
 
     # List of warnings that are not relevant / wanted
 
