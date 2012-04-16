@@ -268,7 +268,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
     int i;
 
     GtkWidget *frame = gtk_expander_new(entangle_control_get_label(ENTANGLE_CONTROL(grp)));
-    GtkWidget *subbox = gtk_vbox_new(FALSE, 6);
+    GtkWidget *subbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 
     gtk_container_add(GTK_CONTAINER(frame), subbox);
     gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
@@ -378,9 +378,10 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
             gtk_container_add(GTK_CONTAINER(subbox), label);
 
-            value = gtk_hscale_new_with_range(entangle_control_range_get_min(ENTANGLE_CONTROL_RANGE(control)),
-                                              entangle_control_range_get_max(ENTANGLE_CONTROL_RANGE(control)),
-                                              entangle_control_range_get_step(ENTANGLE_CONTROL_RANGE(control)));
+            value = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+                                             entangle_control_range_get_min(ENTANGLE_CONTROL_RANGE(control)),
+                                             entangle_control_range_get_max(ENTANGLE_CONTROL_RANGE(control)),
+                                             entangle_control_range_get_step(ENTANGLE_CONTROL_RANGE(control)));
             g_object_get(control, "value", &offset, NULL);
             gtk_range_set_value(GTK_RANGE(value), offset);
             if (entangle_control_get_readonly(control))
