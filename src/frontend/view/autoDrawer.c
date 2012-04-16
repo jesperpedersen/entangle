@@ -215,11 +215,18 @@ ViewAutoDrawerUpdate(ViewAutoDrawer *that, // IN
 
    /* Is the mouse cursor inside the event box? */
 
-   {
+   if (gtk_widget_get_window(priv->evBox)) {
       int x;
       int y;
+      GdkDevice *dev;
+      GdkDeviceManager *devmgr;
 
-      gtk_widget_get_pointer(priv->evBox, &x, &y);
+      devmgr = gdk_display_get_device_manager(gtk_widget_get_display(priv->evBox));
+      dev = gdk_device_manager_get_client_pointer(devmgr);
+
+      gdk_window_get_device_position(gtk_widget_get_window(priv->evBox),
+				     dev, &x, &y, NULL);
+
       gtk_widget_get_allocation(priv->evBox, &allocation);
       g_assert(gtk_container_get_border_width(   GTK_CONTAINER(priv->evBox))
                                               == 0);
