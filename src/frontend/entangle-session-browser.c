@@ -57,6 +57,11 @@ enum {
     FIELD_LAST,
 };
 
+static GObject *
+entangle_session_browser_constructor(GType type,
+                                     guint n_construct_properties,
+                                     GObjectConstructParam *construct_properties);
+
 static void do_thumb_loaded(EntanglePixbufLoader *loader,
                             EntangleImage *image,
                             gpointer data)
@@ -287,6 +292,7 @@ static void entangle_session_browser_class_init(EntangleSessionBrowserClass *kla
     object_class->finalize = entangle_session_browser_finalize;
     object_class->get_property = entangle_session_browser_get_property;
     object_class->set_property = entangle_session_browser_set_property;
+    object_class->constructor = entangle_session_browser_constructor;
 
     g_object_class_install_property(object_class,
                                     PROP_SESSION,
@@ -321,14 +327,26 @@ EntangleSessionBrowser *entangle_session_browser_new(void)
 
 static void entangle_session_browser_init(EntangleSessionBrowser *browser)
 {
+    browser->priv = ENTANGLE_SESSION_BROWSER_GET_PRIVATE(browser);
+}
+
+
+static GObject *
+entangle_session_browser_constructor(GType type,
+                                     guint n_construct_properties,
+                                     GObjectConstructParam *construct_properties)
+{
+    EntangleSessionBrowser *browser;
     EntangleSessionBrowserPrivate *priv;
+    GObject *object = G_OBJECT_CLASS(entangle_session_browser_parent_class)->constructor
+        (type, n_construct_properties, construct_properties);
     const GtkTargetEntry targets[] = {
         { g_strdup("demo"), GTK_TARGET_OTHER_APP, 1 },
     };
     int ntargets = 1;
 
-    priv = browser->priv = ENTANGLE_SESSION_BROWSER_GET_PRIVATE(browser);
-    memset(priv, 0, sizeof *priv);
+    browser = ENTANGLE_SESSION_BROWSER(object);
+    priv = browser->priv;
 
     priv->model = gtk_list_store_new(FIELD_LAST, ENTANGLE_TYPE_IMAGE, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_STRING);
 
@@ -354,6 +372,8 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
      * way to force everything into a single row. Perhaps we should
      * just right a new widget for our needs */
     gtk_icon_view_set_columns(GTK_ICON_VIEW(browser), 10000);
+
+    return object;
 }
 
 
