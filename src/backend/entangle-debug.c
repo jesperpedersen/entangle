@@ -25,3 +25,35 @@
 gboolean entangle_debug_app = FALSE;
 gboolean entangle_debug_gphoto = FALSE;
 gint64 entangle_debug_startms = 0;
+
+static void gvir_log_handler(const gchar *log_domain G_GNUC_UNUSED,
+                             GLogLevelFlags log_level G_GNUC_UNUSED,
+                             const gchar *message,
+                             gpointer user_data G_GNUC_UNUSED)
+{
+    g_printerr("%s\n", message);
+}
+
+
+void entangle_debug_setup(gboolean debug_app,
+                          gboolean debug_gphoto)
+{
+    entangle_debug_app = debug_app;
+    entangle_debug_gphoto = debug_gphoto;
+
+#if GLIB_CHECK_VERSION(2, 31, 0)
+    if (debug_app || debug_gphoto) {
+        g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG,
+                          gvir_log_handler, NULL);
+    }
+#endif
+}
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

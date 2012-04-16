@@ -47,9 +47,11 @@ int main(int argc, char **argv)
     GOptionContext *optContext;
     GError *error = NULL;
     GtkApplication *app;
-    static const GOptionEntry entries[] = {
-        { "debug-entangle", 'd', 0, G_OPTION_ARG_NONE, &entangle_debug_app, "Enable debugging of application code", NULL },
-        { "debug-gphoto", 'g', 0, G_OPTION_ARG_NONE, &entangle_debug_gphoto, "Enable debugging of gphoto library", NULL },
+    gboolean debug_app = FALSE;
+    gboolean debug_gphoto = FALSE;
+    const GOptionEntry entries[] = {
+        { "debug-entangle", 'd', 0, G_OPTION_ARG_NONE, &debug_app, "Enable debugging of application code", NULL },
+        { "debug-gphoto", 'g', 0, G_OPTION_ARG_NONE, &debug_gphoto, "Enable debugging of gphoto library", NULL },
         { "introspect-dump", 'i', 0, G_OPTION_ARG_STRING, &ins, "Dump introspection data", NULL },
         { NULL, 0, 0, 0, NULL, NULL, NULL },
     };
@@ -92,6 +94,8 @@ int main(int argc, char **argv)
 
     if (!gtk_init_check(NULL, NULL))
         return 1;
+
+    entangle_debug_setup(debug_app, debug_gphoto);
 
     app = gtk_application_new("org.entangle_photo.Manager", 0);
 

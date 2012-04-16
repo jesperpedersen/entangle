@@ -84,7 +84,9 @@ libentangle_backend_la_CFLAGS = \
 	$(WARN_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
 	-DDATADIR="\"$(datadir)\"" \
-	-DLIBDIR="\"$(libdir)\""
+	-DLIBDIR="\"$(libdir)\"" \
+	-DG_LOG_DOMAIN="\"$(PACKAGE)\"" \
+	$(NULL)
 
 libentangle_frontend_la_SOURCES = \
 	frontend/entangle-camera-info.h frontend/entangle-camera-info.c \
@@ -121,7 +123,9 @@ libentangle_frontend_la_CFLAGS = \
 	$(LIBPEAS_UI_CFLAGS) \
 	$(GEXIV2_CFLAGS) \
 	$(WARN_CFLAGS) \
-	-DPKGDATADIR="\"$(pkgdatadir)\""
+	-DPKGDATADIR="\"$(pkgdatadir)\"" \
+	-DG_LOG_DOMAIN="\"$(PACKAGE)\"" \
+	$(NULL)
 
 
 
@@ -146,7 +150,9 @@ entangle_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(GOBJECT_INTROSPECTION_CFLAGS) \
 	$(LIBPEAS_CFLAGS) \
-	$(WARN_CFLAGS)
+	$(WARN_CFLAGS) \
+	-DG_LOG_DOMAIN="\"$(PACKAGE)\"" \
+	$(NULL)
 
 
 %.desktop: $(srcdir)/%.desktop.in

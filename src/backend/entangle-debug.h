@@ -29,6 +29,9 @@ extern gboolean entangle_debug_app;
 extern gboolean entangle_debug_gphoto;
 extern gint64 entangle_debug_startms;
 
+void entangle_debug_setup(gboolean debug_app,
+                          gboolean debug_gphoto);
+
 #define ENTANGLE_DEBUG(fmt, ...)                                        \
     do {                                                                \
         if (G_UNLIKELY(entangle_debug_app)) {                           \
