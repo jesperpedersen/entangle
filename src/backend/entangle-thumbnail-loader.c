@@ -301,7 +301,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
         if (!thisuri || !thismtimeStr ||
             strcmp(uri, thisuri) != 0 ||
             thismtime != sb.st_mtime) {
-            gdk_pixbuf_unref(thumb);
+            g_object_unref(thumb);
             thumb = NULL;
         }
     }
