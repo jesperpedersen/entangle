@@ -139,7 +139,8 @@ static void entangle_image_statusbar_init(EntangleImageStatusbar *statusbar)
 
     priv = statusbar->priv = ENTANGLE_IMAGE_STATUSBAR_GET_PRIVATE(statusbar);
 
-    priv->metaBox = gtk_hbox_new(TRUE, 6);
+    priv->metaBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+    g_object_set(priv->metaBox, "homogeneous", TRUE, NULL);
 
     gtk_container_set_border_width(GTK_CONTAINER(priv->metaBox), 6);
 
