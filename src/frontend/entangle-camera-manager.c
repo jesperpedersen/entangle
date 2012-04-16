@@ -2058,7 +2058,7 @@ static void do_popup_remove(gpointer data)
 }
 
 
-static void do_drag_failed(GtkWidget *widget,
+static void do_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
                            GdkDragContext *ctx G_GNUC_UNUSED,
                            GtkDragResult res,
                            gpointer data)
@@ -2070,10 +2070,16 @@ static void do_drag_failed(GtkWidget *widget,
         EntangleImage *img = entangle_session_browser_selected_image(priv->sessionBrowser);
         if (img) {
             GdkScreen *screen;
+            GdkDevice *dev;
+            GdkDeviceManager *devmgr;
             int x, y;
-            gdk_display_get_pointer(gtk_widget_get_display(widget),
+
+            devmgr = gdk_display_get_device_manager(gtk_widget_get_display(widget));
+            dev = gdk_device_manager_get_client_pointer(devmgr);
+            gdk_device_get_position(dev,
                                     &screen,
-                                    &x, &y, NULL);
+                                    &x, &y);
+
             GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
             const gchar *filename = entangle_image_get_filename(img);
             EntangleImagePopup *pol;
