@@ -384,7 +384,6 @@ static void entangle_image_display_init(EntangleImageDisplay *display)
     priv = display->priv = ENTANGLE_IMAGE_DISPLAY_GET_PRIVATE(display);
     memset(priv, 0, sizeof *priv);
 
-    gtk_widget_set_double_buffered(GTK_WIDGET(display), FALSE);
     priv->autoscale = TRUE;
 }
 
