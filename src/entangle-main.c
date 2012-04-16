@@ -95,15 +95,12 @@ int main(int argc, char **argv)
 
     app = gtk_application_new("org.entangle_photo.Manager", 0);
 
-    gdk_threads_enter();
     context = entangle_context_new(G_APPLICATION(app));
     manager = entangle_camera_manager_new(context);
 
     g_signal_connect(app, "activate", G_CALLBACK(entangle_start), manager);
 
     g_application_run(G_APPLICATION(app), argc, argv);
-
-    gdk_threads_leave();
 
     g_object_unref(context);
     g_object_unref(manager);
