@@ -290,8 +290,7 @@ void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monito
 
     gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(win)),
                           null_cursor);
-    gdk_cursor_unref(null_cursor);
-    //g_object_unref(null_cursor);
+    g_object_unref(null_cursor);
 
     entangle_image_popup_move_to_monitor(popup, monitor);
 
