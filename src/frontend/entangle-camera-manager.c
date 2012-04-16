@@ -1905,7 +1905,11 @@ void do_menu_preferences(GtkCheckMenuItem *src G_GNUC_UNUSED,
 void do_menu_quit(GtkMenuItem *src G_GNUC_UNUSED,
                   EntangleCameraManager *manager G_GNUC_UNUSED)
 {
+#if GLIB_CHECK_VERSION(2, 32, 0)
     g_application_quit(g_application_get_default());
+#else
+    gtk_main_quit();
+#endif
 }
 
 
@@ -2028,7 +2032,11 @@ static gboolean do_manager_delete(GtkWidget *widget G_GNUC_UNUSED,
                                   EntangleCameraManager *manager G_GNUC_UNUSED)
 {
     ENTANGLE_DEBUG("Got delete");
+#if GLIB_CHECK_VERSION(2, 32, 0)
     g_application_quit(g_application_get_default());
+#else
+    gtk_main_quit();
+#endif
     return TRUE;
 }
 

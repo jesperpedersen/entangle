@@ -26,6 +26,7 @@ gboolean entangle_debug_app = FALSE;
 gboolean entangle_debug_gphoto = FALSE;
 gint64 entangle_debug_startms = 0;
 
+#if GLIB_CHECK_VERSION(2, 31, 0)
 static void gvir_log_handler(const gchar *log_domain G_GNUC_UNUSED,
                              GLogLevelFlags log_level G_GNUC_UNUSED,
                              const gchar *message,
@@ -33,6 +34,7 @@ static void gvir_log_handler(const gchar *log_domain G_GNUC_UNUSED,
 {
     g_printerr("%s\n", message);
 }
+#endif
 
 
 void entangle_debug_setup(gboolean debug_app,
