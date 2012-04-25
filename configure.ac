@@ -63,7 +63,7 @@ AC_SUBST(GIO_LIBS)
 
 AC_MSG_CHECKING([for glib-compile-schemas])
 AC_SUBST([GLIB_COMPILE_SCHEMAS], [$($PKG_CONFIG --variable=glib_compile_schemas gio-2.0)])
-if [ test -x $GLIB_COMPILE_SCHEMAS ]; then
+if [ test -n "$GLIB_COMPILE_SCHEMAS" ]; then
   AC_MSG_RESULT([$GLIB_COMPILE_SCHEMAS])
 else
   AC_MSG_ERROR([The $GLIB_COMPILE_SCHEMAS binary must be installed before building entangle])
