@@ -1,6 +1,17 @@
       Entangle News
       =============
 
+Release 0.3.3 - 2012-04-25
+--------------------------
+
+ * Fix deadlock when starting app with glib >= 2.32
+ * Remove use of deprecated API calls
+ * Remove use of deprecated GTK widgets
+ * Fix debugging with glib >= 2.32
+ * Fix creation of session browser widget to avoid warnings
+ * Refresh translations
+ * Fix check for glib-compile-schemas binary
+
 Release 0.3.2 - 2012-04-03
 --------------------------
 
