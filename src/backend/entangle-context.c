@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include <gphoto2.h>
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <stdio.h>
@@ -28,7 +27,6 @@
 
 #include "entangle-debug.h"
 #include "entangle-context.h"
-#include "entangle-device-manager.h"
 #include "entangle-preferences.h"
 
 /**
@@ -54,11 +52,6 @@
 struct _EntangleContextPrivate {
     GApplication *app;
 
-    GPContext *ctx;
-    CameraAbilitiesList *caps;
-    GPPortInfoList *ports;
-
-    EntangleDeviceManager *devManager;
     EntangleCameraList *cameras;
 
     EntanglePreferences *preferences;
@@ -74,7 +67,6 @@ enum {
     PROP_APPLICATION,
     PROP_CAMERAS,
     PROP_PREFERENCES,
-    PROP_DEVMANAGER,
 };
 
 static void entangle_context_get_property(GObject *object,
@@ -97,10 +89,6 @@ static void entangle_context_get_property(GObject *object,
 
         case PROP_PREFERENCES:
             g_value_set_object(value, priv->preferences);
-            break;
-
-        case PROP_DEVMANAGER:
-            g_value_set_object(value, priv->devManager);
             break;
 
         default:
@@ -139,13 +127,6 @@ static void entangle_context_set_property(GObject *object,
             g_object_ref(priv->preferences);
             break;
 
-        case PROP_DEVMANAGER:
-            if (priv->devManager)
-                g_object_unref(priv->devManager);
-            priv->devManager = g_value_get_object(value);
-            g_object_ref(priv->devManager);
-            break;
-
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -165,18 +146,10 @@ static void entangle_context_finalize(GObject *object)
         g_object_unref(priv->cameras);
     if (priv->preferences)
         g_object_unref(priv->preferences);
-    if (priv->devManager)
-        g_object_unref(priv->devManager);
     if (priv->pluginEngine)
         g_object_unref(priv->pluginEngine);
     if (priv->pluginExt)
         g_object_unref(priv->pluginExt);
-
-    if (priv->ports)
-        gp_port_info_list_free(priv->ports);
-    if (priv->caps)
-        gp_abilities_list_free(priv->caps);
-    gp_context_unref(priv->ctx);
 
     G_OBJECT_CLASS (entangle_context_parent_class)->finalize (object);
 }
@@ -224,114 +197,9 @@ static void entangle_context_class_init(EntangleContextClass *klass)
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
-    g_object_class_install_property(object_class,
-                                    PROP_DEVMANAGER,
-                                    g_param_spec_object("device-manager",
-                                                        "Device manager",
-                                                        "Device manager for detecting cameras",
-                                                        ENTANGLE_TYPE_DEVICE_MANAGER,
-                                                        G_PARAM_READABLE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
-
-
     g_type_class_add_private(klass, sizeof(EntangleContextPrivate));
 }
 
-
-static void do_refresh_cameras(EntangleContext *context)
-{
-    EntangleContextPrivate *priv = context->priv;
-    CameraList *cams = NULL;
-    GHashTable *toRemove;
-    GHashTableIter iter;
-    gpointer key, value;
-
-    if (priv->ports)
-        gp_port_info_list_free(priv->ports);
-    if (gp_port_info_list_new(&priv->ports) != GP_OK)
-        return;
-    if (gp_port_info_list_load(priv->ports) != GP_OK)
-        return;
-
-    ENTANGLE_DEBUG("Detecting cameras");
-
-    if (gp_list_new(&cams) != GP_OK)
-        return;
-
-    gp_abilities_list_detect(priv->caps, priv->ports, cams, priv->ctx);
-
-    for (int i = 0 ; i < gp_list_count(cams) ; i++) {
-        const char *model, *port;
-        int n;
-        EntangleCamera *cam;
-        CameraAbilities cap;
-
-        gp_list_get_name(cams, i, &model);
-        gp_list_get_value(cams, i, &port);
-
-        cam = entangle_camera_list_find(priv->cameras, port);
-
-        if (cam)
-            continue;
-
-        n = gp_abilities_list_lookup_model(priv->caps, model);
-        gp_abilities_list_get_abilities(priv->caps, n, &cap);
-
-        /* For back compat, libgphoto2 always adds a default
-         * USB camera called 'usb:'. We ignore that, since we
-         * can go for the exact camera entries
-         */
-        if (strcmp(port, "usb:") == 0)
-            continue;
-
-        ENTANGLE_DEBUG("New camera '%s' '%s' %d", model, port, cap.operations);
-        cam = entangle_camera_new(model, port,
-                              cap.operations & GP_OPERATION_CAPTURE_IMAGE ? TRUE : FALSE,
-                              cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
-                              cap.operations & GP_OPERATION_CONFIG ? TRUE : FALSE);
-        entangle_camera_list_add(priv->cameras, cam);
-        g_object_unref(cam);
-    }
-
-    toRemove = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-    for (int i = 0 ; i < entangle_camera_list_count(priv->cameras) ; i++) {
-        gboolean found = FALSE;
-        EntangleCamera *cam = entangle_camera_list_get(priv->cameras, i);
-
-        ENTANGLE_DEBUG("Checking if %s exists", entangle_camera_get_port(cam));
-
-        for (int j = 0 ; j < gp_list_count(cams) ; j++) {
-            const char *port;
-            gp_list_get_value(cams, j, &port);
-
-            if (strcmp(port, entangle_camera_get_port(cam)) == 0) {
-                found = TRUE;
-                break;
-            }
-        }
-        if (!found)
-            g_hash_table_insert(toRemove, g_strdup(entangle_camera_get_port(cam)), cam);
-    }
-
-    gp_list_unref(cams);
-
-    g_hash_table_iter_init(&iter, toRemove);
-    while (g_hash_table_iter_next(&iter, &key, &value)) {
-        EntangleCamera *cam = value;
-
-        entangle_camera_list_remove(priv->cameras, cam);
-    }
-    g_hash_table_unref(toRemove);
-}
-
-static void do_device_addremove(EntangleDeviceManager *manager G_GNUC_UNUSED,
-                                char *port G_GNUC_UNUSED,
-                                EntangleContext *context)
-{
-    do_refresh_cameras(context);
-}
 
 EntangleContext *entangle_context_new(GApplication *context)
 {
@@ -358,16 +226,6 @@ on_extension_removed(PeasExtensionSet *set G_GNUC_UNUSED,
     peas_extension_call(exten, "deactivate");
 }
 
-static void do_entangle_log(GPLogLevel level G_GNUC_UNUSED,
-                            const char *domain,
-                            const char *format,
-                            va_list args,
-                            void *data G_GNUC_UNUSED)
-{
-    char *msg = g_strdup_vprintf(format, args);
-    g_debug("%s: %s", domain, msg);
-}
-
 static void entangle_context_init(EntangleContext *context)
 {
     EntangleContextPrivate *priv;
@@ -378,25 +236,7 @@ static void entangle_context_init(EntangleContext *context)
 
     priv->preferences = entangle_preferences_new();
     priv->cameras = entangle_camera_list_new();
-    priv->devManager = entangle_device_manager_new();
 
-    if (entangle_debug_gphoto) {
-        gp_log_add_func(GP_LOG_DEBUG, do_entangle_log, NULL);
-    }
-
-    priv->ctx = gp_context_new();
-
-    if (gp_abilities_list_new(&priv->caps) != GP_OK)
-        g_error(_("Cannot initialize gphoto2 abilities"));
-
-    if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK)
-        g_error(_("Cannot load gphoto2 abilities"));
-
-    if (gp_port_info_list_new(&priv->ports) != GP_OK)
-        g_error(_("Cannot initialize gphoto2 ports"));
-
-    if (gp_port_info_list_load(priv->ports) != GP_OK)
-        g_error(_("Cannot load gphoto2 ports"));
 
     peasPath = g_new0(gchar *, 5);
     peasPath[0] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
@@ -428,11 +268,6 @@ static void entangle_context_init(EntangleContext *context)
     g_free(peasPath[4]);
     g_free(peasPath);
 
-    g_signal_connect(priv->devManager, "device-added", G_CALLBACK(do_device_addremove), context);
-    g_signal_connect(priv->devManager, "device-removed", G_CALLBACK(do_device_addremove), context);
-
-    do_refresh_cameras(context);
-
     const GList *plugins = peas_engine_get_plugin_list(priv->pluginEngine);
     for (i = 0 ; i < g_list_length((GList *)plugins) ; i++) {
         PeasPluginInfo *plugin = g_list_nth_data((GList*)plugins, i);
@@ -451,7 +286,8 @@ static void entangle_context_init(EntangleContext *context)
  */
 void entangle_context_refresh_cameras(EntangleContext *context)
 {
-    do_refresh_cameras(context);
+    EntangleContextPrivate *priv = context->priv;
+    entangle_camera_list_refresh(priv->cameras, NULL);
 }
 
 
