@@ -1,5 +1,5 @@
 /*
- *  Entangle: Entangle Assists Photograph Aquisition
+ *  Entangle: Tethered Camera Control & Capture
  *
  *  Copyright (C) 2009-2012 Daniel P. Berrange
  *
