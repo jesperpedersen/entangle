@@ -16,9 +16,9 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkMenuItem" id="menuitem1">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_File</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -26,11 +26,28 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="menu-new">
-                        <property name="label" translatable="yes">New session</property>
+                      <object class="GtkMenuItem" id="menu-new-window">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">New window</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="do_menu_new_window" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="menuitem7">
                         <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu-new">
+                        <property name="label" translatable="yes">New session</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
                         <property name="always_show_image">True</property>
                         <signal name="activate" handler="do_menu_new_session" swapped="no"/>
@@ -39,9 +56,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-open">
                         <property name="label" translatable="yes">Open session</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="do_menu_open_session" swapped="no"/>
                       </object>
@@ -55,9 +72,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-connect">
                         <property name="label" translatable="yes">Connect camera</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="do_menu_connect" swapped="no"/>
                       </object>
@@ -65,9 +82,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-disconnect">
                         <property name="label">Disconnect camera</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="do_menu_disconnect" swapped="no"/>
                       </object>
@@ -79,11 +96,22 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem5">
-                        <property name="label">gtk-quit</property>
+                      <object class="GtkImageMenuItem" id="menu-close">
+                        <property name="label">gtk-close</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="do_menu_close" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu-quit">
+                        <property name="label">gtk-quit</property>
                         <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="do_menu_quit" swapped="no"/>
@@ -95,9 +123,9 @@
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem2">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Edit</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -107,9 +135,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem11">
                         <property name="label">gtk-preferences</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="do_menu_preferences" swapped="no"/>
@@ -121,9 +149,9 @@
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem3">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -133,9 +161,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-zoom-best">
                         <property name="label">gtk-zoom-fit</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="do_menu_zoom_best" swapped="no"/>
@@ -150,9 +178,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-zoom-out">
                         <property name="label">gtk-zoom-out</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="do_menu_zoom_out" swapped="no"/>
@@ -161,9 +189,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-zoom-normal">
                         <property name="label">gtk-zoom-100</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="do_menu_zoom_normal" swapped="no"/>
@@ -172,9 +200,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-zoom-in">
                         <property name="label">gtk-zoom-in</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="do_menu_zoom_in" swapped="no"/>
@@ -188,9 +216,9 @@
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="menu-settings">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Settings</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
@@ -199,9 +227,9 @@
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="menu-fullscreen">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Fullscreen</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="do_menu_fullscreen" swapped="no"/>
@@ -209,9 +237,9 @@
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="menu-presentation">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Presentation</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="do_menu_presentation" swapped="no"/>
@@ -225,9 +253,9 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="menu-monitor">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Present on</property>
                         <property name="use_underline">True</property>
                       </object>
@@ -238,9 +266,9 @@
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem4">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -250,9 +278,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem10">
                         <property name="label">gtk-about</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="do_menu_help_about" swapped="no"/>
@@ -266,9 +294,9 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="menu-help-camera">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Camera</property>
                         <property name="use_underline">True</property>
                         <child type="submenu">
@@ -278,9 +306,9 @@
                             <child>
                               <object class="GtkImageMenuItem" id="menu-help-summary">
                                 <property name="label">gtk-about</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="use_stock">True</property>
                                 <signal name="activate" handler="do_menu_help_summary" swapped="no"/>
@@ -289,9 +317,9 @@
                             <child>
                               <object class="GtkImageMenuItem" id="menu-help-driver">
                                 <property name="label" translatable="yes">Driver</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_stock">False</property>
                                 <signal name="activate" handler="do_menu_help_driver" swapped="no"/>
                               </object>
@@ -299,9 +327,9 @@
                             <child>
                               <object class="GtkImageMenuItem" id="menu-help-manual">
                                 <property name="label" translatable="yes">Manual</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_stock">False</property>
                                 <signal name="activate" handler="do_menu_help_manual" swapped="no"/>
                               </object>
@@ -313,9 +341,9 @@
                     <child>
                       <object class="GtkImageMenuItem" id="menu-help-supported">
                         <property name="label" translatable="yes">Supported Cameras</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="do_menu_help_supported" swapped="no"/>
                       </object>
@@ -337,6 +365,7 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkToolButton" id="toolbar-new">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Start a new capture session</property>
@@ -353,6 +382,7 @@
             </child>
             <child>
               <object class="GtkToolButton" id="toolbar-open">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Open an existing capture session</property>
@@ -379,6 +409,7 @@
             </child>
             <child>
               <object class="GtkToggleToolButton" id="toolbar-settings">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">View the full list of camera settings</property>
@@ -396,6 +427,7 @@
             </child>
             <child>
               <object class="GtkSeparatorToolItem" id="separatortoolitem4">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="use_action_appearance">False</property>
@@ -407,6 +439,7 @@
             </child>
             <child>
               <object class="GtkToolButton" id="toolbar-capture">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Capture an image</property>
@@ -423,6 +456,7 @@
             </child>
             <child>
               <object class="GtkToggleToolButton" id="toolbar-preview">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Continuous capture preview</property>
@@ -439,6 +473,7 @@
             </child>
             <child>
               <object class="GtkToolItem" id="toolbar-operation">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="use_action_appearance">False</property>
@@ -458,6 +493,7 @@
             </child>
             <child>
               <object class="GtkToolButton" id="toolbar-cancel">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Attempt to cancel the currently
@@ -485,6 +521,7 @@ executing camera operation</property>
             </child>
             <child>
               <object class="GtkToolButton" id="toolbar-zoom-out">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Shrink the display of the image
@@ -502,6 +539,7 @@ by one factor</property>
             </child>
             <child>
               <object class="GtkToolButton" id="toolbar-zoom-in">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Enlarge the display of the image
@@ -519,6 +557,7 @@ by one factor</property>
             </child>
             <child>
               <object class="GtkToolButton" id="toolbar-zoom-best">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Resize the image to automatically
@@ -536,6 +575,7 @@ fit the available window real estate</property>
             </child>
             <child>
               <object class="GtkToolButton" id="toolbar-zoom-normal">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Display the image with its
@@ -562,6 +602,7 @@ native pixel size</property>
             </child>
             <child>
               <object class="GtkToggleToolButton" id="toolbar-fullscreen">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Switch to fullscreen display mode</property>

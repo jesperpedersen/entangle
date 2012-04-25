@@ -133,6 +133,8 @@ void do_menu_help_driver(GtkMenuItem *src,
                          EntangleCameraManager *manager);
 void do_menu_help_supported(GtkMenuItem *src,
                             EntangleCameraManager *manager);
+void do_menu_new_window(GtkImageMenuItem *src,
+                        EntangleCameraManager *manager);
 void do_menu_new_session(GtkImageMenuItem *src,
                          EntangleCameraManager *manager);
 void do_menu_open_session(GtkImageMenuItem *src,
@@ -175,6 +177,8 @@ void do_toolbar_zoom_best(GtkToolButton *src,
                           EntangleCameraManager *manager);
 void do_toolbar_fullscreen(GtkToggleToolButton *src,
                            EntangleCameraManager *manager);
+void do_menu_close(GtkMenuItem *src,
+                   EntangleCameraManager *manager);
 void do_menu_quit(GtkMenuItem *src,
                   EntangleCameraManager *manager);
 void do_menu_help_about(GtkMenuItem *src,
@@ -1550,6 +1554,14 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
     gtk_widget_destroy(chooser);
 }
 
+void do_menu_new_window(GtkImageMenuItem *src G_GNUC_UNUSED,
+                        EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntangleCameraManager *newmanager = entangle_camera_manager_new(priv->application);
+
+    entangle_camera_manager_show(newmanager);
+}
 
 void do_toolbar_new_session(GtkToolButton *src G_GNUC_UNUSED,
                             EntangleCameraManager *manager)
@@ -1903,10 +1915,33 @@ void do_menu_preferences(GtkCheckMenuItem *src G_GNUC_UNUSED,
 }
 
 
+void do_menu_close(GtkMenuItem *src G_GNUC_UNUSED,
+                   EntangleCameraManager *manager)
+{
+    entangle_camera_manager_hide(manager);
+}
+
+
 void do_menu_quit(GtkMenuItem *src G_GNUC_UNUSED,
                   EntangleCameraManager *manager)
 {
-    entangle_camera_manager_hide(manager);
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GList *windows = gtk_application_get_windows(GTK_APPLICATION(priv->application));
+    GList *tmp = g_list_copy(windows);
+
+    while (tmp) {
+#if 0
+        /* Fixme once EntangleCameraManager inherits GtkWindow  */
+        EntangleCameraManager *thismanager = ENTANGLE_CAMERA_MANAGER(tmp->data);
+        entangle_camera_manager_hide(thismanager);
+#else
+        GtkWindow *window = GTK_WINDOW(tmp->data);
+        gtk_widget_hide(GTK_WIDGET(window));
+        gtk_window_set_application(window, NULL);
+#endif
+        tmp = tmp->next;
+    }
+    g_list_free(tmp);
 }
 
 
