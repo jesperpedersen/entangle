@@ -32,12 +32,11 @@
 
 static gchar *ins = NULL;
 
-static void entangle_start(GApplication *app, gpointer opaque)
+static void entangle_start(GApplication *app G_GNUC_UNUSED, gpointer opaque)
 {
     EntangleCameraManager *manager = opaque;
 
     entangle_camera_manager_show(manager);
-    g_application_hold(app);
 }
 
 

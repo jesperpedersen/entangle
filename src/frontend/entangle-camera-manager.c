@@ -1903,13 +1903,9 @@ void do_menu_preferences(GtkCheckMenuItem *src G_GNUC_UNUSED,
 
 
 void do_menu_quit(GtkMenuItem *src G_GNUC_UNUSED,
-                  EntangleCameraManager *manager G_GNUC_UNUSED)
+                  EntangleCameraManager *manager)
 {
-#if GLIB_CHECK_VERSION(2, 32, 0)
-    g_application_quit(g_application_get_default());
-#else
-    gtk_main_quit();
-#endif
+    entangle_camera_manager_hide(manager);
 }
 
 
@@ -2032,11 +2028,7 @@ static gboolean do_manager_delete(GtkWidget *widget G_GNUC_UNUSED,
                                   EntangleCameraManager *manager G_GNUC_UNUSED)
 {
     ENTANGLE_DEBUG("Got delete");
-#if GLIB_CHECK_VERSION(2, 32, 0)
-    g_application_quit(g_application_get_default());
-#else
-    gtk_main_quit();
-#endif
+    entangle_camera_manager_hide(manager);
     return TRUE;
 }
 
@@ -2279,12 +2271,15 @@ void entangle_camera_manager_show(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
+    GtkApplication *app = GTK_APPLICATION(entangle_context_get_application(priv->context));
 
     gtk_widget_show(win);
     gtk_widget_show(GTK_WIDGET(priv->controlPanel));
     gtk_widget_show(GTK_WIDGET(priv->imageDisplay));
     gtk_widget_show(GTK_WIDGET(priv->sessionBrowser));
     gtk_window_present(GTK_WINDOW(win));
+
+    gtk_application_add_window(app, GTK_WINDOW(win));
 
     do_camera_connect(manager);
 }
@@ -2293,11 +2288,13 @@ void entangle_camera_manager_hide(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
+    GtkApplication *app = GTK_APPLICATION(entangle_context_get_application(priv->context));
 
     ENTANGLE_DEBUG("Removing all popups");
     g_hash_table_remove_all(priv->popups);
 
     gtk_widget_hide(win);
+    gtk_application_remove_window(app, GTK_WINDOW(win));
 }
 
 gboolean entangle_camera_manager_visible(EntangleCameraManager *manager)
