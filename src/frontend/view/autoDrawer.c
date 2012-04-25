@@ -225,7 +225,7 @@ ViewAutoDrawerUpdate(ViewAutoDrawer *that, // IN
       dev = gdk_device_manager_get_client_pointer(devmgr);
 
       gdk_window_get_device_position(gtk_widget_get_window(priv->evBox),
-				     dev, &x, &y, NULL);
+                                     dev, &x, &y, NULL);
 
       gtk_widget_get_allocation(priv->evBox, &allocation);
       g_assert(gtk_container_get_border_width(   GTK_CONTAINER(priv->evBox))

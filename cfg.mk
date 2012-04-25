@@ -155,4 +155,4 @@ exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = ^(docs|src)/.*\.png
 
 exclude_file_name_regexp--sc_prohibit_test_minus_ao = git.mk
 
-exclude_file_name_regexp--sc_trailing_blank = (src|docs)/.*\.(ep|png)
+exclude_file_name_regexp--sc_trailing_blank = (src|docs)/.*\.(ep|png|icc)
