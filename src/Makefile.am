@@ -37,7 +37,6 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-camera-list.h backend/entangle-camera-list.c \
 	backend/entangle-colour-profile.h backend/entangle-colour-profile.c \
 	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
-	backend/entangle-context.h backend/entangle-context.c \
 	backend/entangle-control.h backend/entangle-control.c \
 	backend/entangle-control-button.h backend/entangle-control-button.c \
 	backend/entangle-control-choice.h backend/entangle-control-choice.c \
@@ -89,6 +88,7 @@ libentangle_backend_la_CFLAGS = \
 	$(NULL)
 
 libentangle_frontend_la_SOURCES = \
+	frontend/entangle-application.h frontend/entangle-application.c \
 	frontend/entangle-camera-info.h frontend/entangle-camera-info.c \
 	frontend/entangle-camera-manager.h frontend/entangle-camera-manager.c \
 	frontend/entangle-camera-picker.h frontend/entangle-camera-picker.c \
@@ -124,6 +124,8 @@ libentangle_frontend_la_CFLAGS = \
 	$(GEXIV2_CFLAGS) \
 	$(WARN_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
+	-DDATADIR="\"$(datadir)\"" \
+	-DLIBDIR="\"$(libdir)\"" \
 	-DG_LOG_DOMAIN="\"$(PACKAGE)\"" \
 	$(NULL)
 

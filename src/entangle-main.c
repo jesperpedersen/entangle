@@ -27,17 +27,8 @@
 #include <glib/gi18n.h>
 
 #include "entangle-debug.h"
-#include "entangle-context.h"
+#include "entangle-application.h"
 #include "entangle-camera-manager.h"
-
-static gchar *ins = NULL;
-
-static void entangle_start(GApplication *app G_GNUC_UNUSED, gpointer opaque)
-{
-    EntangleCameraManager *manager = opaque;
-
-    entangle_camera_manager_show(manager);
-}
 
 
 int main(int argc, char **argv)
@@ -45,9 +36,10 @@ int main(int argc, char **argv)
     GOptionGroup *group;
     GOptionContext *optContext;
     GError *error = NULL;
-    GtkApplication *app;
+    EntangleApplication *app;
     gboolean debug_app = FALSE;
     gboolean debug_gphoto = FALSE;
+    gchar *ins = NULL;
     const GOptionEntry entries[] = {
         { "debug-entangle", 'd', 0, G_OPTION_ARG_NONE, &debug_app, "Enable debugging of application code", NULL },
         { "debug-gphoto", 'g', 0, G_OPTION_ARG_NONE, &debug_gphoto, "Enable debugging of gphoto library", NULL },
@@ -55,8 +47,6 @@ int main(int argc, char **argv)
         { NULL, 0, 0, 0, NULL, NULL, NULL },
     };
     static const char *help_msg = "Run 'entangle --help' to see full list of options";
-    EntangleCameraManager *manager;
-    EntangleContext *context;
 
     setlocale(LC_ALL, "");
     bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
@@ -96,17 +86,11 @@ int main(int argc, char **argv)
 
     entangle_debug_setup(debug_app, debug_gphoto);
 
-    app = gtk_application_new("org.entangle_photo.Manager", 0);
-
-    context = entangle_context_new(G_APPLICATION(app));
-    manager = entangle_camera_manager_new(context);
-
-    g_signal_connect(app, "activate", G_CALLBACK(entangle_start), manager);
+    app = entangle_application_new();
 
     g_application_run(G_APPLICATION(app), argc, argv);
 
-    g_object_unref(context);
-    g_object_unref(manager);
+    g_object_unref(app);
     return 0;
 }
 

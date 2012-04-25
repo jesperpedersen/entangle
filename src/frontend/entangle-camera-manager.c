@@ -56,7 +56,7 @@ struct _EntangleCameraManagerPrivate {
     gboolean cameraChanged;
     EntangleSession *session;
 
-    EntangleContext *context;
+    EntangleApplication *application;
 
     EntangleCameraPicker *picker;
     EntangleHelpAbout *about;
@@ -121,7 +121,7 @@ G_DEFINE_TYPE_EXTENDED(EntangleCameraManager, entangle_camera_manager, G_TYPE_OB
 enum {
     PROP_O,
     PROP_CAMERA,
-    PROP_CONTEXT,
+    PROP_APPLICATION,
 };
 
 
@@ -233,7 +233,7 @@ static EntangleColourProfileTransform *entangle_camera_manager_colour_transform(
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntangleColourProfileTransform *transform = NULL;
-    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
 
     if (entangle_preferences_cms_get_enabled(prefs)) {
         EntangleColourProfile *rgbProfile;
@@ -622,7 +622,7 @@ static EntangleCameraFileTaskData *do_camera_task_begin(EntangleCameraManager *m
 static void do_camera_task_complete(EntangleCameraFileTaskData *data)
 {
     EntangleCameraManagerPrivate *priv = data->manager->priv;
-    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     GtkWidget *preview;
 
     if (data->file) {
@@ -714,7 +714,7 @@ static void do_camera_download_file_finish(GObject *src,
     EntangleCameraFileTaskData *data = opaque;
     EntangleCameraManagerPrivate *priv = data->manager->priv;
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
-    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     GError *error = NULL;
 
     if (!entangle_camera_download_file_finish(camera, res, &error)) {
@@ -742,7 +742,7 @@ static void do_camera_capture_image_finish(GObject *src,
     EntangleCameraFileTaskData *data = opaque;
     EntangleCameraManagerPrivate *priv = data->manager->priv;
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
-    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     GError *error = NULL;
 
     if (!(data->file = entangle_camera_capture_image_finish(camera, res, &error))) {
@@ -1223,8 +1223,8 @@ static void entangle_camera_manager_get_property(GObject *object,
             g_value_set_object(value, priv->camera);
             break;
 
-        case PROP_CONTEXT:
-            g_value_set_object(value, priv->context);
+        case PROP_APPLICATION:
+            g_value_set_object(value, priv->application);
             break;
 
         default:
@@ -1267,15 +1267,16 @@ static void entangle_camera_manager_set_property(GObject *object,
             entangle_camera_manager_set_camera(manager, g_value_get_object(value));
             break;
 
-        case PROP_CONTEXT:
-            priv->context = g_value_get_object(value);
-            g_object_ref(priv->context);
-            prefs = entangle_context_get_preferences(priv->context);
+        case PROP_APPLICATION:
+            priv->application = g_value_get_object(value);
+            g_object_ref(priv->application);
+
+            prefs = entangle_application_get_preferences(priv->application);
             priv->sigPrefsNotify = g_signal_connect(prefs,
                                                     "notify",
                                                     G_CALLBACK(entangle_camera_manager_prefs_changed),
                                                     manager);
-            cameras = entangle_context_get_cameras(priv->context);
+            cameras = entangle_application_get_cameras(priv->application);
             g_signal_connect(cameras, "camera-removed", G_CALLBACK(do_camera_removed), manager);
             directory = entangle_preferences_capture_get_last_session(prefs);
             pattern = entangle_preferences_capture_get_filename_pattern(prefs);
@@ -1314,8 +1315,8 @@ static void entangle_camera_manager_finalize(GObject *object)
         g_object_unref(priv->colourTransform);
     if (priv->camera)
         g_object_unref(priv->camera);
-    if (priv->context)
-        g_object_unref(priv->context);
+    if (priv->application)
+        g_object_unref(priv->application);
     if (priv->prefsDisplay)
         g_object_unref(priv->prefsDisplay);
     if (priv->picker)
@@ -1361,11 +1362,11 @@ static void entangle_camera_manager_class_init(EntangleCameraManagerClass *klass
                                                         G_PARAM_STATIC_BLURB));
 
     g_object_class_install_property(object_class,
-                                    PROP_CONTEXT,
-                                    g_param_spec_object("context",
-                                                        "Context",
-                                                        "Application context",
-                                                        ENTANGLE_TYPE_CONTEXT,
+                                    PROP_APPLICATION,
+                                    g_param_spec_object("application",
+                                                        "Application",
+                                                        "Application application",
+                                                        ENTANGLE_TYPE_APPLICATION,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME |
@@ -1375,10 +1376,10 @@ static void entangle_camera_manager_class_init(EntangleCameraManagerClass *klass
     g_type_class_add_private(klass, sizeof(EntangleCameraManagerPrivate));
 }
 
-EntangleCameraManager *entangle_camera_manager_new(EntangleContext *context)
+EntangleCameraManager *entangle_camera_manager_new(EntangleApplication *application)
 {
     return ENTANGLE_CAMERA_MANAGER(g_object_new(ENTANGLE_TYPE_CAMERA_MANAGER,
-                                                "context", context,
+                                                "application", application,
                                                 NULL));
 }
 
@@ -1458,7 +1459,7 @@ static void entangle_camera_manager_new_session(EntangleCameraManager *manager)
     GtkWidget *chooser;
     GtkWidget *win;
     gchar *dir;
-    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
 
@@ -1506,7 +1507,7 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
     GtkWidget *chooser;
     GtkWidget *win;
     gchar *dir;
-    EntanglePreferences *prefs = entangle_context_get_preferences(priv->context);
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
 
@@ -1893,7 +1894,7 @@ void do_menu_preferences(GtkCheckMenuItem *src G_GNUC_UNUSED,
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     if (priv->prefsDisplay == NULL) {
-        priv->prefsDisplay = entangle_preferences_display_new(priv->context);
+        priv->prefsDisplay = entangle_preferences_display_new(priv->application);
         gtk_window_set_transient_for(entangle_preferences_display_get_window(priv->prefsDisplay),
                                      entangle_camera_manager_get_window(manager));
     }
@@ -1933,7 +1934,8 @@ static void do_picker_close(EntangleCameraPicker *picker, EntangleCameraManager 
 static void do_picker_refresh(EntangleCameraPicker *picker G_GNUC_UNUSED, EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
-    entangle_context_refresh_cameras(priv->context);
+    EntangleCameraList *list = entangle_application_get_cameras(priv->application);
+    entangle_camera_list_refresh(list, NULL);
 }
 
 
@@ -1989,7 +1991,7 @@ static void do_camera_connect(EntangleCameraManager *manager)
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntangleCameraList *cameras;
 
-    cameras = entangle_context_get_cameras(priv->context);
+    cameras = entangle_application_get_cameras(priv->application);
 
     if (entangle_camera_list_count(cameras) == 1) {
         EntangleCamera *cam = entangle_camera_list_get(cameras, 0);
@@ -2271,7 +2273,6 @@ void entangle_camera_manager_show(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
-    GtkApplication *app = GTK_APPLICATION(entangle_context_get_application(priv->context));
 
     gtk_widget_show(win);
     gtk_widget_show(GTK_WIDGET(priv->controlPanel));
@@ -2279,7 +2280,8 @@ void entangle_camera_manager_show(EntangleCameraManager *manager)
     gtk_widget_show(GTK_WIDGET(priv->sessionBrowser));
     gtk_window_present(GTK_WINDOW(win));
 
-    gtk_application_add_window(app, GTK_WINDOW(win));
+    gtk_window_set_application(GTK_WINDOW(win),
+                               GTK_APPLICATION(priv->application));
 
     do_camera_connect(manager);
 }
@@ -2288,13 +2290,13 @@ void entangle_camera_manager_hide(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
-    GtkApplication *app = GTK_APPLICATION(entangle_context_get_application(priv->context));
 
     ENTANGLE_DEBUG("Removing all popups");
     g_hash_table_remove_all(priv->popups);
 
     gtk_widget_hide(win);
-    gtk_application_remove_window(app, GTK_WINDOW(win));
+    gtk_window_set_application(GTK_WINDOW(win),
+                               NULL);
 }
 
 gboolean entangle_camera_manager_visible(EntangleCameraManager *manager)
@@ -2354,11 +2356,11 @@ EntangleCamera *entangle_camera_manager_get_camera(EntangleCameraManager *manage
 }
 
 
-EntangleContext *entangle_camera_manager_get_context(EntangleCameraManager *manager)
+EntangleApplication *entangle_camera_manager_get_application(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    return priv->context;
+    return priv->application;
 }
 
 

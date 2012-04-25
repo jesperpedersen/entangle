@@ -23,7 +23,7 @@
 
 #include <gtk/gtk.h>
 
-#include "entangle-context.h"
+#include "entangle-application.h"
 
 G_BEGIN_DECLS
 
@@ -54,13 +54,13 @@ struct _EntanglePreferencesDisplayClass
 
 
 GType entangle_preferences_display_get_type(void) G_GNUC_CONST;
-EntanglePreferencesDisplay* entangle_preferences_display_new(EntangleContext *context);
+EntanglePreferencesDisplay* entangle_preferences_display_new(EntangleApplication *application);
 
 GtkWindow *entangle_preferences_display_get_window(EntanglePreferencesDisplay *preferences);
 
 void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences);
 
-EntangleContext *entangle_camera_preferences_get_context(EntanglePreferencesDisplay *preferences);
+EntangleApplication *entangle_camera_preferences_get_application(EntanglePreferencesDisplay *preferences);
 
 G_END_DECLS
 

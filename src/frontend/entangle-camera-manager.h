@@ -24,7 +24,7 @@
 #include <gtk/gtk.h>
 
 #include "entangle-camera.h"
-#include "entangle-context.h"
+#include "entangle-application.h"
 
 G_BEGIN_DECLS
 
@@ -57,7 +57,7 @@ struct _EntangleCameraManagerClass
 
 
 GType entangle_camera_manager_get_type(void) G_GNUC_CONST;
-EntangleCameraManager* entangle_camera_manager_new(EntangleContext *context);
+EntangleCameraManager* entangle_camera_manager_new(EntangleApplication *app);
 
 GtkWindow *entangle_camera_manager_get_window(EntangleCameraManager *manager);
 
@@ -70,7 +70,7 @@ void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
                                         EntangleCamera *cam);
 EntangleCamera *entangle_camera_manager_get_camera(EntangleCameraManager *manager);
 
-EntangleContext *entangle_camera_manager_get_context(EntangleCameraManager *manager);
+EntangleApplication *entangle_camera_manager_get_application(EntangleCameraManager *manager);
 
 G_END_DECLS
 
