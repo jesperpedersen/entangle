@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-01 13:16+0100\n"
+"POT-Creation-Date: 2012-04-25 18:44+0100\n"
 "PO-Revision-Date: 2012-04-01 12:17+0000\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Latvian (http://www.transifex.net/projects/p/fedora/language/lv/)\n"
@@ -145,7 +145,7 @@ msgid "Controls not available for this camera"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-info.c:231
-#: ../src/frontend/entangle-camera-manager.c:2169
+#: ../src/frontend/entangle-camera-manager.c:2183
 #: ../src/frontend/entangle-camera-picker.c:483
 #: ../src/frontend/entangle-help-about.c:105
 #: ../src/frontend/entangle-image-popup.c:228
@@ -240,13 +240,13 @@ msgid "Camera Manager - Entangle"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1061
-#: ../src/frontend/entangle-camera-manager.c:1958
+#: ../src/frontend/entangle-camera-manager.c:1962
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1066
-#: ../src/frontend/entangle-camera-manager.c:1964
+#: ../src/frontend/entangle-camera-manager.c:1968
 msgid ""
 "Check that the camera is not\n"
 "\n"
@@ -256,13 +256,13 @@ msgid ""
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1071
-#: ../src/frontend/entangle-camera-manager.c:1969
+#: ../src/frontend/entangle-camera-manager.c:1973
 #: ../src/frontend/entangle-camera-manager.xml.h:5
 msgid "Cancel"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1072
-#: ../src/frontend/entangle-camera-manager.c:1970
+#: ../src/frontend/entangle-camera-manager.c:1974
 msgid "Retry"
 msgstr ""
 
