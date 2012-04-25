@@ -55,7 +55,7 @@ struct _EntangleContextClass
 
 GType entangle_context_get_type(void) G_GNUC_CONST;
 
-EntangleContext *entangle_context_new(GApplication *context);
+EntangleContext *entangle_context_new(GApplication *app);
 
 void entangle_context_refresh_cameras(EntangleContext *context);
 

@@ -52,7 +52,7 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CONTEXT, EntangleContextPrivate))
 
 struct _EntangleContextPrivate {
-    GApplication *context;
+    GApplication *app;
 
     GPContext *ctx;
     CameraAbilitiesList *caps;
@@ -71,7 +71,7 @@ G_DEFINE_TYPE(EntangleContext, entangle_context, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
-    PROP_CONTEXT,
+    PROP_APPLICATION,
     PROP_CAMERAS,
     PROP_PREFERENCES,
     PROP_DEVMANAGER,
@@ -87,8 +87,8 @@ static void entangle_context_get_property(GObject *object,
 
     switch (prop_id)
         {
-        case PROP_CONTEXT:
-            g_value_set_object(value, priv->context);
+        case PROP_APPLICATION:
+            g_value_set_object(value, priv->app);
             break;
 
         case PROP_CAMERAS:
@@ -118,11 +118,11 @@ static void entangle_context_set_property(GObject *object,
 
     switch (prop_id)
         {
-        case PROP_CONTEXT:
-            if (priv->context)
-                g_object_unref(priv->context);
-            priv->context = g_value_get_object(value);
-            g_object_ref(priv->context);
+        case PROP_APPLICATION:
+            if (priv->app)
+                g_object_unref(priv->app);
+            priv->app = g_value_get_object(value);
+            g_object_ref(priv->app);
             break;
 
         case PROP_CAMERAS:
@@ -159,8 +159,8 @@ static void entangle_context_finalize(GObject *object)
 
     ENTANGLE_DEBUG("Finalize context %p", object);
 
-    if (priv->context)
-        g_object_unref(priv->context);
+    if (priv->app)
+        g_object_unref(priv->app);
     if (priv->cameras)
         g_object_unref(priv->cameras);
     if (priv->preferences)
@@ -191,7 +191,7 @@ static void entangle_context_class_init(EntangleContextClass *klass)
     object_class->set_property = entangle_context_set_property;
 
     g_object_class_install_property(object_class,
-                                    PROP_CONTEXT,
+                                    PROP_APPLICATION,
                                     g_param_spec_object("context",
                                                         "Application",
                                                         "Application",
@@ -452,6 +452,13 @@ static void entangle_context_init(EntangleContext *context)
 void entangle_context_refresh_cameras(EntangleContext *context)
 {
     do_refresh_cameras(context);
+}
+
+
+GApplication *entangle_context_get_application(EntangleContext *context)
+{
+    EntangleContextPrivate *priv = context->priv;
+    return priv->app;
 }
 
 /**
