@@ -9,8 +9,17 @@
   </enum>
 
   <schema path="/org/entangle-photo/manager/" id="org.entangle-photo.manager" gettext-domain="entangle-photo">
+    <child schema="org.entangle-photo.manager.interface" name="interface"/>
     <child schema="org.entangle-photo.manager.capture" name="capture"/>
     <child schema="org.entangle-photo.manager.cms" name="cms"/>
+  </schema>
+
+  <schema path="/org/entangle-photo/manager/interface/" id="org.entangle-photo.manager.interface" gettext-domain="entangle-photo">
+    <key type="b" name="auto-connect">
+      <default>true</default>
+      <summary>Auto connect</summary>
+      <description>Automatically connect to cameras at startup</description>
+    </key>
   </schema>
 
   <schema path="/org/entangle-photo/manager/capture/" id="org.entangle-photo.manager.capture" gettext-domain="entangle-photo">

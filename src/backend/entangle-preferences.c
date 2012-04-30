@@ -35,14 +35,18 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_PREFERENCES, EntanglePreferencesPrivate))
 
 struct _EntanglePreferencesPrivate {
-    GSettings *cmsSettings;
+    GSettings *interfaceSettings;
     GSettings *captureSettings;
+    GSettings *cmsSettings;
 };
 
 G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
+#define SETTING_INTERFACE                  "interface"
 #define SETTING_CAPTURE                    "capture"
 #define SETTING_CMS                        "cms"
+
+#define SETTING_INTERFACE_AUTO_CONNECT     "auto-connect"
 
 #define SETTING_CAPTURE_FILENAME_PATTERN   "filename-pattern"
 #define SETTING_CAPTURE_LAST_SESSION       "last-session"
@@ -54,6 +58,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_CMS_RGB_PROFILE            "rgb-profile"
 #define SETTING_CMS_MONITOR_PROFILE        "monitor-profile"
 #define SETTING_CMS_RENDERING_INTENT       "rendering-intent"
+
+#define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
 
 #define PROP_NAME_CAPTURE_FILENAME_PATTERN   SETTING_CAPTURE "-" SETTING_CAPTURE_FILENAME_PATTERN
 #define PROP_NAME_CAPTURE_LAST_SESSION       SETTING_CAPTURE "-" SETTING_CAPTURE_LAST_SESSION
@@ -68,6 +74,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
+    
+    PROP_INTERFACE_AUTO_CONNECT,
 
     PROP_CAPTURE_FILENAME_PATTERN,
     PROP_CAPTURE_LAST_SESSION,
@@ -119,6 +127,12 @@ static void entangle_preferences_get_property(GObject *object,
 
     switch (prop_id)
         {
+        case PROP_INTERFACE_AUTO_CONNECT:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->interfaceSettings,
+                                                       SETTING_INTERFACE_AUTO_CONNECT));
+            break;
+
         case PROP_CAPTURE_LAST_SESSION:
             dir = g_settings_get_string(priv->captureSettings,
                                         SETTING_CAPTURE_LAST_SESSION);
@@ -203,6 +217,12 @@ static void entangle_preferences_set_property(GObject *object,
 
     switch (prop_id)
         {
+        case PROP_INTERFACE_AUTO_CONNECT:
+            g_settings_set_boolean(priv->interfaceSettings,
+                                   SETTING_INTERFACE_AUTO_CONNECT,
+                                   g_value_get_boolean(value));
+            break;
+
         case PROP_CAPTURE_LAST_SESSION:
             g_settings_set_string(priv->captureSettings,
                                   SETTING_CAPTURE_LAST_SESSION,
@@ -282,6 +302,7 @@ static void entangle_preferences_finalize(GObject *object)
 
     ENTANGLE_DEBUG("Finalize preferences %p", object);
 
+    g_object_unref(priv->interfaceSettings);
     g_object_unref(priv->captureSettings);
     g_object_unref(priv->cmsSettings);
 
@@ -296,6 +317,18 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
     object_class->finalize = entangle_preferences_finalize;
     object_class->get_property = entangle_preferences_get_property;
     object_class->set_property = entangle_preferences_set_property;
+
+
+    g_object_class_install_property(object_class,
+                                    PROP_INTERFACE_AUTO_CONNECT,
+                                    g_param_spec_boolean(PROP_NAME_INTERFACE_AUTO_CONNECT,
+                                                         "Auto connect",
+                                                         "Automatically connect to cameras at startup",
+                                                         TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     g_object_class_install_property(object_class,
                                     PROP_CAPTURE_LAST_SESSION,
@@ -413,14 +446,19 @@ static void entangle_preferences_ensure_data_dir(void)
     const char *dir;
 
     for (dirs = g_get_system_data_dirs (); *dirs; dirs++) {
-        if (g_str_equal(*dirs, DATADIR))
+        if (g_str_equal(*dirs, DATADIR)) {
+            ENTANGLE_DEBUG("Found dir %s in system search dirs", *dirs);
             return;
+        }
     }
 
     if ((dir = getenv("GSETTINGS_SCHEMA_DIR")) &&
-        g_str_equal(dir, DATADIR "/glib-2.0/schemas"))
+        g_str_equal(dir, DATADIR "/glib-2.0/schemas")) {
+        ENTANGLE_DEBUG("Found dir %s in GSETTINGS_SCHEMA_DIR", dir);
         return;
+    }
 
+    ENTANGLE_DEBUG("Setting %s in GSETTINGS_SCHEMA_DIR", DATADIR "/glib-2.0/schemas");
     setenv("GSETTINGS_SCHEMA_DIR", DATADIR "/glib-2.0/schemas", 1);
 }
 
@@ -434,11 +472,29 @@ static void entangle_preferences_init(EntanglePreferences *picker)
     entangle_preferences_ensure_data_dir();
 
     settings = g_settings_new("org.entangle-photo.manager");
+    priv->interfaceSettings = g_settings_get_child(settings,
+                                                   SETTING_INTERFACE);
     priv->captureSettings = g_settings_get_child(settings,
                                                 SETTING_CAPTURE);
     priv->cmsSettings = g_settings_get_child(settings,
                                              SETTING_CMS);
     g_object_unref(settings);
+}
+
+
+gboolean entangle_preferences_interface_get_auto_connect(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+    return g_settings_get_boolean(priv->interfaceSettings,
+                                  SETTING_INTERFACE_AUTO_CONNECT);
+}
+
+
+void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs, gboolean autoconn)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+    g_settings_set_boolean(priv->interfaceSettings,
+                           SETTING_INTERFACE_AUTO_CONNECT, autoconn);
 }
 
 

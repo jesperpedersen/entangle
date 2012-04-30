@@ -57,6 +57,9 @@ GType entangle_preferences_get_type(void) G_GNUC_CONST;
 
 EntanglePreferences *entangle_preferences_new(void);
 
+gboolean entangle_preferences_interface_get_auto_connect(EntanglePreferences *prefs);
+void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs, gboolean autoconn);
+
 char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs);
 void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, const gchar *dir);
 char *entangle_preferences_capture_get_filename_pattern(EntanglePreferences *prefs);

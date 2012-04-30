@@ -64,6 +64,9 @@ void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesD
 void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);
 void do_cms_detect_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_cms_rendering_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
+
+void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+
 void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
@@ -158,6 +161,15 @@ static void entangle_preferences_display_notify(GObject *object,
 
         if (oldvalue != newvalue)
             gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), newvalue);
+    } else if (strcmp(spec->name, "interface-auto-connect") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
     } else if (strcmp(spec->name, "capture-filename-pattern") == 0) {
         gchar *newvalue;
         const gchar *oldvalue;
@@ -251,6 +263,9 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rendering-intent"));
     gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), entangle_preferences_cms_get_rendering_intent(prefs));
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-auto-connect"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_interface_get_auto_connect(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-filename-pattern"));
     gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_capture_get_filename_pattern(prefs));
@@ -438,6 +453,16 @@ void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePrefere
 }
 
 
+void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+{
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+
+    entangle_preferences_interface_set_auto_connect(prefs, enabled);
+}
+
+
 void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
@@ -493,6 +518,14 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
 
     //gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), 2);
 
+    box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-box"));
+    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-image"));
+    if (local)
+        gtk_image_set_from_file(GTK_IMAGE(image), "./interface.png");
+    else
+        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/interface.png");
+
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-image"));
@@ -501,13 +534,13 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/color-management.png");
 
-    box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "folders-box"));
+    box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
-    image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "folders-image"));
+    image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-image"));
     if (local)
-        gtk_image_set_from_file(GTK_IMAGE(image), "./folders.png");
+        gtk_image_set_from_file(GTK_IMAGE(image), "./capture.png");
     else
-        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/folders.png");
+        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/capture.png");
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-box"));
     gtk_widget_set_state(box, GTK_STATE_SELECTED);
@@ -522,15 +555,29 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     gtk_list_store_append(list, &iter);
     if (local)
         gtk_list_store_set(list, &iter,
+                           0, 3,
+                           1, _("Interface"),
+                           2, gdk_pixbuf_new_from_file("./interface-22.png", NULL),
+                           -1);
+    else
+        gtk_list_store_set(list, &iter,
+                           0, 3,
+                           1, _("Interface"),
+                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/interface-22.png", NULL),
+                           -1);
+
+    gtk_list_store_append(list, &iter);
+    if (local)
+        gtk_list_store_set(list, &iter,
                            0, 0,
                            1, _("Capture"),
-                           2, gdk_pixbuf_new_from_file("./folders-22.png", NULL),
+                           2, gdk_pixbuf_new_from_file("./capture-22.png", NULL),
                            -1);
     else
         gtk_list_store_set(list, &iter,
                            0, 0,
                            1, _("Capture"),
-                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/folders-22.png", NULL),
+                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/capture-22.png", NULL),
                            -1);
 
     gtk_list_store_append(list, &iter);

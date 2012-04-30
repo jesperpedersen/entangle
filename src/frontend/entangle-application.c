@@ -142,9 +142,10 @@ static void entangle_application_activate(GApplication *gapp)
 {
     EntangleApplication *app = ENTANGLE_APPLICATION(gapp);
     EntangleApplicationPrivate *priv = app->priv;
-    GList *cameras, *tmp;
+    GList *cameras = NULL, *tmp;
 
-    cameras = tmp = entangle_camera_list_get_cameras(priv->cameras);
+    if (entangle_preferences_interface_get_auto_connect(priv->preferences))
+        cameras = tmp = entangle_camera_list_get_cameras(priv->cameras);
 
     if (!cameras) {
         EntangleCameraManager *manager = entangle_camera_manager_new(app);
