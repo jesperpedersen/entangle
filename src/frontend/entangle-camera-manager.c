@@ -2028,22 +2028,16 @@ static void do_camera_connect(EntangleCameraManager *manager)
 
     cameras = entangle_application_get_cameras(priv->application);
 
-    if (entangle_camera_list_count(cameras) == 1) {
-        EntangleCamera *cam = entangle_camera_list_get(cameras, 0);
-
-        entangle_camera_manager_set_camera(manager, cam);
-    } else {
-        if (!priv->picker) {
-            priv->picker = entangle_camera_picker_new(cameras);
-            gtk_window_set_transient_for(entangle_camera_picker_get_window(priv->picker),
-                                         entangle_camera_manager_get_window(manager));
-            g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), manager);
-            g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), manager);
-            g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), manager);
-        }
-
-        entangle_camera_picker_show(priv->picker);
+    if (!priv->picker) {
+        priv->picker = entangle_camera_picker_new(cameras);
+        gtk_window_set_transient_for(entangle_camera_picker_get_window(priv->picker),
+                                     entangle_camera_manager_get_window(manager));
+        g_signal_connect(priv->picker, "picker-close", G_CALLBACK(do_picker_close), manager);
+        g_signal_connect(priv->picker, "picker-refresh", G_CALLBACK(do_picker_refresh), manager);
+        g_signal_connect(priv->picker, "picker-connect", G_CALLBACK(do_picker_connect), manager);
     }
+
+    entangle_camera_picker_show(priv->picker);
 }
 
 void do_menu_connect(GtkMenuItem *src G_GNUC_UNUSED,
@@ -2317,8 +2311,6 @@ void entangle_camera_manager_show(EntangleCameraManager *manager)
 
     gtk_window_set_application(GTK_WINDOW(win),
                                GTK_APPLICATION(priv->application));
-
-    do_camera_connect(manager);
 }
 
 void entangle_camera_manager_hide(EntangleCameraManager *manager)

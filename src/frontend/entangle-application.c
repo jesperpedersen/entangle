@@ -141,9 +141,30 @@ static void entangle_application_finalize(GObject *object)
 static void entangle_application_activate(GApplication *gapp)
 {
     EntangleApplication *app = ENTANGLE_APPLICATION(gapp);
-    EntangleCameraManager *manager = entangle_camera_manager_new(app);
+    EntangleApplicationPrivate *priv = app->priv;
+    GList *cameras, *tmp;
 
-    entangle_camera_manager_show(manager);
+    cameras = tmp = entangle_camera_list_get_cameras(priv->cameras);
+
+    if (!cameras) {
+        EntangleCameraManager *manager = entangle_camera_manager_new(app);
+        entangle_camera_manager_show(manager);
+    } else {
+        while (tmp) {
+            EntangleCamera *cam = ENTANGLE_CAMERA(tmp->data);
+
+            ENTANGLE_DEBUG("Opening window for %s",
+                           entangle_camera_get_port(cam));
+
+            EntangleCameraManager *manager = entangle_camera_manager_new(app);
+            entangle_camera_manager_show(manager);
+            entangle_camera_manager_set_camera(manager, cam);
+            //g_object_unref(manager);
+
+            tmp = tmp->next;
+        }
+        g_list_free(cameras);
+    }
 }
 
 

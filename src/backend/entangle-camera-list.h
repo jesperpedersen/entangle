@@ -73,6 +73,8 @@ void entangle_camera_list_remove(EntangleCameraList *list,
 EntangleCamera *entangle_camera_list_get(EntangleCameraList *list,
                                          int entry);
 
+GList *entangle_camera_list_get_cameras(EntangleCameraList *list);
+
 EntangleCamera *entangle_camera_list_find(EntangleCameraList *list,
                                           const char *port);
 

@@ -366,6 +366,25 @@ EntangleCamera *entangle_camera_list_get(EntangleCameraList *list,
     return priv->cameras[entry];
 }
 
+
+/**
+ * entangle_camera_list_get_cameras:
+ * @list: the camera list
+ *
+ * Returns: (transfer container): a list of #EntangleCamera objects
+ */
+GList *entangle_camera_list_get_cameras(EntangleCameraList *list)
+{
+    EntangleCameraListPrivate *priv = list->priv;
+    GList *cameras = NULL;
+
+    for (int i = (priv->ncamera - 1) ; i >= 0 ; i--) {
+        cameras = g_list_append(cameras, priv->cameras[i]);
+    }
+    return cameras;
+}
+
+
 EntangleCamera *entangle_camera_list_find(EntangleCameraList *list,
                                           const char *port)
 {
