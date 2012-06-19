@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <math.h>
 
 #include "entangle-debug.h"
 #include "entangle-image-display.h"
@@ -43,7 +44,10 @@ struct _EntangleImageDisplayPrivate {
     cairo_surface_t *pixmap;
 
     gboolean autoscale;
-    float scale;
+    gfloat scale;
+
+    gfloat aspect;
+    gfloat opacity;
 };
 
 G_DEFINE_TYPE(EntangleImageDisplay, entangle_image_display, GTK_TYPE_DRAWING_AREA);
@@ -53,6 +57,8 @@ enum {
     PROP_IMAGE,
     PROP_AUTOSCALE,
     PROP_SCALE,
+    PROP_ASPECT_RATIO,
+    PROP_MASK_OPACITY,
 };
 
 static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
@@ -111,6 +117,14 @@ static void entangle_image_display_get_property(GObject *object,
             g_value_set_float(value, priv->scale);
             break;
 
+        case PROP_ASPECT_RATIO:
+            g_value_set_float(value, priv->aspect);
+            break;
+
+        case PROP_MASK_OPACITY:
+            g_value_set_float(value, priv->opacity);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -138,6 +152,14 @@ static void entangle_image_display_set_property(GObject *object,
 
         case PROP_SCALE:
             entangle_image_display_set_scale(display, g_value_get_float(value));
+            break;
+
+        case PROP_ASPECT_RATIO:
+            entangle_image_display_set_aspect_ratio(display, g_value_get_float(value));
+            break;
+
+        case PROP_MASK_OPACITY:
+            entangle_image_display_set_mask_opacity(display, g_value_get_float(value));
             break;
 
         default:
@@ -177,21 +199,20 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
     double iw, ih; /* Desired image size */
     double mx = 0, my = 0;  /* Offset of image within available area */
     double sx = 1, sy = 1;  /* Amount to scale by */
+    double aspectWin, aspectImage = 0.0;
 
     ww = gdk_window_get_width(gtk_widget_get_window(widget));
     wh = gdk_window_get_height(gtk_widget_get_window(widget));
+    aspectWin = (double)ww / (double)wh;
 
     if (priv->pixmap) {
         pw = cairo_image_surface_get_width(priv->pixmap);
         ph = cairo_image_surface_get_height(priv->pixmap);
+        aspectImage = (double)pw / (double)ph;
     }
 
     /* Decide what size we're going to draw the image */
     if (priv->autoscale) {
-        double aspectWin, aspectImage;
-        aspectWin = (double)ww / (double)wh;
-        aspectImage = (double)pw / (double)ph;
-
         if (aspectWin > aspectImage) {
             /* Match drawn height to widget height, scale width preserving aspect */
             ih = (double)wh;
@@ -247,11 +268,47 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
 
     /* Draw the actual image */
     if (priv->pixmap) {
+        cairo_matrix_t m;
+        cairo_get_matrix(cr, &m);
         cairo_scale(cr, sx, sy);
         cairo_set_source_surface(cr,
                                  priv->pixmap,
                                  mx/sx, my/sy);
         cairo_paint(cr);
+        cairo_set_matrix(cr, &m);
+    }
+
+    /* Finally a possible aspect ratio mask */
+    if (priv->pixmap &&
+        (priv->aspect > 0.005) &&
+        (fabs(priv->aspect - aspectImage)  > 0.005)) {
+        cairo_set_source_rgba(cr, 0, 0, 0, priv->opacity);
+
+        if (priv->aspect > aspectImage) { /* mask top & bottom */
+            double ah = (ih - (iw / priv->aspect)) / 2;
+
+            cairo_rectangle(cr,
+                            mx, my,
+                            iw, ah);
+            cairo_fill(cr);
+
+            cairo_rectangle(cr,
+                            mx, my + ih - ah,
+                            iw, ah);
+            cairo_fill(cr);
+        } else { /* mask left & right */
+            double aw = (iw - (ih * priv->aspect)) / 2;
+
+            cairo_rectangle(cr,
+                            mx, my,
+                            aw, ih);
+            cairo_fill(cr);
+
+            cairo_rectangle(cr,
+                            mx + iw - aw, my,
+                            aw, ih);
+            cairo_fill(cr);
+        }
     }
 
     return TRUE;
@@ -368,6 +425,32 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
                                                        G_PARAM_STATIC_NICK |
                                                        G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_ASPECT_RATIO,
+                                    g_param_spec_float("aspect-ratio",
+                                                       "Aspect ratio",
+                                                       "Aspect ratio to mask image to",
+                                                       0.0,
+                                                       100.0,
+                                                       1.69,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_STATIC_NAME |
+                                                       G_PARAM_STATIC_NICK |
+                                                       G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_MASK_OPACITY,
+                                    g_param_spec_float("mask-opacity",
+                                                       "Mask opacity",
+                                                       "Mask opacity when adjusting aspect ratio",
+                                                       0.0,
+                                                       1.0,
+                                                       0.5,
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_STATIC_NAME |
+                                                       G_PARAM_STATIC_NICK |
+                                                       G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntangleImageDisplayPrivate));
 }
 
@@ -385,6 +468,8 @@ static void entangle_image_display_init(EntangleImageDisplay *display)
     memset(priv, 0, sizeof *priv);
 
     priv->autoscale = TRUE;
+    priv->opacity = 0.9;
+    priv->aspect = 0.0;
 }
 
 
@@ -469,6 +554,46 @@ gfloat entangle_image_display_get_scale(EntangleImageDisplay *display)
     EntangleImageDisplayPrivate *priv = display->priv;
 
     return priv->scale;
+}
+
+
+void entangle_image_display_set_aspect_ratio(EntangleImageDisplay *display,
+                                             gfloat aspect)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    priv->aspect = aspect;
+
+    if (gtk_widget_get_visible((GtkWidget*)display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+gfloat entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    return priv->aspect;
+}
+
+
+void entangle_image_display_set_mask_opacity(EntangleImageDisplay *display,
+                                             gfloat opacity)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    priv->opacity = opacity;
+
+    if (gtk_widget_get_visible((GtkWidget*)display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+gfloat entangle_image_display_get_mask_opacity(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    return priv->opacity;
 }
 
 

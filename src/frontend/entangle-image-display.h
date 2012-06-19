@@ -70,6 +70,14 @@ void entangle_image_display_set_scale(EntangleImageDisplay *display,
                                       gfloat scale);
 gfloat entangle_image_display_get_scale(EntangleImageDisplay *display);
 
+void entangle_image_display_set_aspect_ratio(EntangleImageDisplay *display,
+                                             gfloat aspect);
+gfloat entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display);
+
+void entangle_image_display_set_mask_opacity(EntangleImageDisplay *display,
+                                             gfloat opacity);
+gfloat entangle_image_display_get_mask_opacity(EntangleImageDisplay *display);
+
 G_END_DECLS
 
 #endif /* __ENTANGLE_IMAGE_DISPLAY_H__ */
