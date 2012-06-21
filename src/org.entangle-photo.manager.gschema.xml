@@ -12,6 +12,7 @@
     <child schema="org.entangle-photo.manager.interface" name="interface"/>
     <child schema="org.entangle-photo.manager.capture" name="capture"/>
     <child schema="org.entangle-photo.manager.cms" name="cms"/>
+    <child schema="org.entangle-photo.manager.img" name="img"/>
   </schema>
 
   <schema path="/org/entangle-photo/manager/interface/" id="org.entangle-photo.manager.interface" gettext-domain="entangle-photo">
@@ -77,6 +78,20 @@
       <default>''</default>
       <summary>RGB profile</summary>
       <description>Path to RGB colour profile</description>
+    </key>
+  </schema>
+
+  <schema path="/org/entangle-photo/manager/img/" id="org.entangle-photo.manager.img" gettext-domain="entangle-photo">
+    <key type="s" name="aspect-ratio">
+      <default>''</default>
+      <summary>Aspect ratio</summary>
+      <description>Apply image mask with a fixed aspect ratio ('' to disable)</description>
+    </key>
+
+    <key type="i" name="mask-opacity">
+      <default>90</default>
+      <summary>Mask opacity</summary>
+      <description>Opacity of borders used for image mask</description>
     </key>
   </schema>
 </schemalist>

@@ -71,6 +71,10 @@ void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDispl
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
+void do_img_apply_mask_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
+void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
+
 static void entangle_preferences_display_get_property(GObject *object,
                                                       guint prop_id,
                                                       GValue *value,
@@ -240,6 +244,9 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     GtkWidget *tmp;
     EntangleColourProfile *profile;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    const gchar *ratio;
+    GtkAdjustment *adjust;
+    gboolean hasRatio;
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-enabled"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_get_enabled(prefs));
@@ -275,6 +282,28 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-delete-file"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_capture_get_delete_file(prefs));
+
+    ratio = entangle_preferences_img_get_aspect_ratio(prefs);
+    hasRatio = ratio && !g_str_equal(ratio, "");
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-apply-mask"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), hasRatio);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio"));
+    gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), hasRatio ? ratio : NULL);
+    gtk_widget_set_sensitive(tmp, hasRatio);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio-label"));
+    gtk_widget_set_sensitive(tmp, hasRatio);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-opacity"));
+    gtk_widget_set_sensitive(tmp, hasRatio);
+    adjust = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(tmp));
+    gtk_adjustment_set_value(adjust,
+                             entangle_preferences_img_get_mask_opacity(prefs));
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-opacity-label"));
+    gtk_widget_set_sensitive(tmp, hasRatio);
 }
 
 static void entangle_preferences_display_finalize (GObject *object)
@@ -473,6 +502,56 @@ void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDis
 }
 
 
+void do_img_apply_mask_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+{
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+    GtkWidget *aspect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio"));
+    GtkWidget *aspectLbl = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio-label"));
+    GtkWidget *opacity = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-opacity"));
+    GtkWidget *opacityLbl = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-opacity-label"));
+    const gchar *ratio = gtk_combo_box_get_active_id(GTK_COMBO_BOX(aspect));
+
+    if (!ratio)
+        ratio = "";
+
+    gtk_widget_set_sensitive(aspect, enabled);
+    gtk_widget_set_sensitive(aspectLbl, enabled);
+    gtk_widget_set_sensitive(opacity, enabled);
+    gtk_widget_set_sensitive(opacityLbl, enabled);
+    entangle_preferences_img_set_aspect_ratio(prefs, enabled ? ratio : "");
+    if (!enabled)
+        gtk_combo_box_set_active_id(GTK_COMBO_BOX(aspect), NULL);
+    else
+        gtk_combo_box_set_active_id(GTK_COMBO_BOX(aspect), "1.5");
+}
+
+
+void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
+{
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    const gchar *ratio = gtk_combo_box_get_active_id(src);
+
+    if (ratio == NULL)
+        ratio = "";
+
+    entangle_preferences_img_set_aspect_ratio(prefs, ratio);
+}
+
+
+void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display)
+{
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    GtkAdjustment *adjust = gtk_spin_button_get_adjustment(src);
+
+    entangle_preferences_img_set_mask_opacity(prefs,
+                                              gtk_adjustment_get_value(adjust));
+}
+
+
 static void entangle_preferences_display_init(EntanglePreferencesDisplay *preferences)
 {
     EntanglePreferencesDisplayPrivate *priv;
@@ -493,6 +572,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     GtkFileFilter *allFilter;
     GtkFileFilter *iccFilter;
     GError *error = NULL;
+    GtkComboBox *aspectRatio;
 
     priv = preferences->priv = ENTANGLE_PREFERENCES_DISPLAY_GET_PRIVATE(preferences);
 
@@ -550,6 +630,15 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     else
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/plugins.png");
 
+
+    box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-box"));
+    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-image"));
+    if (local)
+        gtk_image_set_from_file(GTK_IMAGE(image), "./imageviewer.png");
+    else
+        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/imageviewer.png");
+
     list = gtk_list_store_new(3, G_TYPE_INT, G_TYPE_STRING, GDK_TYPE_PIXBUF, -1);
 
     gtk_list_store_append(list, &iter);
@@ -564,6 +653,20 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
                            0, 3,
                            1, _("Interface"),
                            2, gdk_pixbuf_new_from_file(PKGDATADIR "/interface-22.png", NULL),
+                           -1);
+
+    gtk_list_store_append(list, &iter);
+    if (local)
+        gtk_list_store_set(list, &iter,
+                           0, 4,
+                           1, _("Image Viewer"),
+                           2, gdk_pixbuf_new_from_file("./imageviewer-22.png", NULL),
+                           -1);
+    else
+        gtk_list_store_set(list, &iter,
+                           0, 4,
+                           1, _("Image Viewer"),
+                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/imageviewer-22.png", NULL),
                            -1);
 
     gtk_list_store_append(list, &iter);
@@ -633,14 +736,14 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     gtk_file_filter_set_name(allFilter, _("All files (*.*)"));
     gtk_file_filter_add_pattern(allFilter, "*");
 
-    chooser = GTK_FILE_CHOOSER(GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile")));
+    chooser = GTK_FILE_CHOOSER(gtk_builder_get_object(priv->builder, "cms-rgb-profile"));
     g_object_ref(allFilter);
     gtk_file_chooser_add_filter(chooser, allFilter);
     g_object_ref(iccFilter);
     gtk_file_chooser_add_filter(chooser, iccFilter);
     gtk_file_chooser_set_filter(chooser, iccFilter);
 
-    chooser = GTK_FILE_CHOOSER(GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile")));
+    chooser = GTK_FILE_CHOOSER(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
     g_object_ref(allFilter);
     gtk_file_chooser_add_filter(chooser, allFilter);
     g_object_ref(iccFilter);
@@ -649,6 +752,144 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
 
     g_object_unref(iccFilter);
     g_object_unref(allFilter);
+
+    aspectRatio = GTK_COMBO_BOX(gtk_builder_get_object(priv->builder, "img-aspect-ratio"));
+    list = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING, -1);
+
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1",
+                       1, _("1:1 - Square / MF 6x6"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.15",
+                       1, _("1.15:1 - Movietone"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.33",
+                       1, _("1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.37",
+                       1, _("1.37:1 - 35mm movie"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.44",
+                       1, _("1.44:1 - IMAX"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.5",
+                       1, _("1.50:1 (3:2, 15:10)- 35mm SLR"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.6",
+                       1, _("1.6:1 (8:5, 16:10) - Widescreen"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.66",
+                       1, _("1.66:1 (5:3, 15:9) - Super 16mm"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.75",
+                       1, _("1.75:1 (7:4) - Widescreen"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.77",
+                       1, _("1.77:1 (16:9) - APS-H / HDTV / Widescreen"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "1.85",
+                       1, _("1.85:1 - 35mm Widescreen"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.0",
+                       1, _("2.00:1 - SuperScope"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.10",
+                       1, _("2.10:1 (21:10) - Planned HDTV"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.20",
+                       1, _("2.20:1 (11:5, 22:10) - 70mm movie"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.35",
+                       1, _("2.35:1 - CinemaScope"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.37",
+                       1, _("2.37:1 (64:27)- HDTV cinema"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.39",
+                       1, _("2.39:1 (12:5)- Panavision"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.55",
+                       1, _("2.55:1 (23:9)- CinemaScope 55"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.59",
+                       1, _("2.59:1 (13:5)- Cinerama"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.66",
+                       1, _("2.66:1 (8:3, 24:9)- Super 16mm"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.76",
+                       1, _("2.76:1 (11:4) - Ultra Panavision"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "2.93",
+                       1, _("2.93:1 - MGM Camera 65"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "3.0",
+                       1, _("3:1 APS Panorama"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "4.0",
+                       1, _("4.00:1 - Polyvision"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "12.0",
+                       1, _("12.00:1 - Circle-Vision 360"),
+                       -1);
+
+
+    gtk_combo_box_set_model(GTK_COMBO_BOX(aspectRatio), GTK_TREE_MODEL(list));
+    gtk_combo_box_set_id_column(GTK_COMBO_BOX(aspectRatio), 0);
+
+    cellText = gtk_cell_renderer_text_new();
+    gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(aspectRatio), cellText, TRUE);
+    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(aspectRatio),
+        cellText, "text", 1, NULL);
 
     g_signal_connect(selection, "changed", G_CALLBACK(do_page_changed), preferences);
 }

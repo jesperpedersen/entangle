@@ -81,6 +81,11 @@ EntangleColourProfileIntent entangle_preferences_cms_get_rendering_intent(Entang
 void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs, EntangleColourProfileIntent intent);
 
 
+gchar *entangle_preferences_img_get_aspect_ratio(EntanglePreferences *prefs);
+void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs, const gchar *aspect);
+gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs);
+void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs, gint opacity);
+
 G_END_DECLS
 
 #endif /* __ENTANGLE_PREFERENCES_H__ */

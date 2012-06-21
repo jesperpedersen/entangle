@@ -38,6 +38,7 @@ struct _EntanglePreferencesPrivate {
     GSettings *interfaceSettings;
     GSettings *captureSettings;
     GSettings *cmsSettings;
+    GSettings *imgSettings;
 };
 
 G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
@@ -45,6 +46,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_INTERFACE                  "interface"
 #define SETTING_CAPTURE                    "capture"
 #define SETTING_CMS                        "cms"
+#define SETTING_IMG                        "img"
 
 #define SETTING_INTERFACE_AUTO_CONNECT     "auto-connect"
 
@@ -59,6 +61,9 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_CMS_MONITOR_PROFILE        "monitor-profile"
 #define SETTING_CMS_RENDERING_INTENT       "rendering-intent"
 
+#define SETTING_IMG_ASPECT_RATIO           "aspect-ratio"
+#define SETTING_IMG_MASK_OPACITY           "mask-opacity"
+
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
 
 #define PROP_NAME_CAPTURE_FILENAME_PATTERN   SETTING_CAPTURE "-" SETTING_CAPTURE_FILENAME_PATTERN
@@ -71,6 +76,9 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define PROP_NAME_CMS_RGB_PROFILE            SETTING_CMS "-" SETTING_CMS_RGB_PROFILE
 #define PROP_NAME_CMS_MONITOR_PROFILE        SETTING_CMS "-" SETTING_CMS_MONITOR_PROFILE
 #define PROP_NAME_CMS_RENDERING_INTENT       SETTING_CMS "-" SETTING_CMS_RENDERING_INTENT
+
+#define PROP_NAME_IMG_ASPECT_RATIO           SETTING_IMG "-" SETTING_IMG_ASPECT_RATIO
+#define PROP_NAME_IMG_MASK_OPACITY           SETTING_IMG "-" SETTING_IMG_MASK_OPACITY
 
 enum {
     PROP_0,
@@ -87,6 +95,9 @@ enum {
     PROP_CMS_MONITOR_PROFILE,
     PROP_CMS_DETECT_SYSTEM_PROFILE,
     PROP_CMS_RENDERING_INTENT,
+
+    PROP_IMG_ASPECT_RATIO,
+    PROP_IMG_MASK_OPACITY,
 };
 
 
@@ -201,6 +212,18 @@ static void entangle_preferences_get_property(GObject *object,
                                                  SETTING_CMS_RENDERING_INTENT));
             break;
 
+        case PROP_IMG_ASPECT_RATIO:
+            g_value_set_string(value,
+                               g_settings_get_string(priv->imgSettings,
+                                                     SETTING_IMG_ASPECT_RATIO));
+            break;
+
+        case PROP_IMG_MASK_OPACITY:
+            g_value_set_int(value,
+                            g_settings_get_int(priv->imgSettings,
+                                               SETTING_IMG_MASK_OPACITY));
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -289,6 +312,18 @@ static void entangle_preferences_set_property(GObject *object,
                                 g_value_get_enum(value));
             break;
 
+        case PROP_IMG_ASPECT_RATIO:
+            g_settings_set_string(priv->imgSettings,
+                                  SETTING_IMG_ASPECT_RATIO,
+                                  g_value_get_string(value));
+            break;
+
+        case PROP_IMG_MASK_OPACITY:
+            g_settings_set_int(priv->imgSettings,
+                               SETTING_IMG_MASK_OPACITY,
+                               g_value_get_int(value));
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -305,6 +340,7 @@ static void entangle_preferences_finalize(GObject *object)
     g_object_unref(priv->interfaceSettings);
     g_object_unref(priv->captureSettings);
     g_object_unref(priv->cmsSettings);
+    g_object_unref(priv->imgSettings);
 
     G_OBJECT_CLASS(entangle_preferences_parent_class)->finalize(object);
 }
@@ -430,6 +466,32 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                       G_PARAM_STATIC_NICK |
                                                       G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_ASPECT_RATIO,
+                                    g_param_spec_int(PROP_NAME_IMG_ASPECT_RATIO,
+                                                     "Aspect ratio",
+                                                     "Image mask aspect ratio",
+                                                     0,
+                                                     10000,
+                                                     0,
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_NAME |
+                                                     G_PARAM_STATIC_NICK |
+                                                     G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_MASK_OPACITY,
+                                    g_param_spec_int(PROP_NAME_IMG_MASK_OPACITY,
+                                                     "Mask opacity",
+                                                     "Image mask border opacity",
+                                                     0,
+                                                     100,
+                                                     90,
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_NAME |
+                                                     G_PARAM_STATIC_NICK |
+                                                     G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntanglePreferencesPrivate));
 }
 
@@ -478,6 +540,8 @@ static void entangle_preferences_init(EntanglePreferences *picker)
                                                 SETTING_CAPTURE);
     priv->cmsSettings = g_settings_get_child(settings,
                                              SETTING_CMS);
+    priv->imgSettings = g_settings_get_child(settings,
+                                             SETTING_IMG);
     g_object_unref(settings);
 }
 
@@ -675,6 +739,43 @@ void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs,
 
     g_settings_set_enum(priv->cmsSettings,
                         SETTING_CMS_RENDERING_INTENT, intent);
+}
+
+
+gchar *entangle_preferences_img_get_aspect_ratio(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_string(priv->imgSettings,
+                                 SETTING_IMG_ASPECT_RATIO);
+}
+
+
+void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs,
+                                               const gchar *aspect)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_string(priv->imgSettings,
+                          SETTING_IMG_ASPECT_RATIO, aspect);
+}
+
+gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_int(priv->imgSettings,
+                              SETTING_IMG_MASK_OPACITY);
+}
+
+
+void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs,
+                                               gint mask)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_int(priv->imgSettings,
+                       SETTING_IMG_MASK_OPACITY, mask);
 }
 
 /*

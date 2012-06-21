@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "entangle-debug.h"
 #include "entangle-camera-manager.h"
@@ -281,6 +282,36 @@ static void entangle_camera_manager_update_colour_transform(EntangleCameraManage
 }
 
 
+static void entangle_camera_manager_update_aspect_ratio(EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    const gchar *aspect = entangle_preferences_img_get_aspect_ratio(prefs);
+
+    if (!aspect || g_str_equal(aspect, "")) {
+        entangle_image_display_set_aspect_ratio(priv->imageDisplay, 0.0);
+    } else {
+        double d;
+        char *end;
+        d = strtod(aspect, &end);
+        if (end == aspect || (errno == ERANGE))
+            entangle_image_display_set_aspect_ratio(priv->imageDisplay, 0.0);
+        else
+            entangle_image_display_set_aspect_ratio(priv->imageDisplay, d);
+    }
+}
+
+
+static void entangle_camera_manager_update_mask_opacity(EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gint opacity = entangle_preferences_img_get_mask_opacity(prefs);
+
+    entangle_image_display_set_mask_opacity(priv->imageDisplay, opacity / 100.0);
+}
+
+
 static void do_presentation_monitor_toggled(GtkCheckMenuItem *menu, gpointer opaque)
 {
     EntangleCameraManager *manager = opaque;
@@ -338,12 +369,16 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
 {
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
 
-    if (strcmp(spec->name, "cms-enabled") == 0 ||
-        strcmp(spec->name, "cms-rgb-profile") == 0 ||
-        strcmp(spec->name, "cms-monitor-profile") == 0 ||
-        strcmp(spec->name, "cms-detect-system-profile") == 0 ||
-        strcmp(spec->name, "cms-rendering-intent") == 0) {
+    if (g_str_equal(spec->name, "cms-enabled") ||
+        g_str_equal(spec->name, "cms-rgb-profile") ||
+        g_str_equal(spec->name, "cms-monitor-profile") ||
+        g_str_equal(spec->name, "cms-detect-system-profile") ||
+        g_str_equal(spec->name, "cms-rendering-intent")) {
         entangle_camera_manager_update_colour_transform(manager);
+    } else if (g_str_equal(spec->name, "img-aspect-ratio")) {
+        entangle_camera_manager_update_aspect_ratio(manager);
+    } else if (g_str_equal(spec->name, "img-mask-opacity")) {
+        entangle_camera_manager_update_mask_opacity(manager);
     }
 }
 
@@ -1293,6 +1328,8 @@ static void entangle_camera_manager_set_property(GObject *object,
             g_free(pattern);
 
             entangle_camera_manager_update_colour_transform(manager);
+            entangle_camera_manager_update_aspect_ratio(manager);
+            entangle_camera_manager_update_mask_opacity(manager);
             break;
 
         default:
