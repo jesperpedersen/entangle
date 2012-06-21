@@ -559,6 +559,7 @@ void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs,
     EntanglePreferencesPrivate *priv = prefs->priv;
     g_settings_set_boolean(priv->interfaceSettings,
                            SETTING_INTERFACE_AUTO_CONNECT, autoconn);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_INTERFACE_AUTO_CONNECT);
 }
 
 
@@ -580,8 +581,10 @@ char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs)
 void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, const gchar *dir)
 {
     EntanglePreferencesPrivate *priv = prefs->priv;
+
     g_settings_set_string(priv->captureSettings,
                           SETTING_CAPTURE_LAST_SESSION, dir);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_LAST_SESSION);
 }
 
 
@@ -600,6 +603,7 @@ void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *pref
 
     g_settings_set_string(priv->captureSettings,
                           SETTING_CAPTURE_FILENAME_PATTERN, dir);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_FILENAME_PATTERN);
 }
 
 
@@ -618,6 +622,7 @@ void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *pr
 
     g_settings_set_boolean(priv->captureSettings,
                            SETTING_CAPTURE_CONTINUOUS_PREVIEW, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_CONTINUOUS_PREVIEW);
 }
 
 
@@ -636,6 +641,7 @@ void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gb
 
     g_settings_set_boolean(priv->captureSettings,
                            SETTING_CAPTURE_DELETE_FILE, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_DELETE_FILE);
 }
 
 
@@ -659,6 +665,7 @@ void entangle_preferences_cms_set_rgb_profile(EntanglePreferences *prefs,
     g_settings_set_string(priv->cmsSettings,
                           SETTING_CMS_RGB_PROFILE,
                           prof ? entangle_colour_profile_filename(prof) : NULL);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CMS_RGB_PROFILE);
 }
 
 
@@ -682,6 +689,7 @@ void entangle_preferences_cms_set_monitor_profile(EntanglePreferences *prefs,
     g_settings_set_string(priv->cmsSettings,
                           SETTING_CMS_MONITOR_PROFILE,
                           prof ? entangle_colour_profile_filename(prof) : NULL);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CMS_MONITOR_PROFILE);
 }
 
 
@@ -701,6 +709,7 @@ void entangle_preferences_cms_set_enabled(EntanglePreferences *prefs,
 
     g_settings_set_boolean(priv->cmsSettings,
                            SETTING_CMS_ENABLED, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CMS_ENABLED);
 }
 
 
@@ -720,6 +729,7 @@ void entangle_preferences_cms_set_detect_system_profile(EntanglePreferences *pre
 
     g_settings_set_boolean(priv->cmsSettings,
                            SETTING_CMS_DETECT_SYSTEM_PROFILE, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CMS_DETECT_SYSTEM_PROFILE);
 }
 
 
@@ -739,6 +749,7 @@ void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs,
 
     g_settings_set_enum(priv->cmsSettings,
                         SETTING_CMS_RENDERING_INTENT, intent);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CMS_RENDERING_INTENT);
 }
 
 
@@ -758,6 +769,7 @@ void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs,
 
     g_settings_set_string(priv->imgSettings,
                           SETTING_IMG_ASPECT_RATIO, aspect);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_ASPECT_RATIO);
 }
 
 gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs)
@@ -776,6 +788,7 @@ void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs,
 
     g_settings_set_int(priv->imgSettings,
                        SETTING_IMG_MASK_OPACITY, mask);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_MASK_OPACITY);
 }
 
 /*
