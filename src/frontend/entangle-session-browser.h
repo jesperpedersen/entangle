@@ -43,15 +43,16 @@ typedef struct _EntangleSessionBrowserClass EntangleSessionBrowserClass;
 
 struct _EntangleSessionBrowser
 {
-    GtkIconView parent;
+    GtkDrawingArea parent;
 
     EntangleSessionBrowserPrivate *priv;
 };
 
 struct _EntangleSessionBrowserClass
 {
-    GtkIconViewClass parent_class;
+    GtkDrawingAreaClass parent_class;
 
+    void (*selection_changed)(EntangleSessionBrowser *browser);
 };
 
 GType entangle_session_browser_get_type(void) G_GNUC_CONST;
@@ -60,14 +61,13 @@ EntangleSessionBrowser* entangle_session_browser_new(void);
 
 EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *browser);
 
-
 void entangle_session_browser_set_thumbnail_loader(EntangleSessionBrowser *browser,
-                                               EntangleThumbnailLoader *loader);
+                                                   EntangleThumbnailLoader *loader);
 EntangleThumbnailLoader *entangle_session_browser_get_thumbnail_loader(EntangleSessionBrowser *browser);
 
 
 void entangle_session_browser_set_session(EntangleSessionBrowser *browser,
-                                      EntangleSession *session);
+                                          EntangleSession *session);
 EntangleSession *entangle_session_browser_get_session(EntangleSessionBrowser *browser);
 
 

@@ -2214,7 +2214,7 @@ static void do_popup_remove(gpointer data)
     g_object_unref(pol);
 }
 
-
+#if 0
 static void do_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
                            GdkDragContext *ctx G_GNUC_UNUSED,
                            GtkDragResult res,
@@ -2251,6 +2251,7 @@ static void do_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
         }
     }
 }
+#endif
 
 static void do_pixbuf_loaded(EntanglePixbufLoader *loader,
                              EntangleImage *image)
@@ -2315,9 +2316,6 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     GtkWidget *monitorMenu;
     GtkWidget *operation;
     GError *error = NULL;
-    GtkTargetEntry targets[] = {
-        { g_strdup("demo"), GTK_TARGET_SAME_APP, 0,}
-    };
 
     priv = manager->priv = ENTANGLE_CAMERA_MANAGER_GET_PRIVATE(manager);
 
@@ -2364,14 +2362,6 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     settingsBox = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-box"));
     settingsViewport = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-viewport"));
     display = GTK_WIDGET(gtk_builder_get_object(priv->builder, "display-panel"));
-
-    gtk_icon_view_enable_model_drag_source(GTK_ICON_VIEW(priv->sessionBrowser),
-                                           GDK_BUTTON1_MASK,
-                                           targets,
-                                           1,
-                                           GDK_ACTION_PRIVATE);
-
-    g_signal_connect(priv->sessionBrowser, "drag-failed", G_CALLBACK(do_drag_failed), manager);
 
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(iconScroll),
                                    GTK_POLICY_AUTOMATIC,
