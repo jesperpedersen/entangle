@@ -230,12 +230,12 @@ static void entangle_preferences_display_notify(GObject *object,
         g_free(newvalue);
     } else if (strcmp(spec->name, "img-mask-opacity") == 0) {
         GtkAdjustment *adjust = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(tmp));
-        gfloat newvalue;
+        gint newvalue;
         gfloat oldvalue;
 
         g_object_get(object, spec->name, &newvalue, NULL);
-
         oldvalue = gtk_adjustment_get_value(adjust);
+
         if (fabs(newvalue - oldvalue)  > 0.0005)
             gtk_adjustment_set_value(adjust, newvalue);
     }
