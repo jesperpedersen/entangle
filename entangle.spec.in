@@ -76,9 +76,14 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %{_datadir}/%{name}/%{name}.svg
 %{_datadir}/%{name}/plugins.png
 %{_datadir}/%{name}/plugins-22.png
-%{_datadir}/%{name}/folders.png
-%{_datadir}/%{name}/folders-22.png
+%{_datadir}/%{name}/capture.png
+%{_datadir}/%{name}/capture-22.png
 %{_datadir}/%{name}/color-management.png
+%{_datadir}/%{name}/color-management-22.png
+%{_datadir}/%{name}/interface.png
+%{_datadir}/%{name}/interface-22.png
+%{_datadir}/%{name}/imageviewer.png
+%{_datadir}/%{name}/imageviewer-22.png
 %{_datadir}/%{name}/color-management-22.png
 %{_datadir}/%{name}/sRGB.icc
 %{_datadir}/gtk-doc/html/Entangle
