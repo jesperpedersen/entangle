@@ -1,5 +1,5 @@
+src/backend/entangle-camera-list.c
 src/backend/entangle-camera.c
-src/backend/entangle-context.c
 src/frontend/entangle-camera-info.c
 [type: gettext/glade] src/frontend/entangle-camera-info.xml
 src/frontend/entangle-camera-manager.c

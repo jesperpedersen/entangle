@@ -84,7 +84,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
 enum {
     PROP_0,
-    
+
     PROP_INTERFACE_AUTO_CONNECT,
 
     PROP_CAPTURE_FILENAME_PATTERN,
