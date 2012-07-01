@@ -483,16 +483,14 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 
     g_object_class_install_property(object_class,
                                     PROP_IMG_ASPECT_RATIO,
-                                    g_param_spec_int(PROP_NAME_IMG_ASPECT_RATIO,
-                                                     "Aspect ratio",
-                                                     "Image mask aspect ratio",
-                                                     0,
-                                                     10000,
-                                                     0,
-                                                     G_PARAM_READWRITE |
-                                                     G_PARAM_STATIC_NAME |
-                                                     G_PARAM_STATIC_NICK |
-                                                     G_PARAM_STATIC_BLURB));
+                                    g_param_spec_string(PROP_NAME_IMG_ASPECT_RATIO,
+                                                        "Aspect ratio",
+                                                        "Image mask aspect ratio",
+                                                        "1.33",
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
 
     g_object_class_install_property(object_class,
                                     PROP_IMG_MASK_OPACITY,
