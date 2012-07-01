@@ -24,6 +24,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <unistd.h>
+#include <math.h>
 
 #include <libpeas-gtk/peas-gtk.h>
 
@@ -71,7 +72,7 @@ void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDispl
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
-void do_img_apply_mask_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_img_mask_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
 void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
 
@@ -205,6 +206,38 @@ static void entangle_preferences_display_notify(GObject *object,
 
         if (newvalue != oldvalue)
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "img-mask-enabled") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "img-aspect-ratio") == 0) {
+        gchar *newvalue;
+        const gchar *oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+
+        oldvalue = gtk_combo_box_get_active_id(GTK_COMBO_BOX(tmp));
+        if ((newvalue && !oldvalue) ||
+            (!newvalue && oldvalue) ||
+            strcmp(newvalue, oldvalue) != 0)
+            gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), newvalue);
+
+        g_free(newvalue);
+    } else if (strcmp(spec->name, "img-mask-opacity") == 0) {
+        GtkAdjustment *adjust = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(tmp));
+        gfloat newvalue;
+        gfloat oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+
+        oldvalue = gtk_adjustment_get_value(adjust);
+        if (fabs(newvalue - oldvalue)  > 0.0005)
+            gtk_adjustment_set_value(adjust, newvalue);
     }
 }
 
@@ -286,7 +319,7 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     ratio = entangle_preferences_img_get_aspect_ratio(prefs);
     hasRatio = entangle_preferences_img_get_mask_enabled(prefs);
 
-    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-apply-mask"));
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-enabled"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), hasRatio);
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio"));
@@ -502,7 +535,7 @@ void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDis
 }
 
 
-void do_img_apply_mask_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_img_mask_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
 {
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);

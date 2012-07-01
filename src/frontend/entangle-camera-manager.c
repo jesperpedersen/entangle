@@ -1345,6 +1345,7 @@ static void entangle_camera_manager_set_property(GObject *object,
             entangle_camera_manager_update_colour_transform(manager);
             entangle_camera_manager_update_aspect_ratio(manager);
             entangle_camera_manager_update_mask_opacity(manager);
+            entangle_camera_manager_update_mask_enabled(manager);
             break;
 
         default:
