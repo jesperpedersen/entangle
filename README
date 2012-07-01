@@ -69,6 +69,15 @@ For further information visit
    http://entangle-photo.org/
 
 
+UI shortcuts
+------------
+
+There are a number of shortcuts available for common operations
+
+ - 's' - Trigger the shutter, to shoot a picture 
+ - 'p' - Toggle 'live view' preview mode
+ - 'esc' - Cancel the current operation
+
 License
 -------
 

@@ -188,6 +188,9 @@ void do_menu_connect(GtkMenuItem *src,
                      EntangleCameraManager *manager);
 void do_menu_disconnect(GtkMenuItem *src,
                         EntangleCameraManager *manager);
+gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
+                                GdkEventKey *ev,
+                                gpointer data);
 
 
 static EntangleColourProfile *entangle_camera_manager_monitor_profile(GtkWindow *window)
@@ -1722,6 +1725,73 @@ void do_toolbar_preview(GtkToggleToolButton *src,
         g_cancellable_cancel(priv->taskCancel);
     }
 }
+
+
+gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
+                                GdkEventKey *ev,
+                                gpointer opaque)
+{
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    switch (ev->keyval) {
+    case GDK_KEY_Escape:
+        if (priv->taskCancel) {
+            ENTANGLE_DEBUG("cancelling operation");
+            g_cancellable_cancel(priv->taskCancel);
+            return TRUE;
+        }
+        break;
+
+    case GDK_KEY_s:
+        if (priv->taskPreview) {
+            ENTANGLE_DEBUG("starting capture from preview operation");
+            g_cancellable_cancel(priv->taskConfirm);
+            return TRUE;
+        } else if (!priv->taskCapture) {
+            EntangleCameraFileTaskData *data;
+            ENTANGLE_DEBUG("starting capture operation");
+            if (!(data = do_camera_task_begin(manager)))
+                return FALSE;
+
+            priv->taskCapture = TRUE;
+            do_capture_widget_sensitivity(manager);
+            entangle_camera_capture_image_async(priv->camera,
+                                                priv->taskCancel,
+                                                do_camera_capture_image_finish,
+                                                data);
+            return TRUE;
+        }
+        break;
+
+    case GDK_KEY_p:
+        if (!priv->taskCapture && !priv->taskPreview) {
+            EntangleCameraFileTaskData *data;
+            ENTANGLE_DEBUG("starting preview operation");
+            if (!(data = do_camera_task_begin(manager)))
+                return FALSE;
+
+            priv->taskPreview = TRUE;
+            do_capture_widget_sensitivity(manager);
+            entangle_camera_preview_image_async(priv->camera,
+                                                priv->taskCancel,
+                                                do_camera_preview_image_finish,
+                                                data);
+            return TRUE;
+        } else if (priv->taskPreview) {
+            ENTANGLE_DEBUG("Cancelling capture operation");
+            g_cancellable_cancel(priv->taskCancel);
+            return TRUE;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return FALSE;
+}
+
 
 static void do_zoom_widget_sensitivity(EntangleCameraManager *manager)
 {

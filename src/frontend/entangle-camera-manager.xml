@@ -6,6 +6,7 @@
     <property name="title" translatable="yes">Entangle</property>
     <property name="default_width">1000</property>
     <property name="default_height">600</property>
+    <signal name="key-release-event" handler="do_manager_key_release" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
