@@ -349,7 +349,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
             sh = (double)rh / (double)th;
             result = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8,
                                     priv->width, priv->height);
-            gdk_pixbuf_fill(result, 0x000000FF);
+            gdk_pixbuf_fill(result, 0x00000000);
 
             gdk_pixbuf_scale(thumb, result,
                              (priv->width - rw) / 2,
