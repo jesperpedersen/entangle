@@ -284,13 +284,13 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_capture_get_delete_file(prefs));
 
     ratio = entangle_preferences_img_get_aspect_ratio(prefs);
-    hasRatio = ratio && !g_str_equal(ratio, "");
+    hasRatio = entangle_preferences_img_get_mask_enabled(prefs);
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-apply-mask"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), hasRatio);
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio"));
-    gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), hasRatio ? ratio : NULL);
+    gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), ratio);
     gtk_widget_set_sensitive(tmp, hasRatio);
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio-label"));
@@ -511,20 +511,13 @@ void do_img_apply_mask_toggled(GtkToggleButton *src, EntanglePreferencesDisplay 
     GtkWidget *aspectLbl = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio-label"));
     GtkWidget *opacity = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-opacity"));
     GtkWidget *opacityLbl = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-opacity-label"));
-    const gchar *ratio = gtk_combo_box_get_active_id(GTK_COMBO_BOX(aspect));
-
-    if (!ratio)
-        ratio = "";
 
     gtk_widget_set_sensitive(aspect, enabled);
     gtk_widget_set_sensitive(aspectLbl, enabled);
     gtk_widget_set_sensitive(opacity, enabled);
     gtk_widget_set_sensitive(opacityLbl, enabled);
-    entangle_preferences_img_set_aspect_ratio(prefs, enabled ? ratio : "");
-    if (!enabled)
-        gtk_combo_box_set_active_id(GTK_COMBO_BOX(aspect), NULL);
-    else
-        gtk_combo_box_set_active_id(GTK_COMBO_BOX(aspect), "1.5");
+
+    entangle_preferences_img_set_mask_enabled(prefs, enabled);
 }
 
 

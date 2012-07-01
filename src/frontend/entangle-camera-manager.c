@@ -291,14 +291,14 @@ static void entangle_camera_manager_update_aspect_ratio(EntangleCameraManager *m
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     const gchar *aspect = entangle_preferences_img_get_aspect_ratio(prefs);
 
-    if (!aspect || g_str_equal(aspect, "")) {
-        entangle_image_display_set_aspect_ratio(priv->imageDisplay, 0.0);
+    if (!aspect) {
+        entangle_image_display_set_aspect_ratio(priv->imageDisplay, 1.33);
     } else {
         double d;
         char *end;
         d = strtod(aspect, &end);
         if (end == aspect || (errno == ERANGE))
-            entangle_image_display_set_aspect_ratio(priv->imageDisplay, 0.0);
+            entangle_image_display_set_aspect_ratio(priv->imageDisplay, 1.33);
         else
             entangle_image_display_set_aspect_ratio(priv->imageDisplay, d);
     }
@@ -312,6 +312,16 @@ static void entangle_camera_manager_update_mask_opacity(EntangleCameraManager *m
     gint opacity = entangle_preferences_img_get_mask_opacity(prefs);
 
     entangle_image_display_set_mask_opacity(priv->imageDisplay, opacity / 100.0);
+}
+
+
+static void entangle_camera_manager_update_mask_enabled(EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = entangle_preferences_img_get_mask_enabled(prefs);
+
+    entangle_image_display_set_mask_enabled(priv->imageDisplay, enabled);
 }
 
 
@@ -382,6 +392,8 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
         entangle_camera_manager_update_aspect_ratio(manager);
     } else if (g_str_equal(spec->name, "img-mask-opacity")) {
         entangle_camera_manager_update_mask_opacity(manager);
+    } else if (g_str_equal(spec->name, "img-mask-enabled")) {
+        entangle_camera_manager_update_mask_enabled(manager);
     }
 }
 
@@ -1784,6 +1796,12 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
             return TRUE;
         }
         break;
+
+    case GDK_KEY_m: {
+        EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+        gboolean enabled = entangle_preferences_img_get_mask_enabled(prefs);
+        entangle_preferences_img_set_mask_enabled(prefs, !enabled);
+    }   break;
 
     default:
         break;

@@ -83,15 +83,21 @@
 
   <schema path="/org/entangle-photo/manager/img/" id="org.entangle-photo.manager.img" gettext-domain="entangle-photo">
     <key type="s" name="aspect-ratio">
-      <default>''</default>
+      <default>'1.33'</default>
       <summary>Aspect ratio</summary>
-      <description>Apply image mask with a fixed aspect ratio ('' to disable)</description>
+      <description>Apply image mask with a fixed aspect ratio (eg 1.33)</description>
     </key>
 
     <key type="i" name="mask-opacity">
       <default>90</default>
       <summary>Mask opacity</summary>
       <description>Opacity of borders used for image mask</description>
+    </key>
+
+    <key type="b" name="mask-enabled">
+      <default>false</default>
+      <summary>Mask enabled</summary>
+      <description>Enable aspect ratio image mask</description>
     </key>
   </schema>
 </schemalist>

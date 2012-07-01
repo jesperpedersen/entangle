@@ -78,6 +78,10 @@ void entangle_image_display_set_mask_opacity(EntangleImageDisplay *display,
                                              gfloat opacity);
 gfloat entangle_image_display_get_mask_opacity(EntangleImageDisplay *display);
 
+void entangle_image_display_set_mask_enabled(EntangleImageDisplay *display,
+                                             gboolean enabled);
+gboolean entangle_image_display_get_mask_enabled(EntangleImageDisplay *display);
+
 G_END_DECLS
 
 #endif /* __ENTANGLE_IMAGE_DISPLAY_H__ */

@@ -46,8 +46,9 @@ struct _EntangleImageDisplayPrivate {
     gboolean autoscale;
     gfloat scale;
 
-    gfloat aspect;
-    gfloat opacity;
+    gfloat aspectRatio;
+    gfloat maskOpacity;
+    gboolean maskEnabled;
 };
 
 G_DEFINE_TYPE(EntangleImageDisplay, entangle_image_display, GTK_TYPE_DRAWING_AREA);
@@ -59,6 +60,7 @@ enum {
     PROP_SCALE,
     PROP_ASPECT_RATIO,
     PROP_MASK_OPACITY,
+    PROP_MASK_ENABLED,
 };
 
 static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
@@ -118,11 +120,15 @@ static void entangle_image_display_get_property(GObject *object,
             break;
 
         case PROP_ASPECT_RATIO:
-            g_value_set_float(value, priv->aspect);
+            g_value_set_float(value, priv->aspectRatio);
             break;
 
         case PROP_MASK_OPACITY:
-            g_value_set_float(value, priv->opacity);
+            g_value_set_float(value, priv->maskOpacity);
+            break;
+
+        case PROP_MASK_ENABLED:
+            g_value_set_boolean(value, priv->maskEnabled);
             break;
 
         default:
@@ -160,6 +166,10 @@ static void entangle_image_display_set_property(GObject *object,
 
         case PROP_MASK_OPACITY:
             entangle_image_display_set_mask_opacity(display, g_value_get_float(value));
+            break;
+
+        case PROP_MASK_ENABLED:
+            entangle_image_display_set_mask_enabled(display, g_value_get_boolean(value));
             break;
 
         default:
@@ -279,13 +289,12 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
     }
 
     /* Finally a possible aspect ratio mask */
-    if (priv->pixmap &&
-        (priv->aspect > 0.005) &&
-        (fabs(priv->aspect - aspectImage)  > 0.005)) {
-        cairo_set_source_rgba(cr, 0, 0, 0, priv->opacity);
+    if (priv->pixmap && priv->maskEnabled &&
+        (fabs(priv->aspectRatio - aspectImage)  > 0.005)) {
+        cairo_set_source_rgba(cr, 0, 0, 0, priv->maskOpacity);
 
-        if (priv->aspect > aspectImage) { /* mask top & bottom */
-            double ah = (ih - (iw / priv->aspect)) / 2;
+        if (priv->aspectRatio > aspectImage) { /* mask top & bottom */
+            double ah = (ih - (iw / priv->aspectRatio)) / 2;
 
             cairo_rectangle(cr,
                             mx, my,
@@ -297,7 +306,7 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
                             iw, ah);
             cairo_fill(cr);
         } else { /* mask left & right */
-            double aw = (iw - (ih * priv->aspect)) / 2;
+            double aw = (iw - (ih * priv->aspectRatio)) / 2;
 
             cairo_rectangle(cr,
                             mx, my,
@@ -451,6 +460,17 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
                                                        G_PARAM_STATIC_NICK |
                                                        G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_MASK_ENABLED,
+                                    g_param_spec_boolean("mask-enabled",
+                                                         "Mask enabled",
+                                                         "Enable aspect ratio image mask",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntangleImageDisplayPrivate));
 }
 
@@ -465,11 +485,11 @@ static void entangle_image_display_init(EntangleImageDisplay *display)
     EntangleImageDisplayPrivate *priv;
 
     priv = display->priv = ENTANGLE_IMAGE_DISPLAY_GET_PRIVATE(display);
-    memset(priv, 0, sizeof *priv);
 
     priv->autoscale = TRUE;
-    priv->opacity = 0.9;
-    priv->aspect = 0.0;
+    priv->maskOpacity = 0.9;
+    priv->aspectRatio = 1.33;
+    priv->maskEnabled = FALSE;
 }
 
 
@@ -562,7 +582,7 @@ void entangle_image_display_set_aspect_ratio(EntangleImageDisplay *display,
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
-    priv->aspect = aspect;
+    priv->aspectRatio = aspect;
 
     if (gtk_widget_get_visible((GtkWidget*)display))
         gtk_widget_queue_resize(GTK_WIDGET(display));
@@ -573,7 +593,7 @@ gfloat entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
-    return priv->aspect;
+    return priv->aspectRatio;
 }
 
 
@@ -582,7 +602,7 @@ void entangle_image_display_set_mask_opacity(EntangleImageDisplay *display,
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
-    priv->opacity = opacity;
+    priv->maskOpacity = opacity;
 
     if (gtk_widget_get_visible((GtkWidget*)display))
         gtk_widget_queue_resize(GTK_WIDGET(display));
@@ -593,8 +613,29 @@ gfloat entangle_image_display_get_mask_opacity(EntangleImageDisplay *display)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
-    return priv->opacity;
+    return priv->maskOpacity;
 }
+
+
+void entangle_image_display_set_mask_enabled(EntangleImageDisplay *display,
+                                             gboolean enabled)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    priv->maskEnabled = enabled;
+
+    if (gtk_widget_get_visible((GtkWidget*)display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+gboolean entangle_image_display_get_mask_enabled(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    return priv->maskEnabled;
+}
+
 
 
 /*

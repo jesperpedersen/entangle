@@ -77,6 +77,7 @@ There are a number of shortcuts available for common operations
  - 's' - Trigger the shutter, to shoot a picture 
  - 'p' - Toggle 'live view' preview mode
  - 'esc' - Cancel the current operation
+ - 'm' - Toggle aspect ratio image mask
 
 License
 -------

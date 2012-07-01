@@ -85,6 +85,8 @@ gchar *entangle_preferences_img_get_aspect_ratio(EntanglePreferences *prefs);
 void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs, const gchar *aspect);
 gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs);
 void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs, gint opacity);
+gboolean entangle_preferences_img_get_mask_enabled(EntanglePreferences *prefs);
+void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gboolean enabled);
 
 G_END_DECLS
 

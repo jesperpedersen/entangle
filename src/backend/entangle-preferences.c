@@ -63,6 +63,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
 #define SETTING_IMG_ASPECT_RATIO           "aspect-ratio"
 #define SETTING_IMG_MASK_OPACITY           "mask-opacity"
+#define SETTING_IMG_MASK_ENABLED           "mask-enabled"
 
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
 
@@ -79,6 +80,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
 #define PROP_NAME_IMG_ASPECT_RATIO           SETTING_IMG "-" SETTING_IMG_ASPECT_RATIO
 #define PROP_NAME_IMG_MASK_OPACITY           SETTING_IMG "-" SETTING_IMG_MASK_OPACITY
+#define PROP_NAME_IMG_MASK_ENABLED           SETTING_IMG "-" SETTING_IMG_MASK_ENABLED
 
 enum {
     PROP_0,
@@ -98,6 +100,7 @@ enum {
 
     PROP_IMG_ASPECT_RATIO,
     PROP_IMG_MASK_OPACITY,
+    PROP_IMG_MASK_ENABLED,
 };
 
 
@@ -224,6 +227,12 @@ static void entangle_preferences_get_property(GObject *object,
                                                SETTING_IMG_MASK_OPACITY));
             break;
 
+        case PROP_IMG_MASK_ENABLED:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->imgSettings,
+                                                       SETTING_IMG_MASK_ENABLED));
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -322,6 +331,12 @@ static void entangle_preferences_set_property(GObject *object,
             g_settings_set_int(priv->imgSettings,
                                SETTING_IMG_MASK_OPACITY,
                                g_value_get_int(value));
+            break;
+
+        case PROP_IMG_MASK_ENABLED:
+            g_settings_set_boolean(priv->imgSettings,
+                                   SETTING_IMG_MASK_ENABLED,
+                                   g_value_get_boolean(value));
             break;
 
         default:
@@ -491,6 +506,17 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                      G_PARAM_STATIC_NAME |
                                                      G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_MASK_ENABLED,
+                                    g_param_spec_boolean(PROP_NAME_IMG_MASK_ENABLED,
+                                                         "Mask enabled",
+                                                         "Enable aspect ratio image mask",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntanglePreferencesPrivate));
 }
@@ -790,6 +816,26 @@ void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs,
                        SETTING_IMG_MASK_OPACITY, mask);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_MASK_OPACITY);
 }
+
+
+gboolean entangle_preferences_img_get_mask_enabled(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->imgSettings,
+                                  SETTING_IMG_MASK_ENABLED);
+}
+
+
+void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gboolean enabled)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->imgSettings,
+                           SETTING_IMG_MASK_ENABLED, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_MASK_ENABLED);
+}
+
 
 /*
  * Local variables:
