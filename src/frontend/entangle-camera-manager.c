@@ -937,6 +937,7 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
 
     g_object_unref(pixbuf);
     g_object_unref(is);
+    g_object_unref(image);
 }
 
 

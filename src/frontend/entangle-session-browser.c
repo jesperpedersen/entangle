@@ -189,11 +189,12 @@ static void do_thumb_loaded(EntanglePixbufLoader *loader,
         gtk_tree_model_get(priv->model, &iter, FIELD_IMAGE, &thisimage, -1);
 
         if (image == thisimage) {
+            g_object_unref(thisimage);
             gtk_list_store_set(GTK_LIST_STORE(priv->model),
                                &iter, FIELD_PIXMAP, pixbuf, -1);
             break;
         }
-
+        g_object_unref(thisimage);
     } while (gtk_tree_model_iter_next(priv->model, &iter));
 }
 
