@@ -67,6 +67,7 @@ void do_cms_detect_system_profile_toggled(GtkToggleButton *src, EntanglePreferen
 void do_cms_rendering_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
 
 void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
 void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
@@ -167,6 +168,15 @@ static void entangle_preferences_display_notify(GObject *object,
         if (oldvalue != newvalue)
             gtk_combo_box_set_active(GTK_COMBO_BOX(tmp), newvalue);
     } else if (strcmp(spec->name, "interface-auto-connect") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "interface-screen-blank") == 0) {
         gboolean newvalue;
         gboolean oldvalue;
 
@@ -306,6 +316,8 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-auto-connect"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_interface_get_auto_connect(prefs));
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-screen-blank"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_interface_get_screen_blank(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-filename-pattern"));
     gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_capture_get_filename_pattern(prefs));
@@ -522,6 +534,16 @@ void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferences
     gboolean enabled = gtk_toggle_button_get_active(src);
 
     entangle_preferences_interface_set_auto_connect(prefs, enabled);
+}
+
+
+void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+{
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+
+    entangle_preferences_interface_set_screen_blank(prefs, enabled);
 }
 
 

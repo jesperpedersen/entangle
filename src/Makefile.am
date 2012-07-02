@@ -113,6 +113,7 @@ libentangle_frontend_la_LDFLAGS = \
 	$(LIBPEAS_LIBS) \
 	$(LIBPEAS_UI_LIBS) \
 	$(GEXIV2_LIBS) \
+	$(XEXT_LIBS) \
 	$(WARN_LDFLAGS)
 
 libentangle_frontend_la_CFLAGS = \
@@ -123,6 +124,7 @@ libentangle_frontend_la_CFLAGS = \
 	$(LIBPEAS_CFLAGS) \
 	$(LIBPEAS_UI_CFLAGS) \
 	$(GEXIV2_CFLAGS) \
+	$(XEXT_CFLAGS) \
 	$(WARN_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
 	-DDATADIR="\"$(datadir)\"" \

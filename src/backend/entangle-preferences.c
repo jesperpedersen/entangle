@@ -49,6 +49,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_IMG                        "img"
 
 #define SETTING_INTERFACE_AUTO_CONNECT     "auto-connect"
+#define SETTING_INTERFACE_SCREEN_BLANK     "screen-blank"
 
 #define SETTING_CAPTURE_FILENAME_PATTERN   "filename-pattern"
 #define SETTING_CAPTURE_LAST_SESSION       "last-session"
@@ -66,6 +67,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_IMG_MASK_ENABLED           "mask-enabled"
 
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
+#define PROP_NAME_INTERFACE_SCREEN_BLANK     SETTING_INTERFACE "-" SETTING_INTERFACE_SCREEN_BLANK
 
 #define PROP_NAME_CAPTURE_FILENAME_PATTERN   SETTING_CAPTURE "-" SETTING_CAPTURE_FILENAME_PATTERN
 #define PROP_NAME_CAPTURE_LAST_SESSION       SETTING_CAPTURE "-" SETTING_CAPTURE_LAST_SESSION
@@ -86,6 +88,7 @@ enum {
     PROP_0,
 
     PROP_INTERFACE_AUTO_CONNECT,
+    PROP_INTERFACE_SCREEN_BLANK,
 
     PROP_CAPTURE_FILENAME_PATTERN,
     PROP_CAPTURE_LAST_SESSION,
@@ -145,6 +148,12 @@ static void entangle_preferences_get_property(GObject *object,
             g_value_set_boolean(value,
                                 g_settings_get_boolean(priv->interfaceSettings,
                                                        SETTING_INTERFACE_AUTO_CONNECT));
+            break;
+
+        case PROP_INTERFACE_SCREEN_BLANK:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->interfaceSettings,
+                                                       SETTING_INTERFACE_SCREEN_BLANK));
             break;
 
         case PROP_CAPTURE_LAST_SESSION:
@@ -252,6 +261,12 @@ static void entangle_preferences_set_property(GObject *object,
         case PROP_INTERFACE_AUTO_CONNECT:
             g_settings_set_boolean(priv->interfaceSettings,
                                    SETTING_INTERFACE_AUTO_CONNECT,
+                                   g_value_get_boolean(value));
+            break;
+
+        case PROP_INTERFACE_SCREEN_BLANK:
+            g_settings_set_boolean(priv->interfaceSettings,
+                                   SETTING_INTERFACE_SCREEN_BLANK,
                                    g_value_get_boolean(value));
             break;
 
@@ -376,6 +391,17 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                          "Auto connect",
                                                          "Automatically connect to cameras at startup",
                                                          TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_INTERFACE_SCREEN_BLANK,
+                                    g_param_spec_boolean(PROP_NAME_INTERFACE_SCREEN_BLANK,
+                                                         "Screen blank",
+                                                         "Blank screen while capturing images",
+                                                         FALSE,
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_STATIC_NAME |
                                                          G_PARAM_STATIC_NICK |
@@ -584,6 +610,23 @@ void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs,
     g_settings_set_boolean(priv->interfaceSettings,
                            SETTING_INTERFACE_AUTO_CONNECT, autoconn);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_INTERFACE_AUTO_CONNECT);
+}
+
+
+gboolean entangle_preferences_interface_get_screen_blank(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+    return g_settings_get_boolean(priv->interfaceSettings,
+                                  SETTING_INTERFACE_SCREEN_BLANK);
+}
+
+
+void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs, gboolean blank)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+    g_settings_set_boolean(priv->interfaceSettings,
+                           SETTING_INTERFACE_SCREEN_BLANK, blank);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_INTERFACE_SCREEN_BLANK);
 }
 
 

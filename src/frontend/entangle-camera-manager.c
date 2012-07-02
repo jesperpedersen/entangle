@@ -46,6 +46,7 @@
 #include "entangle-colour-profile.h"
 #include "entangle-preferences-display.h"
 #include "entangle-progress.h"
+#include "entangle-dpms.h"
 #include "view/autoDrawer.h"
 
 #define ENTANGLE_CAMERA_MANAGER_GET_PRIVATE(obj)                            \
@@ -799,6 +800,9 @@ static void do_camera_capture_image_finish(GObject *src,
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     GError *error = NULL;
 
+    if (entangle_preferences_interface_get_screen_blank(prefs))
+        entangle_dpms_set_blanking(FALSE, NULL);
+
     if (!(data->file = entangle_camera_capture_image_finish(camera, res, &error))) {
         do_camera_task_error(data->manager, _("Capture"), error);
         do_camera_task_complete(data);
@@ -882,6 +886,11 @@ static void do_camera_preview_image_finish(GObject *src,
                                             do_camera_capture_image_discard_finish,
                                             data);
     } else if (g_cancellable_is_cancelled(priv->taskConfirm)) {
+        EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+
+        if (entangle_preferences_interface_get_screen_blank(prefs))
+            entangle_dpms_set_blanking(TRUE, NULL);
+
         g_cancellable_reset(priv->taskConfirm);
         entangle_camera_capture_image_async(priv->camera,
                                             priv->taskCancel,
@@ -1703,12 +1712,17 @@ void do_toolbar_capture(GtkToolButton *src G_GNUC_UNUSED,
     if (priv->taskPreview) {
         g_cancellable_cancel(priv->taskConfirm);
     } else {
+        EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
         EntangleCameraFileTaskData *data;
         if (!(data = do_camera_task_begin(manager)))
             return;
 
         priv->taskCapture = TRUE;
         do_capture_widget_sensitivity(manager);
+
+        if (entangle_preferences_interface_get_screen_blank(prefs))
+            entangle_dpms_set_blanking(TRUE, NULL);
+
         entangle_camera_capture_image_async(priv->camera,
                                             priv->taskCancel,
                                             do_camera_capture_image_finish,
@@ -1763,6 +1777,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
             g_cancellable_cancel(priv->taskConfirm);
             return TRUE;
         } else if (!priv->taskCapture) {
+            EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
             EntangleCameraFileTaskData *data;
             ENTANGLE_DEBUG("starting capture operation");
             if (!(data = do_camera_task_begin(manager)))
@@ -1770,6 +1785,10 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
 
             priv->taskCapture = TRUE;
             do_capture_widget_sensitivity(manager);
+
+            if (entangle_preferences_interface_get_screen_blank(prefs))
+                entangle_dpms_set_blanking(TRUE, NULL);
+
             entangle_camera_capture_image_async(priv->camera,
                                                 priv->taskCancel,
                                                 do_camera_capture_image_finish,
