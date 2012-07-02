@@ -93,6 +93,7 @@ libentangle_frontend_la_SOURCES = \
 	frontend/entangle-camera-manager.h frontend/entangle-camera-manager.c \
 	frontend/entangle-camera-picker.h frontend/entangle-camera-picker.c \
 	frontend/entangle-control-panel.h frontend/entangle-control-panel.c \
+        frontend/entangle-dpms.h frontend/entangle-dpms.c \
 	frontend/entangle-help-about.h frontend/entangle-help-about.c \
 	frontend/entangle-image-display.h frontend/entangle-image-display.c \
 	frontend/entangle-image-popup.h frontend/entangle-image-popup.c \

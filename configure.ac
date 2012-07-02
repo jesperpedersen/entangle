@@ -42,6 +42,8 @@ LIBPEAS_REQUIRED=0.5.5
 AC_SUBST(LIBPEAS_REQUIRED)
 GEXIV2_REQUIRED=0.2.2
 AC_SUBST(GEXIV2_REQUIRED)
+XEXT_REQUIRED=1.3.0
+AC_SUBST(XEXT_REQUIRED)
 
 dnl *******************************************************************************
 dnl Setup core compilers / build helpers
@@ -104,6 +106,15 @@ AC_SUBST(LCMS_LIBS)
 PKG_CHECK_MODULES([GEXIV2], [gexiv2 >= $GEXIV2_REQUIRED])
 AC_SUBST(GEXIV2_CFLAGS)
 AC_SUBST(GEXIV2_LIBS)
+
+PKG_CHECK_MODULES([XEXT], [xext >= $XEXT_REQUIRED],
+                  [have_xext=yes], [have_xext=no])
+AC_SUBST(XEXT_CFLAGS)
+AC_SUBST(XEXT_LIBS)
+if test "$have_xext" = "yes"; then
+  AC_DEFINE_UNQUOTED([HAVE_XEXT], [], [Use Xext library])
+fi
+
 
 GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 
