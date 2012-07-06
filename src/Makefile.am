@@ -27,7 +27,11 @@ iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
 
 BUILT_SOURCES = \
-	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c
+	backend/entangle-colour-profile-enums.h \
+	backend/entangle-colour-profile-enums.c \
+	frontend/entangle-image-display-enums.h \
+	frontend/entangle-image-display-enums.c \
+	$(NULL)
 
 EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA) $(gsettings_DATA)
 
@@ -96,6 +100,8 @@ libentangle_frontend_la_SOURCES = \
         frontend/entangle-dpms.h frontend/entangle-dpms.c \
 	frontend/entangle-help-about.h frontend/entangle-help-about.c \
 	frontend/entangle-image-display.h frontend/entangle-image-display.c \
+	frontend/entangle-image-display-enums.h \
+	frontend/entangle-image-display-enums.c \
 	frontend/entangle-image-popup.h frontend/entangle-image-popup.c \
 	frontend/entangle-image-statusbar.h frontend/entangle-image-statusbar.c \
 	frontend/entangle-preferences-display.h frontend/entangle-preferences-display.c \
@@ -214,6 +220,34 @@ backend/entangle-config-entry-enums.h: backend/entangle-config-entry.h Makefile.
                         --fhead "G_BEGIN_DECLS\n\n" \
                         --ftail "G_END_DECLS\n\n" \
                         --ftail "#endif /* __ENTANGLE_COLOUR_PROFILE_ENUMS_H__ */\n" \
+                        --fprod "\n/* --- @filename@ --- */" \
+                        --eprod "#define ENTANGLE_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
+                        --eprod "GType @enum_name@_get_type (void);\n" \
+                $< >  $@
+
+frontend/entangle-image-display-enums.c: frontend/entangle-image-display.h frontend/entangle-image-display-enums.h Makefile.am
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#include \"entangle-image-display-enums.h\"\n\n" \
+                        --fprod "\n/* enumerations from \"@filename@\" */" \
+                        --fprod "\n#include \"@filename@\"\n" \
+                        --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
+                        --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+                        --vtail "  { 0, NULL, NULL }\n};\n\n" \
+                        --vtail "GType\n@enum_name@_get_type (void)\n{\n" \
+                        --vtail "  static GType type = 0;\n\n" \
+                        --vtail "  if (!type)\n" \
+                        --vtail "    type = g_@type@_register_static (\"@EnumName@\", _@enum_name@_values);\n\n" \
+                        --vtail "  return type;\n}\n\n" \
+                $< > $@
+
+frontend/entangle-image-display-enums.h: frontend/entangle-image-display.h Makefile.am
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#ifndef __ENTANGLE_IMAGE_DISPLAY_ENUMS_H__\n" \
+                        --fhead "#define __ENTANGLE_IMAGE_DISPLAY_ENUMS_H__\n\n" \
+                        --fhead "#include <glib-object.h>\n" \
+                        --fhead "G_BEGIN_DECLS\n\n" \
+                        --ftail "G_END_DECLS\n\n" \
+                        --ftail "#endif /* __ENTANGLE_IMAGE_DISPLAY_ENUMS_H__ */\n" \
                         --fprod "\n/* --- @filename@ --- */" \
                         --eprod "#define ENTANGLE_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
                         --eprod "GType @enum_name@_get_type (void);\n" \

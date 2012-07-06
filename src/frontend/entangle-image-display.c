@@ -51,6 +51,7 @@ struct _EntangleImageDisplayPrivate {
     gboolean maskEnabled;
 
     gboolean focusPoint;
+    EntangleImageDisplayGrid gridDisplay;
 };
 
 G_DEFINE_TYPE(EntangleImageDisplay, entangle_image_display, GTK_TYPE_DRAWING_AREA);
@@ -64,6 +65,7 @@ enum {
     PROP_MASK_OPACITY,
     PROP_MASK_ENABLED,
     PROP_FOCUS_POINT,
+    PROP_GRID_DISPLAY,
 };
 
 static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
@@ -138,6 +140,10 @@ static void entangle_image_display_get_property(GObject *object,
             g_value_set_boolean(value, priv->focusPoint);
             break;
 
+        case PROP_GRID_DISPLAY:
+            g_value_set_enum(value, priv->gridDisplay);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -181,6 +187,10 @@ static void entangle_image_display_set_property(GObject *object,
 
         case PROP_FOCUS_POINT:
             entangle_image_display_set_focus_point(display, g_value_get_boolean(value));
+            break;
+
+        case PROP_GRID_DISPLAY:
+            entangle_image_display_set_grid_display(display, g_value_get_enum(value));
             break;
 
         default:
@@ -268,6 +278,95 @@ static void entangle_image_display_draw_focus_point(GtkWidget *widget, cairo_t *
     cairo_line_to(cr, cx + WIDTH, cy + SIZE);
     cairo_fill(cr);
 }
+
+
+static void entangle_image_display_draw_grid_display(GtkWidget *widget, cairo_t *cr,
+                                                     gdouble mx, gdouble my)
+{
+    EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
+    EntangleImageDisplayPrivate *priv = display->priv;
+    gint ww = gdk_window_get_width(gtk_widget_get_window(widget));
+    gint wh = gdk_window_get_height(gtk_widget_get_window(widget));
+    gdouble cx = (ww - (mx * 2))/2.0;
+    gdouble cy = (wh - (my * 2))/2.0;
+    gdouble offx[4], offy[4];
+    gint count;
+    gint i;
+
+    cairo_set_source_rgba(cr, 0.7, 0, 0, 1);
+
+    if (priv->focusPoint) {
+        /* Cut out the area where the focus point lives
+         * to avoid lines going through it */
+        cairo_rectangle(cr, mx, my, ww - (mx * 2), wh - (my * 2));
+        cairo_rectangle(cr,
+                        ww - mx - cx + SIZE,
+                        my + cy - SIZE,
+                        -1 * SIZE * 2,
+                        SIZE * 2);
+        cairo_clip(cr);
+    }
+
+    switch (priv->gridDisplay) {
+    case ENTANGLE_IMAGE_DISPLAY_GRID_CENTER_LINES:
+        count = 1;
+        offx[0] = (ww - (mx * 2)) / 2;
+        offy[0] = (wh - (my * 2)) / 2;
+        break;
+
+    case ENTANGLE_IMAGE_DISPLAY_GRID_RULE_OF_3RDS:
+        count = 2;
+        offx[0] = (ww - (mx * 2)) / 3;
+        offy[0] = (wh - (my * 2)) / 3;
+        offx[1] = (ww - (mx * 2)) / 3 * 2;
+        offy[1] = (wh - (my * 2)) / 3 * 2;
+        break;
+
+    case ENTANGLE_IMAGE_DISPLAY_GRID_RULE_OF_5THS:
+        count = 4;
+        offx[0] = (ww - (mx * 2)) / 5;
+        offy[0] = (wh - (my * 2)) / 5;
+        offx[1] = (ww - (mx * 2)) / 5 * 2;
+        offy[1] = (wh - (my * 2)) / 5 * 2;
+        offx[2] = (ww - (mx * 2)) / 5 * 3;
+        offy[2] = (wh - (my * 2)) / 5 * 3;
+        offx[3] = (ww - (mx * 2)) / 5 * 4;
+        offy[3] = (wh - (my * 2)) / 5 * 4;
+        break;
+
+    case ENTANGLE_IMAGE_DISPLAY_GRID_GOLDEN_SECTIONS:
+        count = 2;
+        offx[0] = (ww - (mx * 2)) / 100 * 38;
+        offy[0] = (wh - (my * 2)) / 100 * 38;
+        offx[1] = (ww - (mx * 2)) / 100 * 62;
+        offy[1] = (wh - (my * 2)) / 100 * 62;
+        break;
+
+    case ENTANGLE_IMAGE_DISPLAY_GRID_NONE:
+    default:
+        count = 0;
+        break;
+    }
+
+    for (i = 0 ; i < count ; i++) {
+        /* Horizontal line */
+        cairo_move_to(cr, mx, my + offy[i] - 1);
+        cairo_line_to(cr, ww - mx, my + offy[i] - 1);
+        cairo_line_to(cr, ww - mx, my + offy[i]);
+        cairo_line_to(cr, mx, my + offy[i]);
+        cairo_line_to(cr, mx, my + offy[i] - 1);
+        cairo_fill(cr);
+
+        /* Vertical line */
+        cairo_move_to(cr, mx + offx[i] - 1, my);
+        cairo_line_to(cr, mx + offx[i], my);
+        cairo_line_to(cr, mx + offx[i], wh - my);
+        cairo_line_to(cr, mx + offx[i] - 1, wh - my);
+        cairo_line_to(cr, mx + offx[i] - 1, my);
+        cairo_fill(cr);
+    }
+}
+
 
 static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
 {
@@ -360,6 +459,9 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
     /* Draw the focus point */
     if (priv->focusPoint)
         entangle_image_display_draw_focus_point(widget, cr);
+
+    /* Draw the grid lines */
+    entangle_image_display_draw_grid_display(widget, cr, mx, my);
 
     /* Finally a possible aspect ratio mask */
     if (priv->pixmap && priv->maskEnabled &&
@@ -555,6 +657,18 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
                                                          G_PARAM_STATIC_NICK |
                                                          G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_GRID_DISPLAY,
+                                    g_param_spec_enum("grid-display",
+                                                      "Grid display",
+                                                      "Grid line display",
+                                                      ENTANGLE_TYPE_IMAGE_DISPLAY_GRID,
+                                                      ENTANGLE_IMAGE_DISPLAY_GRID_NONE,
+                                                      G_PARAM_READWRITE |
+                                                      G_PARAM_STATIC_NAME |
+                                                      G_PARAM_STATIC_NICK |
+                                                      G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntangleImageDisplayPrivate));
 }
 
@@ -739,6 +853,25 @@ gboolean entangle_image_display_get_focus_point(EntangleImageDisplay *display)
     EntangleImageDisplayPrivate *priv = display->priv;
 
     return priv->focusPoint;
+}
+
+void entangle_image_display_set_grid_display(EntangleImageDisplay *display,
+                                             EntangleImageDisplayGrid mode)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    priv->gridDisplay = mode;
+
+    if (gtk_widget_get_visible((GtkWidget*)display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+EntangleImageDisplayGrid entangle_image_display_get_grid_display(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    return priv->gridDisplay;
 }
 
 

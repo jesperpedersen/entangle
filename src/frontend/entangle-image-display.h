@@ -25,6 +25,8 @@
 
 #include "entangle-image-loader.h"
 
+#include "entangle-image-display-enums.h"
+
 G_BEGIN_DECLS
 
 #define ENTANGLE_TYPE_IMAGE_DISPLAY            (entangle_image_display_get_type ())
@@ -85,6 +87,18 @@ gboolean entangle_image_display_get_mask_enabled(EntangleImageDisplay *display);
 void entangle_image_display_set_focus_point(EntangleImageDisplay *display,
                                             gboolean enabled);
 gboolean entangle_image_display_get_focus_point(EntangleImageDisplay *display);
+
+typedef enum {
+    ENTANGLE_IMAGE_DISPLAY_GRID_NONE,
+    ENTANGLE_IMAGE_DISPLAY_GRID_CENTER_LINES,
+    ENTANGLE_IMAGE_DISPLAY_GRID_RULE_OF_3RDS,
+    ENTANGLE_IMAGE_DISPLAY_GRID_RULE_OF_5THS,
+    ENTANGLE_IMAGE_DISPLAY_GRID_GOLDEN_SECTIONS,
+} EntangleImageDisplayGrid;
+
+void entangle_image_display_set_grid_display(EntangleImageDisplay *display,
+                                             EntangleImageDisplayGrid mode);
+EntangleImageDisplayGrid entangle_image_display_get_grid_display(EntangleImageDisplay *display);
 
 G_END_DECLS
 
