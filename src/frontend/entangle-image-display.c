@@ -49,6 +49,8 @@ struct _EntangleImageDisplayPrivate {
     gfloat aspectRatio;
     gfloat maskOpacity;
     gboolean maskEnabled;
+
+    gboolean focusPoint;
 };
 
 G_DEFINE_TYPE(EntangleImageDisplay, entangle_image_display, GTK_TYPE_DRAWING_AREA);
@@ -61,6 +63,7 @@ enum {
     PROP_ASPECT_RATIO,
     PROP_MASK_OPACITY,
     PROP_MASK_ENABLED,
+    PROP_FOCUS_POINT,
 };
 
 static void do_entangle_pixmap_setup(EntangleImageDisplay *display)
@@ -131,6 +134,10 @@ static void entangle_image_display_get_property(GObject *object,
             g_value_set_boolean(value, priv->maskEnabled);
             break;
 
+        case PROP_FOCUS_POINT:
+            g_value_set_boolean(value, priv->focusPoint);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -172,6 +179,10 @@ static void entangle_image_display_set_property(GObject *object,
             entangle_image_display_set_mask_enabled(display, g_value_get_boolean(value));
             break;
 
+        case PROP_FOCUS_POINT:
+            entangle_image_display_set_focus_point(display, g_value_get_boolean(value));
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -198,6 +209,64 @@ static void entangle_image_display_realize(GtkWidget *widget)
     GTK_WIDGET_CLASS(entangle_image_display_parent_class)->realize(widget);
 
     do_entangle_pixmap_setup(ENTANGLE_IMAGE_DISPLAY(widget));
+}
+
+
+static void entangle_image_display_draw_focus_point(GtkWidget *widget, cairo_t *cr)
+{
+    gint ww, wh, cx, cy;
+
+    ww = gdk_window_get_width(gtk_widget_get_window(widget));
+    wh = gdk_window_get_height(gtk_widget_get_window(widget));
+
+    cx = ww / 2;
+    cy = wh / 2;
+
+    cairo_set_source_rgba(cr, 0.7, 0, 0, 1);
+
+#define SIZE 12
+#define GAP 4
+#define WIDTH 3
+
+    /* top left */
+    cairo_move_to(cr, cx - SIZE, cy - SIZE);
+    cairo_line_to(cr, cx - GAP, cy - SIZE);
+    cairo_line_to(cr, cx - GAP, cy - SIZE + WIDTH);
+    cairo_line_to(cr, cx - SIZE + WIDTH, cy - SIZE + WIDTH);
+    cairo_line_to(cr, cx - SIZE + WIDTH, cy - GAP);
+    cairo_line_to(cr, cx - SIZE, cy - GAP);
+    cairo_move_to(cr, cx - SIZE, cy - SIZE);
+    cairo_fill(cr);
+
+    /* top right */
+    cairo_move_to(cr, cx + GAP, cy - SIZE);
+    cairo_line_to(cr, cx + SIZE, cy - SIZE);
+    cairo_line_to(cr, cx + SIZE, cy - GAP);
+    cairo_line_to(cr, cx + SIZE - WIDTH, cy - GAP);
+    cairo_line_to(cr, cx + SIZE - WIDTH, cy - SIZE + WIDTH);
+    cairo_line_to(cr, cx + GAP, cy - SIZE + WIDTH);
+    cairo_move_to(cr, cx + GAP, cy - SIZE);
+    cairo_fill(cr);
+
+    /* bottom left */
+    cairo_move_to(cr, cx - SIZE, cy + SIZE);
+    cairo_line_to(cr, cx - SIZE, cy + GAP);
+    cairo_line_to(cr, cx - SIZE + WIDTH, cy + GAP);
+    cairo_line_to(cr, cx - SIZE + WIDTH, cy + SIZE - WIDTH);
+    cairo_line_to(cr, cx - GAP, cy + SIZE - WIDTH);
+    cairo_line_to(cr, cx - GAP, cy + SIZE);
+    cairo_line_to(cr, cx - SIZE, cy + SIZE);
+    cairo_fill(cr);
+
+    /* bottom right */
+    cairo_move_to(cr, cx + WIDTH, cy + SIZE);
+    cairo_line_to(cr, cx + SIZE, cy + SIZE);
+    cairo_line_to(cr, cx + SIZE, cy + WIDTH);
+    cairo_line_to(cr, cx + SIZE - WIDTH, cy + WIDTH);
+    cairo_line_to(cr, cx + SIZE - WIDTH, cy + SIZE - WIDTH);
+    cairo_line_to(cr, cx + WIDTH, cy + SIZE - WIDTH);
+    cairo_line_to(cr, cx + WIDTH, cy + SIZE);
+    cairo_fill(cr);
 }
 
 static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
@@ -287,6 +356,10 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
         cairo_paint(cr);
         cairo_set_matrix(cr, &m);
     }
+
+    /* Draw the focus point */
+    if (priv->focusPoint)
+        entangle_image_display_draw_focus_point(widget, cr);
 
     /* Finally a possible aspect ratio mask */
     if (priv->pixmap && priv->maskEnabled &&
@@ -471,6 +544,17 @@ static void entangle_image_display_class_init(EntangleImageDisplayClass *klass)
                                                          G_PARAM_STATIC_NICK |
                                                          G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_FOCUS_POINT,
+                                    g_param_spec_boolean("focus-point",
+                                                         "Focus point",
+                                                         "Overlay center focus point",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntangleImageDisplayPrivate));
 }
 
@@ -634,6 +718,27 @@ gboolean entangle_image_display_get_mask_enabled(EntangleImageDisplay *display)
     EntangleImageDisplayPrivate *priv = display->priv;
 
     return priv->maskEnabled;
+}
+
+
+
+void entangle_image_display_set_focus_point(EntangleImageDisplay *display,
+                                            gboolean enabled)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    priv->focusPoint = enabled;
+
+    if (gtk_widget_get_visible((GtkWidget*)display))
+        gtk_widget_queue_resize(GTK_WIDGET(display));
+}
+
+
+gboolean entangle_image_display_get_focus_point(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    return priv->focusPoint;
 }
 
 
