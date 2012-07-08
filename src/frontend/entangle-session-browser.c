@@ -1193,6 +1193,35 @@ entangle_session_browser_button_release(GtkWidget *widget,
     return event->button == 1;
 }
 
+static gboolean
+entangle_session_browser_scroll(GtkWidget *widget,
+                                GdkEventScroll *event)
+{
+    EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+
+    switch (event->direction) {
+    case GDK_SCROLL_UP:
+    case GDK_SCROLL_LEFT:
+        gtk_adjustment_set_value(priv->hadjustment,
+                                 gtk_adjustment_get_value(priv->hadjustment) -
+                                 gtk_adjustment_get_step_increment(priv->hadjustment));
+        break;
+    case GDK_SCROLL_DOWN:
+    case GDK_SCROLL_RIGHT:
+        gtk_adjustment_set_value(priv->hadjustment,
+                                 gtk_adjustment_get_value(priv->hadjustment) +
+                                 gtk_adjustment_get_step_increment(priv->hadjustment));
+        break;
+
+    case GDK_SCROLL_SMOOTH:
+    default:
+        break;
+    }
+
+    return TRUE;
+}
+
 
 static gboolean
 entangle_session_browser_motion_notify(GtkWidget *widget,
@@ -1410,6 +1439,7 @@ static void entangle_session_browser_class_init(EntangleSessionBrowserClass *kla
     widget_class->draw = entangle_session_browser_draw;
     widget_class->button_press_event = entangle_session_browser_button_press;
     widget_class->button_release_event = entangle_session_browser_button_release;
+    widget_class->scroll_event = entangle_session_browser_scroll;
     widget_class->motion_notify_event = entangle_session_browser_motion_notify;
     widget_class->key_release_event = entangle_session_browser_key_release;
     widget_class->size_allocate = entangle_session_browser_size_allocate;
