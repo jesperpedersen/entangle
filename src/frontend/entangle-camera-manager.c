@@ -2363,9 +2363,9 @@ static void do_session_browser_open_with_select(GtkMenuItem *src G_GNUC_UNUSED,
 }
 
 
-static void do_session_browser_popup(EntangleSessionBrowser *browser,
-                                     GdkEventButton  *event,
-                                     EntangleCameraManager *manager)
+static gboolean do_session_browser_popup(EntangleSessionBrowser *browser,
+                                         GdkEventButton  *event,
+                                         EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *open;
@@ -2377,16 +2377,16 @@ static void do_session_browser_popup(EntangleSessionBrowser *browser,
     const gchar *filename;
 
     if (event->type != GDK_BUTTON_PRESS)
-        return;
+        return FALSE;
     if (event->button != 3)
-        return;
+        return FALSE;
 
     priv->sessionBrowserImage = entangle_session_browser_get_image_at_coords(browser,
                                                                              event->x,
                                                                              event->y);
 
     if (!priv->sessionBrowserImage)
-        return;
+        return FALSE;
 
     filename = entangle_image_get_filename(priv->sessionBrowserImage);
 
@@ -2438,6 +2438,7 @@ static void do_session_browser_popup(EntangleSessionBrowser *browser,
 
  cleanup:
     gtk_widget_set_sensitive(GTK_WIDGET(open), ctype && appInfoList ? TRUE : FALSE);
+    return TRUE;
 }
 
 
