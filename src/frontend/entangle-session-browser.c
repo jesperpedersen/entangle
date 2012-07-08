@@ -1185,7 +1185,7 @@ entangle_session_browser_button_release(GtkWidget *widget,
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
-    if (event->button == 1 && event->type == GDK_BUTTON_RELEASE) {    
+    if (event->button == 1 && event->type == GDK_BUTTON_RELEASE) {
         priv->dnd_start_x = -1;
         priv->dnd_start_y = -1;
     }
@@ -1408,7 +1408,7 @@ static void entangle_session_browser_class_init(EntangleSessionBrowserClass *kla
     widget_class->realize = entangle_session_browser_realize;
     widget_class->unrealize = entangle_session_browser_unrealize;
     widget_class->draw = entangle_session_browser_draw;
-    widget_class->button_press_event = entangle_session_browser_button_press; 
+    widget_class->button_press_event = entangle_session_browser_button_press;
     widget_class->button_release_event = entangle_session_browser_button_release;
     widget_class->motion_notify_event = entangle_session_browser_motion_notify;
     widget_class->key_release_event = entangle_session_browser_key_release;

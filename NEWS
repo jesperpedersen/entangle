@@ -1,8 +1,32 @@
       Entangle News
       =============
 
-Release 0.3.3 - 2012-04-25
---------------------------
+Release 0.4.0 - "Higgs Boson" - 2012-07-08
+------------------------------------------
+
+ * Better use of GtkApplication class
+ * Add support for multiple windows & cameras
+ * Add ability to sync capture/preview across windows
+ * Add preference to control whether cameras autoconnect
+   at startup
+ * Add ability to apply aspect ratio masks to images
+ * Add key bindings for common actions (see README)
+ * Rewrite session browser widget to not use GtkIconView
+ * Add popup menu with session browser to allow open and
+   delete of captured images
+ * Fix memory leak during preview
+ * Fix memory leak in session browser widget
+ * Add ability to DPMS-blank screen during capture for
+   consistent lighting environment
+ * Add ability to render a focus point during preview
+ * Add ability to render grid lines during preview
+ * Merge "New session" and "Open session" toolbar buttons
+   into one "Select session" drop down / menu
+ * Add custom icons for toolbar capture/preview buttons
+
+
+Release 0.3.3 - "Muon neutrino" - 2012-04-25
+--------------------------------------------
 
  * Fix deadlock when starting app with glib >= 2.32
  * Remove use of deprecated API calls
@@ -12,8 +36,8 @@ Release 0.3.3 - 2012-04-25
  * Refresh translations
  * Fix check for glib-compile-schemas binary
 
-Release 0.3.2 - 2012-04-03
---------------------------
+Release 0.3.2 - "Muon" - 2012-04-03
+-----------------------------------
 
  * Major code style cleanup
  * Mark all translatable strings in code & UI files
@@ -24,8 +48,8 @@ Release 0.3.2 - 2012-04-03
    previous release dist.
 
 
-Release 0.3.1 - 2012-02-13
---------------------------
+Release 0.3.1 - "Tau neutrino" 2012-02-13
+-----------------------------------------
 
  * Fix crash in handling camera control combo lists
  * Add notice about need to set XDG_DATA_DIRS when
@@ -44,8 +68,8 @@ Release 0.3.1 - 2012-02-13
  * Update README with new URLs for bugs/mailing lists
 
 
-Release 0.3.0 - 2011-11-28
---------------------------
+Release 0.3.0 - "Tau" - 2011-11-28
+----------------------------------
 
  * Switch to use Gtk3 for UI
  * Switch to use GSettings for preferences
@@ -81,8 +105,8 @@ Release 0.3.0 - 2011-11-28
  * Skip directories / special files when loading sessions
 
 
-Release 0.2.0 - 2010-09-17
---------------------------
+Release 0.2.0 - "Electron neutrino" - 2010-09-17
+------------------------------------------------
 
  * Better compatibility with cameras not supporting events
  * Ability to unmount camera via GVFS
@@ -93,8 +117,8 @@ Release 0.2.0 - 2010-09-17
  * Fixed crash with udev
 
 
-Release 0.1.0 - 2010-04-08
---------------------------
+Release 0.1.0 - "Electron" - 2010-04-08
+---------------------------------------
 
  * First release !
 

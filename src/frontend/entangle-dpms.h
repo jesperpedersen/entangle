@@ -24,6 +24,15 @@
 #include <glib.h>
 
 gboolean entangle_dpms_set_blanking(gboolean enabled,
-				    GError **error);
+                                    GError **error);
 
 #endif /* __ENTANGLE_DPMS_H__ */
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  indent-tabs-mode: nil
+ *  tab-width: 8
+ * End:
+ */

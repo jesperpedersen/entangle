@@ -24,6 +24,7 @@
 #include "entangle-debug.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #define ENTANGLE_ERROR(err, msg...)                                     \
     g_set_error((err),                                                  \
@@ -39,7 +40,7 @@
 #endif
 
 gboolean entangle_dpms_set_blanking(gboolean enabled,
-				    GError **error)
+                                    GError **error)
 {
     GdkDisplay *dpy = gdk_display_get_default();
 
@@ -52,7 +53,8 @@ gboolean entangle_dpms_set_blanking(gboolean enabled,
 
         if (!DPMSQueryExtension(xdpy, &ignore1, &ignore2) ||
             !DPMSCapable(xdpy)) {
-            ENTANGLE_ERROR(error, "%s", "Screen blanking is not available on this display");
+            ENTANGLE_ERROR(error, "%s",
+                           _("Screen blanking is not available on this display"));
             return FALSE;
         }
 
@@ -63,7 +65,8 @@ gboolean entangle_dpms_set_blanking(gboolean enabled,
     }
 #endif
 
-    ENTANGLE_ERROR(error, "%s", "Screen blanking is not implemented on this platform");
+    ENTANGLE_ERROR(error, "%s",
+                   _("Screen blanking is not implemented on this platform"));
     return FALSE;
 }
 
