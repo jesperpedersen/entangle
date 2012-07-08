@@ -361,7 +361,7 @@
                 <property name="can_focus">False</property>
                 <property name="use_action_appearance">False</property>
                 <child>
-                  <object class="GtkFileChooserButton" id="filechooserbutton1">
+                  <object class="GtkFileChooserButton" id="toolbar-session-button">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
@@ -695,6 +695,47 @@ native pixel size</property>
             <property name="position">2</property>
           </packing>
         </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="menu-session-browser">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkImageMenuItem" id="menu-session-open">
+        <property name="label">gtk-open</property>
+        <property name="use_action_appearance">False</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="do_menu_session_open_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menu-session-open-with">
+        <property name="use_action_appearance">False</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Open with</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="separatormenuitem3">
+        <property name="use_action_appearance">False</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImageMenuItem" id="menu-session-delete">
+        <property name="label">gtk-delete</property>
+        <property name="use_action_appearance">False</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="do_menu_session_delete_activate" swapped="no"/>
       </object>
     </child>
   </object>

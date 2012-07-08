@@ -66,6 +66,8 @@ const char *entangle_image_get_filename(EntangleImage *image);
 time_t entangle_image_get_last_modified(EntangleImage *image);
 off_t entangle_image_get_file_size(EntangleImage *image);
 
+gboolean entangle_image_delete(EntangleImage *image, GError **error);
+
 GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image);
 void entangle_image_set_pixbuf(EntangleImage *image,
                                GdkPixbuf *pixbuf);

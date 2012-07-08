@@ -70,6 +70,8 @@ void entangle_session_browser_set_session(EntangleSessionBrowser *browser,
                                           EntangleSession *session);
 EntangleSession *entangle_session_browser_get_session(EntangleSessionBrowser *browser);
 
+EntangleImage *entangle_session_browser_get_image_at_coords(EntangleSessionBrowser *browser,
+                                                            gint x, gint y);
 
 G_END_DECLS
 

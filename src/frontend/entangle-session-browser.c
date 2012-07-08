@@ -234,6 +234,37 @@ static void do_image_added(EntangleSession *session G_GNUC_UNUSED,
 
 
 
+static void do_image_removed(EntangleSession *session G_GNUC_UNUSED,
+                             EntangleImage *img,
+                             gpointer data)
+{
+    EntangleSessionBrowser *browser = data;
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+    GtkTreeIter iter;
+
+    ENTANGLE_DEBUG("Unrequest image %s for new image", entangle_image_get_filename(img));
+    entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->loader), img);
+
+    if (!gtk_tree_model_get_iter_first(priv->model, &iter))
+        return;
+
+    do {
+        EntangleImage *thisimg = NULL;
+        GValue value;
+        memset(&value, 0, sizeof(value));
+        gtk_tree_model_get_value(priv->model, &iter, FIELD_IMAGE, &value);
+        thisimg = g_value_get_object(&value);
+        if (thisimg == img) {
+            gtk_list_store_remove(GTK_LIST_STORE(priv->model), &iter);
+            break;
+        }
+    } while (gtk_tree_model_iter_next(priv->model, &iter));
+
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
+}
+
+
+
 static void do_model_unload(EntangleSessionBrowser *browser)
 {
     EntangleSessionBrowserPrivate *priv = browser->priv;
@@ -275,6 +306,8 @@ static void do_model_load(EntangleSessionBrowser *browser)
 
     priv->sigImageAdded = g_signal_connect(priv->session, "session-image-added",
                                            G_CALLBACK(do_image_added), browser);
+    priv->sigImageAdded = g_signal_connect(priv->session, "session-image-removed",
+                                           G_CALLBACK(do_image_removed), browser);
     priv->sigThumbReady = g_signal_connect(priv->loader, "pixbuf-loaded",
                                            G_CALLBACK(do_thumb_loaded), browser);
 
@@ -920,6 +953,27 @@ entangle_session_browser_get_item_at_coords(EntangleSessionBrowser *browser,
         }
     }
     return NULL;
+}
+
+
+EntangleImage *entangle_session_browser_get_image_at_coords(EntangleSessionBrowser *browser,
+                                                            gint x, gint y)
+{
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+    EntangleSessionBrowserItem *item = entangle_session_browser_get_item_at_coords(browser, x, y,
+                                                                                   FALSE, NULL);
+    EntangleImage *img;
+    GValue val;
+
+    if (!item)
+        return NULL;
+
+    memset(&val, 0, sizeof val);
+    gtk_tree_model_get_value(GTK_TREE_MODEL(priv->model), &item->iter, 0, &val);
+
+    img = g_value_get_object(&val);
+
+    return img;
 }
 
 

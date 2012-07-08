@@ -59,7 +59,7 @@ struct _EntangleSessionClass
 GType entangle_session_get_type(void) G_GNUC_CONST;
 
 EntangleSession *entangle_session_new(const char *directory,
-                              const char *filenamePattern);
+                                      const char *filenamePattern);
 
 const char *entangle_session_directory(EntangleSession *session);
 const char *entangle_session_filename_pattern(EntangleSession *session);
@@ -70,6 +70,7 @@ char *entangle_session_next_filename(EntangleSession *session,
 gboolean entangle_session_load(EntangleSession *session);
 
 void entangle_session_add(EntangleSession *session, EntangleImage *image);
+void entangle_session_remove(EntangleSession *session, EntangleImage *image);
 
 int entangle_session_image_count(EntangleSession *session);
 

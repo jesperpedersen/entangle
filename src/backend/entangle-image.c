@@ -246,6 +246,15 @@ off_t entangle_image_get_file_size(EntangleImage *image)
 }
 
 
+gboolean entangle_image_delete(EntangleImage *image, GError **error)
+{
+    EntangleImagePrivate *priv = image->priv;
+    GFile *file = g_file_new_for_path(priv->filename);
+
+    return g_file_delete(file, NULL, error);
+}
+
+
 GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image)
 {
     EntangleImagePrivate *priv = image->priv;

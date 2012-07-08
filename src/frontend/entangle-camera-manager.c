@@ -76,6 +76,8 @@ struct _EntangleCameraManagerPrivate {
     ViewAutoDrawer *imageDrawer;
     gulong imageDrawerTimer;
     EntangleSessionBrowser *sessionBrowser;
+    GtkMenu *sessionBrowserMenu;
+    EntangleImage *sessionBrowserImage;
     EntangleControlPanel *controlPanel;
     EntanglePreferencesDisplay *prefsDisplay;
 
@@ -188,6 +190,10 @@ void do_menu_disconnect(GtkMenuItem *src,
 gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                 GdkEventKey *ev,
                                 gpointer data);
+void do_menu_session_open_activate(GtkMenuItem *item G_GNUC_UNUSED,
+                                   EntangleCameraManager *manager);
+void do_menu_session_delete_activate(GtkMenuItem *item G_GNUC_UNUSED,
+                                     EntangleCameraManager *manager);
 
 
 static EntangleColourProfile *entangle_camera_manager_monitor_profile(GtkWindow *window)
@@ -423,11 +429,9 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     GtkWidget *toolPreview;
     GtkWidget *settingsBox;
 
-    GtkWidget *toolNew;
-    GtkWidget *toolOpen;
+    GtkWidget *toolSession;
     GtkWidget *toolSettings;
-    GtkWidget *menuNew;
-    GtkWidget *menuOpen;
+    GtkWidget *menuSession;
     GtkWidget *menuConnect;
     GtkWidget *menuDisconnect;
     GtkWidget *menuHelp;
@@ -442,11 +446,9 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     toolPreview = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-preview"));
     settingsBox = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-box"));
 
-    toolNew = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-new"));
-    toolOpen = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-open"));
+    toolSession = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session"));
     toolSettings = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-settings"));
-    menuNew = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-new"));
-    menuOpen = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-open"));
+    menuSession = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-session"));
     menuConnect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-connect"));
     menuDisconnect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-disconnect"));
     menuHelp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-help-camera"));
@@ -464,13 +466,9 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
                              entangle_camera_get_has_preview(priv->camera) &&
                              !priv->taskCapture ? TRUE : FALSE);
 
-    gtk_widget_set_sensitive(toolNew,
+    gtk_widget_set_sensitive(toolSession,
                              !priv->taskActive);
-    gtk_widget_set_sensitive(toolOpen,
-                             !priv->taskActive);
-    gtk_widget_set_sensitive(menuNew,
-                             !priv->taskActive);
-    gtk_widget_set_sensitive(menuOpen,
+    gtk_widget_set_sensitive(menuSession,
                              !priv->taskActive);
     gtk_widget_set_sensitive(menuConnect,
                              priv->camera ? FALSE : TRUE);
@@ -1366,7 +1364,7 @@ static void entangle_camera_manager_set_property(GObject *object,
             pattern = entangle_preferences_capture_get_filename_pattern(prefs);
             priv->session = entangle_session_new(directory, pattern);
 
-            chooser = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session"));
+            chooser = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session-button"));
             gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), directory);
 
             entangle_session_load(priv->session);
@@ -2201,6 +2199,189 @@ static void do_session_image_selected(GtkIconView *view G_GNUC_UNUSED,
 }
 
 
+void do_menu_session_open_activate(GtkMenuItem *item G_GNUC_UNUSED,
+                                   EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    gchar *ctype = NULL;
+    GList *files = NULL;
+    GAppInfo *info = NULL;
+    const gchar *filename;
+
+    if (!priv->sessionBrowserImage)
+        return;
+
+    filename = entangle_image_get_filename(priv->sessionBrowserImage);
+    ctype = g_content_type_guess(filename,
+                                 NULL, 0, NULL);
+    if (!ctype)
+        return;
+
+    info = g_app_info_get_default_for_type(ctype, FALSE);
+    g_free(ctype);
+    if (!info)
+        return;
+
+    files = g_list_append(files, g_file_new_for_path(filename));
+
+    g_app_info_launch(info, files, NULL, NULL);
+
+    g_list_foreach(files, (GFunc)g_object_unref, NULL);
+    g_list_free(files);
+}
+
+
+void do_menu_session_delete_activate(GtkMenuItem *item G_GNUC_UNUSED,
+                                     EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GError *error = NULL;
+
+    if (!priv->sessionBrowserImage)
+        return;
+
+    if (!entangle_image_delete(priv->sessionBrowserImage, &error)) {
+        do_camera_task_error(manager, _("Delete"), error);
+        return;
+    }
+    entangle_session_remove(priv->session, priv->sessionBrowserImage);
+}
+
+
+static void do_session_browser_open_with_app(GtkMenuItem *src,
+                                             EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GAppInfo *info = g_object_get_data(G_OBJECT(src), "appinfo");
+    GList *files = NULL;
+    const gchar *filename;
+
+    if (!info)
+        return;
+
+    if (!priv->sessionBrowserImage)
+        return;
+
+    filename = entangle_image_get_filename(priv->sessionBrowserImage);
+    files = g_list_append(files, g_file_new_for_path(filename));
+
+    g_app_info_launch(info, files, NULL, NULL);
+
+    g_list_foreach(files, (GFunc)g_object_unref, NULL);
+    g_list_free(files);
+}
+
+
+static void do_session_browser_open_with_select(GtkMenuItem *src G_GNUC_UNUSED,
+                                                EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GtkDialog *dialog;
+    GFile *file;
+    GAppInfo *info;
+    GList *files = NULL;
+
+    if (!priv->sessionBrowserImage)
+        return;
+
+    file = g_file_new_for_path(entangle_image_get_filename(priv->sessionBrowserImage));
+    dialog = GTK_DIALOG(gtk_app_chooser_dialog_new(entangle_camera_manager_get_window(manager),
+                                                   GTK_DIALOG_MODAL|GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   file));
+
+    gtk_dialog_run(dialog);
+
+    info = gtk_app_chooser_get_app_info(GTK_APP_CHOOSER(dialog));
+
+    files = g_list_append(files, file);
+
+    if (info)
+        g_app_info_launch(info, files, NULL, NULL);
+
+    g_list_foreach(files, (GFunc)g_object_unref, NULL);
+    g_list_free(files);
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+
+static void do_session_browser_popup(EntangleSessionBrowser *browser,
+                                     GdkEventButton  *event,
+                                     EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GtkWidget *open;
+    GtkWidget *openWith;
+    GtkMenu *appList;
+    GtkMenuItem *child;
+    gchar *ctype = NULL;
+    GList *appInfoList = NULL;
+    const gchar *filename;
+
+    if (event->type != GDK_BUTTON_PRESS)
+        return;
+    if (event->button != 3)
+        return;
+
+    priv->sessionBrowserImage = entangle_session_browser_get_image_at_coords(browser,
+                                                                             event->x,
+                                                                             event->y);
+
+    if (!priv->sessionBrowserImage)
+        return;
+
+    filename = entangle_image_get_filename(priv->sessionBrowserImage);
+
+    open = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-session-open"));
+    openWith = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-session-open-with"));
+
+    ctype = g_content_type_guess(filename,
+                                 NULL, 0, NULL);
+    if (!ctype)
+        goto cleanup;
+
+    appInfoList = g_app_info_get_all_for_type(ctype);
+
+    appList = GTK_MENU(gtk_menu_new());
+
+    if (appInfoList) {
+        GList *tmp = appInfoList;
+        while (tmp) {
+            GAppInfo *appInfo = tmp->data;
+
+            child = GTK_MENU_ITEM(gtk_menu_item_new_with_label
+                                  (g_app_info_get_display_name(appInfo)));
+            g_signal_connect(child, "activate",
+                             G_CALLBACK(do_session_browser_open_with_app), manager);
+            g_object_set_data_full(G_OBJECT(child), "appinfo",
+                                   appInfo, (GDestroyNotify)g_object_unref);
+            gtk_container_add(GTK_CONTAINER(appList), GTK_WIDGET(child));
+
+            tmp = tmp->next;
+        }
+        g_list_free(appInfoList);
+
+        child = GTK_MENU_ITEM(gtk_separator_menu_item_new());
+        gtk_container_add(GTK_CONTAINER(appList), GTK_WIDGET(child));
+    }
+
+    child = GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Select application...")));
+    g_signal_connect(child, "activate",
+                     G_CALLBACK(do_session_browser_open_with_select), manager);
+    gtk_container_add(GTK_CONTAINER(appList), GTK_WIDGET(child));
+
+    gtk_widget_show_all(GTK_WIDGET(appList));
+
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(openWith), GTK_WIDGET(appList));
+
+    gtk_menu_popup(priv->sessionBrowserMenu,
+                   NULL, NULL, NULL, NULL,
+                   event->button, event->time);
+
+ cleanup:
+    gtk_widget_set_sensitive(GTK_WIDGET(open), ctype && appInfoList ? TRUE : FALSE);
+}
+
+
 static void do_popup_remove(gpointer data)
 {
     EntangleImagePopup *pol = data;
@@ -2345,12 +2526,15 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     priv->imageStatusbar = entangle_image_statusbar_new();
     priv->imageDrawer = VIEW_AUTODRAWER(ViewAutoDrawer_New());
     priv->sessionBrowser = entangle_session_browser_new();
+    priv->sessionBrowserMenu = GTK_MENU(gtk_builder_get_object(priv->builder, "menu-session-browser"));
     priv->controlPanel = entangle_control_panel_new();
 
     g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
 
     g_signal_connect(priv->sessionBrowser, "selection-changed",
                      G_CALLBACK(do_session_image_selected), manager);
+    g_signal_connect(priv->sessionBrowser, "button-press-event",
+                     G_CALLBACK(do_session_browser_popup), manager);
 
     imageScroll = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-scroll"));
     iconScroll = GTK_WIDGET(gtk_builder_get_object(priv->builder, "icon-scroll"));

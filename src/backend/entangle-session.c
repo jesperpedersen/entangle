@@ -402,6 +402,21 @@ void entangle_session_add(EntangleSession *session, EntangleImage *image)
 }
 
 
+void entangle_session_remove(EntangleSession *session, EntangleImage *image)
+{
+    EntangleSessionPrivate *priv = session->priv;
+    GList *tmp = g_list_find(priv->images, image);
+
+    if (!tmp)
+        return;
+
+    priv->images = g_list_delete_link(priv->images, tmp);
+
+    g_signal_emit_by_name(session, "session-image-removed", image);
+    g_object_unref(image);
+}
+
+
 gboolean entangle_session_load(EntangleSession *session)
 {
     EntangleSessionPrivate *priv = session->priv;
