@@ -39,7 +39,7 @@ and 'hands off' shooting directly from the controlling computer.
 %build
 
 %configure
-make %{?_smp_mflags}
+make %{?_smp_mflags} V=1
 
 %install
 rm -fr %{buildroot}
