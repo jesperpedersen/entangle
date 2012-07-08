@@ -89,6 +89,10 @@ gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs);
 void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs, gint opacity);
 gboolean entangle_preferences_img_get_mask_enabled(EntanglePreferences *prefs);
 void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gboolean enabled);
+gboolean entangle_preferences_img_get_focus_point(EntanglePreferences *prefs);
+void entangle_preferences_img_set_focus_point(EntanglePreferences *prefs, gboolean enabled);
+gint entangle_preferences_img_get_grid_lines(EntanglePreferences *prefs);
+void entangle_preferences_img_set_grid_lines(EntanglePreferences *prefs, gint gridLines);
 
 G_END_DECLS
 

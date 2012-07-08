@@ -32,6 +32,7 @@
 #include "entangle-preferences-display.h"
 #include "entangle-camera-picker.h"
 #include "entangle-camera-manager.h"
+#include "entangle-image-display.h"
 
 #define ENTANGLE_PREFERENCES_DISPLAY_GET_PRIVATE(obj)                               \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_PREFERENCES_DISPLAY, EntanglePreferencesDisplayPrivate))
@@ -76,6 +77,8 @@ void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDis
 void do_img_mask_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
 void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
+void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
 
 static void entangle_preferences_display_get_property(GObject *object,
                                                       guint prop_id,
@@ -248,6 +251,43 @@ static void entangle_preferences_display_notify(GObject *object,
 
         if (fabs(newvalue - oldvalue)  > 0.0005)
             gtk_adjustment_set_value(adjust, newvalue);
+    } else if (strcmp(spec->name, "img-focus-point") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "img-grid-lines") == 0) {
+        gint newvalue;
+        gint oldvalue;
+        const gchar *oldid;
+        GEnumClass *enum_class;
+        GEnumValue *enum_value;
+
+        enum_class = g_type_class_ref(ENTANGLE_TYPE_IMAGE_DISPLAY_GRID);
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldid = gtk_combo_box_get_active_id(GTK_COMBO_BOX(tmp));
+
+        oldvalue = ENTANGLE_IMAGE_DISPLAY_GRID_NONE;
+        if (oldid) {
+            enum_value = g_enum_get_value_by_nick(enum_class, oldid);
+            if (enum_value != NULL)
+                oldvalue = enum_value->value;
+        }
+
+        if (newvalue != oldvalue) {
+            enum_value = g_enum_get_value(enum_class, newvalue);
+            if (enum_value != NULL)
+                gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), enum_value->value_nick);
+            else
+                gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), "none");
+        }
+
+        g_type_class_unref(enum_class);
     }
 }
 
@@ -349,6 +389,21 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-mask-opacity-label"));
     gtk_widget_set_sensitive(tmp, hasRatio);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-focus-point"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp),
+                                 entangle_preferences_img_get_focus_point(prefs));
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-grid-lines"));
+    GEnumClass *enum_class = g_type_class_ref(ENTANGLE_TYPE_IMAGE_DISPLAY_GRID);
+    GEnumValue *enum_value = g_enum_get_value(enum_class,
+                                              entangle_preferences_img_get_grid_lines(prefs));
+    g_type_class_unref(enum_class);
+
+    if (enum_value != NULL)
+        gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), enum_value->value_nick);
+    else
+        gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), NULL);
 }
 
 static void entangle_preferences_display_finalize (GObject *object)
@@ -600,6 +655,36 @@ void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay 
 }
 
 
+void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+{
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+
+    entangle_preferences_img_set_focus_point(prefs, enabled);
+}
+
+
+void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
+{
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    const gchar *id = gtk_combo_box_get_active_id(src);
+    EntangleImageDisplayGrid grid = ENTANGLE_IMAGE_DISPLAY_GRID_NONE;
+
+    if (id) {
+        GEnumClass *enum_class = g_type_class_ref(ENTANGLE_TYPE_IMAGE_DISPLAY_GRID);
+        GEnumValue *enum_value = g_enum_get_value_by_nick(enum_class, id);
+        g_type_class_unref(enum_class);
+
+        if (enum_value != NULL)
+            grid = enum_value->value;
+    }
+
+    entangle_preferences_img_set_grid_lines(prefs, grid);
+}
+
+
 static void entangle_preferences_display_init(EntanglePreferencesDisplay *preferences)
 {
     EntanglePreferencesDisplayPrivate *priv;
@@ -621,6 +706,7 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
     GtkFileFilter *iccFilter;
     GError *error = NULL;
     GtkComboBox *aspectRatio;
+    GtkComboBox *gridLines;
 
     priv = preferences->priv = ENTANGLE_PREFERENCES_DISPLAY_GET_PRIVATE(preferences);
 
@@ -930,14 +1016,50 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
                        1, _("12.00:1 - Circle-Vision 360"),
                        -1);
 
-
     gtk_combo_box_set_model(GTK_COMBO_BOX(aspectRatio), GTK_TREE_MODEL(list));
     gtk_combo_box_set_id_column(GTK_COMBO_BOX(aspectRatio), 0);
 
     cellText = gtk_cell_renderer_text_new();
     gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(aspectRatio), cellText, TRUE);
     gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(aspectRatio),
-        cellText, "text", 1, NULL);
+                                   cellText, "text", 1, NULL);
+
+
+    gridLines = GTK_COMBO_BOX(gtk_builder_get_object(priv->builder, "img-grid-lines"));
+    list = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING, -1);
+
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "none",
+                       1, _("None"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "center-lines",
+                       1, _("Center lines"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "rule-of-3rds",
+                       1, _("Rule of 3rds"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "rule-of-5ths",
+                       1, _("Rule of 5ths"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
+                       0, "golden-sections",
+                       1, _("Golden sections"),
+                       -1);
+    gtk_combo_box_set_model(GTK_COMBO_BOX(gridLines), GTK_TREE_MODEL(list));
+    gtk_combo_box_set_id_column(GTK_COMBO_BOX(gridLines), 0);
+
+    cellText = gtk_cell_renderer_text_new();
+    gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(gridLines), cellText, TRUE);
+    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(gridLines),
+                                   cellText, "text", 1, NULL);
 
     g_signal_connect(selection, "changed", G_CALLBACK(do_page_changed), preferences);
 }

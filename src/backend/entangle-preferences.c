@@ -65,6 +65,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_IMG_ASPECT_RATIO           "aspect-ratio"
 #define SETTING_IMG_MASK_OPACITY           "mask-opacity"
 #define SETTING_IMG_MASK_ENABLED           "mask-enabled"
+#define SETTING_IMG_FOCUS_POINT            "focus-point"
+#define SETTING_IMG_GRID_LINES             "grid-lines"
 
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
 #define PROP_NAME_INTERFACE_SCREEN_BLANK     SETTING_INTERFACE "-" SETTING_INTERFACE_SCREEN_BLANK
@@ -83,6 +85,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define PROP_NAME_IMG_ASPECT_RATIO           SETTING_IMG "-" SETTING_IMG_ASPECT_RATIO
 #define PROP_NAME_IMG_MASK_OPACITY           SETTING_IMG "-" SETTING_IMG_MASK_OPACITY
 #define PROP_NAME_IMG_MASK_ENABLED           SETTING_IMG "-" SETTING_IMG_MASK_ENABLED
+#define PROP_NAME_IMG_FOCUS_POINT            SETTING_IMG "-" SETTING_IMG_FOCUS_POINT
+#define PROP_NAME_IMG_GRID_LINES             SETTING_IMG "-" SETTING_IMG_GRID_LINES
 
 enum {
     PROP_0,
@@ -104,6 +108,8 @@ enum {
     PROP_IMG_ASPECT_RATIO,
     PROP_IMG_MASK_OPACITY,
     PROP_IMG_MASK_ENABLED,
+    PROP_IMG_FOCUS_POINT,
+    PROP_IMG_GRID_LINES,
 };
 
 
@@ -236,10 +242,16 @@ static void entangle_preferences_get_property(GObject *object,
                                                SETTING_IMG_MASK_OPACITY));
             break;
 
-        case PROP_IMG_MASK_ENABLED:
+        case PROP_IMG_FOCUS_POINT:
             g_value_set_boolean(value,
                                 g_settings_get_boolean(priv->imgSettings,
-                                                       SETTING_IMG_MASK_ENABLED));
+                                                       SETTING_IMG_FOCUS_POINT));
+            break;
+
+        case PROP_IMG_GRID_LINES:
+            g_value_set_int(value,
+                            g_settings_get_enum(priv->imgSettings,
+                                                SETTING_IMG_GRID_LINES));
             break;
 
         default:
@@ -348,10 +360,16 @@ static void entangle_preferences_set_property(GObject *object,
                                g_value_get_int(value));
             break;
 
-        case PROP_IMG_MASK_ENABLED:
+        case PROP_IMG_FOCUS_POINT:
             g_settings_set_boolean(priv->imgSettings,
-                                   SETTING_IMG_MASK_ENABLED,
+                                   SETTING_IMG_FOCUS_POINT,
                                    g_value_get_boolean(value));
+            break;
+
+        case PROP_IMG_GRID_LINES:
+            g_settings_set_enum(priv->imgSettings,
+                                SETTING_IMG_GRID_LINES,
+                                g_value_get_int(value));
             break;
 
         default:
@@ -541,6 +559,28 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                          G_PARAM_STATIC_NAME |
                                                          G_PARAM_STATIC_NICK |
                                                          G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_FOCUS_POINT,
+                                    g_param_spec_boolean(PROP_NAME_IMG_FOCUS_POINT,
+                                                         "Focus point",
+                                                         "Focus point during preview",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_GRID_LINES,
+                                    g_param_spec_int(PROP_NAME_IMG_GRID_LINES,
+                                                     "Grid lines",
+                                                     "Grid lines during preview",
+                                                     0, 4, 4,
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_NAME |
+                                                     G_PARAM_STATIC_NICK |
+                                                     G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntanglePreferencesPrivate));
 }
@@ -875,6 +915,44 @@ void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gbool
     g_settings_set_boolean(priv->imgSettings,
                            SETTING_IMG_MASK_ENABLED, enabled);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_MASK_ENABLED);
+}
+
+
+gboolean entangle_preferences_img_get_focus_point(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->imgSettings,
+                                  SETTING_IMG_FOCUS_POINT);
+}
+
+
+void entangle_preferences_img_set_focus_point(EntanglePreferences *prefs, gboolean enabled)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->imgSettings,
+                           SETTING_IMG_FOCUS_POINT, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_FOCUS_POINT);
+}
+
+
+gint entangle_preferences_img_get_grid_lines(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_enum(priv->imgSettings,
+                               SETTING_IMG_GRID_LINES);
+}
+
+
+void entangle_preferences_img_set_grid_lines(EntanglePreferences *prefs, gint gridLines)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_enum(priv->imgSettings,
+                        SETTING_IMG_GRID_LINES, gridLines);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_GRID_LINES);
 }
 
 

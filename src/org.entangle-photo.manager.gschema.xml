@@ -8,6 +8,14 @@
     <value value="3" nick="absolute-colourimetric"/>
   </enum>
 
+  <enum id="org.entangle-photo.manager.img.grid-lines">
+    <value value="0" nick="none"/>
+    <value value="1" nick="center-lines"/>
+    <value value="2" nick="rule-of-3rds"/>
+    <value value="3" nick="rule-of-5ths"/>
+    <value value="4" nick="golden-sections"/>
+  </enum>
+
   <schema path="/org/entangle-photo/manager/" id="org.entangle-photo.manager" gettext-domain="entangle-photo">
     <child schema="org.entangle-photo.manager.interface" name="interface"/>
     <child schema="org.entangle-photo.manager.capture" name="capture"/>
@@ -104,6 +112,18 @@
       <default>false</default>
       <summary>Mask enabled</summary>
       <description>Enable aspect ratio image mask</description>
+    </key>
+
+    <key type="b" name="focus-point">
+      <default>true</default>
+      <summary>Focus point</summary>
+      <description>Focus point in preview mode</description>
+    </key>
+
+    <key name="grid-lines" enum="org.entangle-photo.manager.img.grid-lines">
+      <default>'golden-sections'</default>
+      <summary>Grid lines</summary>
+      <description>Grid lines in preview</description>
     </key>
   </schema>
 </schemalist>
