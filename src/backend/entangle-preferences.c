@@ -230,6 +230,12 @@ static void entangle_preferences_get_property(GObject *object,
                                                  SETTING_CMS_RENDERING_INTENT));
             break;
 
+        case PROP_IMG_MASK_ENABLED:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->imgSettings,
+                                                       SETTING_IMG_MASK_ENABLED));
+            break;
+
         case PROP_IMG_ASPECT_RATIO:
             g_value_set_string(value,
                                g_settings_get_string(priv->imgSettings,
@@ -346,6 +352,12 @@ static void entangle_preferences_set_property(GObject *object,
             g_settings_set_enum(priv->cmsSettings,
                                 SETTING_CMS_RENDERING_INTENT,
                                 g_value_get_enum(value));
+            break;
+
+        case PROP_IMG_MASK_ENABLED:
+            g_settings_set_boolean(priv->imgSettings,
+                                   SETTING_IMG_MASK_ENABLED,
+                                   g_value_get_boolean(value));
             break;
 
         case PROP_IMG_ASPECT_RATIO:
