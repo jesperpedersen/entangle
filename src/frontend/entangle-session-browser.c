@@ -90,6 +90,9 @@ struct _EntangleSessionBrowserPrivate {
     gint margin;
     gint item_padding;
     gint column_spacing;
+
+    gint dnd_start_x;
+    gint dnd_start_y;
 };
 
 
@@ -1163,6 +1166,8 @@ entangle_session_browser_button_press(GtkWidget *widget,
             item->selected = TRUE;
             entangle_session_browser_queue_draw_item(browser, item);
             entangle_session_browser_scroll_to_item(browser, item);
+            priv->dnd_start_x = event->x;
+            priv->dnd_start_y = event->y;
         }
     }
 
@@ -1172,6 +1177,72 @@ entangle_session_browser_button_press(GtkWidget *widget,
     return event->button == 1;
 }
 
+
+static gboolean
+entangle_session_browser_button_release(GtkWidget *widget,
+                                        GdkEventButton *event)
+{
+    EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+
+    if (event->button == 1 && event->type == GDK_BUTTON_RELEASE) {    
+        priv->dnd_start_x = -1;
+        priv->dnd_start_y = -1;
+    }
+
+    return event->button == 1;
+}
+
+
+static gboolean
+entangle_session_browser_motion_notify(GtkWidget *widget,
+                                       GdkEventMotion *event)
+{
+    EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+    EntangleSessionBrowserItem *item;
+    GdkPixbuf *pixbuf;
+    GtkTargetEntry tentry[] = {
+        { g_strdup("demo"), GTK_TARGET_SAME_APP, 0,}
+    };
+    GtkTargetList *tlist;
+    GdkDragContext *ctx;
+
+    if (priv->dnd_start_y == -1 || priv->dnd_start_x == -1)
+        return FALSE;
+
+    if (!gtk_drag_check_threshold(widget,
+                                  priv->dnd_start_x,
+                                  priv->dnd_start_y,
+                                  event->x, event->y))
+        return TRUE;
+
+    item = entangle_session_browser_get_item_at_coords(browser,
+                                                       priv->dnd_start_x,
+                                                       priv->dnd_start_y,
+                                                       FALSE,
+                                                       NULL);
+
+    if (!item) {
+        priv->dnd_start_x = priv->dnd_start_y = -1;
+        return FALSE;
+    }
+
+    gtk_tree_model_get(priv->model, &item->iter, FIELD_PIXMAP, &pixbuf, -1);
+
+    tlist = gtk_target_list_new(tentry, G_N_ELEMENTS(tentry));
+
+    ctx = gtk_drag_begin(widget,
+                         tlist,
+                         GDK_ACTION_PRIVATE,
+                         1,
+                         (GdkEvent*)event);
+    gtk_drag_set_icon_pixbuf(ctx, pixbuf, 0, 0);
+
+    gtk_target_list_unref(tlist);
+
+    return TRUE;
+}
 
 static gboolean
 entangle_session_browser_key_release(GtkWidget *widget,
@@ -1337,7 +1408,9 @@ static void entangle_session_browser_class_init(EntangleSessionBrowserClass *kla
     widget_class->realize = entangle_session_browser_realize;
     widget_class->unrealize = entangle_session_browser_unrealize;
     widget_class->draw = entangle_session_browser_draw;
-    widget_class->button_press_event = entangle_session_browser_button_press;
+    widget_class->button_press_event = entangle_session_browser_button_press; 
+    widget_class->button_release_event = entangle_session_browser_button_release;
+    widget_class->motion_notify_event = entangle_session_browser_motion_notify;
     widget_class->key_release_event = entangle_session_browser_key_release;
     widget_class->size_allocate = entangle_session_browser_size_allocate;
 

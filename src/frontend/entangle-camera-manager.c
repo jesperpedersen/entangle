@@ -2390,11 +2390,11 @@ static void do_popup_remove(gpointer data)
     g_object_unref(pol);
 }
 
-#if 0
-static void do_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
-                           GdkDragContext *ctx G_GNUC_UNUSED,
-                           GtkDragResult res,
-                           gpointer data)
+
+static void do_session_browser_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
+                                           GdkDragContext *ctx G_GNUC_UNUSED,
+                                           GtkDragResult res,
+                                           gpointer data)
 {
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
@@ -2427,7 +2427,7 @@ static void do_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
         }
     }
 }
-#endif
+
 
 static void do_pixbuf_loaded(EntanglePixbufLoader *loader,
                              EntangleImage *image)
@@ -2535,6 +2535,8 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
                      G_CALLBACK(do_session_image_selected), manager);
     g_signal_connect(priv->sessionBrowser, "button-press-event",
                      G_CALLBACK(do_session_browser_popup), manager);
+    g_signal_connect(priv->sessionBrowser, "drag-failed",
+                     G_CALLBACK(do_session_browser_drag_failed), manager);
 
     imageScroll = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-scroll"));
     iconScroll = GTK_WIDGET(gtk_builder_get_object(priv->builder, "icon-scroll"));
