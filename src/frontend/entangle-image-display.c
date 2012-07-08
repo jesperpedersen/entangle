@@ -322,6 +322,16 @@ static void entangle_image_display_draw_grid_display(GtkWidget *widget, cairo_t 
         offy[1] = (wh - (my * 2)) / 3 * 2;
         break;
 
+    case ENTANGLE_IMAGE_DISPLAY_GRID_QUARTERS:
+        count = 3;
+        offx[0] = (ww - (mx * 2)) / 4;
+        offy[0] = (wh - (my * 2)) / 4;
+        offx[1] = (ww - (mx * 2)) / 4 * 2;
+        offy[1] = (wh - (my * 2)) / 4 * 2;
+        offx[2] = (ww - (mx * 2)) / 4 * 3;
+        offy[2] = (wh - (my * 2)) / 4 * 3;
+        break;
+
     case ENTANGLE_IMAGE_DISPLAY_GRID_RULE_OF_5THS:
         count = 4;
         offx[0] = (ww - (mx * 2)) / 5;

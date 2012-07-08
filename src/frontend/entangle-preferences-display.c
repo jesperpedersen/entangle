@@ -1045,6 +1045,11 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
                        -1);
     gtk_list_store_append(list, &iter);
     gtk_list_store_set(list, &iter,
+                       0, "quarters",
+                       1, _("Quarters"),
+                       -1);
+    gtk_list_store_append(list, &iter);
+    gtk_list_store_set(list, &iter,
                        0, "rule-of-5ths",
                        1, _("Rule of 5ths"),
                        -1);

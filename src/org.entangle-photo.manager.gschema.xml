@@ -12,8 +12,9 @@
     <value value="0" nick="none"/>
     <value value="1" nick="center-lines"/>
     <value value="2" nick="rule-of-3rds"/>
-    <value value="3" nick="rule-of-5ths"/>
-    <value value="4" nick="golden-sections"/>
+    <value value="3" nick="quarters"/>
+    <value value="4" nick="rule-of-5ths"/>
+    <value value="5" nick="golden-sections"/>
   </enum>
 
   <schema path="/org/entangle-photo/manager/" id="org.entangle-photo.manager" gettext-domain="entangle-photo">
