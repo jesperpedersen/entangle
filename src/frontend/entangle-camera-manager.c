@@ -377,6 +377,24 @@ static GtkWidget *entangle_camera_manager_monitor_menu(EntangleCameraManager *ma
 }
 
 
+static void entangle_camera_manager_update_viewfinder(EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->taskPreview) {
+        EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+        gint gridLines = entangle_preferences_img_get_grid_lines(prefs);
+        gboolean focusPoint = entangle_preferences_img_get_focus_point(prefs);
+
+        entangle_image_display_set_focus_point(priv->imageDisplay, focusPoint);
+        entangle_image_display_set_grid_display(priv->imageDisplay, gridLines);
+    } else {
+        entangle_image_display_set_focus_point(priv->imageDisplay, FALSE);
+        entangle_image_display_set_grid_display(priv->imageDisplay,
+                                                ENTANGLE_IMAGE_DISPLAY_GRID_NONE);
+    }
+}
+
 static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
                                                   GParamSpec *spec,
                                                   gpointer opaque)
@@ -395,6 +413,9 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
         entangle_camera_manager_update_mask_opacity(manager);
     } else if (g_str_equal(spec->name, "img-mask-enabled")) {
         entangle_camera_manager_update_mask_enabled(manager);
+    } else if (g_str_equal(spec->name, "img-focus-point") ||
+               g_str_equal(spec->name, "img-grid-lines")) {
+        entangle_camera_manager_update_viewfinder(manager);
     }
 }
 
@@ -495,6 +516,8 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     } else {
         gtk_widget_hide(cancel);
     }
+
+    entangle_camera_manager_update_viewfinder(manager);
 }
 
 
