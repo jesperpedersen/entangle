@@ -19,6 +19,7 @@ BuildRequires: lcms-devel >= 1.18
 BuildRequires: gobject-introspection-devel
 BuildRequires: libpeas-devel >= 0.5.5
 BuildRequires: libgexiv2-devel >= 0.2.2
+BuildRequires: intltool
 BuildRequires: libX11-devel
 BuildRequires: libXext-devel >= 1.3.0
 
@@ -87,7 +88,6 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %{_datadir}/%{name}/interface-22.png
 %{_datadir}/%{name}/imageviewer.png
 %{_datadir}/%{name}/imageviewer-22.png
-%{_datadir}/%{name}/color-management-22.png
 %{_datadir}/%{name}/sRGB.icc
 %{_datadir}/gtk-doc/html/Entangle
 %{_datadir}/applications/%{name}.desktop
