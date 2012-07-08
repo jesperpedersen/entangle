@@ -448,7 +448,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Capture</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-execute</property>
+                <property name="icon_name">capture</property>
                 <signal name="clicked" handler="do_toolbar_capture" swapped="no"/>
               </object>
               <packing>
@@ -465,7 +465,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Preview</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-find</property>
+                <property name="icon_name">preview</property>
                 <signal name="toggled" handler="do_toolbar_preview" swapped="no"/>
               </object>
               <packing>

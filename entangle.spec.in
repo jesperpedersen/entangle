@@ -76,6 +76,7 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %{_datadir}/%{name}/%{name}-128x128.png
 %{_datadir}/%{name}/%{name}-256x256.png
 %{_datadir}/%{name}/%{name}.svg
+%{_datadir}/%{name}/icons
 %{_datadir}/%{name}/plugins.png
 %{_datadir}/%{name}/plugins-22.png
 %{_datadir}/%{name}/capture.png

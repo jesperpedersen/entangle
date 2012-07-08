@@ -155,6 +155,19 @@ AC_CONFIG_FILES(
   Makefile
   entangle.spec
   src/Makefile
+  src/icons/Makefile
+  src/icons/128x128/Makefile
+  src/icons/128x128/actions/Makefile
+  src/icons/16x16/Makefile
+  src/icons/16x16/actions/Makefile
+  src/icons/22x22/Makefile
+  src/icons/22x22/actions/Makefile
+  src/icons/32x32/Makefile
+  src/icons/32x32/actions/Makefile
+  src/icons/48x48/Makefile
+  src/icons/48x48/actions/Makefile
+  src/icons/64x64/Makefile
+  src/icons/64x64/actions/Makefile
   po/Makefile.in
   docs/Makefile
   docs/reference/Makefile

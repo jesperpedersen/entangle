@@ -1,4 +1,5 @@
 
+SUBDIRS = icons
 
 noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
@@ -162,6 +163,7 @@ entangle_CFLAGS = \
 	$(GOBJECT_INTROSPECTION_CFLAGS) \
 	$(LIBPEAS_CFLAGS) \
 	$(WARN_CFLAGS) \
+	-DPKGDATADIR="\"$(pkgdatadir)\"" \
 	-DG_LOG_DOMAIN="\"$(PACKAGE)\"" \
 	$(NULL)
 
