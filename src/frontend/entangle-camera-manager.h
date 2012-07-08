@@ -64,6 +64,10 @@ GtkWindow *entangle_camera_manager_get_window(EntangleCameraManager *manager);
 void entangle_camera_manager_show(EntangleCameraManager *manager);
 void entangle_camera_manager_hide(EntangleCameraManager *manager);
 
+void entangle_camera_manager_capture(EntangleCameraManager *manager);
+void entangle_camera_manager_preview_begin(EntangleCameraManager *manager);
+void entangle_camera_manager_preview_cancel(EntangleCameraManager *manager);
+
 gboolean entangle_camera_manager_visible(EntangleCameraManager *manager);
 
 void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
