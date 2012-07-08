@@ -44,24 +44,14 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="menu-new">
-                        <property name="label" translatable="yes">New session</property>
+                      <object class="GtkImageMenuItem" id="menu-session">
+                        <property name="label" translatable="yes">Select session</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
                         <property name="always_show_image">True</property>
-                        <signal name="activate" handler="do_menu_new_session" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="menu-open">
-                        <property name="label" translatable="yes">Open session</property>
-                        <property name="use_action_appearance">False</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_stock">False</property>
-                        <signal name="activate" handler="do_menu_open_session" swapped="no"/>
+                        <signal name="activate" handler="do_menu_select_session" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -365,37 +355,24 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkToolButton" id="toolbar-new">
+              <object class="GtkToolItem" id="toolbar-session">
                 <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Start a new capture session</property>
                 <property name="use_action_appearance">False</property>
-                <property name="label" translatable="yes">New</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-new</property>
-                <signal name="clicked" handler="do_toolbar_new_session" swapped="no"/>
+                <child>
+                  <object class="GtkFileChooserButton" id="filechooserbutton1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <property name="action">select-folder</property>
+                    <property name="title" translatable="yes">Select a folder</property>
+                    <signal name="file-set" handler="do_toolbar_select_session" swapped="no"/>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="toolbar-open">
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Open an existing capture session</property>
-                <property name="use_action_appearance">False</property>
-                <property name="label" translatable="yes">Open</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-open</property>
-                <signal name="clicked" handler="do_toolbar_open_session" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>

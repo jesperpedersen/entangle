@@ -137,10 +137,8 @@ void do_menu_help_supported(GtkMenuItem *src,
                             EntangleCameraManager *manager);
 void do_menu_new_window(GtkImageMenuItem *src,
                         EntangleCameraManager *manager);
-void do_menu_new_session(GtkImageMenuItem *src,
-                         EntangleCameraManager *manager);
-void do_menu_open_session(GtkImageMenuItem *src,
-                          EntangleCameraManager *manager);
+void do_menu_select_session(GtkImageMenuItem *src,
+                            EntangleCameraManager *manager);
 void do_menu_settings_toggled(GtkCheckMenuItem *src,
                               EntangleCameraManager *manager);
 void do_menu_zoom_in(GtkImageMenuItem *src,
@@ -157,10 +155,8 @@ void do_menu_presentation(GtkCheckMenuItem *src,
                           EntangleCameraManager *manager);
 void do_menu_preferences(GtkCheckMenuItem *src,
                          EntangleCameraManager *manager);
-void do_toolbar_new_session(GtkToolButton *src,
-                            EntangleCameraManager *manager);
-void do_toolbar_open_session(GtkToolButton *src,
-                             EntangleCameraManager *manager);
+void do_toolbar_select_session(GtkFileChooserButton *src,
+                               EntangleCameraManager *manager);
 void do_toolbar_settings(GtkToggleToolButton *src,
                          EntangleCameraManager *manager);
 void do_toolbar_cancel_clicked(GtkToolButton *src,
@@ -1345,6 +1341,7 @@ static void entangle_camera_manager_set_property(GObject *object,
     EntangleCameraList *cameras;
     gchar *directory;
     gchar *pattern;
+    GtkWidget *chooser;
 
     ENTANGLE_DEBUG("Set prop %d", prop_id);
 
@@ -1368,6 +1365,9 @@ static void entangle_camera_manager_set_property(GObject *object,
             directory = entangle_preferences_capture_get_last_session(prefs);
             pattern = entangle_preferences_capture_get_filename_pattern(prefs);
             priv->session = entangle_session_new(directory, pattern);
+
+            chooser = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session"));
+            gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), directory);
 
             entangle_session_load(priv->session);
             entangle_session_browser_set_session(priv->sessionBrowser, priv->session);
@@ -1543,55 +1543,40 @@ void do_menu_help_supported(GtkMenuItem *src G_GNUC_UNUSED,
 }
 
 
-static void entangle_camera_manager_new_session(EntangleCameraManager *manager)
+void do_menu_new_window(GtkImageMenuItem *src G_GNUC_UNUSED,
+                        EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
-    GtkWidget *chooser;
-    GtkWidget *win;
-    gchar *dir;
-    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    EntangleCameraManager *newmanager = entangle_camera_manager_new(priv->application);
 
-    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
-
-    chooser = gtk_file_chooser_dialog_new(_("Start new session"),
-                                          GTK_WINDOW(win),
-                                          GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
-                                          GTK_STOCK_CANCEL,
-                                          GTK_RESPONSE_REJECT,
-                                          GTK_STOCK_OK,
-                                          GTK_RESPONSE_ACCEPT,
-                                          NULL);
-    gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(chooser), TRUE);
-
-    dir = entangle_preferences_capture_get_last_session(prefs);
-    g_mkdir_with_parents(dir, 0777);
-    ENTANGLE_DEBUG("Set curent folder '%s'", dir);
-    gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(chooser), dir);
-    g_free(dir);
-
-    gtk_widget_hide(chooser);
-
-    if (gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT) {
-        gchar *pattern;
-        EntangleSession *session;
-        do_select_image(manager, NULL);
-        dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
-        pattern = entangle_preferences_capture_get_filename_pattern(prefs);
-        session = entangle_session_new(dir, pattern);
-        entangle_preferences_capture_set_last_session(prefs, dir);
-        g_free(pattern);
-        g_free(dir);
-        entangle_session_load(session);
-        if (priv->session)
-            g_object_unref(priv->session);
-        priv->session = session;
-        entangle_session_browser_set_session(priv->sessionBrowser, session);
-    }
-
-    gtk_widget_destroy(chooser);
+    entangle_camera_manager_show(newmanager);
 }
 
-static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
+void do_toolbar_select_session(GtkFileChooserButton *src,
+                               EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    EntangleSession *session;
+    gchar *pattern;
+    gchar *dir;
+
+    do_select_image(manager, NULL);
+    dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
+    pattern = entangle_preferences_capture_get_filename_pattern(prefs);
+    session = entangle_session_new(dir, pattern);
+    entangle_preferences_capture_set_last_session(prefs, dir);
+    g_free(dir);
+    g_free(pattern);
+    entangle_session_load(session);
+    if (priv->session)
+        g_object_unref(priv->session);
+    priv->session = session;
+    entangle_session_browser_set_session(priv->sessionBrowser, session);
+}
+
+void do_menu_select_session(GtkImageMenuItem *src G_GNUC_UNUSED,
+                            EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *chooser;
@@ -1601,7 +1586,7 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
 
-    chooser = gtk_file_chooser_dialog_new(_("Open existing session"),
+    chooser = gtk_file_chooser_dialog_new(_("Select a folder"),
                                           GTK_WINDOW(win),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
                                           GTK_STOCK_CANCEL,
@@ -1625,7 +1610,7 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
         gchar *pattern;
         do_select_image(manager, NULL);
         dir = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
-        pattern = entangle_preferences_capture_get_last_session(prefs);
+        pattern = entangle_preferences_capture_get_filename_pattern(prefs);
         session = entangle_session_new(dir, pattern);
         entangle_preferences_capture_set_last_session(prefs, dir);
         g_free(dir);
@@ -1638,39 +1623,6 @@ static void entangle_camera_manager_open_session(EntangleCameraManager *manager)
     }
 
     gtk_widget_destroy(chooser);
-}
-
-void do_menu_new_window(GtkImageMenuItem *src G_GNUC_UNUSED,
-                        EntangleCameraManager *manager)
-{
-    EntangleCameraManagerPrivate *priv = manager->priv;
-    EntangleCameraManager *newmanager = entangle_camera_manager_new(priv->application);
-
-    entangle_camera_manager_show(newmanager);
-}
-
-void do_toolbar_new_session(GtkToolButton *src G_GNUC_UNUSED,
-                            EntangleCameraManager *manager)
-{
-    entangle_camera_manager_new_session(manager);
-}
-
-void do_toolbar_open_session(GtkToolButton *src G_GNUC_UNUSED,
-                             EntangleCameraManager *manager)
-{
-    entangle_camera_manager_open_session(manager);
-}
-
-void do_menu_new_session(GtkImageMenuItem *src G_GNUC_UNUSED,
-                         EntangleCameraManager *manager)
-{
-    entangle_camera_manager_new_session(manager);
-}
-
-void do_menu_open_session(GtkImageMenuItem *src G_GNUC_UNUSED,
-                          EntangleCameraManager *manager)
-{
-    entangle_camera_manager_open_session(manager);
 }
 
 void do_menu_settings_toggled(GtkCheckMenuItem *src,
