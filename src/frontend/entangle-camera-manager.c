@@ -2485,11 +2485,11 @@ static void do_session_browser_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
             if (!(pol = g_hash_table_lookup(priv->popups, filename))) {
                 pol = entangle_image_popup_new();
                 entangle_image_popup_set_image(pol, img);
-                g_object_unref(img);
                 g_hash_table_insert(priv->popups, g_strdup(filename), pol);
             }
             ENTANGLE_DEBUG("Popup %p for %s", pol, filename);
             entangle_image_popup_show(pol, GTK_WINDOW(win), x, y);
+            g_object_unref(img);
         }
     }
 }
