@@ -99,6 +99,8 @@ static void entangle_image_popup_finalize (GObject *object)
 
     ENTANGLE_DEBUG("Remove popup");
 
+    entangle_image_popup_hide(popup);
+
     g_object_unref(priv->builder);
 
     gtk_widget_destroy(win);
@@ -155,7 +157,6 @@ static gboolean entangle_image_popup_key_release(GtkWidget *widget G_GNUC_UNUSED
         ev->keyval == GDK_KEY_KP_Enter ||
         ev->keyval == GDK_KEY_Return) {
         entangle_image_popup_hide(popup);
-        g_signal_emit_by_name(popup, "popup-close");
         return TRUE;
     }
 
@@ -307,7 +308,10 @@ void entangle_image_popup_hide(EntangleImagePopup *popup)
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
-    gtk_widget_hide(win);
+    if (gtk_widget_get_visible(win)) {
+        gtk_widget_hide(win);
+        g_signal_emit_by_name(popup, "popup-close");
+    }
 }
 
 
