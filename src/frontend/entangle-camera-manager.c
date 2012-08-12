@@ -1572,6 +1572,7 @@ void do_toolbar_select_session(GtkFileChooserButton *src,
         g_object_unref(priv->session);
     priv->session = session;
     entangle_session_browser_set_session(priv->sessionBrowser, session);
+    g_hash_table_remove_all(priv->popups);
 }
 
 void do_menu_select_session(GtkImageMenuItem *src G_GNUC_UNUSED,
@@ -1619,6 +1620,7 @@ void do_menu_select_session(GtkImageMenuItem *src G_GNUC_UNUSED,
             g_object_unref(priv->session);
         priv->session = session;
         entangle_session_browser_set_session(priv->sessionBrowser, session);
+        g_hash_table_remove_all(priv->popups);
     }
 
     gtk_widget_destroy(chooser);
