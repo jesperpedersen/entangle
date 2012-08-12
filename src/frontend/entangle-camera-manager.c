@@ -525,6 +525,7 @@ static void do_select_image(EntangleCameraManager *manager,
         entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
                                       priv->currentImage);
         g_object_unref(priv->currentImage);
+        entangle_image_set_pixbuf(priv->currentImage, NULL);
     }
 
     priv->currentImage = image;
