@@ -1274,8 +1274,8 @@ entangle_session_browser_motion_notify(GtkWidget *widget,
 }
 
 static gboolean
-entangle_session_browser_key_release(GtkWidget *widget,
-                                     GdkEventKey *event)
+entangle_session_browser_key_press(GtkWidget *widget,
+                                   GdkEventKey *event)
 {
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
@@ -1441,7 +1441,7 @@ static void entangle_session_browser_class_init(EntangleSessionBrowserClass *kla
     widget_class->button_release_event = entangle_session_browser_button_release;
     widget_class->scroll_event = entangle_session_browser_scroll;
     widget_class->motion_notify_event = entangle_session_browser_motion_notify;
-    widget_class->key_release_event = entangle_session_browser_key_release;
+    widget_class->key_press_event = entangle_session_browser_key_press;
     widget_class->size_allocate = entangle_session_browser_size_allocate;
 
     g_object_class_install_property(object_class,
