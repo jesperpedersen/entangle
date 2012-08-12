@@ -525,7 +525,8 @@ static void do_select_image(EntangleCameraManager *manager,
         entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
                                       priv->currentImage);
         g_object_unref(priv->currentImage);
-        entangle_image_set_pixbuf(priv->currentImage, NULL);
+        if (!g_hash_table_lookup(priv->popups, entangle_image_get_filename(priv->currentImage)))
+            entangle_image_set_pixbuf(priv->currentImage, NULL);
     }
 
     priv->currentImage = image;
@@ -2448,6 +2449,21 @@ static gboolean do_session_browser_popup(EntangleSessionBrowser *browser,
 }
 
 
+static void do_popup_close(EntangleImagePopup *popup,
+                           EntangleCameraManager *manager)
+{
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntangleImage *img = entangle_image_popup_get_image(popup);
+    const char *filename = entangle_image_get_filename(img);
+
+    g_hash_table_remove(priv->popups, filename);
+
+    if (priv->currentImage != img)
+        entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
+                                      img);
+}
+
+
 static void do_session_browser_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
                                            GdkDragContext *ctx G_GNUC_UNUSED,
                                            GtkDragResult res,
@@ -2476,6 +2492,7 @@ static void do_session_browser_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
             if (!(pol = g_hash_table_lookup(priv->popups, filename))) {
                 pol = entangle_image_popup_new();
                 entangle_image_popup_set_image(pol, img);
+                g_signal_connect(pol, "popup-close", G_CALLBACK(do_popup_close), manager);
                 g_hash_table_insert(priv->popups, g_strdup(filename), pol);
             }
             ENTANGLE_DEBUG("Popup %p for %s", pol, filename);
