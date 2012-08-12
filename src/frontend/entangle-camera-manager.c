@@ -1573,6 +1573,7 @@ void do_toolbar_select_session(GtkFileChooserButton *src,
     priv->session = session;
     entangle_session_browser_set_session(priv->sessionBrowser, session);
     g_hash_table_remove_all(priv->popups);
+    gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(src), dir);
 }
 
 void do_menu_select_session(GtkImageMenuItem *src G_GNUC_UNUSED,
@@ -1606,6 +1607,7 @@ void do_menu_select_session(GtkImageMenuItem *src G_GNUC_UNUSED,
     gtk_widget_hide(chooser);
 
     if (gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT) {
+        GtkWidget *toolchooser = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session-button"));
         EntangleSession *session;
         gchar *pattern;
         do_select_image(manager, NULL);
@@ -1621,6 +1623,7 @@ void do_menu_select_session(GtkImageMenuItem *src G_GNUC_UNUSED,
         priv->session = session;
         entangle_session_browser_set_session(priv->sessionBrowser, session);
         g_hash_table_remove_all(priv->popups);
+        gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(toolchooser), dir);
     }
 
     gtk_widget_destroy(chooser);
