@@ -81,8 +81,7 @@ static void entangle_image_popup_set_property(GObject *object,
         case PROP_IMAGE: {
             if (priv->image)
                 g_object_unref(priv->image);
-            priv->image = g_value_get_object(value);
-            g_object_ref(priv->image);
+            priv->image = g_value_dup_object(value);
 
             entangle_image_display_set_image(priv->display, priv->image);
         } break;
@@ -96,10 +95,13 @@ static void entangle_image_popup_finalize (GObject *object)
 {
     EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(object);
     EntangleImagePopupPrivate *priv = popup->priv;
+    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     ENTANGLE_DEBUG("Remove popup");
 
     g_object_unref(priv->builder);
+
+    gtk_widget_destroy(win);
 
     if (priv->image)
         g_object_unref(priv->image);

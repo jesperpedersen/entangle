@@ -2448,15 +2448,6 @@ static gboolean do_session_browser_popup(EntangleSessionBrowser *browser,
 }
 
 
-static void do_popup_remove(gpointer data)
-{
-    EntangleImagePopup *pol = data;
-
-    entangle_image_popup_hide(pol);
-    g_object_unref(pol);
-}
-
-
 static void do_session_browser_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
                                            GdkDragContext *ctx G_GNUC_UNUSED,
                                            GtkDragResult res,
@@ -2623,9 +2614,9 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_widget_set_size_request(iconScroll, 140, 170);
 
     priv->popups = g_hash_table_new_full(g_str_hash,
-                                            g_str_equal,
-                                            g_free,
-                                            do_popup_remove);
+                                         g_str_equal,
+                                         g_free,
+                                         g_object_unref);
 
 
     ViewOvBox_SetOver(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageStatusbar));
