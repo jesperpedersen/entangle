@@ -1166,6 +1166,8 @@ entangle_session_browser_button_press(GtkWidget *widget,
             item->selected = TRUE;
             entangle_session_browser_queue_draw_item(browser, item);
             entangle_session_browser_scroll_to_item(browser, item);
+        }
+        if (item != NULL) {
             priv->dnd_start_x = event->x;
             priv->dnd_start_y = event->y;
         }
