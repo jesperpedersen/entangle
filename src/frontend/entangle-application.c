@@ -242,6 +242,8 @@ static void entangle_application_init(EntangleApplication *application)
     priv->preferences = entangle_preferences_new();
     priv->cameras = entangle_camera_list_new();
 
+    g_irepository_require(g_irepository_get_default(),
+                          "Peas", "1.0", 0, NULL);
 
     peasPath = g_new0(gchar *, 5);
     peasPath[0] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
