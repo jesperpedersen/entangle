@@ -231,11 +231,36 @@ on_extension_removed(PeasExtensionSet *set G_GNUC_UNUSED,
     peas_extension_call(exten, "deactivate");
 }
 
+static void
+on_plugin_load(PeasEngine *engine G_GNUC_UNUSED,
+               PeasPluginInfo *info,
+               gpointer opaque)
+{
+    EntangleApplication *app = opaque;
+    EntangleApplicationPrivate *priv = app->priv;
+
+    entangle_preferences_interface_add_plugin(priv->preferences,
+                                              peas_plugin_info_get_module_name(info));
+}
+
+static void
+on_plugin_unload(PeasEngine *engine G_GNUC_UNUSED,
+                 PeasPluginInfo *info,
+                 gpointer opaque)
+{
+    EntangleApplication *app = opaque;
+    EntangleApplicationPrivate *priv = app->priv;
+
+    entangle_preferences_interface_remove_plugin(priv->preferences,
+                                                 peas_plugin_info_get_module_name(info));
+}
+
 static void entangle_application_init(EntangleApplication *application)
 {
     EntangleApplicationPrivate *priv;
-    gchar **peasPath;
     int i;
+    gchar *userdir;
+    gchar **plugins;
 
     priv = application->priv = ENTANGLE_APPLICATION_GET_PRIVATE(application);
 
@@ -245,16 +270,19 @@ static void entangle_application_init(EntangleApplication *application)
     g_irepository_require(g_irepository_get_default(),
                           "Peas", "1.0", 0, NULL);
 
-    peasPath = g_new0(gchar *, 5);
-    peasPath[0] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
-    peasPath[1] = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
-    peasPath[2] = g_strdup(LIBDIR "/entangle/plugins");
-    peasPath[3] = g_strdup(DATADIR "/entangle/plugins");
-    peasPath[4] = NULL;
-
-    g_mkdir_with_parents(peasPath[0], 0777);
+    userdir = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
+    g_mkdir_with_parents(userdir, 0777);
 
     priv->pluginEngine = peas_engine_get_default();
+    peas_engine_enable_loader(priv->pluginEngine, "python");
+
+    peas_engine_add_search_path(priv->pluginEngine,
+                                userdir, userdir);
+    g_free(userdir);
+    peas_engine_add_search_path(priv->pluginEngine,
+                                LIBDIR "/entangle/plugins",
+                                DATADIR "/entangle/plugins");
+    peas_engine_rescan_plugins(priv->pluginEngine);
 
     priv->pluginExt = peas_extension_set_new(priv->pluginEngine,
                                              PEAS_TYPE_ACTIVATABLE,
@@ -268,18 +296,21 @@ static void entangle_application_init(EntangleApplication *application)
     g_signal_connect(priv->pluginExt, "extension-removed",
                      G_CALLBACK(on_extension_removed), application);
 
-    g_free(peasPath[0]);
-    g_free(peasPath[1]);
-    g_free(peasPath[2]);
-    g_free(peasPath[3]);
-    g_free(peasPath[4]);
-    g_free(peasPath);
+    g_signal_connect(priv->pluginEngine, "load-plugin",
+                     G_CALLBACK(on_plugin_load), application);
+    g_signal_connect(priv->pluginEngine, "unload-plugin",
+                     G_CALLBACK(on_plugin_unload), application);
 
-    const GList *plugins = peas_engine_get_plugin_list(priv->pluginEngine);
-    for (i = 0 ; i < g_list_length((GList *)plugins) ; i++) {
-        PeasPluginInfo *plugin = g_list_nth_data((GList*)plugins, i);
-        peas_engine_load_plugin(priv->pluginEngine, plugin);
+    plugins = entangle_preferences_interface_get_plugins(priv->preferences);
+    for (i = 0 ; plugins[i] != NULL ; i++) {
+        PeasPluginInfo *plugin = peas_engine_get_plugin_info(priv->pluginEngine,
+                                                             plugins[i]);
+        if (plugin) {
+            ENTANGLE_DEBUG("Plugin %p %s", plugin, plugins[i]);
+            peas_engine_load_plugin(priv->pluginEngine, plugin);
+        }
     }
+    g_strfreev(plugins);
 }
 
 

@@ -50,6 +50,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 
 #define SETTING_INTERFACE_AUTO_CONNECT     "auto-connect"
 #define SETTING_INTERFACE_SCREEN_BLANK     "screen-blank"
+#define SETTING_INTERFACE_PLUGINS          "plugins"
 
 #define SETTING_CAPTURE_FILENAME_PATTERN   "filename-pattern"
 #define SETTING_CAPTURE_LAST_SESSION       "last-session"
@@ -679,6 +680,59 @@ void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs,
     g_settings_set_boolean(priv->interfaceSettings,
                            SETTING_INTERFACE_SCREEN_BLANK, blank);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_INTERFACE_SCREEN_BLANK);
+}
+
+
+gchar **entangle_preferences_interface_get_plugins(EntanglePreferences *prefs)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+    return g_settings_get_strv(priv->interfaceSettings,
+                               SETTING_INTERFACE_PLUGINS);
+}
+
+
+void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const char *name)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+    gchar **plugins = g_settings_get_strv(priv->interfaceSettings,
+                                          SETTING_INTERFACE_PLUGINS);
+    gsize len = g_strv_length(plugins);
+
+    plugins = g_renew(gchar *, plugins, len + 1);
+    plugins[len] = g_strdup(name);
+    plugins[len+1] = NULL;
+    g_settings_set_strv(priv->interfaceSettings,
+                        SETTING_INTERFACE_PLUGINS,
+                        (const gchar *const*)plugins);
+    g_strfreev(plugins);
+}
+
+
+void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, const char *name)
+{
+    EntanglePreferencesPrivate *priv = prefs->priv;
+    gchar **plugins = g_settings_get_strv(priv->interfaceSettings,
+                                          SETTING_INTERFACE_PLUGINS);
+    gsize len = g_strv_length(plugins);
+    gsize i;
+
+    for (i = 0 ; i < len ; i++) {
+        if (g_str_equal(plugins[i], name)) {
+            g_free(plugins[i]);
+            plugins[i] = NULL;
+            if (i < (len - 1)) {
+                memmove(plugins + i,
+                        plugins + i + 1,
+                        len - i - 1);
+                plugins[len-1] = NULL;
+            }
+            break;
+        }
+    }
+    g_settings_set_strv(priv->interfaceSettings,
+                        SETTING_INTERFACE_PLUGINS,
+                        (const gchar *const*)plugins);
+    g_strfreev(plugins);
 }
 
 

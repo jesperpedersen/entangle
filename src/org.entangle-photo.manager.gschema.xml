@@ -36,6 +36,12 @@
       <summary>Screen blank</summary>
       <description>Blank screen while capturing images</description>
     </key>
+
+    <key type="as" name="plugins">
+      <default>[]</default>
+      <summary>Plugins</summary>
+      <description>Plugins which are loaded</description>
+    </key>
   </schema>
 
   <schema path="/org/entangle-photo/manager/capture/" id="org.entangle-photo.manager.capture" gettext-domain="entangle-photo">

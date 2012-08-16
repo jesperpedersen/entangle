@@ -61,6 +61,9 @@ gboolean entangle_preferences_interface_get_auto_connect(EntanglePreferences *pr
 void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs, gboolean autoconn);
 gboolean entangle_preferences_interface_get_screen_blank(EntanglePreferences *prefs);
 void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs, gboolean blank);
+gchar **entangle_preferences_interface_get_plugins(EntanglePreferences *prefs);
+void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const char *name);
+void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, const char *name);
 
 char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs);
 void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, const gchar *dir);

@@ -300,12 +300,15 @@ static void entangle_preferences_display_set_property(GObject *object,
     EntanglePreferencesDisplay *display = ENTANGLE_PREFERENCES_DISPLAY(object);
     EntanglePreferencesDisplayPrivate *priv = display->priv;
     EntanglePreferences *prefs;
+    PeasEngine *pluginEngine;
+    GtkWidget *panel;
 
     ENTANGLE_DEBUG("Set prop on preferences display %d", prop_id);
 
     switch (prop_id)
         {
         case PROP_APPLICATION:
+            panel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-panel"));
             priv->application = g_value_get_object(value);
             g_object_ref(priv->application);
             entangle_preferences_display_refresh(display);
@@ -314,6 +317,10 @@ static void entangle_preferences_display_set_property(GObject *object,
                                              "notify",
                                              G_CALLBACK(entangle_preferences_display_notify),
                                              object);
+            pluginEngine = entangle_application_get_plugin_engine(priv->application);
+            priv->pluginManager = PEAS_GTK_PLUGIN_MANAGER(peas_gtk_plugin_manager_new(pluginEngine));
+            gtk_container_add(GTK_CONTAINER(panel), GTK_WIDGET(priv->pluginManager));
+            gtk_widget_show_all(GTK_WIDGET(priv->pluginManager));
             break;
 
         default:
