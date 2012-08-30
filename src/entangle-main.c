@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <locale.h>
 
 #include <gtk/gtk.h>
 #include <girepository.h>
