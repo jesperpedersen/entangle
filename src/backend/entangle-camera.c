@@ -526,12 +526,16 @@ static void entangle_camera_init(EntangleCamera *cam)
 
 const char *entangle_camera_get_model(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     return priv->model;
 }
 
 const char *entangle_camera_get_port(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     return priv->port;
 }
@@ -600,6 +604,8 @@ static void do_entangle_camera_error(GPContext *ctx G_GNUC_UNUSED,
 gboolean entangle_camera_connect(EntangleCamera *cam,
                                  GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     int i;
     GPPortInfo port;
@@ -721,6 +727,8 @@ void entangle_camera_connect_async(EntangleCamera *cam,
                                    GAsyncReadyCallback callback,
                                    gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -734,10 +742,12 @@ void entangle_camera_connect_async(EntangleCamera *cam,
 }
 
 
-gboolean entangle_camera_connect_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_connect_finish(EntangleCamera *cam,
                                         GAsyncResult *result,
                                         GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   error);
 }
@@ -746,6 +756,8 @@ gboolean entangle_camera_connect_finish(EntangleCamera *cam G_GNUC_UNUSED,
 gboolean entangle_camera_disconnect(EntangleCamera *cam,
                                     GError **error G_GNUC_UNUSED)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret = FALSE;
 
@@ -823,6 +835,8 @@ void entangle_camera_disconnect_async(EntangleCamera *cam,
                                       GAsyncReadyCallback callback,
                                       gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -836,10 +850,12 @@ void entangle_camera_disconnect_async(EntangleCamera *cam,
 }
 
 
-gboolean entangle_camera_disconnect_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_disconnect_finish(EntangleCamera *cam,
                                            GAsyncResult *result,
                                            GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   error);
 }
@@ -847,6 +863,8 @@ gboolean entangle_camera_disconnect_finish(EntangleCamera *cam G_GNUC_UNUSED,
 
 gboolean entangle_camera_get_connected(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret;
 
@@ -859,6 +877,8 @@ gboolean entangle_camera_get_connected(EntangleCamera *cam)
 
 char *entangle_camera_get_summary(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     char *ret;
 
@@ -872,6 +892,8 @@ char *entangle_camera_get_summary(EntangleCamera *cam)
 
 char *entangle_camera_get_manual(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     char *ret;
 
@@ -885,6 +907,8 @@ char *entangle_camera_get_manual(EntangleCamera *cam)
 
 char *entangle_camera_get_driver(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     char *ret;
 
@@ -899,6 +923,8 @@ char *entangle_camera_get_driver(EntangleCamera *cam)
 EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
                                                   GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     CameraFilePath camerapath;
     EntangleCameraFile *file = NULL;
@@ -956,6 +982,8 @@ void entangle_camera_capture_image_async(EntangleCamera *cam,
                                          GAsyncReadyCallback callback,
                                          gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -969,10 +997,12 @@ void entangle_camera_capture_image_async(EntangleCamera *cam,
 }
 
 
-EntangleCameraFile *entangle_camera_capture_image_finish(EntangleCamera *cam G_GNUC_UNUSED,
+EntangleCameraFile *entangle_camera_capture_image_finish(EntangleCamera *cam,
                                                          GAsyncResult *result,
                                                          GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraFile *file;
     if (g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                               error))
@@ -987,6 +1017,8 @@ EntangleCameraFile *entangle_camera_capture_image_finish(EntangleCamera *cam G_G
 EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
                                                   GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     EntangleCameraFile *file = NULL;
     CameraFile *datafile = NULL;
@@ -1072,6 +1104,8 @@ void entangle_camera_preview_image_async(EntangleCamera *cam,
                                          GAsyncReadyCallback callback,
                                          gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -1085,10 +1119,12 @@ void entangle_camera_preview_image_async(EntangleCamera *cam,
 }
 
 
-EntangleCameraFile *entangle_camera_preview_image_finish(EntangleCamera *cam G_GNUC_UNUSED,
+EntangleCameraFile *entangle_camera_preview_image_finish(EntangleCamera *cam,
                                                          GAsyncResult *result,
                                                          GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraFile *file;
     if (g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                               error))
@@ -1104,6 +1140,9 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
                                        EntangleCameraFile *file,
                                        GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     CameraFile *datafile = NULL;
     const char *data;
@@ -1188,6 +1227,9 @@ void entangle_camera_download_file_async(EntangleCamera *cam,
                                          GAsyncReadyCallback callback,
                                          gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+    g_return_if_fail(ENTANGLE_IS_CAMERA_FILE(file));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -1204,10 +1246,12 @@ void entangle_camera_download_file_async(EntangleCamera *cam,
 
 }
 
-gboolean entangle_camera_download_file_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_download_file_finish(EntangleCamera *cam,
                                               GAsyncResult *result,
                                               GError **err)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   err);
 }
@@ -1217,6 +1261,9 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
                                      EntangleCameraFile *file,
                                      GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret = FALSE;
     int err;
@@ -1277,6 +1324,9 @@ void entangle_camera_delete_file_async(EntangleCamera *cam,
                                        GAsyncReadyCallback callback,
                                        gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+    g_return_if_fail(ENTANGLE_IS_CAMERA_FILE(file));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -1292,10 +1342,12 @@ void entangle_camera_delete_file_async(EntangleCamera *cam,
     g_object_unref(result);
 }
 
-gboolean entangle_camera_delete_file_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_delete_file_finish(EntangleCamera *cam,
                                             GAsyncResult *result,
                                             GError **err)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   err);
 }
@@ -1305,6 +1357,8 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
                                         guint64 waitms,
                                         GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     CameraEventType eventType = 0;
     void *eventData;
@@ -1432,6 +1486,8 @@ void entangle_camera_process_events_async(EntangleCamera *cam,
                                           GAsyncReadyCallback callback,
                                           gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     guint64 *waitptr = g_new0(guint64, 1);
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
@@ -1449,10 +1505,12 @@ void entangle_camera_process_events_async(EntangleCamera *cam,
 }
 
 
-gboolean entangle_camera_process_events_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_process_events_finish(EntangleCamera *cam,
                                                GAsyncResult *result,
                                                GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   error);
 }
@@ -1798,6 +1856,8 @@ static gboolean do_save_controls(EntangleCamera *cam,
 gboolean entangle_camera_load_controls(EntangleCamera *cam,
                                        GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret = FALSE;
     int err;
@@ -1856,6 +1916,8 @@ void entangle_camera_load_controls_async(EntangleCamera *cam,
                                          GAsyncReadyCallback callback,
                                          gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -1869,10 +1931,12 @@ void entangle_camera_load_controls_async(EntangleCamera *cam,
 }
 
 
-gboolean entangle_camera_load_controls_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_load_controls_finish(EntangleCamera *cam,
                                               GAsyncResult *result,
                                               GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   error);
 }
@@ -1881,6 +1945,8 @@ gboolean entangle_camera_load_controls_finish(EntangleCamera *cam G_GNUC_UNUSED,
 gboolean entangle_camera_save_controls(EntangleCamera *cam,
                                        GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret = FALSE;
     int err;
@@ -1944,6 +2010,8 @@ void entangle_camera_save_controls_async(EntangleCamera *cam,
                                          GAsyncReadyCallback callback,
                                          gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
                                                            callback,
                                                            user_data,
@@ -1957,10 +2025,12 @@ void entangle_camera_save_controls_async(EntangleCamera *cam,
 }
 
 
-gboolean entangle_camera_save_controls_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_save_controls_finish(EntangleCamera *cam,
                                               GAsyncResult *result,
                                               GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   error);
 }
@@ -1968,6 +2038,8 @@ gboolean entangle_camera_save_controls_finish(EntangleCamera *cam G_GNUC_UNUSED,
 
 EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     EntangleControlGroup *ret = NULL;
 
@@ -1996,6 +2068,8 @@ EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError *
 
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret;
 
@@ -2009,6 +2083,8 @@ gboolean entangle_camera_get_has_capture(EntangleCamera *cam)
 
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret;
 
@@ -2022,6 +2098,8 @@ gboolean entangle_camera_get_has_preview(EntangleCamera *cam)
 
 gboolean entangle_camera_get_has_settings(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret;
 
@@ -2035,6 +2113,8 @@ gboolean entangle_camera_get_has_settings(EntangleCamera *cam)
 
 void entangle_camera_set_progress(EntangleCamera *cam, EntangleProgress *prog)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     EntangleCameraPrivate *priv = cam->priv;
 
     g_mutex_lock(priv->lock);
@@ -2049,6 +2129,8 @@ void entangle_camera_set_progress(EntangleCamera *cam, EntangleProgress *prog)
 
 EntangleProgress *entangle_camera_get_progress(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
+
     EntangleCameraPrivate *priv = cam->priv;
     EntangleProgress *ret;
 
@@ -2106,6 +2188,8 @@ static GVolumeMonitor *monitor;
 
 gboolean entangle_camera_is_mounted(EntangleCamera *cam)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     GMount *mount;
     gboolean ret;
     g_static_mutex_lock(&monitorLock);
@@ -2178,6 +2262,8 @@ void entangle_camera_unmount_async(EntangleCamera *cam,
                                    GAsyncReadyCallback callback,
                                    gpointer user_data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     struct UnmountData *data = g_new0(struct UnmountData, 1);
 
     data->monitor = g_volume_monitor_get();
@@ -2202,10 +2288,12 @@ void entangle_camera_unmount_async(EntangleCamera *cam,
     }
 }
 
-gboolean entangle_camera_unmount_finish(EntangleCamera *cam G_GNUC_UNUSED,
+gboolean entangle_camera_unmount_finish(EntangleCamera *cam,
                                         GAsyncResult *result,
                                         GError **err)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
     return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
                                                   err);
 }

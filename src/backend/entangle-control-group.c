@@ -65,6 +65,9 @@ EntangleControlGroup *entangle_control_group_new(const gchar *path,
                                                  const gchar *info,
                                                  gboolean readonly)
 {
+    g_return_val_if_fail(path != NULL, NULL);
+    g_return_val_if_fail(label != NULL, NULL);
+
     return ENTANGLE_CONTROL_GROUP(g_object_new(ENTANGLE_TYPE_CONTROL_GROUP,
                                                "path", path,
                                                "id", id,
@@ -81,8 +84,11 @@ static void entangle_control_group_init(EntangleControlGroup *picker)
 }
 
 void entangle_control_group_add(EntangleControlGroup *group,
-                            EntangleControl *control)
+                                EntangleControl *control)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_GROUP(group));
+    g_return_if_fail(ENTANGLE_IS_CONTROL(control));
+
     EntangleControlGroupPrivate *priv = group->priv;
 
     priv->controls = g_renew(EntangleControl *, priv->controls, priv->ncontrol+1);
@@ -93,6 +99,8 @@ void entangle_control_group_add(EntangleControlGroup *group,
 
 guint entangle_control_group_count(EntangleControlGroup *group)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_GROUP(group), 0);
+
     EntangleControlGroupPrivate *priv = group->priv;
 
     return priv->ncontrol;
@@ -101,6 +109,8 @@ guint entangle_control_group_count(EntangleControlGroup *group)
 
 EntangleControl *entangle_control_group_get(EntangleControlGroup *group, gint idx)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_GROUP(group), NULL);
+
     EntangleControlGroupPrivate *priv = group->priv;
 
     if (idx < 0 || idx >= priv->ncontrol)
@@ -113,6 +123,9 @@ EntangleControl *entangle_control_group_get(EntangleControlGroup *group, gint id
 EntangleControl *entangle_control_group_get_by_path(EntangleControlGroup *group,
                                                     const gchar *path)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_GROUP(group), NULL);
+    g_return_val_if_fail(path != NULL, NULL);
+
     EntangleControlGroupPrivate *priv = group->priv;
     size_t i;
 

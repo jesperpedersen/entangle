@@ -227,6 +227,8 @@ static void entangle_camera_list_init(EntangleCameraList *list)
 gboolean entangle_camera_list_refresh(EntangleCameraList *list,
                                       GError **error G_GNUC_UNUSED)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_LIST(list), FALSE);
+
     EntangleCameraListPrivate *priv = list->priv;
     CameraList *cams = NULL;
     GHashTable *toRemove;
@@ -316,6 +318,8 @@ gboolean entangle_camera_list_refresh(EntangleCameraList *list,
 
 int entangle_camera_list_count(EntangleCameraList *list)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_LIST(list), 0);
+
     EntangleCameraListPrivate *priv = list->priv;
 
     return priv->ncamera;
@@ -324,6 +328,9 @@ int entangle_camera_list_count(EntangleCameraList *list)
 void entangle_camera_list_add(EntangleCameraList *list,
                               EntangleCamera *cam)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_LIST(list));
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     EntangleCameraListPrivate *priv = list->priv;
 
     priv->cameras = g_renew(EntangleCamera *, priv->cameras, priv->ncamera+1);
@@ -337,6 +344,9 @@ void entangle_camera_list_add(EntangleCameraList *list,
 void entangle_camera_list_remove(EntangleCameraList *list,
                                  EntangleCamera *cam)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_LIST(list));
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     EntangleCameraListPrivate *priv = list->priv;
 
     for (int i = 0 ; i < priv->ncamera ; i++) {
@@ -358,6 +368,8 @@ void entangle_camera_list_remove(EntangleCameraList *list,
 EntangleCamera *entangle_camera_list_get(EntangleCameraList *list,
                                          int entry)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_LIST(list), NULL);
+
     EntangleCameraListPrivate *priv = list->priv;
 
     if (entry < 0 || entry >= priv->ncamera)

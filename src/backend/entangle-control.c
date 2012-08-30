@@ -232,6 +232,9 @@ EntangleControl *entangle_control_new(const gchar *path,
                                       const gchar *info,
                                       gboolean readonly)
 {
+    g_return_val_if_fail(path != NULL, NULL);
+    g_return_val_if_fail(label != NULL, NULL);
+
     return ENTANGLE_CONTROL(g_object_new(ENTANGLE_TYPE_CONTROL,
                                          "path", path,
                                          "id", id,
@@ -250,6 +253,8 @@ static void entangle_control_init(EntangleControl *control)
 
 gint entangle_control_get_id(EntangleControl *control)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL(control), 0);
+
     EntangleControlPrivate *priv = control->priv;
 
     return priv->id;
@@ -257,6 +262,8 @@ gint entangle_control_get_id(EntangleControl *control)
 
 const gchar *entangle_control_get_path(EntangleControl *control)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL(control), NULL);
+
     EntangleControlPrivate *priv = control->priv;
 
     return priv->path;
@@ -264,6 +271,8 @@ const gchar *entangle_control_get_path(EntangleControl *control)
 
 const gchar *entangle_control_get_label(EntangleControl *control)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL(control), NULL);
+
     EntangleControlPrivate *priv = control->priv;
 
     return priv->label;
@@ -271,6 +280,8 @@ const gchar *entangle_control_get_label(EntangleControl *control)
 
 const gchar *entangle_control_get_info(EntangleControl *control)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL(control), NULL);
+
     EntangleControlPrivate *priv = control->priv;
 
     return priv->info;
@@ -278,14 +289,18 @@ const gchar *entangle_control_get_info(EntangleControl *control)
 
 gboolean entangle_control_get_dirty(EntangleControl *control)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL(control), FALSE);
+
     EntangleControlPrivate *priv = control->priv;
 
     return priv->dirty;
 }
 
 void entangle_control_set_dirty(EntangleControl *control,
-                                   gboolean dirty)
+                                gboolean dirty)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL(control));
+
     EntangleControlPrivate *priv = control->priv;
     gboolean changed = priv->dirty != dirty;
 
@@ -296,6 +311,8 @@ void entangle_control_set_dirty(EntangleControl *control,
 
 gboolean entangle_control_get_readonly(EntangleControl *control)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL(control), TRUE);
+
     EntangleControlPrivate *priv = control->priv;
 
     return priv->readonly;
@@ -304,6 +321,8 @@ gboolean entangle_control_get_readonly(EntangleControl *control)
 void entangle_control_set_readonly(EntangleControl *control,
                                    gboolean ro)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL(control));
+
     EntangleControlPrivate *priv = control->priv;
     gboolean changed = priv->readonly != ro;
 

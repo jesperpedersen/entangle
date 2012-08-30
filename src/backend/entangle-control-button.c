@@ -57,6 +57,9 @@ EntangleControlButton *entangle_control_button_new(const char *path,
                                                    const char *info,
                                                    gboolean readonly)
 {
+    g_return_val_if_fail(path != NULL, NULL);
+    g_return_val_if_fail(label != NULL, NULL);
+
     return ENTANGLE_CONTROL_BUTTON(g_object_new(ENTANGLE_TYPE_CONTROL_BUTTON,
                                                 "path", path,
                                                 "id", id,

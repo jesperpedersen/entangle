@@ -397,6 +397,9 @@ static void entangle_pixbuf_loader_init(EntanglePixbufLoader *loader)
 gboolean entangle_pixbuf_loader_is_ready(EntanglePixbufLoader *loader,
                                          EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), FALSE);
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
     EntanglePixbufLoaderEntry *entry;
     gboolean ready = FALSE;
@@ -415,6 +418,9 @@ gboolean entangle_pixbuf_loader_is_ready(EntanglePixbufLoader *loader,
 GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,
                                              EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), NULL);
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
     EntanglePixbufLoaderEntry *entry;
     GdkPixbuf *pixbuf = NULL;
@@ -434,6 +440,9 @@ GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,
 GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader,
                                                     EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), NULL);
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
     EntanglePixbufLoaderEntry *entry;
     GExiv2Metadata *metadata = NULL;
@@ -453,6 +462,9 @@ GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader
 gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
                                      EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), FALSE);
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
     EntanglePixbufLoaderEntry *entry;
 
@@ -485,6 +497,9 @@ gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
 gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
                                        EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), FALSE);
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
     EntanglePixbufLoaderEntry *entry;
 
@@ -512,6 +527,8 @@ gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
 void entangle_pixbuf_loader_set_colour_transform(EntanglePixbufLoader *loader,
                                                  EntangleColourProfileTransform *transform)
 {
+    g_return_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader));
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
 
     g_mutex_lock(priv->lock);
@@ -528,6 +545,8 @@ void entangle_pixbuf_loader_set_colour_transform(EntanglePixbufLoader *loader,
 
 EntangleColourProfileTransform *entangle_pixbuf_loader_get_colour_transform(EntanglePixbufLoader *loader)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), NULL);
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
 
     return priv->colourTransform;
@@ -535,8 +554,10 @@ EntangleColourProfileTransform *entangle_pixbuf_loader_get_colour_transform(Enta
 
 
 void entangle_pixbuf_loader_set_workers(EntanglePixbufLoader *loader,
-                                    int count)
+                                        int count)
 {
+    g_return_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader));
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
 
     g_thread_pool_set_max_threads(priv->workers, count, NULL);
@@ -545,6 +566,8 @@ void entangle_pixbuf_loader_set_workers(EntanglePixbufLoader *loader,
 
 int entangle_pixbuf_loader_get_workers(EntanglePixbufLoader *loader)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), 0);
+
     EntanglePixbufLoaderPrivate *priv = loader->priv;
 
     return g_thread_pool_get_max_threads(priv->workers);

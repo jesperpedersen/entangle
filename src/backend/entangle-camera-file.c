@@ -213,6 +213,8 @@ static void entangle_camera_file_init(EntangleCameraFile *file)
 
 const char *entangle_camera_file_get_folder(EntangleCameraFile *file)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
+
     EntangleCameraFilePrivate *priv = file->priv;
     return priv->folder;
 }
@@ -220,15 +222,19 @@ const char *entangle_camera_file_get_folder(EntangleCameraFile *file)
 
 const char *entangle_camera_file_get_name(EntangleCameraFile *file)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
+
     EntangleCameraFilePrivate *priv = file->priv;
     return priv->name;
 }
 
 
 gboolean entangle_camera_file_save_path(EntangleCameraFile *file,
-                                    const char *localpath,
-                                    GError **err)
+                                        const char *localpath,
+                                        GError **err)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), FALSE);
+
     EntangleCameraFilePrivate *priv = file->priv;
     GFile *gf;
     GFileOutputStream *gos;
@@ -280,9 +286,11 @@ gboolean entangle_camera_file_save_path(EntangleCameraFile *file,
 }
 
 gboolean entangle_camera_file_save_uri(EntangleCameraFile *file,
-                                   const char *uri,
-                                   GError **err)
+                                       const char *uri,
+                                       GError **err)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), FALSE);
+
     EntangleCameraFilePrivate *priv = file->priv;
     GFile *gf;
     GFileOutputStream *gos;
@@ -335,6 +343,8 @@ gboolean entangle_camera_file_save_uri(EntangleCameraFile *file,
 
 GByteArray *entangle_camera_file_get_data(EntangleCameraFile *file)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
+
     EntangleCameraFilePrivate *priv = file->priv;
     return priv->data;
 }
@@ -342,6 +352,8 @@ GByteArray *entangle_camera_file_get_data(EntangleCameraFile *file)
 
 void entangle_camera_file_set_data(EntangleCameraFile *file, GByteArray *data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_FILE(file));
+
     EntangleCameraFilePrivate *priv = file->priv;
     if (priv->data)
         g_byte_array_unref(priv->data);
@@ -353,6 +365,8 @@ void entangle_camera_file_set_data(EntangleCameraFile *file, GByteArray *data)
 
 const gchar *entangle_camera_file_get_mimetype(EntangleCameraFile *file)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
+
     EntangleCameraFilePrivate *priv = file->priv;
 
     return priv->mimetype;
@@ -361,6 +375,8 @@ const gchar *entangle_camera_file_get_mimetype(EntangleCameraFile *file)
 
 void entangle_camera_file_set_mimetype(EntangleCameraFile *file, const gchar *mimetype)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_FILE(file));
+
     EntangleCameraFilePrivate *priv = file->priv;
     g_free(priv->mimetype);
     priv->mimetype = NULL;

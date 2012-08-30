@@ -115,6 +115,9 @@ EntangleControlDate *entangle_control_date_new(const char *path,
                                                const char *info,
                                                gboolean readonly)
 {
+    g_return_val_if_fail(path != NULL, NULL);
+    g_return_val_if_fail(label != NULL, NULL);
+
     return ENTANGLE_CONTROL_DATE(g_object_new(ENTANGLE_TYPE_CONTROL_DATE,
                                               "path", path,
                                               "id", id,

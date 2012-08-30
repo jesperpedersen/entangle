@@ -204,6 +204,8 @@ static void entangle_image_init(EntangleImage *picker)
 
 const char *entangle_image_get_filename(EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
+
     EntangleImagePrivate *priv = image->priv;
     return priv->filename;
 }
@@ -227,6 +229,8 @@ static gboolean entangle_image_load(EntangleImage *image)
 
 time_t entangle_image_get_last_modified(EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), 0);
+
     EntangleImagePrivate *priv = image->priv;
 
     if (!entangle_image_load(image))
@@ -237,6 +241,8 @@ time_t entangle_image_get_last_modified(EntangleImage *image)
 
 off_t entangle_image_get_file_size(EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), 0);
+
     EntangleImagePrivate *priv = image->priv;
 
     if (!entangle_image_load(image))
@@ -248,6 +254,8 @@ off_t entangle_image_get_file_size(EntangleImage *image)
 
 gboolean entangle_image_delete(EntangleImage *image, GError **error)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), FALSE);
+
     EntangleImagePrivate *priv = image->priv;
     GFile *file = g_file_new_for_path(priv->filename);
 
@@ -257,6 +265,8 @@ gboolean entangle_image_delete(EntangleImage *image, GError **error)
 
 GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
+
     EntangleImagePrivate *priv = image->priv;
     return priv->pixbuf;
 }
@@ -264,12 +274,16 @@ GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image)
 void entangle_image_set_pixbuf(EntangleImage *image,
                                GdkPixbuf *pixbuf)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE(image));
+
     g_object_set(image, "pixbuf", pixbuf, NULL);
 }
 
 
 GExiv2Metadata *entangle_image_get_metadata(EntangleImage *image)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
+
     EntangleImagePrivate *priv = image->priv;
     return priv->metadata;
 }
@@ -277,6 +291,8 @@ GExiv2Metadata *entangle_image_get_metadata(EntangleImage *image)
 void entangle_image_set_metadata(EntangleImage *image,
                                  GExiv2Metadata *metadata)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE(image));
+
     g_object_set(image, "metadata", metadata, NULL);
 }
 

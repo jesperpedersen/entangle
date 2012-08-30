@@ -651,6 +651,8 @@ static void entangle_preferences_init(EntanglePreferences *picker)
 
 gboolean entangle_preferences_interface_get_auto_connect(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     return g_settings_get_boolean(priv->interfaceSettings,
                                   SETTING_INTERFACE_AUTO_CONNECT);
@@ -659,6 +661,8 @@ gboolean entangle_preferences_interface_get_auto_connect(EntanglePreferences *pr
 
 void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs, gboolean autoconn)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     g_settings_set_boolean(priv->interfaceSettings,
                            SETTING_INTERFACE_AUTO_CONNECT, autoconn);
@@ -668,6 +672,8 @@ void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs,
 
 gboolean entangle_preferences_interface_get_screen_blank(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     return g_settings_get_boolean(priv->interfaceSettings,
                                   SETTING_INTERFACE_SCREEN_BLANK);
@@ -676,6 +682,8 @@ gboolean entangle_preferences_interface_get_screen_blank(EntanglePreferences *pr
 
 void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs, gboolean blank)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     g_settings_set_boolean(priv->interfaceSettings,
                            SETTING_INTERFACE_SCREEN_BLANK, blank);
@@ -685,6 +693,8 @@ void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs,
 
 gchar **entangle_preferences_interface_get_plugins(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     return g_settings_get_strv(priv->interfaceSettings,
                                SETTING_INTERFACE_PLUGINS);
@@ -693,6 +703,8 @@ gchar **entangle_preferences_interface_get_plugins(EntanglePreferences *prefs)
 
 void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const char *name)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     gchar **plugins = g_settings_get_strv(priv->interfaceSettings,
                                           SETTING_INTERFACE_PLUGINS);
@@ -710,6 +722,8 @@ void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const
 
 void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, const char *name)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     gchar **plugins = g_settings_get_strv(priv->interfaceSettings,
                                           SETTING_INTERFACE_PLUGINS);
@@ -735,6 +749,8 @@ void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, co
 
 char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     char *dir = g_settings_get_string(priv->captureSettings,
                                       SETTING_CAPTURE_LAST_SESSION);
@@ -750,6 +766,8 @@ char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs)
 
 void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, const gchar *dir)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_string(priv->captureSettings,
@@ -760,6 +778,8 @@ void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, c
 
 char *entangle_preferences_capture_get_filename_pattern(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_string(priv->captureSettings,
@@ -769,6 +789,8 @@ char *entangle_preferences_capture_get_filename_pattern(EntanglePreferences *pre
 
 void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *prefs, const gchar *dir)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_string(priv->captureSettings,
@@ -779,6 +801,8 @@ void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *pref
 
 gboolean entangle_preferences_capture_get_continuous_preview(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_boolean(priv->captureSettings,
@@ -788,6 +812,8 @@ gboolean entangle_preferences_capture_get_continuous_preview(EntanglePreferences
 
 void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *prefs, gboolean enabled)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_boolean(priv->captureSettings,
@@ -798,6 +824,8 @@ void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *pr
 
 gboolean entangle_preferences_capture_get_delete_file(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_boolean(priv->captureSettings,
@@ -807,6 +835,8 @@ gboolean entangle_preferences_capture_get_delete_file(EntanglePreferences *prefs
 
 void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gboolean enabled)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_boolean(priv->captureSettings,
@@ -817,6 +847,8 @@ void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gb
 
 EntangleColourProfile *entangle_preferences_cms_get_rgb_profile(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     EntangleColourProfile *prof;
 
@@ -830,6 +862,8 @@ EntangleColourProfile *entangle_preferences_cms_get_rgb_profile(EntanglePreferen
 void entangle_preferences_cms_set_rgb_profile(EntanglePreferences *prefs,
                                               EntangleColourProfile *prof)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_string(priv->cmsSettings,
@@ -841,6 +875,8 @@ void entangle_preferences_cms_set_rgb_profile(EntanglePreferences *prefs,
 
 EntangleColourProfile *entangle_preferences_cms_get_monitor_profile(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
     EntangleColourProfile *prof;
 
@@ -854,6 +890,8 @@ EntangleColourProfile *entangle_preferences_cms_get_monitor_profile(EntanglePref
 void entangle_preferences_cms_set_monitor_profile(EntanglePreferences *prefs,
                                                   EntangleColourProfile *prof)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_string(priv->cmsSettings,
@@ -865,6 +903,8 @@ void entangle_preferences_cms_set_monitor_profile(EntanglePreferences *prefs,
 
 gboolean entangle_preferences_cms_get_enabled(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_boolean(priv->cmsSettings,
@@ -875,6 +915,8 @@ gboolean entangle_preferences_cms_get_enabled(EntanglePreferences *prefs)
 void entangle_preferences_cms_set_enabled(EntanglePreferences *prefs,
                                           gboolean enabled)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_boolean(priv->cmsSettings,
@@ -885,6 +927,8 @@ void entangle_preferences_cms_set_enabled(EntanglePreferences *prefs,
 
 gboolean entangle_preferences_cms_get_detect_system_profile(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_boolean(priv->cmsSettings,
@@ -895,6 +939,8 @@ gboolean entangle_preferences_cms_get_detect_system_profile(EntanglePreferences 
 void entangle_preferences_cms_set_detect_system_profile(EntanglePreferences *prefs,
                                                         gboolean enabled)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_boolean(priv->cmsSettings,
@@ -905,6 +951,8 @@ void entangle_preferences_cms_set_detect_system_profile(EntanglePreferences *pre
 
 EntangleColourProfileIntent entangle_preferences_cms_get_rendering_intent(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_enum(priv->cmsSettings,
@@ -915,6 +963,8 @@ EntangleColourProfileIntent entangle_preferences_cms_get_rendering_intent(Entang
 void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs,
                                                    EntangleColourProfileIntent intent)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_enum(priv->cmsSettings,
@@ -925,6 +975,8 @@ void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs,
 
 gchar *entangle_preferences_img_get_aspect_ratio(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_string(priv->imgSettings,
@@ -935,6 +987,8 @@ gchar *entangle_preferences_img_get_aspect_ratio(EntanglePreferences *prefs)
 void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs,
                                                const gchar *aspect)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_string(priv->imgSettings,
@@ -944,6 +998,8 @@ void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs,
 
 gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_int(priv->imgSettings,
@@ -954,6 +1010,8 @@ gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs)
 void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs,
                                                gint mask)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_int(priv->imgSettings,
@@ -964,6 +1022,8 @@ void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs,
 
 gboolean entangle_preferences_img_get_mask_enabled(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_boolean(priv->imgSettings,
@@ -973,6 +1033,8 @@ gboolean entangle_preferences_img_get_mask_enabled(EntanglePreferences *prefs)
 
 void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gboolean enabled)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_boolean(priv->imgSettings,
@@ -983,6 +1045,8 @@ void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gbool
 
 gboolean entangle_preferences_img_get_focus_point(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_boolean(priv->imgSettings,
@@ -992,6 +1056,8 @@ gboolean entangle_preferences_img_get_focus_point(EntanglePreferences *prefs)
 
 void entangle_preferences_img_set_focus_point(EntanglePreferences *prefs, gboolean enabled)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_boolean(priv->imgSettings,
@@ -1002,6 +1068,8 @@ void entangle_preferences_img_set_focus_point(EntanglePreferences *prefs, gboole
 
 gint entangle_preferences_img_get_grid_lines(EntanglePreferences *prefs)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     return g_settings_get_enum(priv->imgSettings,
@@ -1011,6 +1079,8 @@ gint entangle_preferences_img_get_grid_lines(EntanglePreferences *prefs)
 
 void entangle_preferences_img_set_grid_lines(EntanglePreferences *prefs, gint gridLines)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_enum(priv->imgSettings,

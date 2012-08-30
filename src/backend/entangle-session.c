@@ -208,6 +208,8 @@ static void entangle_session_init(EntangleSession *session)
 
 const char *entangle_session_directory(EntangleSession *session)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
+
     EntangleSessionPrivate *priv = session->priv;
 
     return priv->directory;
@@ -215,6 +217,8 @@ const char *entangle_session_directory(EntangleSession *session)
 
 const char *entangle_session_filename_pattern(EntangleSession *session)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
+
     EntangleSessionPrivate *priv = session->priv;
 
     return priv->filenamePattern;
@@ -331,6 +335,8 @@ static gint entangle_session_next_digit(EntangleSession *session)
 char *entangle_session_next_filename(EntangleSession *session,
                                      EntangleCameraFile *file)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
+
     EntangleSessionPrivate *priv = session->priv;
     const char *template = strchr(priv->filenamePattern, 'X');
     const char *postfix;
@@ -393,6 +399,9 @@ char *entangle_session_next_filename(EntangleSession *session,
 
 void entangle_session_add(EntangleSession *session, EntangleImage *image)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION(session));
+    g_return_if_fail(ENTANGLE_IS_IMAGE(image));
+
     EntangleSessionPrivate *priv = session->priv;
 
     g_object_ref(image);
@@ -404,6 +413,9 @@ void entangle_session_add(EntangleSession *session, EntangleImage *image)
 
 void entangle_session_remove(EntangleSession *session, EntangleImage *image)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION(session));
+    g_return_if_fail(ENTANGLE_IS_IMAGE(image));
+
     EntangleSessionPrivate *priv = session->priv;
     GList *tmp = g_list_find(priv->images, image);
 
@@ -419,6 +431,8 @@ void entangle_session_remove(EntangleSession *session, EntangleImage *image)
 
 gboolean entangle_session_load(EntangleSession *session)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), FALSE);
+
     EntangleSessionPrivate *priv = session->priv;
     GFile *dir = g_file_new_for_path(priv->directory);
     GFileEnumerator *children = g_file_enumerate_children(dir,
@@ -453,6 +467,8 @@ gboolean entangle_session_load(EntangleSession *session)
 
 int entangle_session_image_count(EntangleSession *session)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), 0);
+
     EntangleSessionPrivate *priv = session->priv;
 
     return g_list_length(priv->images);
@@ -460,6 +476,8 @@ int entangle_session_image_count(EntangleSession *session)
 
 EntangleImage *entangle_session_image_get(EntangleSession *session, int idx)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
+
     EntangleSessionPrivate *priv = session->priv;
 
     return g_list_nth_data(priv->images, idx);

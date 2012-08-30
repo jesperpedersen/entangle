@@ -25,16 +25,22 @@
 
 void entangle_progress_start(EntangleProgress *prog, float target, const char *format, va_list args)
 {
+    g_return_if_fail(ENTANGLE_IS_PROGRESS(prog));
+
     ENTANGLE_PROGRESS_GET_INTERFACE(prog)->start(prog, target, format, args);
 }
 
 void entangle_progress_update(EntangleProgress *prog, float current)
 {
+    g_return_if_fail(ENTANGLE_IS_PROGRESS(prog));
+
     ENTANGLE_PROGRESS_GET_INTERFACE(prog)->update(prog, current);
 }
 
 void entangle_progress_stop(EntangleProgress *prog)
 {
+    g_return_if_fail(ENTANGLE_IS_PROGRESS(prog));
+
     ENTANGLE_PROGRESS_GET_INTERFACE(prog)->stop(prog);
 }
 

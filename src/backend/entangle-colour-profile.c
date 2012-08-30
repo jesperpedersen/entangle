@@ -358,6 +358,8 @@ static void entangle_colour_profile_transform_init(EntangleColourProfileTransfor
 
 const char *entangle_colour_profile_filename(EntangleColourProfile *profile)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
+
     EntangleColourProfilePrivate *priv = profile->priv;
     return priv->filename;
 }
@@ -365,6 +367,8 @@ const char *entangle_colour_profile_filename(EntangleColourProfile *profile)
 
 char *entangle_colour_profile_product_name(EntangleColourProfile *profile)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
+
     EntangleColourProfilePrivate *priv = profile->priv;
     const char *data;
 
@@ -378,6 +382,8 @@ char *entangle_colour_profile_product_name(EntangleColourProfile *profile)
 
 char *entangle_colour_profile_product_desc(EntangleColourProfile *profile)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
+
     EntangleColourProfilePrivate *priv = profile->priv;
     const char *data;
 
@@ -391,6 +397,8 @@ char *entangle_colour_profile_product_desc(EntangleColourProfile *profile)
 
 char *entangle_colour_profile_product_info(EntangleColourProfile *profile)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
+
     EntangleColourProfilePrivate *priv = profile->priv;
     const char *data;
 
@@ -404,6 +412,8 @@ char *entangle_colour_profile_product_info(EntangleColourProfile *profile)
 
 char *entangle_colour_profile_manufacturer(EntangleColourProfile *profile)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
+
     EntangleColourProfilePrivate *priv = profile->priv;
     const char *data;
 
@@ -417,6 +427,8 @@ char *entangle_colour_profile_manufacturer(EntangleColourProfile *profile)
 
 char *entangle_colour_profile_model(EntangleColourProfile *profile)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
+
     EntangleColourProfilePrivate *priv = profile->priv;
     const char *data;
 
@@ -430,6 +442,8 @@ char *entangle_colour_profile_model(EntangleColourProfile *profile)
 
 char *entangle_colour_profile_copyright(EntangleColourProfile *profile)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
+
     EntangleColourProfilePrivate *priv = profile->priv;
     const char *data;
 
@@ -462,6 +476,9 @@ EntangleColourProfileTransform *entangle_colour_profile_transform_new(EntangleCo
                                                                       EntangleColourProfile *dst,
                                                                       EntangleColourProfileIntent intent)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(src), NULL);
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(dst), NULL);
+
     return ENTANGLE_COLOUR_PROFILE_TRANSFORM(g_object_new(ENTANGLE_TYPE_COLOUR_PROFILE_TRANSFORM,
                                                           "src-profile", src,
                                                           "dst-profile", dst,
@@ -472,6 +489,9 @@ EntangleColourProfileTransform *entangle_colour_profile_transform_new(EntangleCo
 GdkPixbuf *entangle_colour_profile_transform_apply(EntangleColourProfileTransform *trans,
                                                    GdkPixbuf *srcpixbuf)
 {
+    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE_TRANSFORM(trans), NULL);
+    g_return_val_if_fail(GDK_IS_PIXBUF(srcpixbuf), NULL);
+
     EntangleColourProfileTransformPrivate *priv = trans->priv;
     EntangleColourProfilePrivate *srcpriv = priv->srcProfile->priv;
     EntangleColourProfilePrivate *dstpriv = priv->dstProfile->priv;

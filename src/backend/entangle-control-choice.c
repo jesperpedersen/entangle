@@ -124,6 +124,9 @@ EntangleControlChoice *entangle_control_choice_new(const char *path,
                                                    const char *info,
                                                    gboolean readonly)
 {
+    g_return_val_if_fail(path != NULL, NULL);
+    g_return_val_if_fail(label != NULL, NULL);
+
     return ENTANGLE_CONTROL_CHOICE(g_object_new(ENTANGLE_TYPE_CONTROL_CHOICE,
                                                 "path", path,
                                                 "id", id,
@@ -142,6 +145,9 @@ static void entangle_control_choice_init(EntangleControlChoice *picker)
 void entangle_control_choice_add_entry(EntangleControlChoice *choice,
                                        const char *entry)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_CHOICE(choice));
+    g_return_if_fail(entry != NULL);
+
     EntangleControlChoicePrivate *priv = choice->priv;
 
     priv->entries = g_renew(char *, priv->entries, priv->nentries+1);
@@ -150,6 +156,8 @@ void entangle_control_choice_add_entry(EntangleControlChoice *choice,
 
 int entangle_control_choice_entry_count(EntangleControlChoice *choice)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_CHOICE(choice), 0);
+
     EntangleControlChoicePrivate *priv = choice->priv;
 
     return priv->nentries;
@@ -158,6 +166,8 @@ int entangle_control_choice_entry_count(EntangleControlChoice *choice)
 const char *entangle_control_choice_entry_get(EntangleControlChoice *choice,
                                               int idx)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_CHOICE(choice), NULL);
+
     EntangleControlChoicePrivate *priv = choice->priv;
 
     if (idx < 0 || idx >= priv->nentries)

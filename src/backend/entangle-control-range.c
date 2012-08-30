@@ -191,6 +191,9 @@ EntangleControlRange *entangle_control_range_new(const char *path,
                                                  float max,
                                                  float step)
 {
+    g_return_val_if_fail(path != NULL, NULL);
+    g_return_val_if_fail(label != NULL, NULL);
+
     return ENTANGLE_CONTROL_RANGE(g_object_new(ENTANGLE_TYPE_CONTROL_RANGE,
                                                "path", path,
                                                "id", id,
@@ -212,6 +215,8 @@ static void entangle_control_range_init(EntangleControlRange *picker)
 
 float entangle_control_range_get_min(EntangleControlRange *range)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_RANGE(range), 0.0);
+
     EntangleControlRangePrivate *priv = range->priv;
 
     return priv->min;
@@ -219,6 +224,8 @@ float entangle_control_range_get_min(EntangleControlRange *range)
 
 float entangle_control_range_get_max(EntangleControlRange *range)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_RANGE(range), 0.0);
+
     EntangleControlRangePrivate *priv = range->priv;
 
     return priv->max;
@@ -226,6 +233,8 @@ float entangle_control_range_get_max(EntangleControlRange *range)
 
 float entangle_control_range_get_step(EntangleControlRange *range)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_RANGE(range), 0.0);
+
     EntangleControlRangePrivate *priv = range->priv;
 
     return priv->step;
