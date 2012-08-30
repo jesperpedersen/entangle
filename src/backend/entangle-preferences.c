@@ -697,10 +697,10 @@ void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const
     gchar **plugins = g_settings_get_strv(priv->interfaceSettings,
                                           SETTING_INTERFACE_PLUGINS);
     gsize len = g_strv_length(plugins);
-
-    plugins = g_renew(gchar *, plugins, len + 1);
-    plugins[len] = g_strdup(name);
-    plugins[len+1] = NULL;
+    plugins = g_renew(gchar *, plugins, len + 2);
+    len++;
+    plugins[len-1] = g_strdup(name);
+    plugins[len] = NULL;
     g_settings_set_strv(priv->interfaceSettings,
                         SETTING_INTERFACE_PLUGINS,
                         (const gchar *const*)plugins);
@@ -714,24 +714,21 @@ void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, co
     gchar **plugins = g_settings_get_strv(priv->interfaceSettings,
                                           SETTING_INTERFACE_PLUGINS);
     gsize len = g_strv_length(plugins);
-    gsize i;
-
-    for (i = 0 ; i < len ; i++) {
-        if (g_str_equal(plugins[i], name)) {
+    gsize i, j;
+    gchar **newplugins = g_new0(gchar *, len + 1);
+    for (i = 0, j = 0 ; i < len ; i++) {
+        if (!g_str_equal(plugins[i], name)) {
+            newplugins[j++] = plugins[i];
+        } else {
             g_free(plugins[i]);
-            plugins[i] = NULL;
-            if (i < (len - 1)) {
-                memmove(plugins + i,
-                        plugins + i + 1,
-                        len - i - 1);
-                plugins[len-1] = NULL;
-            }
-            break;
         }
+        plugins[i] = NULL;
     }
+    newplugins[j] = NULL;
     g_settings_set_strv(priv->interfaceSettings,
                         SETTING_INTERFACE_PLUGINS,
-                        (const gchar *const*)plugins);
+                        (const gchar *const*)newplugins);
+    g_strfreev(newplugins);
     g_strfreev(plugins);
 }
 
