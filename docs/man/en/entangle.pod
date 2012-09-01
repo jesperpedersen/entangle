@@ -1,0 +1,64 @@
+=head1 NAME
+
+entangle - thethered camera control & capture
+
+=head1 SYNOPSIS
+
+entangle [OPTION...]
+
+=head1 DESCRIPTION
+
+Entangle provides a graphical interface for "tethered shooting", aka
+taking photographs with a digital camera completely controlled from
+the computer.
+
+Valid command options:
+
+=over 4
+
+=item --debug-entangle
+
+Enable debugging of the Entangle application code
+
+=item --debug-gphoto
+
+Enable debugging of the gphoto library code
+
+=item --help
+
+Show command line option summary
+
+=item --help-all
+
+Show all command line options
+
+=item --help-gtk
+
+Show GTK+ command line options
+
+=item --help-entangle
+
+Show Entangle command line options
+
+=back
+
+=head1 AUTHOR
+
+Entangle was initially written by Daniel P. Berrange <dan@berrange.com>. For
+details of subsequent contributors, see the application AUTHORS file in the
+source or GIT commit history.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2009-2012 by Daniel P. Berrange
+
+=head1 LICENSE
+
+Entangle is distributed under the terms of the GNU GPL v3+.
+This is free software; see the source for copying conditions. There
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE
+
+=head1 SEE ALSO
+
+C<gphoto2(1)>, C<libgphoto2(3)>

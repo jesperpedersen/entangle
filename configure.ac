@@ -170,6 +170,8 @@ AC_CONFIG_FILES(
   src/icons/64x64/actions/Makefile
   po/Makefile.in
   docs/Makefile
+  docs/man/Makefile
+  docs/man/en/Makefile
   docs/reference/Makefile
   )
 
