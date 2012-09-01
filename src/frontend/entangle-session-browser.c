@@ -1216,7 +1216,9 @@ entangle_session_browser_scroll(GtkWidget *widget,
                                  gtk_adjustment_get_step_increment(priv->hadjustment));
         break;
 
+#if GTK_CHECK_VERSION(3,4,0)
     case GDK_SCROLL_SMOOTH:
+#endif
     default:
         break;
     }
