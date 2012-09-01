@@ -64,7 +64,7 @@ void entangle_camera_support_show(EntangleCameraSupport *support);
 void entangle_camera_support_hide(EntangleCameraSupport *support);
 
 void entangle_camera_support_set_camera_list(EntangleCameraSupport *support,
-					       EntangleCameraList *list);
+                                             EntangleCameraList *list);
 
 EntangleCameraList *entangle_camera_support_get_camera_list(EntangleCameraSupport *support);
 
