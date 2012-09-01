@@ -30,13 +30,6 @@
 #define ENTANGLE_IMAGE_DISPLAY_GET_PRIVATE(obj)                             \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_DISPLAY, EntangleImageDisplayPrivate))
 
-#if !GTK_CHECK_VERSION(2,20,0)
-#define gtk_widget_get_visible(win) \
-  GTK_WIDGET_VISIBLE(win)
-#define gtk_widget_get_realized(win) \
-  GTK_WIDGET_REALIZED(win)
-#endif
-
 struct _EntangleImageDisplayPrivate {
     gulong imageNotifyID;
     EntangleImage *image;

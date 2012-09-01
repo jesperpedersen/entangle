@@ -2694,11 +2694,7 @@ gboolean entangle_camera_manager_visible(EntangleCameraManager *manager)
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
 
-#if GTK_CHECK_VERSION(2,20,0)
     return gtk_widget_get_visible(win);
-#else
-    return GTK_WIDGET_FLAGS(win) & GTK_VISIBLE;
-#endif
 }
 
 
