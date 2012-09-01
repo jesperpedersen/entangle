@@ -299,8 +299,8 @@ static void entangle_camera_manager_update_aspect_ratio(EntangleCameraManager *m
     if (!aspect) {
         entangle_image_display_set_aspect_ratio(priv->imageDisplay, 1.33);
     } else {
-        double d;
-        char *end;
+        gdouble d;
+        gchar *end;
         d = g_ascii_strtod(aspect, &end);
         if (end == aspect || (errno == ERANGE))
             entangle_image_display_set_aspect_ratio(priv->imageDisplay, 1.33);
