@@ -54,6 +54,8 @@ enum {
 static void do_control_remove(GtkWidget *widget,
                               gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
     EntangleControlPanel *panel = data;
 
     gtk_container_remove(GTK_CONTAINER(panel), widget);
@@ -62,9 +64,11 @@ static void do_control_remove(GtkWidget *widget,
 
 static void do_update_control_finish(GObject *src G_GNUC_UNUSED,
                                      GAsyncResult *res,
-                                     gpointer opaque)
+                                     gpointer data)
 {
-    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(opaque);
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
+    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
     GError *error = NULL;
 
@@ -91,9 +95,11 @@ static void do_update_control_finish(GObject *src G_GNUC_UNUSED,
 
 static void do_refresh_control_entry(GObject *object,
                                      GParamSpec *pspec G_GNUC_UNUSED,
-                                     gpointer opaque)
+                                     gpointer data)
 {
-    GtkWidget *widget = GTK_WIDGET(opaque);
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
+    GtkWidget *widget = GTK_WIDGET(data);
     gchar *text;
     gdk_threads_enter();
     g_object_get(object, "value", &text, NULL);
@@ -108,10 +114,12 @@ static void do_refresh_control_entry(GObject *object,
 
 static void do_update_control_entry(GtkWidget *widget,
                                     GdkEventFocus *ev G_GNUC_UNUSED,
-                                    gpointer opaque)
+                                    gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
     EntangleControlText *control = g_object_get_data(G_OBJECT(widget), "control");
-    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(opaque);
+    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
     const char *text;
 
@@ -131,9 +139,9 @@ static void do_update_control_entry(GtkWidget *widget,
 
 static void do_refresh_control_range(GObject *object,
                                      GParamSpec *pspec G_GNUC_UNUSED,
-                                     gpointer opaque)
+                                     gpointer data)
 {
-    GtkWidget *widget = GTK_WIDGET(opaque);
+    GtkWidget *widget = GTK_WIDGET(data);
     gfloat val;
 
     gdk_threads_enter();
@@ -152,10 +160,12 @@ static void do_refresh_control_range(GObject *object,
 static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
                                     GtkScrollType scroll G_GNUC_UNUSED,
                                     gdouble value,
-                                    gpointer opaque)
+                                    gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
     EntangleControlText *control = g_object_get_data(G_OBJECT(widget), "control");
-    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(opaque);
+    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
 
     ENTANGLE_DEBUG("range [%lf]", value);
@@ -172,9 +182,9 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
 
 static void do_refresh_control_combo(GObject *object,
                                      GParamSpec *pspec G_GNUC_UNUSED,
-                                     gpointer opaque)
+                                     gpointer data)
 {
-    GtkWidget *widget = GTK_WIDGET(opaque);
+    GtkWidget *widget = GTK_WIDGET(data);
     gchar *text;
 
     gdk_threads_enter();
@@ -196,10 +206,12 @@ static void do_refresh_control_combo(GObject *object,
 
 
 static void do_update_control_combo(GtkComboBox *widget,
-                                    gpointer opaque)
+                                    gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
     EntangleControlChoice *control = g_object_get_data(G_OBJECT(widget), "control");
-    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(opaque);
+    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
     GtkTreeIter iter;
     char *text = NULL;
@@ -224,9 +236,9 @@ static void do_update_control_combo(GtkComboBox *widget,
 
 static void do_refresh_control_toggle(GObject *object,
                                       GParamSpec *pspec G_GNUC_UNUSED,
-                                      gpointer opaque)
+                                      gpointer data)
 {
-    GtkWidget *widget = GTK_WIDGET(opaque);
+    GtkWidget *widget = GTK_WIDGET(data);
     gboolean state;
 
     gdk_threads_enter();
@@ -241,10 +253,12 @@ static void do_refresh_control_toggle(GObject *object,
 
 
 static void do_update_control_toggle(GtkToggleButton *widget,
-                                     gpointer opaque)
+                                     gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
     EntangleControlChoice *control = g_object_get_data(G_OBJECT(widget), "control");
-    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(opaque);
+    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
     gboolean active;
 
@@ -264,6 +278,9 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                                    GtkVBox *box,
                                    EntangleControlGroup *grp)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
+    g_return_if_fail(ENTANGLE_IS_CONTROL_GROUP(grp));
+
     EntangleControlPanelPrivate *priv = panel->priv;
     int i;
 

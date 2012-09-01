@@ -48,9 +48,9 @@ enum {
 };
 
 static void entangle_image_popup_get_property(GObject *object,
-                                             guint prop_id,
-                                             GValue *value,
-                                             GParamSpec *pspec)
+                                              guint prop_id,
+                                              GValue *value,
+                                              GParamSpec *pspec)
 {
     EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(object);
     EntangleImagePopupPrivate *priv = popup->priv;
@@ -67,9 +67,9 @@ static void entangle_image_popup_get_property(GObject *object,
 }
 
 static void entangle_image_popup_set_property(GObject *object,
-                                             guint prop_id,
-                                             const GValue *value,
-                                             GParamSpec *pspec)
+                                              guint prop_id,
+                                              const GValue *value,
+                                              GParamSpec *pspec)
 {
     EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(object);
     EntangleImagePopupPrivate *priv = popup->priv;
@@ -91,7 +91,8 @@ static void entangle_image_popup_set_property(GObject *object,
         }
 }
 
-static void entangle_image_popup_finalize (GObject *object)
+
+static void entangle_image_popup_finalize(GObject *object)
 {
     EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(object);
     EntangleImagePopupPrivate *priv = popup->priv;
@@ -111,10 +112,13 @@ static void entangle_image_popup_finalize (GObject *object)
     G_OBJECT_CLASS (entangle_image_popup_parent_class)->finalize (object);
 }
 
+
 static gboolean entangle_image_popup_button_press(GtkWidget *widget G_GNUC_UNUSED,
-                                                 GdkEventButton *ev,
-                                                 gpointer data)
+                                                  GdkEventButton *ev,
+                                                  gpointer data)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_POPUP(data), FALSE);
+
     EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(data);
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win;
@@ -148,9 +152,11 @@ static gboolean entangle_image_popup_button_press(GtkWidget *widget G_GNUC_UNUSE
 }
 
 static gboolean entangle_image_popup_key_release(GtkWidget *widget G_GNUC_UNUSED,
-                                                GdkEventKey *ev,
-                                                gpointer data)
+                                                 GdkEventKey *ev,
+                                                 gpointer data)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_POPUP(data), FALSE);
+
     EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(data);
 
     if (ev->keyval == GDK_KEY_Escape ||
@@ -195,15 +201,19 @@ static void entangle_image_popup_class_init(EntangleImagePopupClass *klass)
     g_type_class_add_private(klass, sizeof(EntangleImagePopupPrivate));
 }
 
+
 EntangleImagePopup *entangle_image_popup_new(void)
 {
     return ENTANGLE_IMAGE_POPUP(g_object_new(ENTANGLE_TYPE_IMAGE_POPUP, NULL));
 }
 
+
 static gboolean do_popup_delete(GtkWidget *src G_GNUC_UNUSED,
-                                   GdkEvent *ev G_GNUC_UNUSED,
-                                   EntangleImagePopup *popup)
+                                GdkEvent *ev G_GNUC_UNUSED,
+                                EntangleImagePopup *popup)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup), FALSE);
+
     EntangleImagePopupPrivate *priv = popup->priv;
     ENTANGLE_DEBUG("popup delete");
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
@@ -211,6 +221,7 @@ static gboolean do_popup_delete(GtkWidget *src G_GNUC_UNUSED,
     gtk_widget_hide(win);
     return TRUE;
 }
+
 
 static void entangle_image_popup_init(EntangleImagePopup *popup)
 {
@@ -245,10 +256,14 @@ static void entangle_image_popup_init(EntangleImagePopup *popup)
     g_signal_connect(win, "delete-event", G_CALLBACK(do_popup_delete), popup);
 }
 
+
 void entangle_image_popup_show(EntangleImagePopup *popup,
-                              GtkWindow *parent,
-                              int x, int y)
+                               GtkWindow *parent,
+                               int x, int y)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup));
+    g_return_if_fail(GTK_IS_WINDOW(parent));
+
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
@@ -267,6 +282,8 @@ void entangle_image_popup_show(EntangleImagePopup *popup,
 
 void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monitor)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup));
+
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
     GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(win));
@@ -281,8 +298,11 @@ void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monito
     gtk_window_fullscreen(GTK_WINDOW(win));
 }
 
+
 void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monitor)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup));
+
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
     GdkCursor *null_cursor = gdk_cursor_new(GDK_BLANK_CURSOR);
@@ -305,6 +325,8 @@ void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monito
 
 void entangle_image_popup_hide(EntangleImagePopup *popup)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup));
+
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
@@ -317,12 +339,17 @@ void entangle_image_popup_hide(EntangleImagePopup *popup)
 
 void entangle_image_popup_set_image(EntangleImagePopup *popup, EntangleImage *image)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup));
+    g_return_if_fail(ENTANGLE_IS_IMAGE(image));
+
     g_object_set(popup, "image", image, NULL);
 }
 
 
 EntangleImage *entangle_image_popup_get_image(EntangleImagePopup *popup)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup), NULL);
+
     EntangleImagePopupPrivate *priv = popup->priv;
     return priv->image;
 }

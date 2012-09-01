@@ -85,8 +85,8 @@ static void entangle_preferences_display_get_property(GObject *object,
                                                       GValue *value,
                                                       GParamSpec *pspec)
 {
-    EntanglePreferencesDisplay *display = ENTANGLE_PREFERENCES_DISPLAY(object);
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(object);
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
 
     switch (prop_id)
         {
@@ -102,9 +102,11 @@ static void entangle_preferences_display_get_property(GObject *object,
 
 static void entangle_preferences_display_notify(GObject *object,
                                                 GParamSpec *spec,
-                                                gpointer opaque)
+                                                gpointer data)
 {
-    EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(opaque);
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(data));
+
+    EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(data);
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, spec->name));
 
@@ -297,8 +299,8 @@ static void entangle_preferences_display_set_property(GObject *object,
                                                       const GValue *value,
                                                       GParamSpec *pspec)
 {
-    EntanglePreferencesDisplay *display = ENTANGLE_PREFERENCES_DISPLAY(object);
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(object);
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs;
     PeasEngine *pluginEngine;
     GtkWidget *panel;
@@ -311,7 +313,7 @@ static void entangle_preferences_display_set_property(GObject *object,
             panel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-panel"));
             priv->application = g_value_get_object(value);
             g_object_ref(priv->application);
-            entangle_preferences_display_refresh(display);
+            entangle_preferences_display_refresh(preferences);
             prefs = entangle_application_get_preferences(priv->application);
             priv->prefsID = g_signal_connect(prefs,
                                              "notify",
@@ -330,6 +332,8 @@ static void entangle_preferences_display_set_property(GObject *object,
 
 static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *preferences)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *tmp;
     EntangleColourProfile *profile;
@@ -460,6 +464,8 @@ EntanglePreferencesDisplay *entangle_preferences_display_new(EntangleApplication
 
 void do_preferences_close(GtkButton *src G_GNUC_UNUSED, EntanglePreferencesDisplay *preferences)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences"));
     gtk_widget_hide(win);
@@ -468,8 +474,10 @@ void do_preferences_close(GtkButton *src G_GNUC_UNUSED, EntanglePreferencesDispl
 
 gboolean do_preferences_delete(GtkWidget *src,
                                GdkEvent *ev G_GNUC_UNUSED,
-                               EntanglePreferencesDisplay *preferences G_GNUC_UNUSED)
+                               EntanglePreferencesDisplay *preferences)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences), TRUE);
+
     ENTANGLE_DEBUG("preferences delete");
     gtk_widget_hide(src);
     return TRUE;
@@ -478,6 +486,8 @@ gboolean do_preferences_delete(GtkWidget *src,
 void do_page_changed(GtkTreeSelection *selection,
                      EntanglePreferencesDisplay *preferences)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *list;
     GtkTreeIter iter;
@@ -505,9 +515,11 @@ void do_page_changed(GtkTreeSelection *selection,
 }
 
 
-void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     gboolean enabled = gtk_toggle_button_get_active(src);
     GtkWidget *rgbProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-rgb-profile"));
     GtkWidget *monitorProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
@@ -522,9 +534,11 @@ void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *di
     gtk_widget_set_sensitive(monitorProfile, !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(systemProfile)));
 }
 
-void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
+void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     EntangleColourProfile *profile = entangle_colour_profile_new_file(filename);
@@ -534,9 +548,11 @@ void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesD
     g_object_unref(profile);
 }
 
-void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display)
+void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(src));
     EntangleColourProfile *profile = entangle_colour_profile_new_file(filename);
@@ -546,9 +562,11 @@ void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferen
     g_object_unref(profile);
 }
 
-void do_cms_detect_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_cms_detect_system_profile_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     gboolean enabled = gtk_toggle_button_get_active(src);
     GtkWidget *monitorProfile = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-monitor-profile"));
@@ -557,9 +575,11 @@ void do_cms_detect_system_profile_toggled(GtkToggleButton *src, EntanglePreferen
     gtk_widget_set_sensitive(monitorProfile, !enabled);
 }
 
-void do_cms_rendering_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
+void do_cms_rendering_intent_changed(GtkComboBox *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     int option = gtk_combo_box_get_active(src);
 
@@ -569,9 +589,11 @@ void do_cms_rendering_intent_changed(GtkComboBox *src, EntanglePreferencesDispla
 }
 
 
-void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display)
+void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     const char *text = gtk_entry_get_text(src);
 
@@ -579,9 +601,11 @@ void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDispl
 }
 
 
-void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     gboolean enabled = gtk_toggle_button_get_active(src);
 
@@ -589,9 +613,11 @@ void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePrefere
 }
 
 
-void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     gboolean enabled = gtk_toggle_button_get_active(src);
 
@@ -599,9 +625,11 @@ void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferences
 }
 
 
-void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     gboolean enabled = gtk_toggle_button_get_active(src);
 
@@ -609,9 +637,11 @@ void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferences
 }
 
 
-void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     gboolean enabled = gtk_toggle_button_get_active(src);
 
@@ -619,9 +649,11 @@ void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDis
 }
 
 
-void do_img_mask_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_img_mask_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     gboolean enabled = gtk_toggle_button_get_active(src);
     GtkWidget *aspect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-aspect-ratio"));
@@ -638,9 +670,11 @@ void do_img_mask_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDispla
 }
 
 
-void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
+void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     const gchar *ratio = gtk_combo_box_get_active_id(src);
 
@@ -651,9 +685,11 @@ void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *d
 }
 
 
-void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display)
+void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     GtkAdjustment *adjust = gtk_spin_button_get_adjustment(src);
 
@@ -662,9 +698,11 @@ void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay 
 }
 
 
-void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display)
+void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     gboolean enabled = gtk_toggle_button_get_active(src);
 
@@ -672,9 +710,11 @@ void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay
 }
 
 
-void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *display)
+void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *preferences)
 {
-    EntanglePreferencesDisplayPrivate *priv = display->priv;
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
     const gchar *id = gtk_combo_box_get_active_id(src);
     EntangleImageDisplayGrid grid = ENTANGLE_IMAGE_DISPLAY_GRID_NONE;
@@ -1079,6 +1119,8 @@ static void entangle_preferences_display_init(EntanglePreferencesDisplay *prefer
 
 GtkWindow *entangle_preferences_display_get_window(EntanglePreferencesDisplay *preferences)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences), NULL);
+
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
 
     return GTK_WINDOW(gtk_builder_get_object(priv->builder, "preferences"));
@@ -1087,6 +1129,8 @@ GtkWindow *entangle_preferences_display_get_window(EntanglePreferencesDisplay *p
 
 void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences)
 {
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "preferences"));
 
@@ -1097,6 +1141,8 @@ void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences)
 
 EntangleApplication *entangle_camera_preferences_get_application(EntanglePreferencesDisplay *preferences)
 {
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences), NULL);
+
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
 
     return priv->application;

@@ -49,6 +49,8 @@ enum {
 
 static void do_entangle_pixmap_setup(EntangleImageHistogram *histogram)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(histogram));
+
     EntangleImageHistogramPrivate *priv = histogram->priv;
     GdkPixbuf *pixbuf = NULL;
 
@@ -85,6 +87,7 @@ static void do_entangle_pixmap_setup(EntangleImageHistogram *histogram)
 
     priv->hasFreq = TRUE;
 }
+
 
 static void entangle_image_histogram_get_property(GObject *object,
                                                   guint prop_id,
@@ -126,7 +129,8 @@ static void entangle_image_histogram_set_property(GObject *object,
         }
 }
 
-static void entangle_image_histogram_finalize (GObject *object)
+
+static void entangle_image_histogram_finalize(GObject *object)
 {
     EntangleImageHistogram *histogram = ENTANGLE_IMAGE_HISTOGRAM(object);
     EntangleImageHistogramPrivate *priv = histogram->priv;
@@ -139,8 +143,11 @@ static void entangle_image_histogram_finalize (GObject *object)
     G_OBJECT_CLASS (entangle_image_histogram_parent_class)->finalize (object);
 }
 
+
 static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(widget), FALSE);
+
     EntangleImageHistogram *histogram = ENTANGLE_IMAGE_HISTOGRAM(widget);
     EntangleImageHistogramPrivate *priv = histogram->priv;
     int ww, wh; /* Available drawing area extents */
@@ -181,21 +188,27 @@ static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
 }
 
 
-static void entangle_image_histogram_get_preferred_width(GtkWidget *widget G_GNUC_UNUSED,
+static void entangle_image_histogram_get_preferred_width(GtkWidget *widget,
                                                          gint *minwidth,
                                                          gint *natwidth)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(widget));
+
     *minwidth = 100;
     *natwidth = 250;
 }
 
-static void entangle_image_histogram_get_preferred_height(GtkWidget *widget G_GNUC_UNUSED,
+
+static void entangle_image_histogram_get_preferred_height(GtkWidget *widget,
                                                           gint *minheight,
                                                           gint *natheight)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(widget));
+
     *minheight = 50;
     *natheight = 100;
 }
+
 
 static void entangle_image_histogram_class_init(EntangleImageHistogramClass *klass)
 {
@@ -224,6 +237,7 @@ static void entangle_image_histogram_class_init(EntangleImageHistogramClass *kla
     g_type_class_add_private(klass, sizeof(EntangleImageHistogramPrivate));
 }
 
+
 EntangleImageHistogram *entangle_image_histogram_new(void)
 {
     return ENTANGLE_IMAGE_HISTOGRAM(g_object_new(ENTANGLE_TYPE_IMAGE_HISTOGRAM, NULL));
@@ -240,19 +254,26 @@ static void entangle_image_histogram_init(EntangleImageHistogram *histogram)
     gtk_widget_set_double_buffered(GTK_WIDGET(histogram), FALSE);
 }
 
+
 static void entangle_image_histogram_image_pixbuf_notify(GObject *image G_GNUC_UNUSED,
                                                          GParamSpec *pspec G_GNUC_UNUSED,
-                                                         gpointer opaque)
+                                                         gpointer data)
 {
-    EntangleImageHistogram *histogram = ENTANGLE_IMAGE_HISTOGRAM(opaque);
+    g_return_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(data));
+
+    EntangleImageHistogram *histogram = ENTANGLE_IMAGE_HISTOGRAM(data);
 
     do_entangle_pixmap_setup(histogram);
     gtk_widget_queue_draw(GTK_WIDGET(histogram));
 }
 
+
 void entangle_image_histogram_set_image(EntangleImageHistogram *histogram,
                                         EntangleImage *image)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(histogram));
+    g_return_if_fail(!image || ENTANGLE_IS_IMAGE(image));
+
     EntangleImageHistogramPrivate *priv = histogram->priv;
 
     if (priv->image) {
@@ -277,6 +298,8 @@ void entangle_image_histogram_set_image(EntangleImageHistogram *histogram,
 
 EntangleImage *entangle_image_histogram_get_image(EntangleImageHistogram *histogram)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(histogram), NULL);
+
     EntangleImageHistogramPrivate *priv = histogram->priv;
 
     return priv->image;

@@ -90,7 +90,8 @@ static void entangle_image_statusbar_set_property(GObject *object,
         }
 }
 
-static void entangle_image_statusbar_finalize (GObject *object)
+
+static void entangle_image_statusbar_finalize(GObject *object)
 {
     EntangleImageStatusbar *statusbar = ENTANGLE_IMAGE_STATUSBAR(object);
     EntangleImageStatusbarPrivate *priv = statusbar->priv;
@@ -126,6 +127,7 @@ static void entangle_image_statusbar_class_init(EntangleImageStatusbarClass *kla
     g_type_class_add_private(klass, sizeof(EntangleImageStatusbarPrivate));
 }
 
+
 EntangleImageStatusbar *entangle_image_statusbar_new(void)
 {
     return ENTANGLE_IMAGE_STATUSBAR(g_object_new(ENTANGLE_TYPE_IMAGE_STATUSBAR, NULL));
@@ -134,6 +136,8 @@ EntangleImageStatusbar *entangle_image_statusbar_new(void)
 
 static void entangle_image_statusbar_init(EntangleImageStatusbar *statusbar)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_STATUSBAR(statusbar));
+
     EntangleImageStatusbarPrivate *priv;
     GdkColor color;
 
@@ -175,6 +179,8 @@ static void entangle_image_statusbar_init(EntangleImageStatusbar *statusbar)
 
 static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statusbar)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_STATUSBAR(statusbar));
+
     EntangleImageStatusbarPrivate *priv = statusbar->priv;
     GExiv2Metadata *metadata = entangle_image_get_metadata(priv->image);
     gchar *shutter = NULL;
@@ -230,9 +236,11 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
 
 static void entangle_image_statusbar_image_metadata_notify(GObject *image G_GNUC_UNUSED,
                                                            GParamSpec *pspec G_GNUC_UNUSED,
-                                                           gpointer opaque)
+                                                           gpointer data)
 {
-    EntangleImageStatusbar *statusbar = ENTANGLE_IMAGE_STATUSBAR(opaque);
+    g_return_if_fail(ENTANGLE_IS_IMAGE_STATUSBAR(data));
+
+    EntangleImageStatusbar *statusbar = ENTANGLE_IMAGE_STATUSBAR(data);
 
     entangle_image_statusbar_update_labels(statusbar);
 }
@@ -241,6 +249,9 @@ static void entangle_image_statusbar_image_metadata_notify(GObject *image G_GNUC
 void entangle_image_statusbar_set_image(EntangleImageStatusbar *statusbar,
                                         EntangleImage *image)
 {
+    g_return_if_fail(ENTANGLE_IS_IMAGE_STATUSBAR(statusbar));
+    g_return_if_fail(!image || ENTANGLE_IS_IMAGE(image));
+
     EntangleImageStatusbarPrivate *priv = statusbar->priv;
 
     if (priv->image) {
@@ -262,6 +273,8 @@ void entangle_image_statusbar_set_image(EntangleImageStatusbar *statusbar,
 
 EntangleImage *entangle_image_statusbar_get_image(EntangleImageStatusbar *statusbar)
 {
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_STATUSBAR(statusbar), NULL);
+
     EntangleImageStatusbarPrivate *priv = statusbar->priv;
 
     return priv->image;

@@ -270,6 +270,8 @@ static void do_image_removed(EntangleSession *session G_GNUC_UNUSED,
 
 static void do_model_unload(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     int count;
 
@@ -292,6 +294,8 @@ static void do_model_unload(EntangleSessionBrowser *browser)
 
 static void do_model_load(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     int count;
     int width;
@@ -473,6 +477,8 @@ static void
 entangle_session_browser_set_cell_data(EntangleSessionBrowser *browser,
                                        EntangleSessionBrowserItem *item)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     gboolean iters_persist;
     GtkTreeIter iter;
 
@@ -501,6 +507,8 @@ entangle_session_browser_set_cell_data(EntangleSessionBrowser *browser,
 static void
 entangle_session_browser_cache_widths(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     GList *items;
 
     g_signal_handler_block (browser->priv->cell_area_context,
@@ -534,6 +542,8 @@ entangle_session_browser_item_invalidate_size(EntangleSessionBrowserItem *item)
 static void
 entangle_session_browser_invalidate_sizes (EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     /* Clear all item sizes */
     g_list_foreach (browser->priv->items,
                     (GFunc)entangle_session_browser_item_invalidate_size, NULL);
@@ -557,6 +567,8 @@ entangle_session_browser_context_changed(GtkCellAreaContext *context G_GNUC_UNUS
                                          GParamSpec *pspec,
                                          gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(data));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
 
     if (!strcmp(pspec->name, "minimum-width") ||
@@ -573,6 +585,8 @@ entangle_session_browser_row_changed(GtkTreeModel *model G_GNUC_UNUSED,
                                      GtkTreeIter *iter G_GNUC_UNUSED,
                                      gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(data));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
 
     /* ignore changes in branches */
@@ -627,6 +641,8 @@ entangle_session_browser_row_inserted(GtkTreeModel *model G_GNUC_UNUSED,
                                       GtkTreeIter *iter,
                                       gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(data));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
     gint idx;
     EntangleSessionBrowserItem *item;
@@ -672,6 +688,8 @@ entangle_session_browser_row_deleted(GtkTreeModel *model G_GNUC_UNUSED,
                                      GtkTreePath *path,
                                      gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(data));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
     gint idx;
     EntangleSessionBrowserItem *item;
@@ -717,6 +735,8 @@ entangle_session_browser_rows_reordered(GtkTreeModel *model,
                                         gint *new_order,
                                         gpointer data)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(data));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
     int i;
     int length;
@@ -760,6 +780,8 @@ entangle_session_browser_rows_reordered(GtkTreeModel *model,
 static void
 entangle_session_browser_build_items(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     GtkTreeIter iter;
     int i;
     gboolean iters_persist;
@@ -791,6 +813,8 @@ entangle_session_browser_build_items(EntangleSessionBrowser *browser)
 static void
 entangle_session_browser_realize(GtkWidget *widget)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GtkAllocation allocation;
@@ -854,6 +878,8 @@ entangle_session_browser_realize(GtkWidget *widget)
 static void
 entangle_session_browser_unrealize(GtkWidget *widget)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
@@ -869,6 +895,8 @@ static void
 entangle_session_browser_scroll_to_item(EntangleSessionBrowser *browser,
                                         EntangleSessionBrowserItem *item)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GtkWidget *widget = GTK_WIDGET(browser);
     GtkAdjustment *hadj, *vadj;
@@ -917,6 +945,8 @@ entangle_session_browser_get_item_at_coords(EntangleSessionBrowser *browser,
                                             gboolean only_in_cell,
                                             GtkCellRenderer **cell_at_pos)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GList *items;
 
@@ -962,6 +992,8 @@ entangle_session_browser_get_item_at_coords(EntangleSessionBrowser *browser,
 EntangleImage *entangle_session_browser_get_image_at_coords(EntangleSessionBrowser *browser,
                                                             gint x, gint y)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     EntangleSessionBrowserItem *item = entangle_session_browser_get_item_at_coords(browser, x, y,
                                                                                    FALSE, NULL);
@@ -984,6 +1016,8 @@ static void
 entangle_session_browser_queue_draw_item(EntangleSessionBrowser *browser,
                                          EntangleSessionBrowserItem *item)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GdkRectangle  rect;
     GdkRectangle *item_area = (GdkRectangle *)item;
@@ -1001,6 +1035,8 @@ entangle_session_browser_queue_draw_item(EntangleSessionBrowser *browser,
 static gboolean
 entangle_session_browser_unselect_all_internal(EntangleSessionBrowser *browser)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), FALSE);
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     gboolean dirty = FALSE;
     GList *items;
@@ -1023,6 +1059,8 @@ static void
 entangle_session_browser_select_item(EntangleSessionBrowser *browser,
                                      EntangleSessionBrowserItem *item)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     if (item->selected)
         return;
 
@@ -1038,6 +1076,8 @@ static void
 entangle_session_browser_unselect_item(EntangleSessionBrowser *browser,
                                        EntangleSessionBrowserItem *item)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     if (!item->selected)
         return;
 
@@ -1053,6 +1093,8 @@ static void
 entangle_session_browser_select_path(EntangleSessionBrowser *browser,
                                      GtkTreePath *path)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     EntangleSessionBrowserItem *item = NULL;
 
@@ -1074,6 +1116,8 @@ entangle_session_browser_scroll_to_path(EntangleSessionBrowser *browser,
                                         gfloat       row_align,
                                         gfloat       col_align)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     EntangleSessionBrowserItem *item = NULL;
     GtkWidget *widget = GTK_WIDGET(browser);
@@ -1137,6 +1181,8 @@ static gboolean
 entangle_session_browser_button_press(GtkWidget *widget,
                                       GdkEventButton *event)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget), FALSE);
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
     EntangleSessionBrowserItem *item;
@@ -1184,6 +1230,8 @@ static gboolean
 entangle_session_browser_button_release(GtkWidget *widget,
                                         GdkEventButton *event)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget), FALSE);
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
@@ -1199,6 +1247,8 @@ static gboolean
 entangle_session_browser_scroll(GtkWidget *widget,
                                 GdkEventScroll *event)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget), FALSE);
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
@@ -1231,6 +1281,8 @@ static gboolean
 entangle_session_browser_motion_notify(GtkWidget *widget,
                                        GdkEventMotion *event)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget), FALSE);
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
     EntangleSessionBrowserItem *item;
@@ -1281,6 +1333,8 @@ static gboolean
 entangle_session_browser_key_press(GtkWidget *widget,
                                    GdkEventKey *event)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget), FALSE);
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GList *list, *prev = NULL;
@@ -1325,6 +1379,8 @@ static void
 entangle_session_browser_size_allocate(GtkWidget *widget,
                                        GtkAllocation *allocation)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
@@ -1370,6 +1426,8 @@ entangle_session_browser_size_allocate(GtkWidget *widget,
 
 static void entangle_session_browser_destroy(GtkWidget *widget)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget));
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
@@ -1589,6 +1647,8 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
 static GList *
 entangle_session_browser_get_selected_items(EntangleSessionBrowser *browser)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GList *list;
     GList *selected = NULL;
@@ -1609,6 +1669,8 @@ entangle_session_browser_get_selected_items(EntangleSessionBrowser *browser)
 
 EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *browser)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GList *items;
     EntangleImage *img = NULL;
@@ -1643,6 +1705,8 @@ EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *b
 void entangle_session_browser_set_thumbnail_loader(EntangleSessionBrowser *browser,
                                                    EntangleThumbnailLoader *loader)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     if (priv->loader) {
@@ -1663,6 +1727,8 @@ void entangle_session_browser_set_thumbnail_loader(EntangleSessionBrowser *brows
 
 EntangleThumbnailLoader *entangle_session_browser_get_thumbnail_loader(EntangleSessionBrowser *browser)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     return priv->loader;
@@ -1672,6 +1738,8 @@ EntangleThumbnailLoader *entangle_session_browser_get_thumbnail_loader(EntangleS
 void entangle_session_browser_set_session(EntangleSessionBrowser *browser,
                                           EntangleSession *session)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     if (priv->session) {
@@ -1691,6 +1759,8 @@ void entangle_session_browser_set_session(EntangleSessionBrowser *browser,
 
 EntangleSession *entangle_session_browser_get_session(EntangleSessionBrowser *browser)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     return priv->session;
@@ -1704,6 +1774,8 @@ entangle_session_browser_paint_item(EntangleSessionBrowser *browser,
                                     gint x,
                                     gint y)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     GdkRectangle cell_area;
     GtkStateFlags state = 0;
     GtkCellRendererState flags = 0;
@@ -1749,6 +1821,8 @@ static gboolean
 entangle_session_browser_draw(GtkWidget *widget,
                               cairo_t *cr)
 {
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget), FALSE);
+
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GList *icons;
@@ -1808,6 +1882,8 @@ entangle_session_browser_layout_row(EntangleSessionBrowser *browser,
                                     gint *y,
                                     gint *maximum_width)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GtkWidget *widget = GTK_WIDGET(browser);
     GtkAllocation allocation;
@@ -1880,6 +1956,8 @@ entangle_session_browser_layout_row(EntangleSessionBrowser *browser,
 static void
 adjust_wrap_width(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     gint wrap_width = 50;
 
     /* Here we go with the same old guess, try the icon size and set double
@@ -1902,6 +1980,8 @@ adjust_wrap_width(EntangleSessionBrowser *browser)
 static void
 entangle_session_browser_layout(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GtkAllocation allocation;
     GtkWidget *widget = GTK_WIDGET(browser);
@@ -1963,6 +2043,8 @@ entangle_session_browser_layout(EntangleSessionBrowser *browser)
 static void
 entangle_session_browser_process_updates(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     /* Prior to drawing, we check if a layout has been scheduled.  If so,
@@ -1977,9 +2059,11 @@ entangle_session_browser_process_updates(EntangleSessionBrowser *browser)
 
 
 static gboolean
-layout_callback(gpointer opaque)
+layout_callback(gpointer data)
 {
-    EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(opaque);
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(data), FALSE);
+
+    EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     priv->layout_idle_id = 0;
@@ -1993,6 +2077,8 @@ layout_callback(gpointer opaque)
 static void
 entangle_session_browser_queue_layout(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     if (priv->layout_idle_id != 0)
@@ -2007,6 +2093,8 @@ entangle_session_browser_queue_layout(EntangleSessionBrowser *browser)
 static void
 entangle_session_browser_set_hadjustment_values(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GtkAllocation allocation;
     GtkAdjustment *adj = priv->hadjustment;
@@ -2026,6 +2114,8 @@ entangle_session_browser_set_hadjustment_values(EntangleSessionBrowser *browser)
 static void
 entangle_session_browser_set_vadjustment_values(EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
     GtkAllocation allocation;
     GtkAdjustment *adj = priv->vadjustment;
@@ -2046,6 +2136,8 @@ static void
 entangle_session_browser_set_hadjustment(EntangleSessionBrowser *browser,
                                          GtkAdjustment *adjustment)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     if (adjustment && priv->hadjustment == adjustment)
@@ -2075,6 +2167,8 @@ static void
 entangle_session_browser_set_vadjustment(EntangleSessionBrowser *browser,
                                          GtkAdjustment *adjustment)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     if (adjustment && priv->vadjustment == adjustment)
@@ -2104,6 +2198,8 @@ static void
 entangle_session_browser_adjustment_changed(GtkAdjustment *adjustment G_GNUC_UNUSED,
                                             EntangleSessionBrowser *browser)
 {
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     if (gtk_widget_get_realized(GTK_WIDGET(browser))) {

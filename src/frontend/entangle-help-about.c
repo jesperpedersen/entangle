@@ -38,7 +38,7 @@ struct _EntangleHelpAboutPrivate {
 G_DEFINE_TYPE(EntangleHelpAbout, entangle_help_about, G_TYPE_OBJECT);
 
 
-static void entangle_help_about_finalize (GObject *object)
+static void entangle_help_about_finalize(GObject *object)
 {
     EntangleHelpAbout *about = ENTANGLE_HELP_ABOUT(object);
     EntangleHelpAboutPrivate *priv = about->priv;
@@ -47,6 +47,7 @@ static void entangle_help_about_finalize (GObject *object)
 
     G_OBJECT_CLASS (entangle_help_about_parent_class)->finalize (object);
 }
+
 
 static void entangle_help_about_class_init(EntangleHelpAboutClass *klass)
 {
@@ -57,15 +58,19 @@ static void entangle_help_about_class_init(EntangleHelpAboutClass *klass)
     g_type_class_add_private(klass, sizeof(EntangleHelpAboutPrivate));
 }
 
+
 EntangleHelpAbout *entangle_help_about_new(void)
 {
     return ENTANGLE_HELP_ABOUT(g_object_new(ENTANGLE_TYPE_HELP_ABOUT, NULL));
 }
 
+
 static void do_about_response(GtkDialog *dialog G_GNUC_UNUSED,
                               gint response G_GNUC_UNUSED,
                               EntangleHelpAbout *about)
 {
+    g_return_if_fail(ENTANGLE_IS_HELP_ABOUT(about));
+
     EntangleHelpAboutPrivate *priv = about->priv;
     ENTANGLE_DEBUG("about response");
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
@@ -73,10 +78,13 @@ static void do_about_response(GtkDialog *dialog G_GNUC_UNUSED,
     gtk_widget_hide(win);
 }
 
+
 static gboolean do_about_delete(GtkWidget *src G_GNUC_UNUSED,
                                 GdkEvent *ev G_GNUC_UNUSED,
                                 EntangleHelpAbout *about)
 {
+    g_return_val_if_fail(ENTANGLE_IS_HELP_ABOUT(about), FALSE);
+
     EntangleHelpAboutPrivate *priv = about->priv;
     ENTANGLE_DEBUG("about delete");
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
@@ -84,6 +92,7 @@ static gboolean do_about_delete(GtkWidget *src G_GNUC_UNUSED,
     gtk_widget_hide(win);
     return TRUE;
 }
+
 
 static void entangle_help_about_init(EntangleHelpAbout *about)
 {
@@ -123,6 +132,8 @@ static void entangle_help_about_init(EntangleHelpAbout *about)
 
 GtkWindow *entangle_help_about_get_window(EntangleHelpAbout *about)
 {
+    g_return_val_if_fail(ENTANGLE_IS_HELP_ABOUT(about), NULL);
+
     EntangleHelpAboutPrivate *priv = about->priv;
 
     return GTK_WINDOW(gtk_builder_get_object(priv->builder, "help-about"));
@@ -131,6 +142,8 @@ GtkWindow *entangle_help_about_get_window(EntangleHelpAbout *about)
 
 void entangle_help_about_show(EntangleHelpAbout *about)
 {
+    g_return_if_fail(ENTANGLE_IS_HELP_ABOUT(about));
+
     EntangleHelpAboutPrivate *priv = about->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
@@ -140,6 +153,8 @@ void entangle_help_about_show(EntangleHelpAbout *about)
 
 void entangle_help_about_hide(EntangleHelpAbout *about)
 {
+    g_return_if_fail(ENTANGLE_IS_HELP_ABOUT(about));
+
     EntangleHelpAboutPrivate *priv = about->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
