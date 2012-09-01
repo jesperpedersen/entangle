@@ -44,10 +44,10 @@ struct _EntangleImageDisplayPrivate {
     cairo_surface_t *pixmap;
 
     gboolean autoscale;
-    gfloat scale;
+    gdouble scale;
 
-    gfloat aspectRatio;
-    gfloat maskOpacity;
+    gdouble aspectRatio;
+    gdouble maskOpacity;
     gboolean maskEnabled;
 
     gboolean focusPoint;
@@ -766,7 +766,7 @@ gboolean entangle_image_display_get_autoscale(EntangleImageDisplay *display)
 
 
 void entangle_image_display_set_scale(EntangleImageDisplay *display,
-                                      gfloat scale)
+                                      gdouble scale)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -777,7 +777,7 @@ void entangle_image_display_set_scale(EntangleImageDisplay *display,
 }
 
 
-gfloat entangle_image_display_get_scale(EntangleImageDisplay *display)
+gdouble entangle_image_display_get_scale(EntangleImageDisplay *display)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -786,7 +786,7 @@ gfloat entangle_image_display_get_scale(EntangleImageDisplay *display)
 
 
 void entangle_image_display_set_aspect_ratio(EntangleImageDisplay *display,
-                                             gfloat aspect)
+                                             gdouble aspect)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -797,7 +797,7 @@ void entangle_image_display_set_aspect_ratio(EntangleImageDisplay *display,
 }
 
 
-gfloat entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display)
+gdouble entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -806,7 +806,7 @@ gfloat entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display)
 
 
 void entangle_image_display_set_mask_opacity(EntangleImageDisplay *display,
-                                             gfloat opacity)
+                                             gdouble opacity)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 
@@ -817,7 +817,7 @@ void entangle_image_display_set_mask_opacity(EntangleImageDisplay *display,
 }
 
 
-gfloat entangle_image_display_get_mask_opacity(EntangleImageDisplay *display)
+gdouble entangle_image_display_get_mask_opacity(EntangleImageDisplay *display)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
 

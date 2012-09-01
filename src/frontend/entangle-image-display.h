@@ -69,16 +69,16 @@ gboolean entangle_image_display_get_autoscale(EntangleImageDisplay *display);
 
 
 void entangle_image_display_set_scale(EntangleImageDisplay *display,
-                                      gfloat scale);
-gfloat entangle_image_display_get_scale(EntangleImageDisplay *display);
+                                      gdouble scale);
+gdouble entangle_image_display_get_scale(EntangleImageDisplay *display);
 
 void entangle_image_display_set_aspect_ratio(EntangleImageDisplay *display,
-                                             gfloat aspect);
-gfloat entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display);
+                                             gdouble aspect);
+gdouble entangle_image_display_get_aspect_ratio(EntangleImageDisplay *display);
 
 void entangle_image_display_set_mask_opacity(EntangleImageDisplay *display,
-                                             gfloat opacity);
-gfloat entangle_image_display_get_mask_opacity(EntangleImageDisplay *display);
+                                             gdouble opacity);
+gdouble entangle_image_display_get_mask_opacity(EntangleImageDisplay *display);
 
 void entangle_image_display_set_mask_enabled(EntangleImageDisplay *display,
                                              gboolean enabled);
