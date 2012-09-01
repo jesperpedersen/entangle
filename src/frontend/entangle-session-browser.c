@@ -38,7 +38,7 @@ struct _EntangleSessionBrowserItem
     GdkRectangle cell_area;
 
     GtkTreeIter iter;
-    gint index;
+    gint idx;
 
     gint col;
 
@@ -451,9 +451,9 @@ verify_items(EntangleSessionBrowser *browser)
     for (items = browser->priv->items; items; items = items->next) {
         EntangleSessionBrowserItem *item = items->data;
 
-        if (item->index != i)
+        if (item->idx != i)
             ENTANGLE_DEBUG("List item does not match its index: "
-                           "item index %d and list index %d\n", item->index, i);
+                           "item index %d and list index %d\n", item->idx, i);
         i++;
     }
 }
@@ -481,7 +481,7 @@ entangle_session_browser_set_cell_data(EntangleSessionBrowser *browser,
     if (!iters_persist) {
         GtkTreePath *path;
 
-        path = gtk_tree_path_new_from_indices (item->index, -1);
+        path = gtk_tree_path_new_from_indices (item->idx, -1);
         if (!gtk_tree_model_get_iter (browser->priv->model, &iter, path))
             return;
         gtk_tree_path_free (path);
@@ -628,7 +628,7 @@ entangle_session_browser_row_inserted(GtkTreeModel *model G_GNUC_UNUSED,
                                       gpointer data)
 {
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
-    gint index;
+    gint idx;
     EntangleSessionBrowserItem *item;
     gboolean iters_persist;
     GList *list;
@@ -639,26 +639,26 @@ entangle_session_browser_row_inserted(GtkTreeModel *model G_GNUC_UNUSED,
 
     iters_persist = gtk_tree_model_get_flags(browser->priv->model) & GTK_TREE_MODEL_ITERS_PERSIST;
 
-    index = gtk_tree_path_get_indices(path)[0];
+    idx = gtk_tree_path_get_indices(path)[0];
 
     item = entangle_session_browser_item_new();
 
     if (iters_persist)
         item->iter = *iter;
 
-    item->index = index;
+    item->idx = idx;
 
     /* FIXME: We can be more efficient here,
        we can store a tail pointer and use that when
        appending (which is a rather common operation)
     */
     browser->priv->items = g_list_insert(browser->priv->items,
-                                         item, index);
+                                         item, idx);
 
-    list = g_list_nth (browser->priv->items, index + 1);
+    list = g_list_nth (browser->priv->items, idx + 1);
     for (; list; list = list->next) {
         item = list->data;
-        item->index++;
+        item->idx++;
     }
 
     verify_items(browser);
@@ -673,7 +673,7 @@ entangle_session_browser_row_deleted(GtkTreeModel *model G_GNUC_UNUSED,
                                      gpointer data)
 {
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
-    gint index;
+    gint idx;
     EntangleSessionBrowserItem *item;
     GList *list, *next;
     gboolean emit = FALSE;
@@ -682,9 +682,9 @@ entangle_session_browser_row_deleted(GtkTreeModel *model G_GNUC_UNUSED,
     if (gtk_tree_path_get_depth(path) > 1)
         return;
 
-    index = gtk_tree_path_get_indices(path)[0];
+    idx = gtk_tree_path_get_indices(path)[0];
 
-    list = g_list_nth(browser->priv->items, index);
+    list = g_list_nth(browser->priv->items, idx);
     item = list->data;
 
     if (browser->priv->cell_area)
@@ -697,7 +697,7 @@ entangle_session_browser_row_deleted(GtkTreeModel *model G_GNUC_UNUSED,
 
     for (next = list->next; next; next = next->next) {
         item = next->data;
-        item->index--;
+        item->idx--;
     }
 
     browser->priv->items = g_list_delete_link(browser->priv->items, list);
@@ -743,7 +743,7 @@ entangle_session_browser_rows_reordered(GtkTreeModel *model,
     g_free(order);
 
     for (i = length - 1; i >= 0; i--) {
-        item_array[i]->index = i;
+        item_array[i]->idx = i;
         items = g_list_prepend(items, item_array[i]);
     }
 
@@ -779,7 +779,7 @@ entangle_session_browser_build_items(EntangleSessionBrowser *browser)
         if (iters_persist)
             item->iter = iter;
 
-        item->index = i;
+        item->idx = i;
         i++;
         items = g_list_prepend(items, item);
     } while (gtk_tree_model_iter_next(browser->priv->model, &iter));
@@ -1595,7 +1595,7 @@ entangle_session_browser_get_selected_items(EntangleSessionBrowser *browser)
         EntangleSessionBrowserItem *item = list->data;
 
         if (item->selected) {
-            GtkTreePath *path = gtk_tree_path_new_from_indices(item->index, -1);
+            GtkTreePath *path = gtk_tree_path_new_from_indices(item->idx, -1);
 
             selected = g_list_prepend(selected, path);
         }
