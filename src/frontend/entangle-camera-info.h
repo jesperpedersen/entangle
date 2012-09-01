@@ -58,7 +58,6 @@ typedef enum {
     ENTANGLE_CAMERA_INFO_DATA_SUMMARY,
     ENTANGLE_CAMERA_INFO_DATA_MANUAL,
     ENTANGLE_CAMERA_INFO_DATA_DRIVER,
-    ENTANGLE_CAMERA_INFO_DATA_SUPPORTED,
 } EntangleCameraInfoData;
 
 GType entangle_camera_info_get_type(void) G_GNUC_CONST;

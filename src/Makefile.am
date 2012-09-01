@@ -8,6 +8,7 @@ bin_PROGRAMS = entangle
 builderdir = $(pkgdatadir)
 builder_DATA = \
 	frontend/entangle-camera-info.xml \
+	frontend/entangle-camera-support.xml \
 	frontend/entangle-camera-manager.xml \
 	frontend/entangle-camera-picker.xml \
 	frontend/entangle-help-about.xml \
@@ -95,6 +96,7 @@ libentangle_backend_la_CFLAGS = \
 libentangle_frontend_la_SOURCES = \
 	frontend/entangle-application.h frontend/entangle-application.c \
 	frontend/entangle-camera-info.h frontend/entangle-camera-info.c \
+	frontend/entangle-camera-support.h frontend/entangle-camera-support.c \
 	frontend/entangle-camera-manager.h frontend/entangle-camera-manager.c \
 	frontend/entangle-camera-picker.h frontend/entangle-camera-picker.c \
 	frontend/entangle-control-panel.h frontend/entangle-control-panel.c \

@@ -168,7 +168,6 @@ GType entangle_camera_info_data_get_type(void)
             { ENTANGLE_CAMERA_INFO_DATA_SUMMARY, "ENTANGLE_CAMERA_INFO_DATA_SUMMARY", "summary" },
             { ENTANGLE_CAMERA_INFO_DATA_MANUAL, "ENTANGLE_CAMERA_INFO_DATA_MANUAL", "manual" },
             { ENTANGLE_CAMERA_INFO_DATA_DRIVER, "ENTANGLE_CAMERA_INFO_DATA_DRIVER", "driver" },
-            { ENTANGLE_CAMERA_INFO_DATA_SUPPORTED, "ENTANGLE_CAMERA_INFO_DATA_SUPPORTED", "supported" },
             { 0, NULL, NULL }
         };
         etype = g_enum_register_static ("EntangleCameraInfoData", values );
@@ -282,9 +281,6 @@ static void do_info_refresh(EntangleCameraInfo *info)
             gtk_label_set_text(GTK_LABEL(text), str);
             g_free(str);
         }   break;
-        case ENTANGLE_CAMERA_INFO_DATA_SUPPORTED:
-            gtk_label_set_text(GTK_LABEL(text), _("Cannot list supported cameras yet"));
-            break;
         default:
             gtk_label_set_text(GTK_LABEL(text), _("Unknown information"));
             break;

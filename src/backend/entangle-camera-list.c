@@ -416,6 +416,46 @@ EntangleCamera *entangle_camera_list_find(EntangleCameraList *list,
 }
 
 
+static const gchar *entangle_camera_list_get_status(CameraDriverStatus status)
+{
+    switch (status) {
+    case GP_DRIVER_STATUS_PRODUCTION:
+        return "Production";
+    case GP_DRIVER_STATUS_TESTING:
+        return "Testing";
+    case GP_DRIVER_STATUS_EXPERIMENTAL:
+        return "Experimental";
+    case GP_DRIVER_STATUS_DEPRECATED:
+        return "Deprecated";
+    default:
+        return "Unknown";
+    }
+}
+
+
+gchar **entangle_camera_list_get_supported(EntangleCameraList *list)
+{
+    EntangleCameraListPrivate *priv = list->priv;
+    gchar **ret = NULL;
+    int cnt;
+    gsize i;
+
+    cnt = gp_abilities_list_count(priv->caps);
+
+    ret = g_new0(gchar *, cnt + 1);
+
+    for (i = 0 ; i < cnt ; i++) {
+        CameraAbilities ab;
+        gp_abilities_list_get_abilities(priv->caps, i, &ab);
+
+        ret[i] = g_strdup_printf("%s (%s)",
+                                 ab.model,
+                                 entangle_camera_list_get_status(ab.status));
+    }
+    ret[cnt] = NULL;
+    return ret;
+}
+
 /*
  * Local variables:
  *  c-indent-level: 4

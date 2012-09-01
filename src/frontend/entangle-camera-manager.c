@@ -33,6 +33,7 @@
 #include "entangle-camera-manager.h"
 #include "entangle-camera-list.h"
 #include "entangle-camera-info.h"
+#include "entangle-camera-support.h"
 #include "entangle-camera-picker.h"
 #include "entangle-session.h"
 #include "entangle-image-display.h"
@@ -67,7 +68,7 @@ struct _EntangleCameraManagerPrivate {
     EntangleCameraInfo *summary;
     EntangleCameraInfo *manual;
     EntangleCameraInfo *driver;
-    EntangleCameraInfo *supported;
+    EntangleCameraSupport *supported;
 
     EntangleImageLoader *imageLoader;
     EntangleThumbnailLoader *thumbLoader;
@@ -1521,13 +1522,12 @@ void do_menu_help_supported(GtkMenuItem *src G_GNUC_UNUSED,
     EntangleCameraManagerPrivate *priv = manager->priv;
 
     if (!priv->supported) {
-        priv->supported = entangle_camera_info_new(priv->camera,
-                                                   ENTANGLE_CAMERA_INFO_DATA_SUPPORTED);
-        gtk_window_set_transient_for(entangle_camera_info_get_window(priv->supported),
+        priv->supported = entangle_camera_support_new(entangle_application_get_cameras(priv->application));
+        gtk_window_set_transient_for(entangle_camera_support_get_window(priv->supported),
                                      entangle_camera_manager_get_window(manager));
     }
 
-    entangle_camera_info_show(priv->supported);
+    entangle_camera_support_show(priv->supported);
 }
 
 

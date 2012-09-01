@@ -78,6 +78,8 @@ GList *entangle_camera_list_get_cameras(EntangleCameraList *list);
 EntangleCamera *entangle_camera_list_find(EntangleCameraList *list,
                                           const char *port);
 
+gchar **entangle_camera_list_get_supported(EntangleCameraList *list);
+
 G_END_DECLS
 
 #endif /* __ENTANGLE_CAMERA_LIST_H__ */
