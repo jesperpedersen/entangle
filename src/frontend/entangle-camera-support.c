@@ -148,6 +148,8 @@ EntangleCameraSupport *entangle_camera_support_new(EntangleCameraList *cameraLis
 gboolean do_support_close(GtkButton *src G_GNUC_UNUSED,
                           EntangleCameraSupport *support)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support), TRUE);
+
     EntangleCameraSupportPrivate *priv = support->priv;
     ENTANGLE_DEBUG("support close");
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-support"));
@@ -161,6 +163,8 @@ gboolean do_support_delete(GtkWidget *src G_GNUC_UNUSED,
                            GdkEvent *ev G_GNUC_UNUSED,
                            EntangleCameraSupport *support)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support), FALSE);
+
     EntangleCameraSupportPrivate *priv = support->priv;
     ENTANGLE_DEBUG("support delete");
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-support"));
@@ -193,6 +197,8 @@ static void entangle_camera_support_init(EntangleCameraSupport *support)
 
 GtkWindow *entangle_camera_support_get_window(EntangleCameraSupport *support)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support), NULL);
+
     EntangleCameraSupportPrivate *priv = support->priv;
     return GTK_WINDOW(gtk_builder_get_object(priv->builder, "camera-support"));
 }
@@ -200,6 +206,8 @@ GtkWindow *entangle_camera_support_get_window(EntangleCameraSupport *support)
 
 void entangle_camera_support_show(EntangleCameraSupport *support)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support));
+
     EntangleCameraSupportPrivate *priv = support->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-support"));
 
@@ -210,6 +218,8 @@ void entangle_camera_support_show(EntangleCameraSupport *support)
 
 void entangle_camera_support_hide(EntangleCameraSupport *support)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support));
+
     EntangleCameraSupportPrivate *priv = support->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-support"));
 
@@ -219,6 +229,8 @@ void entangle_camera_support_hide(EntangleCameraSupport *support)
 
 static void do_support_refresh(EntangleCameraSupport *support)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support));
+
     EntangleCameraSupportPrivate *priv = support->priv;
     GtkWidget *text = GTK_WIDGET(gtk_builder_get_object(priv->builder, "info-text"));
 
@@ -236,6 +248,9 @@ static void do_support_refresh(EntangleCameraSupport *support)
 void entangle_camera_support_set_camera_list(EntangleCameraSupport *support,
                                              EntangleCameraList *cameraList)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support));
+    g_return_if_fail(ENTANGLE_IS_CAMERA_LIST(cameraList));
+
     EntangleCameraSupportPrivate *priv = support->priv;
 
     if (priv->cameraList)
@@ -250,6 +265,8 @@ void entangle_camera_support_set_camera_list(EntangleCameraSupport *support,
 
 EntangleCameraList *entangle_camera_support_get_camera_list(EntangleCameraSupport *support)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support), NULL);
+
     EntangleCameraSupportPrivate *priv = support->priv;
 
     return priv->cameraList;

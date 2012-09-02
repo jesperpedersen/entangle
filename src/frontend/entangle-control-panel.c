@@ -454,6 +454,9 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
                                       GtkVBox *box,
                                       EntangleControlGroup *grp)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
+    g_return_if_fail(ENTANGLE_IS_CONTROL_GROUP(grp));
+
     EntangleControlPanelPrivate *priv = panel->priv;
     int i;
 
@@ -546,6 +549,8 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
 
 static void do_setup_camera(EntangleControlPanel *panel)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
+
     EntangleControlPanelPrivate *priv = panel->priv;
     EntangleControlGroup *root;
     EntangleControl *grp;
@@ -611,6 +616,7 @@ static void entangle_control_panel_get_property(GObject *object,
         }
 }
 
+
 static void entangle_control_panel_set_property(GObject *object,
                                                 guint prop_id,
                                                 const GValue *value,
@@ -631,7 +637,8 @@ static void entangle_control_panel_set_property(GObject *object,
         }
 }
 
-static void entangle_control_panel_finalize (GObject *object)
+
+static void entangle_control_panel_finalize(GObject *object)
 {
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(object);
     EntangleControlPanelPrivate *priv = panel->priv;
@@ -676,6 +683,7 @@ static void entangle_control_panel_class_init(EntangleControlPanelClass *klass)
     g_type_class_add_private(klass, sizeof(EntangleControlPanelPrivate));
 }
 
+
 EntangleControlPanel *entangle_control_panel_new(void)
 {
     return ENTANGLE_CONTROL_PANEL(g_object_new(ENTANGLE_TYPE_CONTROL_PANEL, NULL));
@@ -695,6 +703,9 @@ static void entangle_control_panel_init(EntangleControlPanel *panel)
 void entangle_control_panel_set_camera(EntangleControlPanel *panel,
                                        EntangleCamera *cam)
 {
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
     EntangleControlPanelPrivate *priv = panel->priv;
 
     if (priv->camera)
@@ -708,6 +719,8 @@ void entangle_control_panel_set_camera(EntangleControlPanel *panel,
 
 EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel), NULL);
+
     EntangleControlPanelPrivate *priv = panel->priv;
 
     return priv->camera;
@@ -716,6 +729,8 @@ EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel)
 
 gboolean entangle_control_panel_get_has_controls(EntangleControlPanel *panel)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel), FALSE);
+
     EntangleControlPanelPrivate *priv = panel->priv;
 
     return priv->hasControls;

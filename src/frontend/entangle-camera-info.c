@@ -55,9 +55,9 @@ enum {
 
 
 static void entangle_camera_info_get_property(GObject *object,
-                                          guint prop_id,
-                                          GValue *value,
-                                          GParamSpec *pspec)
+                                              guint prop_id,
+                                              GValue *value,
+                                              GParamSpec *pspec)
 {
     EntangleCameraInfo *info = ENTANGLE_CAMERA_INFO(object);
     EntangleCameraInfoPrivate *priv = info->priv;
@@ -79,9 +79,9 @@ static void entangle_camera_info_get_property(GObject *object,
 
 
 static void entangle_camera_info_set_property(GObject *object,
-                                          guint prop_id,
-                                          const GValue *value,
-                                          GParamSpec *pspec)
+                                              guint prop_id,
+                                              const GValue *value,
+                                              GParamSpec *pspec)
 {
     EntangleCameraInfo *info = ENTANGLE_CAMERA_INFO(object);
 
@@ -103,7 +103,7 @@ static void entangle_camera_info_set_property(GObject *object,
 }
 
 
-static void entangle_camera_info_finalize (GObject *object)
+static void entangle_camera_info_finalize(GObject *object)
 {
     EntangleCameraInfo *info = ENTANGLE_CAMERA_INFO(object);
     EntangleCameraInfoPrivate *priv = info->priv;
@@ -178,7 +178,7 @@ GType entangle_camera_info_data_get_type(void)
 
 
 EntangleCameraInfo *entangle_camera_info_new(EntangleCamera *camera,
-                                     EntangleCameraInfoData data)
+                                             EntangleCameraInfoData data)
 {
     return ENTANGLE_CAMERA_INFO(g_object_new(ENTANGLE_TYPE_CAMERA_INFO,
                                          "camera", camera,
@@ -190,6 +190,8 @@ EntangleCameraInfo *entangle_camera_info_new(EntangleCamera *camera,
 gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
                        EntangleCameraInfo *info)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), FALSE);
+
     EntangleCameraInfoPrivate *priv = info->priv;
     ENTANGLE_DEBUG("info close");
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
@@ -203,6 +205,8 @@ gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
                         GdkEvent *ev G_GNUC_UNUSED,
                         EntangleCameraInfo *info)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), FALSE);
+
     EntangleCameraInfoPrivate *priv = info->priv;
     ENTANGLE_DEBUG("info delete");
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
@@ -214,6 +218,8 @@ gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
 
 static void entangle_camera_info_init(EntangleCameraInfo *info)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
+
     EntangleCameraInfoPrivate *priv;
     GError *error = NULL;
 
@@ -235,6 +241,8 @@ static void entangle_camera_info_init(EntangleCameraInfo *info)
 
 GtkWindow *entangle_camera_info_get_window(EntangleCameraInfo *info)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), NULL);
+
     EntangleCameraInfoPrivate *priv = info->priv;
     return GTK_WINDOW(gtk_builder_get_object(priv->builder, "camera-info"));
 }
@@ -242,6 +250,8 @@ GtkWindow *entangle_camera_info_get_window(EntangleCameraInfo *info)
 
 void entangle_camera_info_show(EntangleCameraInfo *info)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
+
     EntangleCameraInfoPrivate *priv = info->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
@@ -252,6 +262,8 @@ void entangle_camera_info_show(EntangleCameraInfo *info)
 
 void entangle_camera_info_hide(EntangleCameraInfo *info)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
+
     EntangleCameraInfoPrivate *priv = info->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
@@ -261,6 +273,8 @@ void entangle_camera_info_hide(EntangleCameraInfo *info)
 
 static void do_info_refresh(EntangleCameraInfo *info)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
+
     EntangleCameraInfoPrivate *priv = info->priv;
     GtkWidget *text = GTK_WIDGET(gtk_builder_get_object(priv->builder, "info-text"));
 
@@ -292,8 +306,10 @@ static void do_info_refresh(EntangleCameraInfo *info)
 
 
 void entangle_camera_info_set_data(EntangleCameraInfo *info,
-                               EntangleCameraInfoData data)
+                                   EntangleCameraInfoData data)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
+
     EntangleCameraInfoPrivate *priv = info->priv;
 
     priv->data = data;
@@ -304,6 +320,8 @@ void entangle_camera_info_set_data(EntangleCameraInfo *info,
 
 EntangleCameraInfoData entangle_camera_info_get_data(EntangleCameraInfo *info)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), 0);
+
     EntangleCameraInfoPrivate *priv = info->priv;
 
     return priv->data;
@@ -311,8 +329,11 @@ EntangleCameraInfoData entangle_camera_info_get_data(EntangleCameraInfo *info)
 
 
 void entangle_camera_info_set_camera(EntangleCameraInfo *info,
-                                 EntangleCamera *camera)
+                                     EntangleCamera *camera)
 {
+    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
+    g_return_if_fail(!camera || ENTANGLE_IS_CAMERA_INFO(camera));
+
     EntangleCameraInfoPrivate *priv = info->priv;
     char *title;
     GtkWidget *win;
@@ -338,6 +359,8 @@ void entangle_camera_info_set_camera(EntangleCameraInfo *info,
 
 EntangleCamera *entangle_camera_info_get_camera(EntangleCameraInfo *info)
 {
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), NULL);
+
     EntangleCameraInfoPrivate *priv = info->priv;
 
     return priv->camera;
