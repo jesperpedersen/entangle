@@ -206,7 +206,7 @@ static void entangle_image_display_finalize(GObject *object)
     }
 
     if (priv->pixmap)
-        g_object_unref(priv->pixmap);
+        cairo_surface_destroy(priv->pixmap);
 
     G_OBJECT_CLASS (entangle_image_display_parent_class)->finalize (object);
 }
