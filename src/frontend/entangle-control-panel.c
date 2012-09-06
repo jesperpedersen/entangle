@@ -96,8 +96,6 @@ static void do_refresh_control_entry(GObject *object,
                                      GParamSpec *pspec G_GNUC_UNUSED,
                                      gpointer data)
 {
-    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
-
     GtkWidget *widget = GTK_WIDGET(data);
     gchar *text;
     gdk_threads_enter();
