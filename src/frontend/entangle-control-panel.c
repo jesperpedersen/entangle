@@ -63,17 +63,15 @@ static void do_control_remove(GtkWidget *widget,
 }
 
 
-static void do_update_control_finish(GObject *src G_GNUC_UNUSED,
+static void do_update_control_finish(GObject *src,
                                      GAsyncResult *res,
                                      gpointer data)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
 
-    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
-    EntangleControlPanelPrivate *priv = panel->priv;
     GError *error = NULL;
 
-    if (!entangle_camera_save_controls_finish(priv->camera, res, &error)) {
+    if (!entangle_camera_save_controls_finish(ENTANGLE_CAMERA(src), res, &error)) {
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
@@ -712,7 +710,7 @@ void entangle_control_panel_set_camera(EntangleControlPanel *panel,
                                        EntangleCamera *cam)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
-    g_return_if_fail(!cam || ENTANGLE_IS_CAMERA(cam));
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
 
     EntangleControlPanelPrivate *priv = panel->priv;
 
