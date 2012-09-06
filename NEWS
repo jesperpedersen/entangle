@@ -1,6 +1,29 @@
       Entangle News
       =============
 
+Release 0.4.1 - "Gluon" - 2012-09-06
+------------------------------------
+
+ * Fix leak of image pixbufs when changing image in session
+ * Keep toolbar directory in sync with session dir
+ * Fix leak when displaying image popups
+ * Fix leak when closing image popups
+ * Fix key bindings in session browser
+ * Add image histogram display
+ * Load libpeas introspection data for plugins
+ * Main plugin list in preferences
+ * Add object type checking in all APIs
+ * Fix image mask aspect ratio conversion to avoid locale problems
+ * Fix build on GTK < 3.4
+ * Remove obsolete conditionals from GTK 2.x days
+ * Populate list of supported cameras in help menu dialog
+ * Add a simple man page
+ * Add accelerators for many menu options
+ * Fix unref of cairo surface objects
+ * Avoid GTK assertion when range is max-min is zero
+ * Avoid crash in control panel when updating after camera disconnect
+
+
 Release 0.4.0 - "Higgs Boson" - 2012-07-08
 ------------------------------------------
 
