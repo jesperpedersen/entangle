@@ -708,7 +708,7 @@ void entangle_control_panel_set_camera(EntangleControlPanel *panel,
                                        EntangleCamera *cam)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
-    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+    g_return_if_fail(!cam || ENTANGLE_IS_CAMERA(cam));
 
     EntangleControlPanelPrivate *priv = panel->priv;
 
