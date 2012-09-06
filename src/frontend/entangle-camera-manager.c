@@ -2860,7 +2860,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDrawer));
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
     gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));
-    gtk_container_add(GTK_CONTAINER(settingsBox), GTK_WIDGET(priv->imageHistogram));
+    gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(priv->imageHistogram), FALSE, TRUE, 0);
 
     priv->monitorCancel = g_cancellable_new();
     priv->taskCancel = g_cancellable_new();
