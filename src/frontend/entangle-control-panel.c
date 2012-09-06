@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
+#include <math.h>
 
 #include "entangle-debug.h"
 #include "entangle-control-panel.h"
@@ -387,7 +388,15 @@ static void do_setup_control_group(EntangleControlPanel *panel,
         } else if (ENTANGLE_IS_CONTROL_RANGE(control)) {
             GtkWidget *label;
             GtkWidget *value;
-            float offset;
+            gfloat offset;
+            gdouble min = entangle_control_range_get_min(ENTANGLE_CONTROL_RANGE(control));
+            gdouble max = entangle_control_range_get_max(ENTANGLE_CONTROL_RANGE(control));
+            gboolean forceReadonly = FALSE;
+
+            if (fabs(min-max) < 0.005) {
+                forceReadonly = TRUE;
+                max += 1;
+            }
 
             label = gtk_label_new(entangle_control_get_label(control));
             gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
@@ -396,12 +405,11 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_container_add(GTK_CONTAINER(subbox), label);
 
             value = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
-                                             entangle_control_range_get_min(ENTANGLE_CONTROL_RANGE(control)),
-                                             entangle_control_range_get_max(ENTANGLE_CONTROL_RANGE(control)),
+                                             min, max,
                                              entangle_control_range_get_step(ENTANGLE_CONTROL_RANGE(control)));
             g_object_get(control, "value", &offset, NULL);
             gtk_range_set_value(GTK_RANGE(value), offset);
-            if (entangle_control_get_readonly(control))
+            if (entangle_control_get_readonly(control) || forceReadonly)
                 gtk_widget_set_sensitive(value, FALSE);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "change-value",
