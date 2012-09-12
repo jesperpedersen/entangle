@@ -1,6 +1,6 @@
 =head1 NAME
 
-entangle - thethered camera control & capture
+entangle - tethered camera control & capture
 
 =head1 SYNOPSIS
 
