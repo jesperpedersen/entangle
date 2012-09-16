@@ -153,7 +153,7 @@ static EntanglePixbufLoaderEntry *entangle_pixbuf_loader_entry_new(EntangleImage
 }
 
 
-static void entangle_pixbuf_loader_trigger_reload(EntanglePixbufLoader *loader)
+void entangle_pixbuf_loader_trigger_reload(EntanglePixbufLoader *loader)
 {
     EntanglePixbufLoaderPrivate *priv = loader->priv;
     GHashTableIter iter;

@@ -24,14 +24,71 @@
 #include "entangle-pixbuf.h"
 #include "entangle-image-loader.h"
 
+#define ENTANGLE_IMAGE_LOADER_GET_PRIVATE(obj)                                     \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_LOADER, EntangleImageLoaderPrivate))
+
+struct _EntangleImageLoaderPrivate {
+    gboolean embeddedPreview;
+};
+
 G_DEFINE_TYPE(EntangleImageLoader, entangle_image_loader, ENTANGLE_TYPE_PIXBUF_LOADER);
+
+
+enum {
+    PROP_0,
+    PROP_EMBEDDED_PREVIEW,
+};
+
+
+static void entangle_image_loader_get_property(GObject *object,
+                                               guint prop_id,
+                                               GValue *value,
+                                               GParamSpec *pspec)
+{
+    EntangleImageLoader *loader = ENTANGLE_IMAGE_LOADER(object);
+    EntangleImageLoaderPrivate *priv = loader->priv;
+
+    switch (prop_id)
+        {
+        case PROP_EMBEDDED_PREVIEW:
+            g_value_set_boolean(value, priv->embeddedPreview);
+            break;
+
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        }
+}
+
+
+static void entangle_image_loader_set_property(GObject *object,
+                                               guint prop_id,
+                                               const GValue *value,
+                                               GParamSpec *pspec)
+{
+    EntangleImageLoader *loader = ENTANGLE_IMAGE_LOADER(object);
+
+    switch (prop_id)
+        {
+        case PROP_EMBEDDED_PREVIEW:
+            entangle_image_loader_set_embedded_preview(loader, g_value_get_boolean(value));
+            break;
+
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        }
+}
 
 
 static GdkPixbuf *entangle_image_loader_pixbuf_load(EntanglePixbufLoader *loader G_GNUC_UNUSED,
                                                     EntangleImage *image)
 {
-    return entangle_pixbuf_open_image(image,
-                                      ENTANGLE_PIXBUF_IMAGE_SLOT_PREVIEW);
+    EntangleImageLoaderPrivate *priv = (ENTANGLE_IMAGE_LOADER(loader))->priv;
+    if (priv->embeddedPreview)
+        return entangle_pixbuf_open_image(image,
+                                          ENTANGLE_PIXBUF_IMAGE_SLOT_PREVIEW);
+    else
+        return entangle_pixbuf_open_image(image,
+                                          ENTANGLE_PIXBUF_IMAGE_SLOT_MASTER);
 }
 
 static GExiv2Metadata *entangle_image_loader_metadata_load(EntanglePixbufLoader *loader G_GNUC_UNUSED,
@@ -51,9 +108,27 @@ static GExiv2Metadata *entangle_image_loader_metadata_load(EntanglePixbufLoader 
 static void entangle_image_loader_class_init(EntangleImageLoaderClass *klass)
 {
     EntanglePixbufLoaderClass *loader_class = ENTANGLE_PIXBUF_LOADER_CLASS(klass);
+    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+    object_class->get_property = entangle_image_loader_get_property;
+    object_class->set_property = entangle_image_loader_set_property;
+
+    g_object_class_install_property(object_class,
+                                    PROP_EMBEDDED_PREVIEW,
+                                    g_param_spec_boolean("embedded-preview",
+                                                         "Embedded preview",
+                                                         "Use embedded preview",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     loader_class->pixbuf_load = entangle_image_loader_pixbuf_load;
     loader_class->metadata_load = entangle_image_loader_metadata_load;
+
+    g_type_class_add_private(klass, sizeof(EntangleImageLoaderPrivate));
 }
 
 
@@ -65,8 +140,27 @@ EntangleImageLoader *entangle_image_loader_new(void)
 }
 
 
-static void entangle_image_loader_init(EntangleImageLoader *loader G_GNUC_UNUSED)
+static void entangle_image_loader_init(EntangleImageLoader *loader)
 {
+    EntangleImageLoaderPrivate *priv;
+
+    priv = loader->priv = ENTANGLE_IMAGE_LOADER_GET_PRIVATE(loader);
+
+    priv->embeddedPreview = TRUE;
+}
+
+
+gboolean entangle_image_loader_get_embedded_preview(EntangleImageLoader *loader)
+{
+    EntangleImageLoaderPrivate *priv = loader->priv;
+    return priv->embeddedPreview;
+}
+
+void entangle_image_loader_set_embedded_preview(EntangleImageLoader *loader, gboolean enable)
+{
+    EntangleImageLoaderPrivate *priv = loader->priv;
+    priv->embeddedPreview = enable;
+    entangle_pixbuf_loader_trigger_reload(ENTANGLE_PIXBUF_LOADER(loader));
 }
 
 

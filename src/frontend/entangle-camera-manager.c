@@ -416,6 +416,19 @@ static void entangle_camera_manager_update_viewfinder(EntangleCameraManager *man
     }
 }
 
+
+static void entangle_camera_manager_update_image_loader(EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean embeddedPreview = entangle_preferences_img_get_embedded_preview(prefs);
+    entangle_image_loader_set_embedded_preview(priv->imageLoader, embeddedPreview);
+}
+
+
 static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
                                                   GParamSpec *spec,
                                                   gpointer data)
@@ -439,6 +452,8 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
     } else if (g_str_equal(spec->name, "img-focus-point") ||
                g_str_equal(spec->name, "img-grid-lines")) {
         entangle_camera_manager_update_viewfinder(manager);
+    } else if (g_str_equal(spec->name, "img-embedded-preview")) {
+        entangle_camera_manager_update_image_loader(manager);
     }
 }
 
@@ -1437,6 +1452,7 @@ static void entangle_camera_manager_set_property(GObject *object,
             entangle_camera_manager_update_aspect_ratio(manager);
             entangle_camera_manager_update_mask_opacity(manager);
             entangle_camera_manager_update_mask_enabled(manager);
+            entangle_camera_manager_update_image_loader(manager);
             break;
 
         default:

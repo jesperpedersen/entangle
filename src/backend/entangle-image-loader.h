@@ -36,10 +36,13 @@ G_BEGIN_DECLS
 
 typedef struct _EntangleImageLoader EntangleImageLoader;
 typedef struct _EntangleImageLoaderClass EntangleImageLoaderClass;
+typedef struct _EntangleImageLoaderPrivate EntangleImageLoaderPrivate;
 
 struct _EntangleImageLoader
 {
     EntanglePixbufLoader parent;
+
+    EntangleImageLoaderPrivate *priv;
 };
 
 struct _EntangleImageLoaderClass
@@ -54,6 +57,10 @@ EntangleImageLoader *entangle_image_loader_new(void);
 
 void entangle_image_loader_add(EntangleImageLoader *loader, EntangleImage *image);
 void entangle_image_loader_remove(EntangleImageLoader *loader, EntangleImage *image);
+
+gboolean entangle_image_loader_get_embedded_preview(EntangleImageLoader *loader);
+void entangle_image_loader_set_embedded_preview(EntangleImageLoader *loader, gboolean enable);
+
 
 G_END_DECLS
 

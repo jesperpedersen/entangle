@@ -76,6 +76,8 @@ gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
 gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
                                        EntangleImage *image);
 
+void entangle_pixbuf_loader_trigger_reload(EntanglePixbufLoader *loader);
+
 void entangle_pixbuf_loader_set_colour_transform(EntanglePixbufLoader *loader,
                                                  EntangleColourProfileTransform *transform);
 

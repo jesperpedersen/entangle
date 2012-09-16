@@ -132,5 +132,11 @@
       <summary>Grid lines</summary>
       <description>Grid lines in preview</description>
     </key>
+
+    <key type="b" name="embedded-preview">
+      <default>true</default>
+      <summary>Use embedded preview</summary>
+      <description>Use embedded preview image instead of loading raw file</description>
+    </key>
   </schema>
 </schemalist>

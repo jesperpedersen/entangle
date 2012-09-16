@@ -79,6 +79,7 @@ void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *d
 void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
 void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
+void do_img_embedded_preview_changed(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
 static void entangle_preferences_display_get_property(GObject *object,
                                                       guint prop_id,
@@ -290,6 +291,15 @@ static void entangle_preferences_display_notify(GObject *object,
         }
 
         g_type_class_unref(enum_class);
+    } else if (strcmp(spec->name, "img-embedded-preview") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
     }
 }
 
@@ -415,6 +425,11 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
         gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), enum_value->value_nick);
     else
         gtk_combo_box_set_active_id(GTK_COMBO_BOX(tmp), NULL);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-embedded-preview"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp),
+                                 entangle_preferences_img_get_embedded_preview(prefs));
+
 }
 
 static void entangle_preferences_display_finalize (GObject *object)
@@ -729,6 +744,18 @@ void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *pre
     }
 
     entangle_preferences_img_set_grid_lines(prefs, grid);
+}
+
+
+void do_img_embedded_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+
+    entangle_preferences_img_set_embedded_preview(prefs, enabled);
 }
 
 

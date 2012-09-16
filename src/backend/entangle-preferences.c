@@ -68,6 +68,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_IMG_MASK_ENABLED           "mask-enabled"
 #define SETTING_IMG_FOCUS_POINT            "focus-point"
 #define SETTING_IMG_GRID_LINES             "grid-lines"
+#define SETTING_IMG_EMBEDDED_PREVIEW       "embedded-preview"
 
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
 #define PROP_NAME_INTERFACE_SCREEN_BLANK     SETTING_INTERFACE "-" SETTING_INTERFACE_SCREEN_BLANK
@@ -88,6 +89,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define PROP_NAME_IMG_MASK_ENABLED           SETTING_IMG "-" SETTING_IMG_MASK_ENABLED
 #define PROP_NAME_IMG_FOCUS_POINT            SETTING_IMG "-" SETTING_IMG_FOCUS_POINT
 #define PROP_NAME_IMG_GRID_LINES             SETTING_IMG "-" SETTING_IMG_GRID_LINES
+#define PROP_NAME_IMG_EMBEDDED_PREVIEW       SETTING_IMG "-" SETTING_IMG_EMBEDDED_PREVIEW
 
 enum {
     PROP_0,
@@ -111,6 +113,7 @@ enum {
     PROP_IMG_MASK_ENABLED,
     PROP_IMG_FOCUS_POINT,
     PROP_IMG_GRID_LINES,
+    PROP_IMG_EMBEDDED_PREVIEW,
 };
 
 
@@ -261,6 +264,12 @@ static void entangle_preferences_get_property(GObject *object,
                                                 SETTING_IMG_GRID_LINES));
             break;
 
+        case PROP_IMG_EMBEDDED_PREVIEW:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->imgSettings,
+                                                       SETTING_IMG_EMBEDDED_PREVIEW));
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -383,6 +392,12 @@ static void entangle_preferences_set_property(GObject *object,
             g_settings_set_enum(priv->imgSettings,
                                 SETTING_IMG_GRID_LINES,
                                 g_value_get_int(value));
+            break;
+
+        case PROP_IMG_EMBEDDED_PREVIEW:
+            g_settings_set_boolean(priv->imgSettings,
+                                   SETTING_IMG_EMBEDDED_PREVIEW,
+                                   g_value_get_boolean(value));
             break;
 
         default:
@@ -594,6 +609,17 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                      G_PARAM_STATIC_NAME |
                                                      G_PARAM_STATIC_NICK |
                                                      G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_EMBEDDED_PREVIEW,
+                                    g_param_spec_boolean(PROP_NAME_IMG_EMBEDDED_PREVIEW,
+                                                         "Embedded preview",
+                                                         "Embedded preview for raw files",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntanglePreferencesPrivate));
 }
@@ -1088,6 +1114,28 @@ void entangle_preferences_img_set_grid_lines(EntanglePreferences *prefs, gint gr
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_GRID_LINES);
 }
 
+
+gboolean entangle_preferences_img_get_embedded_preview(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->imgSettings,
+                                  SETTING_IMG_EMBEDDED_PREVIEW);
+}
+
+
+void entangle_preferences_img_set_embedded_preview(EntanglePreferences *prefs, gboolean enabled)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->imgSettings,
+                           SETTING_IMG_EMBEDDED_PREVIEW, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_EMBEDDED_PREVIEW);
+}
 
 /*
  * Local variables:
