@@ -127,10 +127,11 @@ static char *entangle_thumbnail_loader_uri_to_thumb(const char *uri)
 }
 
 
+/* Loads the master image and downsizes it to produce a thumbnail */
 static GdkPixbuf *entangle_thumbnail_loader_generate(const char *filename,
-                                                 const char *uri,
-                                                 const char *thumbname,
-                                                 time_t mtime)
+                                                     const char *uri,
+                                                     const char *thumbname,
+                                                     time_t mtime)
 {
     GdkPixbuf *master;
     GdkPixbuf *thumb = NULL;
@@ -204,6 +205,7 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(const char *filename,
 }
 
 
+/* Performs rotation of the thunbnail based on embedded metadata */
 static GdkPixbuf *entangle_thumbnail_loader_auto_rotate(GdkPixbuf *src)
 {
     GdkPixbuf *dest = gdk_pixbuf_apply_embedded_orientation(src);
@@ -280,6 +282,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
     GdkPixbuf *thumb = NULL;
     struct stat sb;
 
+    /* Sanity check that the base image still exists */
     if (stat(entangle_image_get_filename(image), &sb) < 0) {
         ENTANGLE_DEBUG("File %s does not exist", entangle_image_get_filename(image));
         goto cleanup;
@@ -287,6 +290,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
 
     ENTANGLE_DEBUG("Want thumbnail %s for %s %ld", thumbname, uri, sb.st_mtime);
 
+    /* Have a go at loading a thumbnail, but it might not exist */
     thumb = gdk_pixbuf_new_from_file(thumbname, NULL);
     if (thumb) {
         const char *thisuri = gdk_pixbuf_get_option(thumb, "tEXt::Thumb::URI");
@@ -298,6 +302,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
         ENTANGLE_DEBUG("Check thumbnail %s for %s %s",
                    thumbname, thisuri, thismtimeStr);
 
+        /* Check that the thumbnail is still valid */
         if (!thisuri || !thismtimeStr ||
             strcmp(uri, thisuri) != 0 ||
             thismtime != sb.st_mtime) {
@@ -307,6 +312,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
     }
 
 
+    /* No thumbnail, so lets generate one */
     if (!thumb) {
         unlink(thumbname);
         ENTANGLE_DEBUG("Generate thumbnail %s for %s %ld",
@@ -316,12 +322,18 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
                                                    sb.st_mtime);
     }
 
+    /* Apply any rotation hints so it is "normal" for the viewer */
     if (thumb) {
         GdkPixbuf *tmp = entangle_thumbnail_loader_auto_rotate(thumb);
         g_object_unref(thumb);
         thumb = tmp;
     }
 
+    /* Chances are that the thumbnail size is not actually the
+     * exact size that we want, or the aspect ratio is different.
+     * So scale it to fit our desired size, and fill any borders
+     * left over with black
+     */
     if (thumb) {
         int tw, th;
 
