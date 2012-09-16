@@ -42,7 +42,8 @@ void entangle_debug_setup(gboolean debug_app,
             if (entangle_debug_startms == 0)                            \
                 entangle_debug_startms = nowms;                         \
             nowms -= entangle_debug_startms;                            \
-            g_debug("[%08" G_GINT64_FORMAT " %s:%s:%d] " fmt, nowms, __FILE__, __func__, __LINE__, ## __VA_ARGS__); \
+            g_debug("[%06lld.%03lld %s:%s:%d] " fmt, \
+                    nowms/1000ll, nowms%1000ll, __FILE__, __func__, __LINE__, ## __VA_ARGS__); \
         }                                                               \
     } while (0)
 

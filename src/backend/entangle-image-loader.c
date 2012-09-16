@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "entangle-debug.h"
+#include "entangle-pixbuf.h"
 #include "entangle-image-loader.h"
 
 G_DEFINE_TYPE(EntangleImageLoader, entangle_image_loader, ENTANGLE_TYPE_PIXBUF_LOADER);
@@ -29,17 +30,8 @@ G_DEFINE_TYPE(EntangleImageLoader, entangle_image_loader, ENTANGLE_TYPE_PIXBUF_L
 static GdkPixbuf *entangle_image_loader_pixbuf_load(EntanglePixbufLoader *loader G_GNUC_UNUSED,
                                                     EntangleImage *image)
 {
-    GdkPixbuf *master = gdk_pixbuf_new_from_file(entangle_image_get_filename(image), NULL);
-    GdkPixbuf *result;
-
-    if (!master)
-        return NULL;
-
-    result = gdk_pixbuf_apply_embedded_orientation(master);
-
-    g_object_unref(master);
-
-    return result;
+    return entangle_pixbuf_open_image(image,
+                                      ENTANGLE_PIXBUF_IMAGE_SLOT_PREVIEW);
 }
 
 static GExiv2Metadata *entangle_image_loader_metadata_load(EntanglePixbufLoader *loader G_GNUC_UNUSED,

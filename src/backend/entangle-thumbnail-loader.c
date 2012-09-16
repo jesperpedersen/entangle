@@ -29,6 +29,7 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "entangle-debug.h"
+#include "entangle-pixbuf.h"
 #include "entangle-thumbnail-loader.h"
 #include "entangle-colour-profile.h"
 
@@ -128,7 +129,8 @@ static char *entangle_thumbnail_loader_uri_to_thumb(const char *uri)
 
 
 /* Loads the master image and downsizes it to produce a thumbnail */
-static GdkPixbuf *entangle_thumbnail_loader_generate(const char *filename,
+static GdkPixbuf *entangle_thumbnail_loader_generate(EntanglePixbufLoader *loader G_GNUC_UNUSED,
+                                                     EntangleImage *image,
                                                      const char *uri,
                                                      const char *thumbname,
                                                      time_t mtime)
@@ -146,7 +148,8 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(const char *filename,
     char *thumbnametmp;
     const char *orientationstr;
 
-    master = gdk_pixbuf_new_from_file(filename, NULL);
+    master = entangle_pixbuf_open_image(image,
+                                        ENTANGLE_PIXBUF_IMAGE_SLOT_THUMBNAIL);
 
     if (!master)
         return NULL;
@@ -205,72 +208,6 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(const char *filename,
 }
 
 
-/* Performs rotation of the thunbnail based on embedded metadata */
-static GdkPixbuf *entangle_thumbnail_loader_auto_rotate(GdkPixbuf *src)
-{
-    GdkPixbuf *dest = gdk_pixbuf_apply_embedded_orientation(src);
-    GdkPixbuf *temp;
-
-    if (dest == src) {
-        const char *orientationstr;
-        int transform = 0;
-        orientationstr = gdk_pixbuf_get_option(src, "tEXt::Entangle::Orientation");
-
-        /* If not option, then try the gobject data slot */
-        if (!orientationstr)
-            orientationstr = g_object_get_data(G_OBJECT(src),
-                                               "tEXt::Entangle::Orientation");
-
-        if (orientationstr)
-            transform = (int)g_ascii_strtoll(orientationstr, NULL, 10);
-
-        /* Apply the actual transforms, which involve rotations and flips.
-           The meaning of orientation values 1-8 and the required transforms
-           are defined by the TIFF and EXIF (for JPEGs) standards. */
-        switch (transform) {
-        case 1:
-                dest = src;
-                g_object_ref(dest);
-                break;
-        case 2:
-                dest = gdk_pixbuf_flip(src, TRUE);
-                break;
-        case 3:
-                dest = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
-                break;
-        case 4:
-                dest = gdk_pixbuf_flip(src, FALSE);
-                break;
-        case 5:
-                temp = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_CLOCKWISE);
-                dest = gdk_pixbuf_flip(temp,TRUE);
-                g_object_unref(temp);
-                break;
-        case 6:
-                dest = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_CLOCKWISE);
-                break;
-        case 7:
-                temp = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_CLOCKWISE);
-                dest = gdk_pixbuf_flip(temp, FALSE);
-                g_object_unref(temp);
-                break;
-        case 8:
-                dest = gdk_pixbuf_rotate_simple(src, GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE);
-                break;
-        default:
-                /* if no orientation tag was present */
-                dest = src;
-                g_object_ref(dest);
-                break;
-        }
-
-    }
-
-    g_object_unref(src);
-
-    return dest;
-}
-
 static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *loader,
                                                         EntangleImage *image)
 {
@@ -317,14 +254,15 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
         unlink(thumbname);
         ENTANGLE_DEBUG("Generate thumbnail %s for %s %ld",
                    thumbname, uri, sb.st_mtime);
-        thumb = entangle_thumbnail_loader_generate(entangle_image_get_filename(image),
+        thumb = entangle_thumbnail_loader_generate(loader,
+                                                   image,
                                                    uri, thumbname,
                                                    sb.st_mtime);
     }
 
     /* Apply any rotation hints so it is "normal" for the viewer */
     if (thumb) {
-        GdkPixbuf *tmp = entangle_thumbnail_loader_auto_rotate(thumb);
+        GdkPixbuf *tmp = entangle_pixbuf_auto_rotate(thumb);
         g_object_unref(thumb);
         thumb = tmp;
     }

@@ -44,6 +44,8 @@ GEXIV2_REQUIRED=0.2.2
 AC_SUBST(GEXIV2_REQUIRED)
 XEXT_REQUIRED=1.3.0
 AC_SUBST(XEXT_REQUIRED)
+LIBRAW_REQUIRED=0.9.0
+AC_SUBST(LIBRAW_REQUIRED)
 
 dnl *******************************************************************************
 dnl Setup core compilers / build helpers
@@ -106,6 +108,10 @@ AC_SUBST(LCMS_LIBS)
 PKG_CHECK_MODULES([GEXIV2], [gexiv2 >= $GEXIV2_REQUIRED])
 AC_SUBST(GEXIV2_CFLAGS)
 AC_SUBST(GEXIV2_LIBS)
+
+PKG_CHECK_MODULES([LIBRAW], [libraw_r >= $LIBRAW_REQUIRED])
+AC_SUBST(LIBRAW_CFLAGS)
+AC_SUBST(LIBRAW_LIBS)
 
 PKG_CHECK_MODULES([XEXT], [xext >= $XEXT_REQUIRED],
                   [have_xext=yes], [have_xext=no])
@@ -207,7 +213,7 @@ then
   AC_MSG_NOTICE([WARNING: If you continue with this install location for schemas, you])
   AC_MSG_NOTICE([WARNING: should set the following environment variable:])
   AC_MSG_NOTICE([WARNING:])
-  AC_MSG_NOTICE([WARNING:      XDG_DATA_DIRS=$rawdatadir])
+  AC_MSG_NOTICE([WARNING:      XDG_DATA_DIRS=$rawdatadir:$searchdirs])
   AC_MSG_NOTICE([WARNING:])
   AC_MSG_NOTICE([WARNING: If XDG_DATA_DIRS is not set, Entangle will attempt to enable])
   AC_MSG_NOTICE([WARNING: a workaround on startup to avoid crashes])

@@ -63,7 +63,6 @@ struct _EntanglePixbufLoaderClass
 
 GType entangle_pixbuf_loader_get_type(void) G_GNUC_CONST;
 
-
 gboolean entangle_pixbuf_loader_is_ready(EntanglePixbufLoader *loader,
                                          EntangleImage *image);
 GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,

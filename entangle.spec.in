@@ -22,6 +22,7 @@ BuildRequires: libgexiv2-devel >= 0.2.2
 BuildRequires: intltool
 BuildRequires: libX11-devel
 BuildRequires: libXext-devel >= 1.3.0
+BuildRequires: LibRaw-devel >= 0.9.0
 
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils

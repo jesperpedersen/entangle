@@ -54,6 +54,7 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-debug.h backend/entangle-debug.c \
 	backend/entangle-device-manager.h backend/entangle-device-manager.c \
 	backend/entangle-image.h backend/entangle-image.c \
+	backend/entangle-pixbuf.h backend/entangle-pixbuf.c \
 	backend/entangle-image-loader.h backend/entangle-image-loader.c \
 	backend/entangle-pixbuf-loader.h backend/entangle-pixbuf-loader.c \
 	backend/entangle-preferences.h backend/entangle-preferences.c \
@@ -72,6 +73,7 @@ libentangle_backend_la_LDFLAGS = \
 	$(DBUS_GLIB_LIBS) \
 	$(LIBPEAS_LIBS) \
 	$(GEXIV2_LIBS) \
+	$(LIBRAW_LIBS) \
 	$(WARN_LDFLAGS)
 
 libentangle_backend_la_CFLAGS = \
@@ -86,6 +88,7 @@ libentangle_backend_la_CFLAGS = \
 	$(DBUS_GLIB_CFLAGS) \
 	$(LIBPEAS_CFLAGS) \
 	$(GEXIV2_CFLAGS) \
+	$(LIBRAW_CFLAGS) \
 	$(WARN_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
 	-DDATADIR="\"$(datadir)\"" \
