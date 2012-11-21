@@ -79,7 +79,7 @@ void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *d
 void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
 void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
-void do_img_embedded_preview_changed(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_img_embedded_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
 static void entangle_preferences_display_get_property(GObject *object,
                                                       guint prop_id,
