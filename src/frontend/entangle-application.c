@@ -141,12 +141,27 @@ static void entangle_application_finalize(GObject *object)
 
 static void entangle_application_activate(GApplication *gapp)
 {
+    GList *wins = gtk_application_get_windows(GTK_APPLICATION(gapp));
+    while (wins) {
+        GtkWindow *win = wins->data;
+        EntangleCameraManager *manager = g_object_get_data(G_OBJECT(win), "manager");
+        if (manager) {
+            entangle_camera_manager_show(manager);
+            break;
+        }
+        wins = wins->next;
+    }
+}
+
+static void entangle_application_startup(GApplication *gapp)
+{
     g_return_if_fail(ENTANGLE_IS_APPLICATION(gapp));
 
     EntangleApplication *app = ENTANGLE_APPLICATION(gapp);
     EntangleApplicationPrivate *priv = app->priv;
     GList *cameras = NULL, *tmp;
 
+    gdk_threads_enter();
     if (entangle_preferences_interface_get_auto_connect(priv->preferences))
         cameras = tmp = entangle_camera_list_get_cameras(priv->cameras);
 
@@ -169,6 +184,10 @@ static void entangle_application_activate(GApplication *gapp)
         }
         g_list_free(cameras);
     }
+
+    gdk_threads_leave();
+
+    (*G_APPLICATION_CLASS(entangle_application_parent_class)->startup)(gapp);
 }
 
 
@@ -182,6 +201,7 @@ static void entangle_application_class_init(EntangleApplicationClass *klass)
     object_class->set_property = entangle_application_set_property;
 
     app_class->activate = entangle_application_activate;
+    app_class->startup = entangle_application_startup;
 
     g_object_class_install_property(object_class,
                                     PROP_CAMERAS,
