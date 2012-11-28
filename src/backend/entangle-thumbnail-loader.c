@@ -33,7 +33,7 @@
 #include "entangle-thumbnail-loader.h"
 #include "entangle-colour-profile.h"
 
-#define ENTANGLE_THUMBNAIL_LOADER_GET_PRIVATE(obj)                                     \
+#define ENTANGLE_THUMBNAIL_LOADER_GET_PRIVATE(obj)                      \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_THUMBNAIL_LOADER, EntangleThumbnailLoaderPrivate))
 
 
@@ -237,7 +237,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
         thismtime = thismtimeStr ? atol(thismtimeStr) : 0;
 
         ENTANGLE_DEBUG("Check thumbnail %s for %s %s",
-                   thumbname, thisuri, thismtimeStr);
+                       thumbname, thisuri, thismtimeStr);
 
         /* Check that the thumbnail is still valid */
         if (!thisuri || !thismtimeStr ||
@@ -253,7 +253,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
     if (!thumb) {
         unlink(thumbname);
         ENTANGLE_DEBUG("Generate thumbnail %s for %s %ld",
-                   thumbname, uri, sb.st_mtime);
+                       thumbname, uri, sb.st_mtime);
         thumb = entangle_thumbnail_loader_generate(loader,
                                                    image,
                                                    uri, thumbname,
@@ -361,12 +361,12 @@ static void entangle_thumbnail_loader_class_init(EntangleThumbnailLoaderClass *k
 
 
 EntangleThumbnailLoader *entangle_thumbnail_loader_new(int width,
-                                               int height)
+                                                       int height)
 {
     return ENTANGLE_THUMBNAIL_LOADER(g_object_new(ENTANGLE_TYPE_THUMBNAIL_LOADER,
-                                              "width", width,
-                                              "height", height,
-                                              NULL));
+                                                  "width", width,
+                                                  "height", height,
+                                                  NULL));
 }
 
 

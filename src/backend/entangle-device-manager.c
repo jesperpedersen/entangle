@@ -31,7 +31,7 @@
 #include "entangle-debug.h"
 #include "entangle-device-manager.h"
 
-#define ENTANGLE_DEVICE_MANAGER_GET_PRIVATE(obj)                            \
+#define ENTANGLE_DEVICE_MANAGER_GET_PRIVATE(obj)                        \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_DEVICE_MANAGER, EntangleDeviceManagerPrivate))
 
 struct _EntangleDeviceManagerPrivate {

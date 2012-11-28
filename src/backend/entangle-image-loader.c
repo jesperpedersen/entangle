@@ -24,7 +24,7 @@
 #include "entangle-pixbuf.h"
 #include "entangle-image-loader.h"
 
-#define ENTANGLE_IMAGE_LOADER_GET_PRIVATE(obj)                                     \
+#define ENTANGLE_IMAGE_LOADER_GET_PRIVATE(obj)                          \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_LOADER, EntangleImageLoaderPrivate))
 
 struct _EntangleImageLoaderPrivate {

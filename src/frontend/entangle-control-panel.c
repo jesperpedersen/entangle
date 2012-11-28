@@ -34,7 +34,7 @@
 #include "entangle-control-text.h"
 #include "entangle-control-toggle.h"
 
-#define ENTANGLE_CONTROL_PANEL_GET_PRIVATE(obj)                             \
+#define ENTANGLE_CONTROL_PANEL_GET_PRIVATE(obj)                         \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CONTROL_PANEL, EntangleControlPanelPrivate))
 
 struct _EntangleControlPanelPrivate {

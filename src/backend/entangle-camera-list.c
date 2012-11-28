@@ -30,7 +30,7 @@
 #include "entangle-camera-list.h"
 #include "entangle-device-manager.h"
 
-#define ENTANGLE_CAMERA_LIST_GET_PRIVATE(obj)                               \
+#define ENTANGLE_CAMERA_LIST_GET_PRIVATE(obj)                           \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_LIST, EntangleCameraListPrivate))
 
 struct _EntangleCameraListPrivate {
@@ -275,9 +275,9 @@ gboolean entangle_camera_list_refresh(EntangleCameraList *list,
 
         ENTANGLE_DEBUG("New camera '%s' '%s' %d", model, port, cap.operations);
         cam = entangle_camera_new(model, port,
-                              cap.operations & GP_OPERATION_CAPTURE_IMAGE ? TRUE : FALSE,
-                              cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
-                              cap.operations & GP_OPERATION_CONFIG ? TRUE : FALSE);
+                                  cap.operations & GP_OPERATION_CAPTURE_IMAGE ? TRUE : FALSE,
+                                  cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
+                                  cap.operations & GP_OPERATION_CONFIG ? TRUE : FALSE);
         entangle_camera_list_add(list, cam);
         g_object_unref(cam);
     }

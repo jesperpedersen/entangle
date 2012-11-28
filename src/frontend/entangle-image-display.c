@@ -27,7 +27,7 @@
 #include "entangle-image-display.h"
 #include "entangle-image.h"
 
-#define ENTANGLE_IMAGE_DISPLAY_GET_PRIVATE(obj)                             \
+#define ENTANGLE_IMAGE_DISPLAY_GET_PRIVATE(obj)                         \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_DISPLAY, EntangleImageDisplayPrivate))
 
 struct _EntangleImageDisplayPrivate {
@@ -441,7 +441,7 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
     sy = ih / ph;
 
     ENTANGLE_DEBUG("Got win %dx%d image %dx%d, autoscale=%d scale=%lf",
-               ww, wh, pw, ph, priv->autoscale ? 1 : 0, priv->scale);
+                   ww, wh, pw, ph, priv->autoscale ? 1 : 0, priv->scale);
     ENTANGLE_DEBUG("Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf", iw, ih, mx, my, sx, sy);
 
 

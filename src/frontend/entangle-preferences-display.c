@@ -34,7 +34,7 @@
 #include "entangle-camera-manager.h"
 #include "entangle-image-display.h"
 
-#define ENTANGLE_PREFERENCES_DISPLAY_GET_PRIVATE(obj)                               \
+#define ENTANGLE_PREFERENCES_DISPLAY_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_PREFERENCES_DISPLAY, EntanglePreferencesDisplayPrivate))
 
 static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *preferences);
@@ -60,7 +60,7 @@ gboolean do_preferences_delete(GtkWidget *src,
                                GdkEvent *ev,
                                EntanglePreferencesDisplay *preferences);
 void do_page_changed(GtkTreeSelection *selection,
-                            EntanglePreferencesDisplay *preferences);
+                     EntanglePreferencesDisplay *preferences);
 void do_cms_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_cms_rgb_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);
 void do_cms_monitor_profile_file_set(GtkFileChooserButton *src, EntanglePreferencesDisplay *display);

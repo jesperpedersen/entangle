@@ -26,7 +26,7 @@
 #include "entangle-image-statusbar.h"
 #include "entangle-image.h"
 
-#define ENTANGLE_IMAGE_STATUSBAR_GET_PRIVATE(obj)                             \
+#define ENTANGLE_IMAGE_STATUSBAR_GET_PRIVATE(obj)                       \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_STATUSBAR, EntangleImageStatusbarPrivate))
 
 struct _EntangleImageStatusbarPrivate {

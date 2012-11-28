@@ -51,7 +51,7 @@
 #include "entangle-dpms.h"
 #include "view/autoDrawer.h"
 
-#define ENTANGLE_CAMERA_MANAGER_GET_PRIVATE(obj)                            \
+#define ENTANGLE_CAMERA_MANAGER_GET_PRIVATE(obj)                        \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_MANAGER, EntangleCameraManagerPrivate))
 
 struct _EntangleCameraManagerPrivate {

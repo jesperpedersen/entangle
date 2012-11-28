@@ -35,7 +35,7 @@ typedef enum {
 } EntanglePixbufImageSlot;
 
 GdkPixbuf *entangle_pixbuf_open_image(EntangleImage *image,
-				      EntanglePixbufImageSlot slot);
+                                      EntanglePixbufImageSlot slot);
 
 #endif /* __ENTANGLE_PIXBUF_H__ */
 

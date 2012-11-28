@@ -46,7 +46,7 @@ GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src)
         if (orientationstr)
             transform = (int)g_ascii_strtoll(orientationstr, NULL, 10);
 
-	ENTANGLE_DEBUG("Auto-rotate %s\n", orientationstr);
+        ENTANGLE_DEBUG("Auto-rotate %s\n", orientationstr);
 
         /* Apply the actual transforms, which involve rotations and flips.
            The meaning of orientation values 1-8 and the required transforms
@@ -257,7 +257,7 @@ entangle_pixbuf_get_closest_preview(GExiv2PreviewProperties **proplist,
 
 
 static GdkPixbuf *entangle_pixbuf_open_image_preview_exiv(EntangleImage *image,
-							  guint minSize)
+                                                          guint minSize)
 {
     GExiv2Metadata *metadata = gexiv2_metadata_new();
     GExiv2PreviewImage *preview = NULL;
@@ -312,7 +312,7 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview_exiv(EntangleImage *image,
        is no set_option method, so abuse gobject data slots :-( */
     g_object_set_data_full(G_OBJECT(master),
                            "tEXt::Entangle::Orientation",
-			   g_strdup_printf("%d", orient),
+                           g_strdup_printf("%d", orient),
                            g_free);
 
     result = entangle_pixbuf_auto_rotate(master);
@@ -351,7 +351,7 @@ static GdkPixbuf *entangle_pixbuf_open_image_thumbnail(EntangleImage *image)
 
 
 GdkPixbuf *entangle_pixbuf_open_image(EntangleImage *image,
-				      EntanglePixbufImageSlot slot)
+                                      EntanglePixbufImageSlot slot)
 {
     ENTANGLE_DEBUG("Open image %s %d", entangle_image_get_filename(image), slot);
     switch (slot) {

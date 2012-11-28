@@ -28,7 +28,7 @@
 #include "entangle-debug.h"
 #include "entangle-help-about.h"
 
-#define ENTANGLE_HELP_ABOUT_GET_PRIVATE(obj)                                \
+#define ENTANGLE_HELP_ABOUT_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_HELP_ABOUT, EntangleHelpAboutPrivate))
 
 struct _EntangleHelpAboutPrivate {

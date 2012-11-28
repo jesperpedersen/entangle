@@ -29,7 +29,7 @@
 #include "entangle-camera-info.h"
 #include "entangle-camera.h"
 
-#define ENTANGLE_CAMERA_INFO_GET_PRIVATE(obj)                               \
+#define ENTANGLE_CAMERA_INFO_GET_PRIVATE(obj)                           \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_INFO, EntangleCameraInfoPrivate))
 
 gboolean do_info_close(GtkButton *src,
@@ -181,9 +181,9 @@ EntangleCameraInfo *entangle_camera_info_new(EntangleCamera *camera,
                                              EntangleCameraInfoData data)
 {
     return ENTANGLE_CAMERA_INFO(g_object_new(ENTANGLE_TYPE_CAMERA_INFO,
-                                         "camera", camera,
-                                         "data", data,
-                                         NULL));
+                                             "camera", camera,
+                                             "data", data,
+                                             NULL));
 }
 
 

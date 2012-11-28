@@ -28,7 +28,7 @@
 #include "entangle-debug.h"
 #include "entangle-camera-support.h"
 
-#define ENTANGLE_CAMERA_SUPPORT_GET_PRIVATE(obj)                               \
+#define ENTANGLE_CAMERA_SUPPORT_GET_PRIVATE(obj)                        \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_SUPPORT, EntangleCameraSupportPrivate))
 
 gboolean do_support_close(GtkButton *src,

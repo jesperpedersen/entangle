@@ -25,7 +25,7 @@
 #include "entangle-debug.h"
 #include "entangle-control.h"
 
-#define ENTANGLE_CONTROL_GET_PRIVATE(obj)                                   \
+#define ENTANGLE_CONTROL_GET_PRIVATE(obj)                               \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CONTROL, EntangleControlPrivate))
 
 struct _EntangleControlPrivate {

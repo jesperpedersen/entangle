@@ -26,10 +26,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#define ENTANGLE_ERROR(err, msg...)                                     \
-    g_set_error((err),                                                  \
-                g_quark_from_string("entangle-dpms"),                   \
-                0,                                                      \
+#define ENTANGLE_ERROR(err, msg...)                     \
+    g_set_error((err),                                  \
+                g_quark_from_string("entangle-dpms"),   \
+                0,                                      \
                 msg)
 
 #if defined(HAVE_XEXT) && defined(GDK_WINDOWING_X11)

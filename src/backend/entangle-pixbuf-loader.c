@@ -26,7 +26,7 @@
 #include "entangle-debug.h"
 #include "entangle-pixbuf-loader.h"
 
-#define ENTANGLE_PIXBUF_LOADER_GET_PRIVATE(obj)                                     \
+#define ENTANGLE_PIXBUF_LOADER_GET_PRIVATE(obj)                         \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_PIXBUF_LOADER, EntanglePixbufLoaderPrivate))
 
 typedef struct _EntanglePixbufLoaderEntry {

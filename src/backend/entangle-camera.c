@@ -38,13 +38,13 @@
 #include "entangle-control-text.h"
 #include "entangle-control-toggle.h"
 
-#define ENTANGLE_CAMERA_GET_PRIVATE(obj)                                    \
+#define ENTANGLE_CAMERA_GET_PRIVATE(obj)                                \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA, EntangleCameraPrivate))
 
-#define ENTANGLE_ERROR(err, msg...)                                     \
-    g_set_error((err),                                                  \
-                g_quark_from_string("entangle-camera"),                 \
-                0,                                                      \
+#define ENTANGLE_ERROR(err, msg...)                     \
+    g_set_error((err),                                  \
+                g_quark_from_string("entangle-camera"), \
+                0,                                      \
                 msg)
 
 struct _EntangleCameraPrivate {
@@ -97,7 +97,7 @@ enum {
 
 static GQuark entangle_camera_error_quark(void)
 {
-  return g_quark_from_static_string("entangle-camera-error-quark");
+    return g_quark_from_static_string("entangle-camera-error-quark");
 }
 
 
@@ -410,7 +410,7 @@ static void entangle_camera_class_init(EntangleCameraClass *klass)
                                     g_param_spec_string("port",
                                                         "Camera port",
                                                         "Device port of the camera",
-                                                         NULL,
+                                                        NULL,
                                                         G_PARAM_READWRITE |
                                                         G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME |
@@ -507,12 +507,12 @@ EntangleCamera *entangle_camera_new(const char *model,
                                     gboolean hasSettings)
 {
     return ENTANGLE_CAMERA(g_object_new(ENTANGLE_TYPE_CAMERA,
-                                    "model", model,
-                                    "port", port,
-                                    "has-capture", hasCapture,
-                                    "has-preview", hasPreview,
-                                    "has-settings", hasSettings,
-                                    NULL));
+                                        "model", model,
+                                        "port", port,
+                                        "has-capture", hasCapture,
+                                        "has-preview", hasPreview,
+                                        "has-settings", hasSettings,
+                                        NULL));
 }
 
 
@@ -1159,8 +1159,8 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
     }
 
     ENTANGLE_DEBUG("Downloading '%s' from '%s'",
-               entangle_camera_file_get_name(file),
-               entangle_camera_file_get_folder(file));
+                   entangle_camera_file_get_name(file),
+                   entangle_camera_file_get_folder(file));
 
     gp_file_new(&datafile);
 
@@ -1276,8 +1276,8 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
     }
 
     ENTANGLE_DEBUG("Deleting '%s' from '%s'",
-               entangle_camera_file_get_name(file),
-               entangle_camera_file_get_folder(file));
+                   entangle_camera_file_get_name(file),
+                   entangle_camera_file_get_folder(file));
 
     entangle_camera_reset_last_error(cam);
     entangle_camera_begin_job(cam);
@@ -1426,7 +1426,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
             ENTANGLE_DEBUG("File added '%s' in '%s'", camerapath->name, camerapath->folder);
 
             file = entangle_camera_file_new(camerapath->folder,
-                                        camerapath->name);
+                                            camerapath->name);
 
             entangle_camera_emit_deferred(cam, "camera-file-added", G_OBJECT(file));
 

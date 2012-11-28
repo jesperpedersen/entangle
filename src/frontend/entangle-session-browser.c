@@ -27,7 +27,7 @@
 
 #define ENTANGLE_SESSION_BROWSER_PRIORITY_LAYOUT (GDK_PRIORITY_REDRAW + 5)
 
-#define ENTANGLE_SESSION_BROWSER_GET_PRIVATE(obj)                           \
+#define ENTANGLE_SESSION_BROWSER_GET_PRIVATE(obj)                       \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_SESSION_BROWSER, EntangleSessionBrowserPrivate))
 
 typedef struct _EntangleSessionBrowserItem EntangleSessionBrowserItem;
@@ -1341,7 +1341,7 @@ entangle_session_browser_key_press(GtkWidget *widget,
 
     switch (event->keyval) {
     case GDK_KEY_Right:
-       for (list = priv->items; list != NULL; list = list->next) {
+        for (list = priv->items; list != NULL; list = list->next) {
             EntangleSessionBrowserItem *item = list->data;
 
             if (item->selected && list->next) {

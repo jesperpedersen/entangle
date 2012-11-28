@@ -31,7 +31,7 @@
 #include "entangle-image-popup.h"
 #include "entangle-image-display.h"
 
-#define ENTANGLE_IMAGE_POPUP_GET_PRIVATE(obj)                            \
+#define ENTANGLE_IMAGE_POPUP_GET_PRIVATE(obj)                           \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_POPUP, EntangleImagePopupPrivate))
 
 struct _EntangleImagePopupPrivate {

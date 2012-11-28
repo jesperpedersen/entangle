@@ -47,7 +47,7 @@
  */
 
 
-#define ENTANGLE_APPLICATION_GET_PRIVATE(obj)                                       \
+#define ENTANGLE_APPLICATION_GET_PRIVATE(obj)                           \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_APPLICATION, EntangleApplicationPrivate))
 
 struct _EntangleApplicationPrivate {

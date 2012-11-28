@@ -28,7 +28,7 @@
 #include "entangle-debug.h"
 #include "entangle-camera-picker.h"
 
-#define ENTANGLE_CAMERA_PICKER_GET_PRIVATE(obj)                             \
+#define ENTANGLE_CAMERA_PICKER_GET_PRIVATE(obj)                         \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_PICKER, EntangleCameraPickerPrivate))
 
 struct _EntangleCameraPickerPrivate {
@@ -64,10 +64,10 @@ void do_picker_connect(GtkButton *src,
 
 
 static void entangle_camera_cell_data_model_func(GtkTreeViewColumn *col G_GNUC_UNUSED,
-                                             GtkCellRenderer *cell,
-                                             GtkTreeModel *model,
-                                             GtkTreeIter *iter,
-                                             gpointer data G_GNUC_UNUSED)
+                                                 GtkCellRenderer *cell,
+                                                 GtkTreeModel *model,
+                                                 GtkTreeIter *iter,
+                                                 gpointer data G_GNUC_UNUSED)
 {
     GValue val;
     EntangleCamera *cam;
