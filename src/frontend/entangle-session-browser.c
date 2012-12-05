@@ -1702,6 +1702,48 @@ EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *b
 }
 
 
+GList *entangle_session_browser_earlier_images(EntangleSessionBrowser *browser,
+                                               gsize count)
+{
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+    GList *list;
+    GList *images = NULL;
+
+    for (list = priv->items; list != NULL; list = list->next) {
+        EntangleSessionBrowserItem *item = list->data;
+
+        if (item->selected)
+            break;
+    }
+
+    if (list) {
+        for (list = list->prev ; list != NULL && count ; list = list->prev, count--) {
+            EntangleSessionBrowserItem *item = list->data;
+            GtkTreePath *path = gtk_tree_path_new_from_indices(item->idx, -1);
+            GtkTreeIter iter;
+            GValue val;
+
+            if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(priv->model), &iter, path))
+                goto cleanup;
+
+            memset(&val, 0, sizeof val);
+            gtk_tree_model_get_value(GTK_TREE_MODEL(priv->model), &iter, 0, &val);
+
+            images = g_list_append(images, g_value_get_object(&val));
+        }
+    }
+
+    return images;
+
+ cleanup:
+    g_list_foreach(images, (GFunc)(g_object_unref), NULL);
+    g_list_free(images);
+    return NULL;
+}
+
+
 void entangle_session_browser_set_thumbnail_loader(EntangleSessionBrowser *browser,
                                                    EntangleThumbnailLoader *loader)
 {

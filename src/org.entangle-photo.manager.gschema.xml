@@ -138,5 +138,18 @@
       <summary>Use embedded preview</summary>
       <description>Use embedded preview image instead of loading raw file</description>
     </key>
+
+    <key type="i" name="onion-layers">
+      <default>3</default>
+      <summary>Onion layers</summary>
+      <description>Number of overlay layers in image display</description>
+    </key>
+
+    <key type="b" name="onion-skin">
+      <default>false</default>
+      <summary>Onion skin</summary>
+      <description>Enable image overlay display</description>
+    </key>
+
   </schema>
 </schemalist>

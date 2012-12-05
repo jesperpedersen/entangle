@@ -120,6 +120,8 @@ struct _EntangleCameraFileTaskData {
 
 static void entangle_camera_progress_interface_init(gpointer g_iface,
                                                     gpointer iface_data);
+static void do_select_image(EntangleCameraManager *manager,
+                            EntangleImage *image);
 
 //G_DEFINE_TYPE(EntangleCameraManager, entangle_camera_manager, G_TYPE_OBJECT);
 G_DEFINE_TYPE_EXTENDED(EntangleCameraManager, entangle_camera_manager, G_TYPE_OBJECT, 0,
@@ -454,6 +456,10 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
         entangle_camera_manager_update_viewfinder(manager);
     } else if (g_str_equal(spec->name, "img-embedded-preview")) {
         entangle_camera_manager_update_image_loader(manager);
+    } else if (g_str_equal(spec->name, "img-onion-skin") ||
+               g_str_equal(spec->name, "img-onion-layers")) {
+        EntangleCameraManagerPrivate *priv = manager->priv;
+        do_select_image(manager, priv->currentImage);
     }
 }
 
@@ -548,12 +554,19 @@ static void do_select_image(EntangleCameraManager *manager,
     GList *tmp;
 
     EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
 
     ENTANGLE_DEBUG("Selected image %p %s", image,
                    image ? entangle_image_get_filename(image) : "<none>");
 
-    if (image)
+    if (image) {
+        if (entangle_preferences_img_get_onion_skin(prefs))
+            newimages = entangle_session_browser_earlier_images
+                (priv->sessionBrowser,
+                 entangle_preferences_img_get_onion_layers(prefs));
+
         newimages = g_list_prepend(newimages, g_object_ref(image));
+    }
 
     /* Load all new images first */
     tmp = newimages;

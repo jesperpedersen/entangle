@@ -69,6 +69,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_IMG_FOCUS_POINT            "focus-point"
 #define SETTING_IMG_GRID_LINES             "grid-lines"
 #define SETTING_IMG_EMBEDDED_PREVIEW       "embedded-preview"
+#define SETTING_IMG_ONION_SKIN             "onion-skin"
+#define SETTING_IMG_ONION_LAYERS           "onion-layers"
 
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
 #define PROP_NAME_INTERFACE_SCREEN_BLANK     SETTING_INTERFACE "-" SETTING_INTERFACE_SCREEN_BLANK
@@ -90,6 +92,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define PROP_NAME_IMG_FOCUS_POINT            SETTING_IMG "-" SETTING_IMG_FOCUS_POINT
 #define PROP_NAME_IMG_GRID_LINES             SETTING_IMG "-" SETTING_IMG_GRID_LINES
 #define PROP_NAME_IMG_EMBEDDED_PREVIEW       SETTING_IMG "-" SETTING_IMG_EMBEDDED_PREVIEW
+#define PROP_NAME_IMG_ONION_LAYERS           SETTING_IMG "-" SETTING_IMG_ONION_LAYERS
+#define PROP_NAME_IMG_ONION_SKIN             SETTING_IMG "-" SETTING_IMG_ONION_SKIN
 
 enum {
     PROP_0,
@@ -114,6 +118,8 @@ enum {
     PROP_IMG_FOCUS_POINT,
     PROP_IMG_GRID_LINES,
     PROP_IMG_EMBEDDED_PREVIEW,
+    PROP_IMG_ONION_SKIN,
+    PROP_IMG_ONION_LAYERS,
 };
 
 
@@ -270,6 +276,18 @@ static void entangle_preferences_get_property(GObject *object,
                                                        SETTING_IMG_EMBEDDED_PREVIEW));
             break;
 
+        case PROP_IMG_ONION_SKIN:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->imgSettings,
+                                                       SETTING_IMG_ONION_SKIN));
+            break;
+
+        case PROP_IMG_ONION_LAYERS:
+            g_value_set_int(value,
+                            g_settings_get_int(priv->imgSettings,
+                                               SETTING_IMG_ONION_LAYERS));
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -398,6 +416,18 @@ static void entangle_preferences_set_property(GObject *object,
             g_settings_set_boolean(priv->imgSettings,
                                    SETTING_IMG_EMBEDDED_PREVIEW,
                                    g_value_get_boolean(value));
+            break;
+
+        case PROP_IMG_ONION_SKIN:
+            g_settings_set_boolean(priv->imgSettings,
+                                   SETTING_IMG_ONION_SKIN,
+                                   g_value_get_boolean(value));
+            break;
+
+        case PROP_IMG_ONION_LAYERS:
+            g_settings_set_int(priv->imgSettings,
+                               SETTING_IMG_ONION_LAYERS,
+                               g_value_get_int(value));
             break;
 
         default:
@@ -615,6 +645,30 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                     g_param_spec_boolean(PROP_NAME_IMG_EMBEDDED_PREVIEW,
                                                          "Embedded preview",
                                                          "Embedded preview for raw files",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_ONION_LAYERS,
+                                    g_param_spec_int(PROP_NAME_IMG_ONION_LAYERS,
+                                                     "Onion layer count",
+                                                     "Overlay layers in image display",
+                                                     1,
+                                                     5,
+                                                     3,
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_NAME |
+                                                     G_PARAM_STATIC_NICK |
+                                                     G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_ONION_SKIN,
+                                    g_param_spec_boolean(PROP_NAME_IMG_ONION_SKIN,
+                                                         "Onion skin",
+                                                         "Enable image overlay display",
                                                          FALSE,
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_STATIC_NAME |
@@ -1136,6 +1190,54 @@ void entangle_preferences_img_set_embedded_preview(EntanglePreferences *prefs, g
                            SETTING_IMG_EMBEDDED_PREVIEW, enabled);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_EMBEDDED_PREVIEW);
 }
+
+
+gint entangle_preferences_img_get_onion_layers(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_int(priv->imgSettings,
+                              SETTING_IMG_ONION_LAYERS);
+}
+
+
+void entangle_preferences_img_set_onion_layers(EntanglePreferences *prefs,
+                                               gint onion)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_int(priv->imgSettings,
+                       SETTING_IMG_ONION_LAYERS, onion);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_ONION_LAYERS);
+}
+
+
+gboolean entangle_preferences_img_get_onion_skin(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->imgSettings,
+                                  SETTING_IMG_ONION_SKIN);
+}
+
+
+void entangle_preferences_img_set_onion_skin(EntanglePreferences *prefs, gboolean skin)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->imgSettings,
+                           SETTING_IMG_ONION_SKIN, skin);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_ONION_SKIN);
+}
+
 
 /*
  * Local variables:

@@ -6,6 +6,13 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adjustment2">
+    <property name="lower">1</property>
+    <property name="upper">5</property>
+    <property name="value">3</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
   <object class="GtkListStore" id="model1">
     <columns>
       <!-- column-name gchararray -->
@@ -49,11 +56,9 @@
             <child>
               <object class="GtkButton" id="close">
                 <property name="label">gtk-close</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="do_preferences_close" swapped="no"/>
               </object>
@@ -192,11 +197,9 @@
                             <child>
                               <object class="GtkCheckButton" id="capture-continuous-preview">
                                 <property name="label" translatable="yes">Continue preview mode after capture</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_capture_continuous_preview_toggled" swapped="no"/>
@@ -210,11 +213,9 @@
                             <child>
                               <object class="GtkCheckButton" id="capture-delete-file">
                                 <property name="label" translatable="yes">Delete file from camera after downloading</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_capture_delete_file_toggled" swapped="no"/>
@@ -361,11 +362,9 @@
                             <child>
                               <object class="GtkCheckButton" id="cms-detect-system-profile">
                                 <property name="label" translatable="yes">Detect the system monitor profile</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0.5</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_cms_detect_system_profile_toggled" swapped="no"/>
@@ -428,11 +427,9 @@
                             <child>
                               <object class="GtkCheckButton" id="cms-enabled">
                                 <property name="label" translatable="yes">Colour managed display</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0.5</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_cms_enabled_toggled" swapped="no"/>
@@ -612,11 +609,9 @@
                             <child>
                               <object class="GtkCheckButton" id="interface-auto-connect">
                                 <property name="label" translatable="yes">Automatically connect to cameras at startup</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_interface_auto_connect_toggled" swapped="no"/>
@@ -628,11 +623,9 @@
                             <child>
                               <object class="GtkCheckButton" id="interface-screen-blank">
                                 <property name="label" translatable="yes">Blank screen when capturing images</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_interface_screen_blank_toggled" swapped="no"/>
@@ -729,18 +722,16 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="border_width">6</property>
-                            <property name="n_rows">6</property>
+                            <property name="n_rows">8</property>
                             <property name="n_columns">2</property>
                             <property name="column_spacing">6</property>
                             <property name="row_spacing">6</property>
                             <child>
                               <object class="GtkCheckButton" id="img-mask-enabled">
                                 <property name="label" translatable="yes">Apply mask to alter aspect ratio</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_img_mask_enabled_toggled" swapped="no"/>
@@ -805,11 +796,9 @@
                             <child>
                               <object class="GtkCheckButton" id="img-focus-point">
                                 <property name="label" translatable="yes">Display focus point during preview</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_img_focus_point_toggled" swapped="no"/>
@@ -849,11 +838,9 @@
                             <child>
                               <object class="GtkCheckButton" id="img-embedded-preview">
                                 <property name="label" translatable="yes">Use embedded preview from raw files</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="do_img_embedded_preview_toggled" swapped="no"/>
@@ -862,6 +849,50 @@
                                 <property name="right_attach">2</property>
                                 <property name="top_attach">5</property>
                                 <property name="bottom_attach">6</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="img-onion-skin">
+                                <property name="label" translatable="yes">Overlay earlier images</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="do_img_onion_skin_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">6</property>
+                                <property name="bottom_attach">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="img-onion-layers-label">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Overlay layers:</property>
+                              </object>
+                              <packing>
+                                <property name="top_attach">7</property>
+                                <property name="bottom_attach">8</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="img-onion-layers">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">●</property>
+                                <property name="invisible_char_set">True</property>
+                                <property name="adjustment">adjustment2</property>
+                                <signal name="value-changed" handler="do_img_onion_layers_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">7</property>
+                                <property name="bottom_attach">8</property>
                               </packing>
                             </child>
                           </object>

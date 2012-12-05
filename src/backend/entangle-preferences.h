@@ -98,6 +98,10 @@ gint entangle_preferences_img_get_grid_lines(EntanglePreferences *prefs);
 void entangle_preferences_img_set_grid_lines(EntanglePreferences *prefs, gint gridLines);
 gboolean entangle_preferences_img_get_embedded_preview(EntanglePreferences *prefs);
 void entangle_preferences_img_set_embedded_preview(EntanglePreferences *prefs, gboolean enabled);
+gboolean entangle_preferences_img_get_onion_skin(EntanglePreferences *prefs);
+void entangle_preferences_img_set_onion_skin(EntanglePreferences *prefs, gboolean enabled);
+gint entangle_preferences_img_get_onion_layers(EntanglePreferences *prefs);
+void entangle_preferences_img_set_onion_layers(EntanglePreferences *prefs, gint layers);
 
 G_END_DECLS
 

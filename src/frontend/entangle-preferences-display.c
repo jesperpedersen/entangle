@@ -80,6 +80,9 @@ void do_img_mask_opacity_changed(GtkSpinButton *src, EntanglePreferencesDisplay 
 void do_img_focus_point_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
 void do_img_embedded_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_img_onion_skin_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_img_onion_layers_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
+
 
 static void entangle_preferences_display_get_property(GObject *object,
                                                       guint prop_id,
@@ -89,7 +92,7 @@ static void entangle_preferences_display_get_property(GObject *object,
     EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(object);
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
 
-    switch (prop_id)
+   switch (prop_id)
         {
         case PROP_APPLICATION:
             g_value_set_object(value, priv->application);
@@ -300,6 +303,25 @@ static void entangle_preferences_display_notify(GObject *object,
 
         if (newvalue != oldvalue)
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "img-onion-skin") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "img-onion-layers") == 0) {
+        GtkAdjustment *adjust = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(tmp));
+        gint newvalue;
+        gfloat oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_adjustment_get_value(adjust);
+
+        if (fabs(newvalue - oldvalue)  > 0.0005)
+            gtk_adjustment_set_value(adjust, newvalue);
     }
 }
 
@@ -351,6 +373,7 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     const gchar *ratio;
     GtkAdjustment *adjust;
     gboolean hasRatio;
+    gboolean hasOnion;
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-enabled"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_cms_get_enabled(prefs));
@@ -430,9 +453,22 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp),
                                  entangle_preferences_img_get_embedded_preview(prefs));
 
+    hasOnion = entangle_preferences_img_get_onion_skin(prefs);
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-onion-skin"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), hasOnion);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-onion-layers"));
+    gtk_widget_set_sensitive(tmp, hasOnion);
+    adjust = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(tmp));
+    gtk_adjustment_set_value(adjust,
+                             entangle_preferences_img_get_onion_layers(prefs));
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-onion-layers-label"));
+    gtk_widget_set_sensitive(tmp, hasOnion);
 }
 
-static void entangle_preferences_display_finalize (GObject *object)
+
+static void entangle_preferences_display_finalize(GObject *object)
 {
     EntanglePreferencesDisplay *preferences = ENTANGLE_PREFERENCES_DISPLAY(object);
     EntanglePreferencesDisplayPrivate *priv = preferences->priv;
@@ -756,6 +792,36 @@ void do_img_embedded_preview_toggled(GtkToggleButton *src, EntanglePreferencesDi
     gboolean enabled = gtk_toggle_button_get_active(src);
 
     entangle_preferences_img_set_embedded_preview(prefs, enabled);
+}
+
+
+void do_img_onion_skin_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+    GtkWidget *layers = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-onion-layers"));
+    GtkWidget *layersLbl = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-onion-layers-label"));
+
+    gtk_widget_set_sensitive(layers, enabled);
+    gtk_widget_set_sensitive(layersLbl, enabled);
+
+    entangle_preferences_img_set_onion_skin(prefs, enabled);
+}
+
+
+void do_img_onion_layers_changed(GtkSpinButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    GtkAdjustment *adjust = gtk_spin_button_get_adjustment(src);
+
+    entangle_preferences_img_set_onion_layers(prefs,
+                                              gtk_adjustment_get_value(adjust));
 }
 
 
