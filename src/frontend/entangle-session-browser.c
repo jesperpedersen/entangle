@@ -350,17 +350,17 @@ static void do_model_load(EntangleSessionBrowser *browser)
 
 
 static gint
-do_image_sort_modified(GtkTreeModel *model,
-                       GtkTreeIter  *a,
-                       GtkTreeIter  *b,
-                       gpointer data G_GNUC_UNUSED)
+do_image_sort_name(GtkTreeModel *model,
+                   GtkTreeIter  *a,
+                   GtkTreeIter  *b,
+                   gpointer data G_GNUC_UNUSED)
 {
-    gint ai, bi;
+    gchar *ai, *bi;
 
-    gtk_tree_model_get(model, a, FIELD_LASTMOD, &ai, -1);
-    gtk_tree_model_get(model, b, FIELD_LASTMOD, &bi, -1);
+    gtk_tree_model_get(model, a, FIELD_NAME, &ai, -1);
+    gtk_tree_model_get(model, b, FIELD_NAME, &bi, -1);
 
-    return ai - bi;
+    return strcmp(ai, bi);
 }
 
 
@@ -1567,7 +1567,7 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
                                                     G_TYPE_STRING));
 
     gtk_tree_sortable_set_default_sort_func(GTK_TREE_SORTABLE(priv->model),
-                                            do_image_sort_modified, NULL, NULL);
+                                            do_image_sort_name, NULL, NULL);
     gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(priv->model),
                                          GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID,
                                          GTK_SORT_ASCENDING);
