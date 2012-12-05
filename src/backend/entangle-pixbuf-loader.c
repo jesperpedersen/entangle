@@ -369,6 +369,24 @@ static void entangle_pixbuf_loader_class_init(EntanglePixbufLoaderClass *klass)
                  G_TYPE_NONE,
                  1,
                  ENTANGLE_TYPE_IMAGE);
+    g_signal_new("pixbuf-unloaded",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(EntanglePixbufLoaderClass, pixbuf_unloaded),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 ENTANGLE_TYPE_IMAGE);
+    g_signal_new("metadata-unloaded",
+                 G_TYPE_FROM_CLASS(klass),
+                 G_SIGNAL_RUN_FIRST,
+                 G_STRUCT_OFFSET(EntanglePixbufLoaderClass, metadata_unloaded),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE,
+                 1,
+                 ENTANGLE_TYPE_IMAGE);
 
     g_type_class_add_private(klass, sizeof(EntanglePixbufLoaderPrivate));
 }
@@ -459,6 +477,35 @@ GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader
 }
 
 
+struct idle_emit_data {
+    EntangleImage *image;
+    EntanglePixbufLoader *loader;
+    const char *name;
+};
+
+static gboolean do_idle_emit_func(gpointer opaque)
+{
+    struct idle_emit_data *data = opaque;
+
+    g_signal_emit_by_name(data->loader, data->name, data->image);
+    g_object_unref(data->image);
+    g_object_unref(data->loader);
+    g_free(data);
+
+    return FALSE;
+}
+
+static void do_idle_emit(EntanglePixbufLoader *loader,
+                         const char *name,
+                         EntangleImage *image)
+{
+    struct idle_emit_data *data = g_new0(struct idle_emit_data, 1);
+    data->loader = g_object_ref(loader);
+    data->image = g_object_ref(image);
+    data->name = name;
+    g_idle_add(do_idle_emit_func, data);
+}
+
 gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
                                      EntangleImage *image)
 {
@@ -480,10 +527,10 @@ gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
         gboolean hasMetadata = entry->metadata != NULL;
         entry->refs++;
         g_mutex_unlock(priv->lock);
-        if (hasPixbuf)
-            g_signal_emit_by_name(loader, "pixbuf-loaded", image);
-        if (hasMetadata)
-            g_signal_emit_by_name(loader, "metadata-loaded", image);
+        if (hasPixbuf && 0)
+            do_idle_emit(loader, "pixbuf-loaded", image);
+        if (hasMetadata && 0)
+            do_idle_emit(loader, "metadata-loaded", image);
         return TRUE;
     }
     entry = entangle_pixbuf_loader_entry_new(image);
@@ -515,8 +562,15 @@ gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
     ENTANGLE_DEBUG("Entry %d %d", entry->refs, entry->ready);
     if (entry->refs == 0 &&
         !entry->processing &&
-        !entry->pending)
+        !entry->pending) {
+        gboolean hasPixbuf = entry->pixbuf != NULL;
+        gboolean hasMetadata = entry->metadata != NULL;
+        if (hasPixbuf)
+            do_idle_emit(loader, "pixbuf-unloaded", image);
+        if (hasMetadata)
+            do_idle_emit(loader, "metadata-unloaded", image);
         g_hash_table_remove(priv->pixbufs, entangle_image_get_filename(image));
+    }
 
  cleanup:
     g_mutex_unlock(priv->lock);

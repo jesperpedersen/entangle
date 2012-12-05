@@ -551,8 +551,6 @@ static void do_select_image(EntangleCameraManager *manager,
         entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
                                       priv->currentImage);
         g_object_unref(priv->currentImage);
-        if (!g_hash_table_lookup(priv->popups, entangle_image_get_filename(priv->currentImage)))
-            entangle_image_set_pixbuf(priv->currentImage, NULL);
     }
 
     priv->currentImage = image;
@@ -2656,9 +2654,8 @@ static void do_popup_close(EntangleImagePopup *popup,
 
     g_hash_table_remove(priv->popups, filename);
 
-    if (priv->currentImage != img)
-        entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
-                                      img);
+    entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
+                                  img);
 }
 
 
@@ -2694,6 +2691,8 @@ static void do_session_browser_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
                 entangle_image_popup_set_image(pol, img);
                 g_signal_connect(pol, "popup-close", G_CALLBACK(do_popup_close), manager);
                 g_hash_table_insert(priv->popups, g_strdup(filename), pol);
+                entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
+                                            img);
             }
             ENTANGLE_DEBUG("Popup %p for %s", pol, filename);
             entangle_image_popup_show(pol, GTK_WINDOW(win), x, y);
@@ -2725,6 +2724,28 @@ static void do_metadata_loaded(EntanglePixbufLoader *loader,
 
     gdk_threads_enter();
     entangle_image_set_metadata(image, metadata);
+    gdk_threads_leave();
+}
+
+
+static void do_pixbuf_unloaded(EntanglePixbufLoader *loader G_GNUC_UNUSED,
+                               EntangleImage *image)
+{
+    g_return_if_fail(ENTANGLE_IS_IMAGE(image));
+
+    gdk_threads_enter();
+    entangle_image_set_pixbuf(image, NULL);
+    gdk_threads_leave();
+}
+
+
+static void do_metadata_unloaded(EntanglePixbufLoader *loader G_GNUC_UNUSED,
+                                 EntangleImage *image)
+{
+    g_return_if_fail(ENTANGLE_IS_IMAGE(image));
+
+    gdk_threads_enter();
+    entangle_image_set_metadata(image, NULL);
     gdk_threads_leave();
 }
 
@@ -2806,6 +2827,8 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
 
     g_signal_connect(priv->imageLoader, "pixbuf-loaded", G_CALLBACK(do_pixbuf_loaded), NULL);
     g_signal_connect(priv->imageLoader, "metadata-loaded", G_CALLBACK(do_metadata_loaded), NULL);
+    g_signal_connect(priv->imageLoader, "pixbuf-unloaded", G_CALLBACK(do_pixbuf_unloaded), NULL);
+    g_signal_connect(priv->imageLoader, "metadata-unloaded", G_CALLBACK(do_metadata_unloaded), NULL);
 
     priv->imageDisplay = entangle_image_display_new();
     priv->imageStatusbar = entangle_image_statusbar_new();
