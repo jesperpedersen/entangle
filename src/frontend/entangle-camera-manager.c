@@ -2286,15 +2286,9 @@ void do_menu_quit(GtkMenuItem *src G_GNUC_UNUSED,
     GList *tmp = g_list_copy(windows);
 
     while (tmp) {
-#if 0
-        /* Fixme once EntangleCameraManager inherits GtkWindow  */
-        EntangleCameraManager *thismanager = ENTANGLE_CAMERA_MANAGER(tmp->data);
-        entangle_camera_manager_hide(thismanager);
-#else
         GtkWindow *window = GTK_WINDOW(tmp->data);
-        gtk_widget_hide(GTK_WIDGET(window));
-        gtk_window_set_application(window, NULL);
-#endif
+        EntangleCameraManager *onemanager = g_object_get_data(G_OBJECT(window), "manager");
+        entangle_camera_manager_hide(onemanager);
         tmp = tmp->next;
     }
     g_list_free(tmp);
@@ -2914,6 +2908,8 @@ void entangle_camera_manager_hide(EntangleCameraManager *manager)
 
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
+
+    entangle_camera_manager_set_camera(manager, NULL);
 
     ENTANGLE_DEBUG("Removing all popups");
     g_hash_table_remove_all(priv->popups);
