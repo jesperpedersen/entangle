@@ -543,29 +543,64 @@ static void do_select_image(EntangleCameraManager *manager,
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
     g_return_if_fail(!image || ENTANGLE_IS_IMAGE(image));
+    GList *newimages = NULL;
+    GList *oldimages;
+    GList *tmp;
 
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    ENTANGLE_DEBUG("Select image %p", image);
-    if (priv->currentImage && entangle_image_get_filename(priv->currentImage)) {
-        entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
-                                      priv->currentImage);
-        g_object_unref(priv->currentImage);
+    ENTANGLE_DEBUG("Selected image %p %s", image,
+                   image ? entangle_image_get_filename(image) : "<none>");
+
+    if (image)
+        newimages = g_list_prepend(newimages, g_object_ref(image));
+
+    /* Load all new images first */
+    tmp = newimages;
+    while (tmp) {
+        EntangleImage *thisimage = tmp->data;
+        ENTANGLE_DEBUG("New image %p %s", thisimage,
+                       entangle_image_get_filename(thisimage));
+
+        if (entangle_image_get_filename(thisimage))
+            entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
+                                        thisimage);
+
+        tmp = tmp->next;
     }
 
+    /* Now unload old images */
+    tmp = oldimages = entangle_image_display_get_image_list(priv->imageDisplay);
+    while (tmp) {
+        EntangleImage *thisimage = tmp->data;
+
+        ENTANGLE_DEBUG("Old %p %s", thisimage,
+                       entangle_image_get_filename(thisimage));
+
+        if (entangle_image_get_filename(thisimage))
+            entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
+                                          thisimage);
+
+        tmp = tmp->next;
+    }
+
+    entangle_image_display_set_image_list(priv->imageDisplay, newimages);
+
+    if (image)
+        g_object_ref(image);
+    if (priv->currentImage)
+        g_object_unref(priv->currentImage);
     priv->currentImage = image;
 
-    if (priv->currentImage && entangle_image_get_filename(priv->currentImage)) {
-        g_object_ref(priv->currentImage);
-        entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
-                                    priv->currentImage);
-    }
-
-    entangle_image_display_set_image(priv->imageDisplay, priv->currentImage);
     entangle_image_statusbar_set_image(priv->imageStatusbar, priv->currentImage);
     entangle_image_histogram_set_image(priv->imageHistogram, priv->currentImage);
     if (priv->imagePresentation)
         entangle_image_popup_set_image(priv->imagePresentation, priv->currentImage);
+
+    g_list_foreach(oldimages, (GFunc)g_object_unref, NULL);
+    g_list_free(oldimages);
+    g_list_foreach(newimages, (GFunc)g_object_unref, NULL);
+    g_list_free(newimages);
 }
 
 

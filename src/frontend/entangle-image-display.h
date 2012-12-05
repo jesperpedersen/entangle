@@ -59,9 +59,12 @@ GType entangle_image_display_get_type(void) G_GNUC_CONST;
 EntangleImageDisplay* entangle_image_display_new(void);
 
 void entangle_image_display_set_image(EntangleImageDisplay *display,
-                                         EntangleImage *image);
+                                      EntangleImage *image);
 EntangleImage *entangle_image_display_get_image(EntangleImageDisplay *display);
 
+void entangle_image_display_set_image_list(EntangleImageDisplay *display,
+                                           GList *image);
+GList *entangle_image_display_get_image_list(EntangleImageDisplay *display);
 
 void entangle_image_display_set_autoscale(EntangleImageDisplay *displsy,
                                           gboolean autoscale);
