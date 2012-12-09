@@ -1377,7 +1377,9 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
     g_get_current_time(&tv);
     startms = (tv.tv_sec * 1000ll) + (tv.tv_usec / 1000ll);
 
-    ENTANGLE_DEBUG("Waiting for events %llu", (unsigned long long)startms);
+    ENTANGLE_DEBUG("Waiting for events start %llu duration %llu",
+                   (unsigned long long)startms,
+                   (unsigned long long)waitms);
 
     entangle_camera_reset_last_error(cam);
     donems = 0;
@@ -1397,7 +1399,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
             ENTANGLE_ERROR(error, _("Unable to wait for events: %s"), priv->lastError);
             goto cleanup;
         }
-
+        ENTANGLE_DEBUG("Event type %d", eventType);
         switch (eventType) {
         case GP_EVENT_UNKNOWN:
             if (eventData &&
@@ -1454,7 +1456,8 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
     } while (eventType != GP_EVENT_TIMEOUT &&
              donems < waitms);
 
-    ENTANGLE_DEBUG("Done waiting for events %llu", (unsigned long long)donems);
+    ENTANGLE_DEBUG("Done waiting for events %llu",
+                   (unsigned long long)donems);
 
     ret = TRUE;
 
