@@ -1715,7 +1715,7 @@ static gboolean do_load_controls(EntangleCamera *cam,
     case GP_WIDGET_RANGE: {
         float newValue = 0.0;
         float oldValue = 0.0;
-        g_object_set(ctrl, "value", oldValue, NULL);
+        g_object_get(ctrl, "value", &oldValue, NULL);
         gp_widget_get_value(widget, &newValue);
         if (fabs(newValue - oldValue) < 0.0001)
             g_object_set(ctrl, "value", newValue, NULL);
