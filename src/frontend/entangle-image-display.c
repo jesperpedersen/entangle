@@ -33,6 +33,8 @@
 struct _EntangleImageDisplayPrivate {
     GList *images;
 
+    cairo_surface_t *pixmap;
+
     gboolean autoscale;
     gdouble scale;
 
@@ -59,68 +61,99 @@ enum {
 };
 
 
-#define ENTANGLE_IMAGE_DISPLAY_PIXMAP_DATA "entangle-image-display-pixmap-%p"
-
-static cairo_surface_t *
-entangle_image_display_get_pixmap(EntangleImageDisplay *display,
-                                  EntangleImage *image)
-{
-    gchar *key = g_strdup_printf(ENTANGLE_IMAGE_DISPLAY_PIXMAP_DATA, display);
-    cairo_surface_t *data = g_object_get_data(G_OBJECT(image), key);
-    g_free(key);
-    return data;
-}
-
-static void
-entangle_image_display_set_pixmap(EntangleImageDisplay *display,
-                                  EntangleImage *image,
-                                  cairo_surface_t *pixmap)
-{
-    gchar *key = g_strdup_printf(ENTANGLE_IMAGE_DISPLAY_PIXMAP_DATA, display);
-    g_object_set_data(G_OBJECT(image), key, pixmap);
-    g_free(key);
-}
-
-
 static void entangle_image_display_image_pixbuf_notify(GObject *image,
                                                        GParamSpec *pspec,
                                                        gpointer data);
 
 
-static void do_entangle_image_display_create_pixmap(EntangleImageDisplay *display,
-                                                    EntangleImage *image)
+static void do_entangle_image_display_render_pixmap(EntangleImageDisplay *display)
 {
+    EntangleImageDisplayPrivate *priv = display->priv;
     int pw, ph;
     GdkPixbuf *pixbuf = NULL;
-    cairo_surface_t *pixmap;
+    GList *tmp = priv->images;
+    EntangleImage *image = ENTANGLE_IMAGE(priv->images->data);
+
+    ENTANGLE_DEBUG("Setting up server pixmap for %p %s",
+                   image, entangle_image_get_filename(image));
+
+    image = ENTANGLE_IMAGE(tmp->data);
+    pixbuf = entangle_image_get_pixbuf(image);
+
+    pw = gdk_pixbuf_get_width(pixbuf);
+    ph = gdk_pixbuf_get_height(pixbuf);
+    priv->pixmap = cairo_image_surface_create(CAIRO_FORMAT_RGB24, pw, ph);
+
+    /* Paint the stack of images - the first one
+     * is completely opaque. Others are layers
+     * on top */
+    cairo_t *cr = cairo_create(priv->pixmap);
+    while (tmp) {
+        image = ENTANGLE_IMAGE(tmp->data);
+        pixbuf = entangle_image_get_pixbuf(image);
+
+        gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
+        if (tmp == priv->images)
+            cairo_paint(cr);
+        else
+            cairo_paint_with_alpha(cr, 0.5);
+
+        tmp = tmp->next;
+    }
+    cairo_destroy(cr);
+}
+
+
+static void entangle_image_display_try_render_pixmap(EntangleImageDisplay *display)
+{
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    GList *tmp = priv->images;
+    gboolean missing = FALSE;
 
     if (!gtk_widget_get_realized(GTK_WIDGET(display))) {
         ENTANGLE_DEBUG("Skipping setup for non-realized widget");
         return;
     }
 
-    ENTANGLE_DEBUG("Setting up server pixmap for %p %s",
-                   image, entangle_image_get_filename(image));
+    if (priv->pixmap) {
+        cairo_surface_destroy(priv->pixmap);
+        priv->pixmap = NULL;
+    }
 
-    pixmap = entangle_image_display_get_pixmap(display, image);
-    if (pixmap)
+    if (!priv->images)
         return;
 
-    pixbuf = entangle_image_get_pixbuf(image);
-    if (!pixbuf)
-        return;
+    while (tmp) {
+        EntangleImage *image = tmp->data;
 
-    pw = gdk_pixbuf_get_width(pixbuf);
-    ph = gdk_pixbuf_get_height(pixbuf);
-    pixmap = cairo_image_surface_create(CAIRO_FORMAT_RGB24, pw, ph);
+        if (entangle_image_get_pixbuf(image) == NULL)
+            missing = TRUE;
 
-    cairo_t *cr = cairo_create(pixmap);
-    gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
-    cairo_paint(cr);
-    cairo_destroy(cr);
+        tmp = tmp->next;
+    }
 
-    entangle_image_display_set_pixmap(display, image, pixmap);
+    if (!missing) {
+        do_entangle_image_display_render_pixmap(display);
+    } else {
+        ENTANGLE_DEBUG("Not ready to render yet");
+    }
 }
+
+
+static void entangle_image_display_image_pixbuf_notify(GObject *object G_GNUC_UNUSED,
+                                                       GParamSpec *pspec G_GNUC_UNUSED,
+                                                       gpointer data)
+{
+    g_return_if_fail(ENTANGLE_IS_IMAGE_DISPLAY(data));
+
+    EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(data);
+
+    entangle_image_display_try_render_pixmap(display);
+    gtk_widget_queue_resize(GTK_WIDGET(display));
+    gtk_widget_queue_draw(GTK_WIDGET(display));
+}
+
 
 
 static void do_entangle_image_display_connect(EntangleImageDisplay *display,
@@ -131,20 +164,7 @@ static void do_entangle_image_display_connect(EntangleImageDisplay *display,
                      G_CALLBACK(entangle_image_display_image_pixbuf_notify),
                      display);
 
-    do_entangle_image_display_create_pixmap(display, image);
-}
-
-
-static void do_entangle_image_display_disconnect(EntangleImageDisplay *display,
-                                                 EntangleImage *image)
-{
-    cairo_surface_t *pixmap = entangle_image_display_get_pixmap(display, image);
-    if (pixmap) {
-        cairo_surface_destroy(pixmap);
-        entangle_image_display_set_pixmap(display, image, NULL);
-    }
-
-    g_signal_handlers_disconnect_by_data(image, display);
+    entangle_image_display_try_render_pixmap(display);
 }
 
 
@@ -246,12 +266,15 @@ static void entangle_image_display_finalize(GObject *object)
     while (tmp) {
         EntangleImage *image = tmp->data;
 
-        do_entangle_image_display_disconnect(display, image);
+        g_signal_handlers_disconnect_by_data(image, display);
         g_object_unref(image);
 
         tmp = tmp->next;
     }
     g_list_free(priv->images);
+
+    if (priv->pixmap)
+        cairo_surface_destroy(priv->pixmap);
 
     G_OBJECT_CLASS (entangle_image_display_parent_class)->finalize (object);
 }
@@ -264,16 +287,8 @@ static void entangle_image_display_realize(GtkWidget *widget)
     GTK_WIDGET_CLASS(entangle_image_display_parent_class)->realize(widget);
 
     EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(widget);
-    EntangleImageDisplayPrivate *priv = display->priv;
-    GList *tmp = priv->images;
 
-    while (tmp) {
-        EntangleImage *image = ENTANGLE_IMAGE(tmp->data);
-
-        do_entangle_image_display_create_pixmap(display, image);
-
-        tmp = tmp->next;
-    }
+    entangle_image_display_try_render_pixmap(display);
 }
 
 
@@ -449,19 +464,14 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
     double mx = 0, my = 0;  /* Offset of image within available area */
     double sx = 1, sy = 1;  /* Amount to scale by */
     double aspectWin, aspectImage = 0.0;
-    EntangleImage *image = entangle_image_display_get_image(display);
-    cairo_surface_t *pixmap = NULL;
 
     ww = gdk_window_get_width(gtk_widget_get_window(widget));
     wh = gdk_window_get_height(gtk_widget_get_window(widget));
     aspectWin = (double)ww / (double)wh;
 
-    if (image)
-        pixmap = entangle_image_display_get_pixmap(display, image);
-
-    if (pixmap) {
-        pw = cairo_image_surface_get_width(pixmap);
-        ph = cairo_image_surface_get_height(pixmap);
+    if (priv->pixmap) {
+        pw = cairo_image_surface_get_width(priv->pixmap);
+        ph = cairo_image_surface_get_height(priv->pixmap);
         aspectImage = (double)pw / (double)ph;
     }
 
@@ -513,7 +523,7 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
        not double-buffering. Note we're using the undocumented
        behaviour of drawing the rectangle from right to left
        to cut out the whole */
-    if (pixmap)
+    if (priv->pixmap)
         cairo_rectangle(cr,
                         mx + iw,
                         my,
@@ -522,34 +532,15 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
     cairo_fill(cr);
 
     /* Draw the actual image(s) */
-    if (pixmap) {
-        GList *tmp = priv->images;
+    if (priv->pixmap) {
         cairo_matrix_t m;
-        gboolean first = TRUE;
         cairo_get_matrix(cr, &m);
         cairo_scale(cr, sx, sy);
 
-        /* Pain the stack of images - the first one
-         * is completely opaque. Others are layers
-         * on top */
-        while (tmp) {
-            EntangleImage *thisimage = tmp->data;
-            cairo_surface_t *thispixmap = entangle_image_display_get_pixmap(display, thisimage);
-
-            if (thispixmap) {
-                cairo_set_source_surface(cr,
-                                         thispixmap,
-                                         mx/sx, my/sy);
-                if (first)
-                    cairo_paint(cr);
-                else
-                    cairo_paint_with_alpha(cr, 0.5);
-                first = FALSE;
-            }
-
-            tmp = tmp->next;
-        }
-
+        cairo_set_source_surface(cr,
+                                 priv->pixmap,
+                                 mx/sx, my/sy);
+        cairo_paint(cr);
         cairo_set_matrix(cr, &m);
     }
 
@@ -561,7 +552,7 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
     entangle_image_display_draw_grid_display(widget, cr, mx, my);
 
     /* Finally a possible aspect ratio mask */
-    if (pixmap && priv->maskEnabled &&
+    if (priv->pixmap && priv->maskEnabled &&
         (fabs(priv->aspectRatio - aspectImage)  > 0.005)) {
         cairo_set_source_rgba(cr, 0, 0, 0, priv->maskOpacity);
 
@@ -798,23 +789,6 @@ static void entangle_image_display_init(EntangleImageDisplay *display)
 }
 
 
-static void entangle_image_display_image_pixbuf_notify(GObject *object,
-                                                       GParamSpec *pspec G_GNUC_UNUSED,
-                                                       gpointer data)
-{
-    g_return_if_fail(ENTANGLE_IS_IMAGE_DISPLAY(data));
-
-    EntangleImageDisplay *display = ENTANGLE_IMAGE_DISPLAY(data);
-    EntangleImage *image = ENTANGLE_IMAGE(object);
-
-    do_entangle_image_display_create_pixmap(display, image);
-
-    gtk_widget_queue_resize(GTK_WIDGET(display));
-    gtk_widget_queue_draw(GTK_WIDGET(display));
-}
-
-
-
 void entangle_image_display_set_image(EntangleImageDisplay *display,
                                       EntangleImage *image)
 {
@@ -852,7 +826,7 @@ void entangle_image_display_set_image_list(EntangleImageDisplay *display,
     while (tmp) {
         EntangleImage *image = ENTANGLE_IMAGE(tmp->data);
 
-        do_entangle_image_display_disconnect(display, image);
+        g_signal_handlers_disconnect_by_data(image, display);
         g_object_unref(image);
 
         tmp = tmp->next;
@@ -873,6 +847,7 @@ void entangle_image_display_set_image_list(EntangleImageDisplay *display,
     }
     priv->images = g_list_reverse(priv->images);
 
+    entangle_image_display_try_render_pixmap(display);
     gtk_widget_queue_resize(GTK_WIDGET(display));
     gtk_widget_queue_draw(GTK_WIDGET(display));
 }
