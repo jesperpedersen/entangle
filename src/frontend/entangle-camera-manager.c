@@ -106,6 +106,7 @@ struct _EntangleCameraManagerPrivate {
     gboolean taskActive;
     gboolean taskProcessEvents;
     float taskTarget;
+    char *deleteImageDup;
 
     GtkBuilder *builder;
 };
@@ -772,6 +773,9 @@ static EntangleCameraFileTaskData *do_camera_task_begin(EntangleCameraManager *m
     g_cancellable_reset(priv->taskCancel);
     priv->taskActive = TRUE;
 
+    g_free(priv->deleteImageDup);
+    priv->deleteImageDup = NULL;
+
     return data;
 }
 
@@ -940,8 +944,11 @@ static void do_camera_capture_image_discard_finish(GObject *src,
                                                    gpointer opaque)
 {
     EntangleCameraFileTaskData *data = opaque;
+    EntangleCameraManagerPrivate *priv = data->manager->priv;
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
     GError *error = NULL;
+    char *filename;
+    char *tmp;
 
     if (!(data->file = entangle_camera_capture_image_finish(camera, res, &error))) {
         do_camera_task_error(data->manager, _("Capture"), error);
@@ -949,6 +956,11 @@ static void do_camera_capture_image_discard_finish(GObject *src,
         g_error_free(error);
         return;
     }
+
+    filename = g_strdup(entangle_camera_file_get_name(data->file));
+    if ((tmp = strrchr(filename, '.')))
+        *tmp = '\0';
+    priv->deleteImageDup = filename;
 
     entangle_camera_delete_file_async(camera,
                                       data->file,
@@ -1017,11 +1029,29 @@ static void do_camera_file_add(EntangleCamera *camera, EntangleCameraFile *file,
 
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCameraFileTaskData *data = g_new0(EntangleCameraFileTaskData, 1);
+    EntangleCameraManagerPrivate *priv = manager->priv;
 
     ENTANGLE_DEBUG("File add %p %p %p", camera, file, data);
 
     data->manager = g_object_ref(manager);
     data->file = g_object_ref(file);
+
+    if (priv->deleteImageDup) {
+        gsize len = strlen(priv->deleteImageDup);
+        if (strncmp(entangle_camera_file_get_name(file),
+                    priv->deleteImageDup,
+                    len) == 0) {
+            fprintf(stderr, "Dup %s %s\n", priv->deleteImageDup, entangle_camera_file_get_name(file));
+            g_free(priv->deleteImageDup);
+            priv->deleteImageDup = NULL;
+            entangle_camera_delete_file_async(camera,
+                                              data->file,
+                                              NULL,
+                                              do_camera_delete_file_finish,
+                                              data);
+            return;
+        }
+    }
 
     entangle_camera_download_file_async(camera,
                                         data->file,
@@ -1513,6 +1543,8 @@ static void entangle_camera_manager_finalize(GObject *object)
     EntangleCameraManagerPrivate *priv = manager->priv;
 
     ENTANGLE_DEBUG("Finalize manager");
+
+    g_free(priv->deleteImageDup);
 
     g_object_unref(priv->monitorCancel);
     g_object_unref(priv->taskCancel);
