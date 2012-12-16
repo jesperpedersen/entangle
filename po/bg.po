@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Valentin Laskov <laskov@festa.bg>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
@@ -10,143 +11,143 @@ msgstr ""
 "POT-Creation-Date: 2012-12-16 22:05+0000\n"
 "PO-Revision-Date: 2012-12-16 22:05+0000\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
-"Language-Team: Sinhala (http://www.transifex.com/projects/p/fedora/language/si/)\n"
+"Language-Team: Bulgarian <trans-bg@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: si\n"
+"Language: bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/backend/entangle-camera-list.c:208
 #: ../src/backend/entangle-camera.c:630
 #, c-format
 msgid "Cannot initialize gphoto2 abilities"
-msgstr ""
+msgstr "Не мога да инициализирам способностите на gphoto2"
 
 #: ../src/backend/entangle-camera-list.c:211
 #: ../src/backend/entangle-camera.c:636
 #, c-format
 msgid "Cannot load gphoto2 abilities"
-msgstr ""
+msgstr "Не мога да заредя способностите на gphoto2"
 
 #: ../src/backend/entangle-camera-list.c:214
 #: ../src/backend/entangle-camera.c:642
 #, c-format
 msgid "Cannot initialize gphoto2 ports"
-msgstr ""
+msgstr "Не мога да инициализирам портовете на gphoto2"
 
 #: ../src/backend/entangle-camera-list.c:217
 #: ../src/backend/entangle-camera.c:648
 #, c-format
 msgid "Cannot load gphoto2 ports"
-msgstr ""
+msgstr "Не мога да заредя портовете на gphoto2"
 
 #: ../src/backend/entangle-camera.c:679
 #, c-format
 msgid "Unable to initialize camera"
-msgstr ""
+msgstr "Не мога да инициализирам камерата"
 
 #: ../src/backend/entangle-camera.c:936
 msgid "Cannot capture image while not connected"
-msgstr ""
+msgstr "Не мога да правя снимка докато не съм свързан"
 
 #: ../src/backend/entangle-camera.c:949
 #, c-format
 msgid "Unable to capture image: %s"
-msgstr ""
+msgstr "Невъзможно е правенето на снимки: %s"
 
 #: ../src/backend/entangle-camera.c:1035
 msgid "Cannot preview image while not connected"
-msgstr ""
+msgstr "Не мога да покажа предв. преглед докато не съм свързан"
 
 #: ../src/backend/entangle-camera.c:1050
 #, c-format
 msgid "Unable to capture preview: %s"
-msgstr ""
+msgstr "Невъзможен предварителен преглед: %s"
 
 #: ../src/backend/entangle-camera.c:1056 ../src/backend/entangle-camera.c:1185
 #, c-format
 msgid "Unable to get file data: %s"
-msgstr ""
+msgstr "Невъзможно вземането данните на файла: %s"
 
 #: ../src/backend/entangle-camera.c:1061
 #, c-format
 msgid "Unable to get filename: %s"
-msgstr ""
+msgstr "Невъзможно вземането името на файла: %s"
 
 #: ../src/backend/entangle-camera.c:1157
 msgid "Cannot download file while not connected"
-msgstr ""
+msgstr "Не мога да сваля файл докато не съм свързан"
 
 #: ../src/backend/entangle-camera.c:1179
 #, c-format
 msgid "Unable to get camera file: %s"
-msgstr ""
+msgstr "Невъзможно да взема файла на камерата: %s"
 
 #: ../src/backend/entangle-camera.c:1274
 msgid "Cannot delete file while not connected"
-msgstr ""
+msgstr "Не мога да изтрия файл докато не съм свързан"
 
 #: ../src/backend/entangle-camera.c:1291
 #, c-format
 msgid "Unable to delete file: %s"
-msgstr ""
+msgstr "Невъзможно изтриване на файла: %s"
 
 #: ../src/backend/entangle-camera.c:1373
 msgid "Cannot wait for events while not connected"
-msgstr ""
+msgstr "Не мога да очаквам събития докато не съм свързан"
 
 #: ../src/backend/entangle-camera.c:1399
 #, c-format
 msgid "Unable to wait for events: %s"
-msgstr ""
+msgstr "Невъзможно очакването на събития: %s"
 
 #: ../src/backend/entangle-camera.c:1539 ../src/backend/entangle-camera.c:1669
 #: ../src/backend/entangle-camera.c:1774
 #, c-format
 msgid "Unable to fetch widget type"
-msgstr ""
+msgstr "Невъзможно да се извлече типа на джаджата"
 
 #: ../src/backend/entangle-camera.c:1545 ../src/backend/entangle-camera.c:1675
 #: ../src/backend/entangle-camera.c:1780
 #, c-format
 msgid "Unable to fetch widget name"
-msgstr ""
+msgstr "Невъзможно да се извлече името на джаджата"
 
 #: ../src/backend/entangle-camera.c:1872
 #, c-format
 msgid "Unable to load controls, camera is not connected"
-msgstr ""
+msgstr "Не мога да заредя управлението, камерата не е свързана"
 
 #: ../src/backend/entangle-camera.c:1880
 #, c-format
 msgid "Unable to fetch camera control configuration"
-msgstr ""
+msgstr "Не мога да извлека конфигурацията за управление на камерата"
 
 #: ../src/backend/entangle-camera.c:1961
 #, c-format
 msgid "Unable to save controls, camera is not connected"
-msgstr ""
+msgstr "Невъзможно да запиша управлението, камерата не е свързана"
 
 #: ../src/backend/entangle-camera.c:1967
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
-msgstr ""
+msgstr "Невъзможно да запиша управлението, камерата не може да се конфигурира"
 
 #: ../src/backend/entangle-camera.c:1978
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
-msgstr ""
+msgstr "Невъзможно да запиша конфигурацията за управлението на камерата: %s %d"
 
 #: ../src/backend/entangle-camera.c:2053
 #, c-format
 msgid "Controls not available when camera is disconnected"
-msgstr ""
+msgstr "Управлението не е налично, докато камерата е изключена"
 
 #: ../src/backend/entangle-camera.c:2059
 #, c-format
 msgid "Controls not available for this camera"
-msgstr ""
+msgstr "Управление не е налично за тази камера"
 
 #: ../src/frontend/entangle-camera-info.c:236
 #: ../src/frontend/entangle-camera-manager.c:2891
@@ -157,20 +158,20 @@ msgstr ""
 #: ../src/frontend/entangle-preferences-display.c:863
 #, c-format
 msgid "Could not load user interface definition file: %s"
-msgstr ""
+msgstr "Не мога да заредя файла с дефиниции на потребителския интерфейс: %s"
 
 #: ../src/frontend/entangle-camera-info.c:299
 msgid "Unknown information"
-msgstr ""
+msgstr "Непозната информация"
 
 #: ../src/frontend/entangle-camera-info.c:346
 #, c-format
 msgid "%s Camera Info - Entangle"
-msgstr ""
+msgstr "%s инфо за камерата - Entangle"
 
 #: ../src/frontend/entangle-camera-info.c:349
 msgid "Camera Info - Entangle"
-msgstr ""
+msgstr "Инфо за камерата - Entangle"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -182,47 +183,47 @@ msgstr ""
 #: ../src/frontend/entangle-camera-info.xml.h:1
 #: ../src/frontend/entangle-camera-support.xml.h:1
 msgid "label"
-msgstr ""
+msgstr "етикет"
 
 #: ../src/frontend/entangle-camera-manager.c:518
 msgid "This camera does not support image capture"
-msgstr ""
+msgstr "Камерата не поддържа снимане на изображения"
 
 #: ../src/frontend/entangle-camera-manager.c:523
 msgid "This camera does not support image preview"
-msgstr ""
+msgstr "Тази камера не поддържа предв. преглед на изображения"
 
 #: ../src/frontend/entangle-camera-manager.c:631
 #, c-format
 msgid "Operation: %s"
-msgstr ""
+msgstr "Действие: %s"
 
 #: ../src/frontend/entangle-camera-manager.c:633
 msgid "Entangle: Operation failed"
-msgstr ""
+msgstr "Entangle: Действието не успя"
 
 #: ../src/frontend/entangle-camera-manager.c:666
 #: ../src/frontend/entangle-camera-manager.c:1237
 msgid "Camera load controls failed"
-msgstr ""
+msgstr "Зареждането на управлението на камерата не успя"
 
 #: ../src/frontend/entangle-camera-manager.c:668
 #: ../src/frontend/entangle-camera-manager.c:1239
 msgid "Entangle: Camera load controls failed"
-msgstr ""
+msgstr "Entangle: Зареждането на управлението на камерата не успя"
 
 #: ../src/frontend/entangle-camera-manager.c:707
 msgid "Monitor"
-msgstr ""
+msgstr "Монитор"
 
 #: ../src/frontend/entangle-camera-manager.c:865
 #: ../src/frontend/entangle-camera-manager.c:2577
 msgid "Delete"
-msgstr ""
+msgstr "Изтрий"
 
 #: ../src/frontend/entangle-camera-manager.c:885
 msgid "Download"
-msgstr ""
+msgstr "Сваляне"
 
 #: ../src/frontend/entangle-camera-manager.c:916
 #: ../src/frontend/entangle-camera-manager.c:954
@@ -232,22 +233,22 @@ msgstr ""
 #: ../src/frontend/entangle-preferences-display.c:956
 #: ../src/frontend/entangle-preferences.xml.h:10
 msgid "Capture"
-msgstr ""
+msgstr "Снимане"
 
 #: ../src/frontend/entangle-camera-manager.c:991
 #: ../src/frontend/entangle-camera-manager.xml.h:24
 msgid "Preview"
-msgstr ""
+msgstr "Преглед"
 
 #: ../src/frontend/entangle-camera-manager.c:1189
 msgid "Camera Manager - Entangle"
-msgstr ""
+msgstr "Управление на камерата - Entangle"
 
 #: ../src/frontend/entangle-camera-manager.c:1281
 #: ../src/frontend/entangle-camera-manager.c:2432
 #, c-format
 msgid "Unable to connect to camera: %s"
-msgstr ""
+msgstr "Не мога да се свържа към камерата: %s"
 
 #: ../src/frontend/entangle-camera-manager.c:1286
 #: ../src/frontend/entangle-camera-manager.c:2438
@@ -257,60 +258,60 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr ""
+msgstr "Проверете дали камерата не е\n\n - отворена от друго фото <b>приложение</b>\n - монтирана като <b>файлова система</b> на десктопа\n - в <b>спящ режим</b> за пестене на енергия\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1291
 #: ../src/frontend/entangle-camera-manager.c:2443
 #: ../src/frontend/entangle-camera-manager.xml.h:27
 msgid "Cancel"
-msgstr ""
+msgstr "Отказ"
 
 #: ../src/frontend/entangle-camera-manager.c:1292
 #: ../src/frontend/entangle-camera-manager.c:2444
 msgid "Retry"
-msgstr ""
+msgstr "Опит отново"
 
 #: ../src/frontend/entangle-camera-manager.c:1323
 msgid "Camera is in use"
-msgstr ""
+msgstr "Камерата се ползва"
 
 #: ../src/frontend/entangle-camera-manager.c:1327
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr ""
+msgstr "Не мога да отворя камерата, понеже в момента е монтирана като файлова система. Искате ли да я демонтирам сега?"
 
 #: ../src/frontend/entangle-camera-manager.c:1331
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "No"
-msgstr ""
+msgstr "Не"
 
 #: ../src/frontend/entangle-camera-manager.c:1332
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: ../src/frontend/entangle-camera-manager.c:1368
 msgid "Camera connect failed"
-msgstr ""
+msgstr "Свързването към камера не успя"
 
 #: ../src/frontend/entangle-camera-manager.c:1370
 msgid "Entangle: Camera connect failed"
-msgstr ""
+msgstr "Entangle: Свързването към камера не успя"
 
 #: ../src/frontend/entangle-camera-manager.c:1409
 #, c-format
 msgid "%s Camera Manager - Entangle"
-msgstr ""
+msgstr "Управление на камера %s - Entangle"
 
 #: ../src/frontend/entangle-camera-manager.c:1762
 #: ../src/frontend/entangle-camera-manager.xml.h:19
 msgid "Select a folder"
-msgstr ""
+msgstr "Изберете папка"
 
 #: ../src/frontend/entangle-camera-manager.c:2706
 msgid "Select application..."
-msgstr ""
+msgstr "Изберете приложение..."
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -321,39 +322,39 @@ msgstr ""
 #. 
 #: ../src/frontend/entangle-camera-manager.xml.h:1
 msgid "Entangle"
-msgstr ""
+msgstr "Entangle"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:2
 msgid "_File"
-msgstr ""
+msgstr "_Файл"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:3
 msgid "Select session"
-msgstr ""
+msgstr "Изберете сесия"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:4
 msgid "Connect camera"
-msgstr ""
+msgstr "Свържете камера"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:5
 msgid "_Edit"
-msgstr ""
+msgstr "_Редактиране"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:6
 msgid "_View"
-msgstr ""
+msgstr "_Изглед"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:7
 msgid "Settings"
-msgstr ""
+msgstr "Настройки"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:8
 msgid "Fullscreen"
-msgstr ""
+msgstr "Цял екран"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:9
 msgid "Presentation"
-msgstr ""
+msgstr "Представяне"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:10
 msgid "Present on"
@@ -361,11 +362,11 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.xml.h:11
 msgid "Windows"
-msgstr ""
+msgstr "Прозорци"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:12
 msgid "New window"
-msgstr ""
+msgstr "Нов прозорец"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:13
 msgid "Synchronize capture"
@@ -373,101 +374,101 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.xml.h:14
 msgid "_Help"
-msgstr ""
+msgstr "_Помощ"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:15
 msgid "Camera"
-msgstr ""
+msgstr "Камера"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:16
 msgid "Driver"
-msgstr ""
+msgstr "Драйвер"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:17
 msgid "Manual"
-msgstr ""
+msgstr "Ръководство"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:18
 msgid "Supported Cameras"
-msgstr ""
+msgstr "Поддържани камери"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:20
 msgid "View the full list of camera settings"
-msgstr ""
+msgstr "Преглед на всички настройки на камерата"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:21
 msgid "Capture an image"
-msgstr ""
+msgstr "Създава снимка"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:23
 msgid "Continuous capture preview"
-msgstr ""
+msgstr "Постоянно наблюдение"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:25
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr ""
+msgstr "Опит за спиране на текущо\nизпълняваната от камерата операция"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:28
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr ""
+msgstr "Смалява показването на образа\nс една стъпка"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:30
 msgid "Zoom Out"
-msgstr ""
+msgstr "Уголемяване"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:31
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr ""
+msgstr "Уголемява показването на образа\nс една стъпка"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:33
 msgid "Zoom In"
-msgstr ""
+msgstr "Смаляване"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:34
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr ""
+msgstr "Автоматично преоразмеряване на образа\nспоред достъпното пространство в прозореца"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:36
 msgid "Best Fit"
-msgstr ""
+msgstr "Най-добро вместване"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:37
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr ""
+msgstr "Показва образа в неговия\nоригинален размер в пиксели"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:39
 msgid "Normal"
-msgstr ""
+msgstr "Нормален"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:40
 msgid "Switch to fullscreen display mode"
-msgstr ""
+msgstr "Превключва изображението на цял екран"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:41
 msgid "Full Screen"
-msgstr ""
+msgstr "Цял екран"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:42
 msgid "Open with"
-msgstr ""
+msgstr "Отваряне с"
 
 #: ../src/frontend/entangle-camera-picker.c:531
 msgid "Model"
-msgstr ""
+msgstr "Модел"
 
 #: ../src/frontend/entangle-camera-picker.c:532
 msgid "Port"
-msgstr ""
+msgstr "Порт"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -478,11 +479,11 @@ msgstr ""
 #. 
 #: ../src/frontend/entangle-camera-picker.xml.h:1
 msgid "Select camera - Entangle"
-msgstr ""
+msgstr "Избор на камера - Entangle"
 
 #: ../src/frontend/entangle-camera-picker.xml.h:2
 msgid "Select a camera to connect to:"
-msgstr ""
+msgstr "Избор на камера за използване:"
 
 #: ../src/frontend/entangle-camera-picker.xml.h:3
 msgid ""
@@ -495,23 +496,23 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr ""
+msgstr "Няма открити камери, проверете дали\n\n  - <b>кабелите</b> са свързани\n  - камерата е <b>включена</b>\n  - камерата е в <b>необходимия режим</b>\n  - моделът на камерата се <b>поддържа</b>\n\nUSB камерите се откриват автоматично в момента\nна включване. За останалите, пробвайте обновяване."
 
 #: ../src/frontend/entangle-control-panel.c:79
 msgid "Camera control update failed"
-msgstr ""
+msgstr "Обновяването на управлението на камерата не успя"
 
 #: ../src/frontend/entangle-control-panel.c:81
 msgid "Entangle: Camera control update failed"
-msgstr ""
+msgstr "Entangle: Обновяването на управлението на камерата не успя"
 
 #: ../src/frontend/entangle-control-panel.c:244
 msgid "On"
-msgstr ""
+msgstr "Вкл."
 
 #: ../src/frontend/entangle-control-panel.c:244
 msgid "Off"
-msgstr ""
+msgstr "Изкл."
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"
@@ -530,21 +531,21 @@ msgstr ""
 #. 
 #: ../src/frontend/entangle-help-about.xml.h:1
 msgid "About - Entangle"
-msgstr ""
+msgstr "Относно - Entangle"
 
 #: ../src/frontend/entangle-help-about.xml.h:2
 msgid "Copyright (C) 2009-2012 Daniel P. Berrange"
-msgstr ""
+msgstr "Copyright (C) 2009-2012 Daniel P. Berrange\nПревод на български:\nВалентин Ласков"
 
 #: ../src/frontend/entangle-help-about.xml.h:3
 msgid "Tethered Camera Control & Capture"
-msgstr ""
+msgstr "Свързани контрол на камерата и снимане"
 
 #: ../src/frontend/entangle-preferences-display.c:922
 #: ../src/frontend/entangle-preferences-display.c:928
 #: ../src/frontend/entangle-preferences.xml.h:24
 msgid "Interface"
-msgstr ""
+msgstr "Интерфейс"
 
 #: ../src/frontend/entangle-preferences-display.c:936
 #: ../src/frontend/entangle-preferences-display.c:942
@@ -556,125 +557,125 @@ msgstr ""
 #: ../src/frontend/entangle-preferences-display.c:970
 #: ../src/frontend/entangle-preferences.xml.h:18
 msgid "Color Management"
-msgstr ""
+msgstr "Управление на цветовете"
 
 #: ../src/frontend/entangle-preferences-display.c:978
 #: ../src/frontend/entangle-preferences-display.c:984
 #: ../src/frontend/entangle-preferences.xml.h:20
 msgid "Plugins"
-msgstr ""
+msgstr "Плъгини"
 
 #: ../src/frontend/entangle-preferences-display.c:1005
 msgid "ICC profiles (*.icc, *.icm)"
-msgstr ""
+msgstr "ICC профили (*.icc, *.icm)"
 
 #: ../src/frontend/entangle-preferences-display.c:1010
 msgid "All files (*.*)"
-msgstr ""
+msgstr "Всички файлове (*.*)"
 
 #: ../src/frontend/entangle-preferences-display.c:1036
 msgid "1:1 - Square / MF 6x6"
-msgstr ""
+msgstr "1:1 - Квадрат / MF 6x6"
 
 #: ../src/frontend/entangle-preferences-display.c:1041
 msgid "1.15:1 - Movietone"
-msgstr ""
+msgstr "1.15:1 - Movietone"
 
 #: ../src/frontend/entangle-preferences-display.c:1046
 msgid "1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"
-msgstr ""
+msgstr "1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"
 
 #: ../src/frontend/entangle-preferences-display.c:1051
 msgid "1.37:1 - 35mm movie"
-msgstr ""
+msgstr "1.37:1 - 35mm филм"
 
 #: ../src/frontend/entangle-preferences-display.c:1056
 msgid "1.44:1 - IMAX"
-msgstr ""
+msgstr "1.44:1 - IMAX"
 
 #: ../src/frontend/entangle-preferences-display.c:1061
 msgid "1.50:1 (3:2, 15:10)- 35mm SLR"
-msgstr ""
+msgstr "1.50:1 (3:2, 15:10)- 35mm SLR"
 
 #: ../src/frontend/entangle-preferences-display.c:1066
 msgid "1.6:1 (8:5, 16:10) - Widescreen"
-msgstr ""
+msgstr "1.6:1 (8:5, 16:10) - Широк екран"
 
 #: ../src/frontend/entangle-preferences-display.c:1071
 msgid "1.66:1 (5:3, 15:9) - Super 16mm"
-msgstr ""
+msgstr "1.66:1 (5:3, 15:9) - Super 16mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1076
 msgid "1.75:1 (7:4) - Widescreen"
-msgstr ""
+msgstr "1.75:1 (7:4) - Широк екран"
 
 #: ../src/frontend/entangle-preferences-display.c:1081
 msgid "1.77:1 (16:9) - APS-H / HDTV / Widescreen"
-msgstr ""
+msgstr "1.77:1 (16:9) - APS-H / HDTV / Широк екран"
 
 #: ../src/frontend/entangle-preferences-display.c:1086
 msgid "1.85:1 - 35mm Widescreen"
-msgstr ""
+msgstr "1.85:1 - 35mm Широк екран"
 
 #: ../src/frontend/entangle-preferences-display.c:1091
 msgid "2.00:1 - SuperScope"
-msgstr ""
+msgstr "2.00:1 - SuperScope"
 
 #: ../src/frontend/entangle-preferences-display.c:1096
 msgid "2.10:1 (21:10) - Planned HDTV"
-msgstr ""
+msgstr "2.10:1 (21:10) - Planned HDTV"
 
 #: ../src/frontend/entangle-preferences-display.c:1101
 msgid "2.20:1 (11:5, 22:10) - 70mm movie"
-msgstr ""
+msgstr "2.20:1 (11:5, 22:10) - 70mm филм"
 
 #: ../src/frontend/entangle-preferences-display.c:1106
 msgid "2.35:1 - CinemaScope"
-msgstr ""
+msgstr "2.35:1 - CinemaScope"
 
 #: ../src/frontend/entangle-preferences-display.c:1111
 msgid "2.37:1 (64:27)- HDTV cinema"
-msgstr ""
+msgstr "2.37:1 (64:27)- HDTV cinema"
 
 #: ../src/frontend/entangle-preferences-display.c:1116
 msgid "2.39:1 (12:5)- Panavision"
-msgstr ""
+msgstr "2.39:1 (12:5)- Panavision"
 
 #: ../src/frontend/entangle-preferences-display.c:1121
 msgid "2.55:1 (23:9)- CinemaScope 55"
-msgstr ""
+msgstr "2.55:1 (23:9)- CinemaScope 55"
 
 #: ../src/frontend/entangle-preferences-display.c:1126
 msgid "2.59:1 (13:5)- Cinerama"
-msgstr ""
+msgstr "2.59:1 (13:5)- Cinerama"
 
 #: ../src/frontend/entangle-preferences-display.c:1131
 msgid "2.66:1 (8:3, 24:9)- Super 16mm"
-msgstr ""
+msgstr "2.66:1 (8:3, 24:9)- Super 16mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1136
 msgid "2.76:1 (11:4) - Ultra Panavision"
-msgstr ""
+msgstr "2.76:1 (11:4) - Ultra Panavision"
 
 #: ../src/frontend/entangle-preferences-display.c:1141
 msgid "2.93:1 - MGM Camera 65"
-msgstr ""
+msgstr "2.93:1 - MGM Camera 65"
 
 #: ../src/frontend/entangle-preferences-display.c:1146
 msgid "3:1 APS Panorama"
-msgstr ""
+msgstr "3:1 APS Panorama"
 
 #: ../src/frontend/entangle-preferences-display.c:1151
 msgid "4.00:1 - Polyvision"
-msgstr ""
+msgstr "4.00:1 - Polyvision"
 
 #: ../src/frontend/entangle-preferences-display.c:1156
 msgid "12.00:1 - Circle-Vision 360"
-msgstr ""
+msgstr "12.00:1 - Circle-Vision 360"
 
 #: ../src/frontend/entangle-preferences-display.c:1174
 msgid "None"
-msgstr ""
+msgstr "Нищо"
 
 #: ../src/frontend/entangle-preferences-display.c:1179
 msgid "Center lines"
@@ -694,7 +695,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1199
 msgid "Golden sections"
-msgstr ""
+msgstr "Златно сечение"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -713,7 +714,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:3
 msgid "Saturation"
-msgstr ""
+msgstr "Насищане"
 
 #: ../src/frontend/entangle-preferences.xml.h:4
 msgid "Absolute colourimetric"
@@ -721,39 +722,39 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:5
 msgid "Entangle Preferences"
-msgstr ""
+msgstr "Предпочитания за Entangle"
 
 #: ../src/frontend/entangle-preferences.xml.h:6
 msgid "<b>Capture</b>"
-msgstr ""
+msgstr "<b>Снимане</b>"
 
 #: ../src/frontend/entangle-preferences.xml.h:7
 msgid "Filename pattern:"
-msgstr ""
+msgstr "Шаблон за име на файл:"
 
 #: ../src/frontend/entangle-preferences.xml.h:8
 msgid "Continue preview mode after capture"
-msgstr ""
+msgstr "Продължаващ след снимането режим на преглед"
 
 #: ../src/frontend/entangle-preferences.xml.h:9
 msgid "Delete file from camera after downloading"
-msgstr ""
+msgstr "След свалянето, изтрива файла в камерата"
 
 #: ../src/frontend/entangle-preferences.xml.h:11
 msgid "<b>Colour management</b>"
-msgstr ""
+msgstr "<b>Управление на цветовете</b>"
 
 #: ../src/frontend/entangle-preferences.xml.h:12
 msgid "Mode of operation:"
-msgstr ""
+msgstr "Начин на работа:"
 
 #: ../src/frontend/entangle-preferences.xml.h:13
 msgid "RGB profile:"
-msgstr ""
+msgstr "RGB профил:"
 
 #: ../src/frontend/entangle-preferences.xml.h:14
 msgid "Monitor profile:"
-msgstr ""
+msgstr "Профил на монитора:"
 
 #: ../src/frontend/entangle-preferences.xml.h:15
 msgid "Rendering intent:"
@@ -761,7 +762,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:16
 msgid "Detect the system monitor profile"
-msgstr ""
+msgstr "Откриване профила на системния монитор"
 
 #: ../src/frontend/entangle-preferences.xml.h:17
 msgid "Colour managed display"
@@ -769,19 +770,19 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:19
 msgid "<b>Plugins</b>"
-msgstr ""
+msgstr "<b>Плъгини</b>"
 
 #: ../src/frontend/entangle-preferences.xml.h:21
 msgid "<b>Interface</b>"
-msgstr ""
+msgstr "<b>Интерфейс</b>"
 
 #: ../src/frontend/entangle-preferences.xml.h:22
 msgid "Automatically connect to cameras at startup"
-msgstr ""
+msgstr "Автоматично свързване на камери при стартиране"
 
 #: ../src/frontend/entangle-preferences.xml.h:23
 msgid "Blank screen when capturing images"
-msgstr ""
+msgstr "Празен екран при заснемане на изображение"
 
 #: ../src/frontend/entangle-preferences.xml.h:25
 msgid "<b>Image Viewer</b>"
@@ -789,11 +790,11 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:26
 msgid "Apply mask to alter aspect ratio"
-msgstr ""
+msgstr "Прилагане на маска за промяна на съотношението"
 
 #: ../src/frontend/entangle-preferences.xml.h:27
 msgid "Aspect ratio:"
-msgstr ""
+msgstr "Съотношение:"
 
 #: ../src/frontend/entangle-preferences.xml.h:28
 msgid "Mask opacity:"
@@ -801,15 +802,15 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:29
 msgid "Display focus point during preview"
-msgstr ""
+msgstr "Показва точката на фокус в предв. преглед"
 
 #: ../src/frontend/entangle-preferences.xml.h:30
 msgid "Grid lines:"
-msgstr ""
+msgstr "Мрежа от линии:"
 
 #: ../src/frontend/entangle-preferences.xml.h:31
 msgid "Use embedded preview from raw files"
-msgstr ""
+msgstr "Ползвай вградения предв. преглед от raw файлове"
 
 #: ../src/frontend/entangle-preferences.xml.h:32
 msgid "Overlay earlier images"
