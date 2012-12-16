@@ -16,47 +16,46 @@
 
   <chapter>
     <title>Entangle Backend</title>
-    <xi:include href="xml/app.xml"/>
-    <xi:include href="xml/camera.xml"/>
-    <xi:include href="xml/camera-list.xml"/>
-    <xi:include href="xml/colour-profile.xml"/>
-<!--    <xi:include href="xml/colour-profile-enums.xml"/> -->
-    <xi:include href="xml/control.xml"/>
-    <xi:include href="xml/control-button.xml"/>
-    <xi:include href="xml/control-choice.xml"/>
-    <xi:include href="xml/control-date.xml"/>
-    <xi:include href="xml/control-group.xml"/>
-    <xi:include href="xml/control-range.xml"/>
-    <xi:include href="xml/control-text.xml"/>
-    <xi:include href="xml/control-toggle.xml"/>
-    <xi:include href="xml/device-manager.xml"/>
-    <xi:include href="xml/image.xml"/>
-    <xi:include href="xml/image-loader.xml"/>
-    <xi:include href="xml/params.xml"/>
-    <xi:include href="xml/pixbuf-loader.xml"/>
-    <xi:include href="xml/plugin.xml"/>
-    <xi:include href="xml/plugin-javascript.xml"/>
-    <xi:include href="xml/plugin-manager.xml"/>
-    <xi:include href="xml/plugin-native.xml"/>
-    <xi:include href="xml/preferences.xml"/>
-    <xi:include href="xml/preferences-gconf.xml"/>
-    <xi:include href="xml/progress.xml"/>
-    <xi:include href="xml/session.xml"/>
-    <xi:include href="xml/thumbnail-loader.xml"/>
-    <xi:include href="xml/debug.xml"/>
+    <xi:include href="xml/entangle-camera.xml"/>
+    <xi:include href="xml/entangle-camera-file.xml"/>
+    <xi:include href="xml/entangle-camera-list.xml"/>
+    <xi:include href="xml/entangle-colour-profile.xml"/>
+<!--    <xi:include href="xml/entangle-colour-profile-enums.xml"/> -->
+    <xi:include href="xml/entangle-control.xml"/>
+    <xi:include href="xml/entangle-control-button.xml"/>
+    <xi:include href="xml/entangle-control-choice.xml"/>
+    <xi:include href="xml/entangle-control-date.xml"/>
+    <xi:include href="xml/entangle-control-group.xml"/>
+    <xi:include href="xml/entangle-control-range.xml"/>
+    <xi:include href="xml/entangle-control-text.xml"/>
+    <xi:include href="xml/entangle-control-toggle.xml"/>
+    <xi:include href="xml/entangle-device-manager.xml"/>
+    <xi:include href="xml/entangle-image.xml"/>
+    <xi:include href="xml/entangle-image-loader.xml"/>
+    <xi:include href="xml/entangle-pixbuf.xml"/>
+    <xi:include href="xml/entangle-pixbuf-loader.xml"/>
+    <xi:include href="xml/entangle-preferences.xml"/>
+    <xi:include href="xml/entangle-progress.xml"/>
+    <xi:include href="xml/entangle-session.xml"/>
+    <xi:include href="xml/entangle-thumbnail-loader.xml"/>
+    <xi:include href="xml/entangle-debug.xml"/>
   </chapter>
   <chapter>
     <title>Entangle Frontend</title>
-    <xi:include href="xml/app-display.xml"/>
-    <xi:include href="xml/camera-info.xml"/>
-    <xi:include href="xml/camera-manager.xml"/>
-    <xi:include href="xml/camera-picker.xml"/>
-    <xi:include href="xml/control-panel.xml"/>
-    <xi:include href="xml/help-about.xml"/>
-    <xi:include href="xml/image-display.xml"/>
-    <xi:include href="xml/image-polaroid.xml"/>
-    <xi:include href="xml/preferences-display.xml"/>
-    <xi:include href="xml/session-browser.xml"/>
+    <xi:include href="xml/entangle-application.xml"/>
+    <xi:include href="xml/entangle-camera-info.xml"/>
+    <xi:include href="xml/entangle-camera-manager.xml"/>
+    <xi:include href="xml/entangle-camera-picker.xml"/>
+    <xi:include href="xml/entangle-camera-support.xml"/>
+    <xi:include href="xml/entangle-control-panel.xml"/>
+    <xi:include href="xml/entangle-dpms.xml"/>
+    <xi:include href="xml/entangle-help-about.xml"/>
+    <xi:include href="xml/entangle-image-display.xml"/>
+    <xi:include href="xml/entangle-image-histogram.xml"/>
+    <xi:include href="xml/entangle-image-popup.xml"/>
+    <xi:include href="xml/entangle-image-statusbar.xml"/>
+    <xi:include href="xml/entangle-preferences-display.xml"/>
+    <xi:include href="xml/entangle-session-browser.xml"/>
   </chapter>
   <chapter id="object-tree">
     <title>Object Hierarchy</title>

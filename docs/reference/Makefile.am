@@ -22,7 +22,7 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.xml
 # gtk-doc will search all .c & .h files beneath here for inline comments
 # documenting the functions and macros.
 # e.g. DOC_SOURCE_DIR=../../../gtk
-DOC_SOURCE_DIR=../../src
+DOC_SOURCE_DIR=$(top_srcdir)/src
 
 # Extra options to pass to gtkdoc-scangobj. Not normally needed.
 SCANGOBJ_OPTIONS=
@@ -89,6 +89,7 @@ GTKDOC_CFLAGS=	\
 	$(GTK_CFLAGS) \
 	$(LIBPEAS_CFLAGS) \
 	$(GLADE2_CFLAGS) \
+	$(LIBRAW_CFLAGS) \
 	$(UNIQUE_CFLAGS)
 
 GTKDOC_LIBS=$(top_builddir)/src/libentangle_backend.la $(top_builddir)/src/libentangle_frontend.la
