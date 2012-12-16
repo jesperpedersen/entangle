@@ -41,6 +41,9 @@ struct _EntangleSessionPrivate {
     gboolean recalculateDigit;
     int nextFilenameDigit;
 
+    char *lastFilePrefixSrc;
+    char *lastFilePrefixDst;
+
     GList *images;
 };
 
@@ -123,6 +126,8 @@ static void entangle_session_finalize(GObject *object)
         g_list_free(priv->images);
     }
 
+    g_free(priv->lastFilePrefixSrc);
+    g_free(priv->lastFilePrefixDst);
     g_free(priv->filenamePattern);
     g_free(priv->directory);
 
@@ -225,21 +230,6 @@ const char *entangle_session_filename_pattern(EntangleSession *session)
 }
 
 
-static char *entangle_session_get_extension(EntangleCameraFile *file)
-{
-    const char *name = entangle_camera_file_get_name(file);
-    const char *ext;
-
-    ext = g_strrstr(name, ".");
-
-    if (!ext)
-        ext = ".jpeg";
-
-    ext++;
-    return g_ascii_strdown(ext, -1);
-}
-
-
 static gint entangle_session_next_digit(EntangleSession *session)
 {
     EntangleSessionPrivate *priv = session->priv;
@@ -332,15 +322,11 @@ static gint entangle_session_next_digit(EntangleSession *session)
 }
 
 
-char *entangle_session_next_filename(EntangleSession *session,
-                                     EntangleCameraFile *file)
+static char *entangle_session_next_file_prefix(EntangleSession *session)
 {
-    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
-
     EntangleSessionPrivate *priv = session->priv;
     const char *template = strchr(priv->filenamePattern, 'X');
     const char *postfix;
-    char *ext = entangle_session_get_extension(file);
     char *prefix;
     char *format;
     char *filename;
@@ -370,30 +356,76 @@ char *entangle_session_next_filename(EntangleSession *session,
     for (max = 1, i = 0 ; i < ndigits ; i++)
         max *= 10;
 
-    format = g_strdup_printf("%%s/%%s%%0%dd%%s.%%s", ndigits);
+    format = g_strdup_printf("%%s%%0%dd%%s", ndigits);
 
-    ENTANGLE_DEBUG("Format '%s' prefix='%s' postfix='%s' ndigits=%d nextDigits=%d ext=%s",
-                   format, prefix, postfix, ndigits, priv->nextFilenameDigit, ext);
+    ENTANGLE_DEBUG("Format '%s' prefix='%s' postfix='%s' ndigits=%d nextDigits=%d",
+                   format, prefix, postfix, ndigits, priv->nextFilenameDigit);
 
-    filename = g_strdup_printf(format, priv->directory,
-                               prefix, priv->nextFilenameDigit,
-                               postfix, ext);
-
-    ENTANGLE_DEBUG("Built '%s'", filename);
-
-    if (access(filename, R_OK) == 0 || errno != ENOENT) {
-        ENTANGLE_DEBUG("Filename %s unexpectedly exists", filename);
-        g_free(filename);
-        filename = NULL;
-    }
+    filename = g_strdup_printf(format,
+                               prefix,
+                               priv->nextFilenameDigit,
+                               postfix);
 
     priv->nextFilenameDigit++;
 
     g_free(prefix);
     g_free(format);
-    g_free(ext);
 
     return filename;
+}
+
+
+char *entangle_session_next_filename(EntangleSession *session,
+                                     EntangleCameraFile *file)
+{
+    g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
+
+    EntangleSessionPrivate *priv = session->priv;
+    const char *srcname = entangle_camera_file_get_name(file);
+    char *dstname = NULL;
+    const char *offset = strrchr(srcname, '.');
+    char *ext;
+    char *srcprefix;
+
+    ENTANGLE_DEBUG("Next filename %s against (%s, %s)",
+                   srcname,
+                   priv->lastFilePrefixSrc ? priv->lastFilePrefixSrc : "",
+                   priv->lastFilePrefixDst ? priv->lastFilePrefixDst : "");
+
+    if (!offset) {
+        srcprefix = g_strdup(srcname);
+        ext = g_strdup("jpeg");
+    } else {
+        srcprefix = g_strndup(srcname, (offset - srcname));
+        ext = g_ascii_strdown(offset + 1, -1);
+    }
+
+    if (priv->lastFilePrefixSrc &&
+        priv->lastFilePrefixDst &&
+        g_str_equal(priv->lastFilePrefixSrc, srcprefix)) {
+    } else {
+        g_free(priv->lastFilePrefixSrc);
+        g_free(priv->lastFilePrefixDst);
+        priv->lastFilePrefixSrc = srcprefix;
+        priv->lastFilePrefixDst = entangle_session_next_file_prefix(session);
+    }
+
+    if (priv->lastFilePrefixDst)
+        dstname = g_strdup_printf("%s/%s.%s",
+                                  priv->directory,
+                                  priv->lastFilePrefixDst,
+                                  ext);
+    g_free(ext);
+
+    ENTANGLE_DEBUG("Built '%s'", dstname);
+
+    if (access(dstname, R_OK) == 0 || errno != ENOENT) {
+        ENTANGLE_DEBUG("Filename %s unexpectedly exists", dstname);
+        g_free(dstname);
+        dstname = NULL;
+    }
+
+    return dstname;
 }
 
 
