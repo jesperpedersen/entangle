@@ -47,6 +47,13 @@
                 0,                                      \
                 msg)
 
+#if GLIB_CHECK_VERSION(2, 31, 0)
+#define g_mutex_new() g_new0(GMutex, 1)
+#define g_mutex_free(m) g_free(m)
+#define g_cond_new() g_new0(GCond, 1)
+#define g_cond_free(c) g_free(c)
+#endif
+
 struct _EntangleCameraPrivate {
     GMutex *lock;
     GCond *jobCond;

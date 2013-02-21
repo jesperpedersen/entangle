@@ -29,6 +29,11 @@
 #define ENTANGLE_PIXBUF_LOADER_GET_PRIVATE(obj)                         \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_PIXBUF_LOADER, EntanglePixbufLoaderPrivate))
 
+#if GLIB_CHECK_VERSION(2, 31, 0)
+#define g_mutex_new() g_new0(GMutex, 1)
+#define g_mutex_free(m) g_free(m)
+#endif
+
 typedef struct _EntanglePixbufLoaderEntry {
     int refs;
     EntangleImage *image;

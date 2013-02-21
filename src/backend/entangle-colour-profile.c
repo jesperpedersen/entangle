@@ -32,6 +32,11 @@
 #define ENTANGLE_COLOUR_PROFILE_TRANSFORM_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_COLOUR_PROFILE_TRANSFORM, EntangleColourProfileTransformPrivate))
 
+#if GLIB_CHECK_VERSION(2, 31, 0)
+#define g_mutex_new() g_new0(GMutex, 1)
+#define g_mutex_free(m) g_free(m)
+#endif
+
 struct _EntangleColourProfilePrivate {
     GMutex *lock;
     GByteArray *data;
