@@ -1091,7 +1091,7 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
 }
 
 
-static void do_entangle_camera_progress_start(EntangleProgress *iface, float target, const char *format, va_list args)
+static void do_entangle_camera_progress_start(EntangleProgress *iface, float target, const char *msg)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(iface));
 
@@ -1107,15 +1107,11 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
     operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
 
-    txt = g_strdup_vprintf(format, args);
-
-    gtk_widget_set_tooltip_text(mtr, txt);
+    gtk_widget_set_tooltip_text(mtr, msg);
     gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), txt);
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
 
     gtk_widget_show(operation);
-
-    g_free(txt);
 
     gdk_threads_leave();
 }

@@ -541,6 +541,21 @@ const char *entangle_camera_get_port(EntangleCamera *cam)
 }
 
 
+#ifdef HAVE_GPHOTO25
+static unsigned int do_entangle_camera_progress_start(GPContext *ctx G_GNUC_UNUSED,
+                                                      float target,
+                                                      const char *msg,
+                                                      void *data)
+{
+    EntangleCamera *cam = data;
+    EntangleCameraPrivate *priv = cam->priv;
+
+    if (priv->progress)
+        entangle_progress_start(priv->progress, target, msg);
+
+    return 0; /* XXX what is this actually useful for ? */
+}
+#else
 static unsigned int do_entangle_camera_progress_start(GPContext *ctx G_GNUC_UNUSED,
                                                       float target,
                                                       const char *format,
@@ -550,11 +565,15 @@ static unsigned int do_entangle_camera_progress_start(GPContext *ctx G_GNUC_UNUS
     EntangleCamera *cam = data;
     EntangleCameraPrivate *priv = cam->priv;
 
-    if (priv->progress)
-        entangle_progress_start(priv->progress, target, format, args);
+    if (priv->progress) {
+        char *str = g_strdup_vprintf(format, args);
+        entangle_progress_start(priv->progress, target, str);
+        g_free(str);
+    }
 
     return 0; /* XXX what is this actually useful for ? */
 }
+#endif
 
 static void do_entangle_camera_progress_update(GPContext *ctx G_GNUC_UNUSED,
                                                unsigned int id G_GNUC_UNUSED,
@@ -587,6 +606,20 @@ static void entangle_camera_reset_last_error(EntangleCamera *cam)
     priv->lastError = NULL;
 }
 
+
+#ifdef HAVE_GPHOTO25
+static void do_entangle_camera_error(GPContext *ctx G_GNUC_UNUSED,
+                                     const char *msg,
+                                     void *data)
+{
+    EntangleCamera *cam = data;
+    EntangleCameraPrivate *priv = cam->priv;
+
+    entangle_camera_reset_last_error(cam);
+    priv->lastError = g_strdup(msg);
+    ENTANGLE_DEBUG("Got error %s", priv->lastError);
+}
+#else
 static void do_entangle_camera_error(GPContext *ctx G_GNUC_UNUSED,
                                      const char *fmt,
                                      va_list args,
@@ -599,7 +632,7 @@ static void do_entangle_camera_error(GPContext *ctx G_GNUC_UNUSED,
     priv->lastError = g_strdup_vprintf(fmt, args);
     ENTANGLE_DEBUG("Got error %s", priv->lastError);
 }
-
+#endif
 
 gboolean entangle_camera_connect(EntangleCamera *cam,
                                  GError **error)

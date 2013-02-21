@@ -38,14 +38,14 @@ typedef struct _EntangleProgressInterface EntangleProgressInterface;
 struct _EntangleProgressInterface {
     GTypeInterface parent;
 
-    void (*start) (EntangleProgress *prog, float target, const char *format, va_list args);
+    void (*start) (EntangleProgress *prog, float target, const char *msg);
     void (*update) (EntangleProgress *prog, float current);
     void (*stop) (EntangleProgress *prog);
 };
 
 GType entangle_progress_get_type(void);
 
-void entangle_progress_start(EntangleProgress *prog, float target, const char *format, va_list args);
+void entangle_progress_start(EntangleProgress *prog, float target, const char *msg);
 void entangle_progress_update(EntangleProgress *prog, float current);
 void entangle_progress_stop(EntangleProgress *prog);
 

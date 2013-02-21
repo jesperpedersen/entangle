@@ -23,11 +23,11 @@
 #include "entangle-debug.h"
 #include "entangle-progress.h"
 
-void entangle_progress_start(EntangleProgress *prog, float target, const char *format, va_list args)
+void entangle_progress_start(EntangleProgress *prog, float target, const char *msg)
 {
     g_return_if_fail(ENTANGLE_IS_PROGRESS(prog));
 
-    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->start(prog, target, format, args);
+    ENTANGLE_PROGRESS_GET_INTERFACE(prog)->start(prog, target, msg);
 }
 
 void entangle_progress_update(EntangleProgress *prog, float current)

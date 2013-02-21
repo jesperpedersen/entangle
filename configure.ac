@@ -89,9 +89,18 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= $GTK_REQUIRED])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-PKG_CHECK_MODULES([GPHOTO2], [libgphoto2 >= $GPHOTO2_REQUIRED])
+have_gphoto25=no
+PKG_CHECK_MODULES([GPHOTO2], [libgphoto2 >= 2.5], [
+    have_gphoto25=yes
+], [
+    PKG_CHECK_MODULES([GPHOTO2], [libgphoto2 >= $GPHOTO2_REQUIRED])
+])
 AC_SUBST(GPHOTO2_CFLAGS)
 AC_SUBST(GPHOTO2_LIBS)
+
+if test "$have_gphoto25" = "yes" ; then
+  AC_DEFINE_UNQUOTED([HAVE_GPHOTO25], 1, [whether we're building libgphoto >= 2.5])
+fi
 
 PKG_CHECK_MODULES([GUDEV], [gudev-1.0 >= $GUDEV_REQUIRED])
 AC_SUBST(GUDEV_CFLAGS)
