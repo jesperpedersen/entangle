@@ -2084,6 +2084,39 @@ static void do_camera_autofocus_finish(GObject *source,
 }
 
 
+static void do_camera_manualfocus_finish(GObject *source,
+                                         GAsyncResult *result,
+                                         gpointer data)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(data));
+
+    EntangleCamera *camera = ENTANGLE_CAMERA(source);
+    GError *error = NULL;
+
+    if (!entangle_camera_manualfocus_finish(camera, result, &error)) {
+        gdk_threads_enter();
+        GtkWidget *msg = gtk_message_dialog_new(NULL,
+                                                0,
+                                                GTK_MESSAGE_ERROR,
+                                                GTK_BUTTONS_OK,
+                                                _("Manual focus failed"));
+        gtk_window_set_title(GTK_WINDOW(msg),
+                             _("Entangle: Camera manual focus failed"));
+        gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msg),
+                                                 "%s",
+                                                 error->message);
+        g_signal_connect_swapped(msg,
+                                 "response",
+                                 G_CALLBACK (gtk_widget_destroy),
+                                 msg);
+        gtk_widget_show_all(msg);
+        gdk_threads_leave();
+
+        g_error_free(error);
+    }
+}
+
+
 gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                 GdkEventKey *ev,
                                 gpointer data)
@@ -2125,6 +2158,26 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                             NULL,
                                             do_camera_autofocus_finish,
                                             manager);
+        }
+    }
+
+    case GDK_KEY_comma: {
+        if (priv->taskPreview) {
+            entangle_camera_manualfocus_async(priv->camera,
+                                              -1024,
+                                              NULL,
+                                              do_camera_manualfocus_finish,
+                                              manager);
+        }
+    }
+
+    case GDK_KEY_period: {
+        if (priv->taskPreview) {
+            entangle_camera_manualfocus_async(priv->camera,
+                                              1024,
+                                              NULL,
+                                              do_camera_manualfocus_finish,
+                                              manager);
         }
     }
 

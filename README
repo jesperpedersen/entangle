@@ -79,6 +79,8 @@ There are a number of shortcuts available for common operations
  - 'p' - Toggle 'live view' preview mode
  - 'esc' - Cancel the current operation
  - 'm' - Toggle aspect ratio image mask
+ - 'a' - Drive autofocus during preview
+ - ',' or '.' - Drive manual focus during preview
 
 License
 -------
