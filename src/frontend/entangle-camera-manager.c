@@ -970,6 +970,25 @@ static void do_camera_capture_image_discard_finish(GObject *src,
 }
 
 
+static void do_camera_set_viewfinder_finish(GObject *src,
+                                            GAsyncResult *res,
+                                            gpointer opaque)
+{
+    EntangleCameraFileTaskData *data = opaque;
+    EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    GError *error = NULL;
+
+    if (!entangle_camera_set_viewfinder_finish(camera, res, &error)) {
+        do_camera_task_error(data->manager, _("Capture"), error);
+        do_camera_task_complete(data);
+        g_error_free(error);
+        return;
+    }
+
+    do_camera_task_complete(data);
+}
+
+
 static void do_camera_preview_image_finish(GObject *src,
                                            GAsyncResult *res,
                                            gpointer opaque)
@@ -982,10 +1001,17 @@ static void do_camera_preview_image_finish(GObject *src,
 
     if (!(file = entangle_camera_preview_image_finish(camera, res, &error))) {
         if (g_cancellable_is_cancelled(priv->taskCancel) && priv->camera) {
-            entangle_camera_capture_image_async(priv->camera,
-                                                NULL,
-                                                do_camera_capture_image_discard_finish,
-                                                data);
+            if (entangle_camera_get_has_viewfinder(priv->camera))
+                entangle_camera_set_viewfinder_async(priv->camera,
+                                                     FALSE,
+                                                     NULL,
+                                                     do_camera_set_viewfinder_finish,
+                                                     data);
+            else
+                entangle_camera_capture_image_async(priv->camera,
+                                                    NULL,
+                                                    do_camera_capture_image_discard_finish,
+                                                    data);
         } else {
             priv->taskPreview = FALSE;
             do_camera_task_error(data->manager, _("Preview"), error);
@@ -998,10 +1024,17 @@ static void do_camera_preview_image_finish(GObject *src,
     g_object_unref(file);
 
     if (g_cancellable_is_cancelled(priv->taskCancel)) {
-        entangle_camera_capture_image_async(priv->camera,
-                                            NULL,
-                                            do_camera_capture_image_discard_finish,
-                                            data);
+        if (entangle_camera_get_has_viewfinder(priv->camera))
+            entangle_camera_set_viewfinder_async(priv->camera,
+                                                 FALSE,
+                                                 NULL,
+                                                 do_camera_set_viewfinder_finish,
+                                                 data);
+        else
+            entangle_camera_capture_image_async(priv->camera,
+                                                NULL,
+                                                do_camera_capture_image_discard_finish,
+                                                data);
     } else if (g_cancellable_is_cancelled(priv->taskConfirm)) {
         EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
 
