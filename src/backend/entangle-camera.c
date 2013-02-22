@@ -2109,6 +2109,417 @@ EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError *
 }
 
 
+static CameraWidget *
+entangle_camera_find_widget(EntangleCamera *cam,
+                            const gchar *path)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+    gchar **names = g_strsplit(path, "/", 0);
+    CameraWidget *ret = NULL;
+    CameraWidget *curr = priv->widgets;
+    gsize i;
+
+    for (i = 0 ; names[i] != NULL ; i++) {
+        CameraWidget *tmp;
+
+        if (g_str_equal(names[i], ""))
+            continue;
+
+        if (gp_widget_get_child_by_name(curr,
+                                        names[i],
+                                        &tmp) != GP_OK)
+            goto cleanup;
+
+        curr = tmp;
+    }
+
+    ret = curr;
+
+ cleanup:
+    g_strfreev(names);
+    return ret;
+}
+
+
+gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
+                                        gboolean enabled,
+                                        GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret = FALSE;
+    CameraWidget *widget;
+    CameraWidgetType type;
+    int value;
+    int err;
+
+    g_mutex_lock(priv->lock);
+
+    if (priv->cam == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available when camera is disconnected"));
+        goto cleanup;
+    }
+
+    if (priv->widgets == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available for this camera"));
+        goto cleanup;
+    }
+
+    widget = entangle_camera_find_widget(cam,
+                                         "/main/actions/viewfinder");
+    if (!widget)
+        widget = entangle_camera_find_widget(cam,
+                                             "/main/actions/eosviewfinder");
+    if (!widget) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Viewfinder control not available with this camera"));
+        goto cleanup;
+    }
+
+    if (!(err = gp_widget_get_type(widget,
+                                   &type)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to fetch widget type"));
+        goto cleanup;
+    }
+
+    if (type != GP_WIDGET_TOGGLE) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Viewfinder control was not a toggle widget"));
+        goto cleanup;
+    }
+
+    value = enabled ? 1 : 0;
+    if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set viewfinder state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+    
+    if ((err = gp_camera_set_config(priv->cam,
+                                    priv->widgets,
+                                    priv->ctx)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to save camera control configuration: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+
+    ret = TRUE;
+
+ cleanup:
+    g_mutex_unlock(priv->lock);
+    return ret;
+}
+
+
+static void entangle_camera_set_viewfinder_helper(GSimpleAsyncResult *result,
+                                                  GObject *object,
+                                                  GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+    gpointer data;
+    gboolean enabled;
+
+    data = g_object_get_data(G_OBJECT(result),
+                             "enabled");
+
+    enabled = GPOINTER_TO_INT(data) == 1 ? TRUE : FALSE;
+
+    if (!entangle_camera_set_viewfinder(ENTANGLE_CAMERA(object),
+                                        enabled,
+                                        &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_set_viewfinder_async(EntangleCamera *cam,
+                                          gboolean enabled,
+                                          GCancellable *cancellable,
+                                          GAsyncReadyCallback callback,
+                                          gpointer user_data)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_set_viewfinder_async);
+
+    g_object_set_data(G_OBJECT(result),
+                      "enabled",
+                      GINT_TO_POINTER(enabled ? 1 : 0));
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_set_viewfinder_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_set_viewfinder_finish(EntangleCamera *cam,
+                                               GAsyncResult *result,
+                                               GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
+
+gboolean entangle_camera_autofocus(EntangleCamera *cam,
+                                   GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret = FALSE;
+    CameraWidget *widget;
+    CameraWidgetType type;
+    int value;
+    int err;
+
+    g_mutex_lock(priv->lock);
+
+    if (priv->cam == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available when camera is disconnected"));
+        goto cleanup;
+    }
+
+    if (priv->widgets == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available for this camera"));
+        goto cleanup;
+    }
+
+    widget = entangle_camera_find_widget(cam,
+                                         "/main/actions/autofocusdrive");
+    if (!widget) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Autofocus control not available with this camera"));
+        goto cleanup;
+    }
+
+    if (!(err = gp_widget_get_type(widget,
+                                   &type)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to fetch widget type"));
+        goto cleanup;
+    }
+
+    if (type != GP_WIDGET_TOGGLE) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Autofocus control was not a toggle widget"));
+        goto cleanup;
+    }
+
+    value = 1;
+    if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set autofocus state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+    
+    if ((err = gp_camera_set_config(priv->cam,
+                                    priv->widgets,
+                                    priv->ctx)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to save camera control configuration: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+
+    ret = TRUE;
+
+ cleanup:
+    g_mutex_unlock(priv->lock);
+    return ret;
+}
+
+
+static void entangle_camera_autofocus_helper(GSimpleAsyncResult *result,
+                                             GObject *object,
+                                             GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+
+    if (!entangle_camera_autofocus(ENTANGLE_CAMERA(object),
+                                   &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_autofocus_async(EntangleCamera *cam,
+                                     GCancellable *cancellable,
+                                     GAsyncReadyCallback callback,
+                                     gpointer user_data)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_autofocus_async);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_autofocus_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_autofocus_finish(EntangleCamera *cam,
+                                          GAsyncResult *result,
+                                          GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
+
+gboolean entangle_camera_manualfocus(EntangleCamera *cam,
+                                     gshort delta,
+                                     GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret = FALSE;
+    CameraWidget *widget;
+    CameraWidgetType type;
+    float value;
+    int err;
+
+    g_mutex_lock(priv->lock);
+
+    if (priv->cam == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available when camera is disconnected"));
+        goto cleanup;
+    }
+
+    if (priv->widgets == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available for this camera"));
+        goto cleanup;
+    }
+
+    widget = entangle_camera_find_widget(cam,
+                                         "/main/actions/manualfocusdrive");
+    if (!widget) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Manual focus control not available with this camera"));
+        goto cleanup;
+    }
+
+    if (!(err = gp_widget_get_type(widget,
+                                   &type)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to fetch widget type"));
+        goto cleanup;
+    }
+
+    if (type != GP_WIDGET_RANGE) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Manual focus control was not a range widget"));
+        goto cleanup;
+    }
+
+    value = delta;
+    if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set manual focus state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+    
+    if ((err = gp_camera_set_config(priv->cam,
+                                    priv->widgets,
+                                    priv->ctx)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to save camera control configuration: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+
+    ret = TRUE;
+
+ cleanup:
+    g_mutex_unlock(priv->lock);
+    return ret;
+}
+
+
+static void entangle_camera_manualfocus_helper(GSimpleAsyncResult *result,
+                                               GObject *object,
+                                               GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+    gpointer data;
+
+    data = g_object_get_data(G_OBJECT(result),
+                             "delta");
+
+    if (!entangle_camera_manualfocus(ENTANGLE_CAMERA(object),
+                                     GPOINTER_TO_INT(data),
+                                     &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+}
+
+
+void entangle_camera_manualfocus_async(EntangleCamera *cam,
+                                       gshort delta,
+                                       GCancellable *cancellable,
+                                       GAsyncReadyCallback callback,
+                                       gpointer user_data)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_manualfocus_async);
+
+    g_object_set_data(G_OBJECT(result),
+                      "delta",
+                      GINT_TO_POINTER(delta));
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_manualfocus_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+gboolean entangle_camera_manualfocus_finish(EntangleCamera *cam,
+                                            GAsyncResult *result,
+                                            GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
+
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);

@@ -161,6 +161,42 @@ gboolean entangle_camera_process_events_finish(EntangleCamera *cam,
                                                GAsyncResult *result,
                                                GError **error);
 
+
+gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
+                                        gboolean enabled,
+                                        GError **error);
+void entangle_camera_set_viewfinder_async(EntangleCamera *cam,
+                                          gboolean enabled,
+                                          GCancellable *cancellable,
+                                          GAsyncReadyCallback callback,
+                                          gpointer user_data);
+gboolean entangle_camera_set_viewfinder_finish(EntangleCamera *cam,
+                                               GAsyncResult *result,
+                                               GError **error);
+
+gboolean entangle_camera_autofocus(EntangleCamera *cam,
+                                   GError **error);
+void entangle_camera_autofocus_async(EntangleCamera *cam,
+                                     GCancellable *cancellable,
+                                     GAsyncReadyCallback callback,
+                                     gpointer user_data);
+gboolean entangle_camera_autofocus_finish(EntangleCamera *cam,
+                                          GAsyncResult *result,
+                                          GError **error);
+
+gboolean entangle_camera_manualfocus(EntangleCamera *cam,
+                                     gshort delta,
+                                     GError **error);
+void entangle_camera_manualfocus_async(EntangleCamera *cam,
+                                       gshort delta,
+                                       GCancellable *cancellable,
+                                       GAsyncReadyCallback callback,
+                                       gpointer user_data);
+gboolean entangle_camera_manualfocus_finish(EntangleCamera *cam,
+                                            GAsyncResult *result,
+                                            GError **error);
+
+
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);
 gboolean entangle_camera_get_has_settings(EntangleCamera *cam);
