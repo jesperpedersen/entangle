@@ -1041,7 +1041,6 @@ static void do_camera_file_add(EntangleCamera *camera, EntangleCameraFile *file,
         if (strncmp(entangle_camera_file_get_name(file),
                     priv->deleteImageDup,
                     len) == 0) {
-            fprintf(stderr, "Dup %s %s\n", priv->deleteImageDup, entangle_camera_file_get_name(file));
             g_free(priv->deleteImageDup);
             priv->deleteImageDup = NULL;
             entangle_camera_delete_file_async(camera,
