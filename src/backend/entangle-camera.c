@@ -1598,6 +1598,38 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
     switch (type) {
         /* We treat both window and section as just groups */
     case GP_WIDGET_WINDOW:
+        {
+            EntangleControlGroup *grp;
+            ENTANGLE_DEBUG("Add group %s %d %s", fullpath, id, label);
+            grp = entangle_control_group_new(fullpath, id, label, info, ro);
+            for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+                CameraWidget *child;
+                EntangleControl *subctl;
+                const char *childname;
+                if (gp_widget_get_child(widget, i, &child) != GP_OK ||
+                    gp_widget_get_name(child, &childname) != GP_OK) {
+                    g_object_unref(grp);
+                    goto error;
+                }
+
+                /* Actions are exposed as normal APIs
+                 * And "Other ptp properties" 90% dups
+                 */
+                if (g_str_equal(childname, "actions") ||
+                    g_str_equal(childname, "other"))
+                    continue;
+
+                if (!(subctl = do_build_controls(cam, fullpath, child, error))) {
+                    g_object_unref(grp);
+                    goto error;
+                }
+
+                entangle_control_group_add(grp, subctl);
+            }
+
+            ret = ENTANGLE_CONTROL(grp);
+        } break;
+
     case GP_WIDGET_SECTION:
         {
             EntangleControlGroup *grp;
@@ -1720,6 +1752,10 @@ static gboolean do_load_controls(EntangleCamera *cam,
 
     fullpath = g_strdup_printf("%s/%s", path, name);
     ctrl = g_hash_table_lookup(priv->controlPaths, fullpath);
+    if (!ctrl) {
+        ret = TRUE;
+        goto cleanup;
+    }
     entangle_control_set_readonly(ctrl, ro ? TRUE : FALSE);
 
     switch (type) {
@@ -1823,6 +1859,10 @@ static gboolean do_save_controls(EntangleCamera *cam,
 
     fullpath = g_strdup_printf("%s/%s", path, name);
     ctrl = g_hash_table_lookup(priv->controlPaths, fullpath);
+    if (!ctrl) {
+        ret = TRUE;
+        goto cleanup;
+    }
 
     switch (type) {
         /* We treat both window and section as just groups */

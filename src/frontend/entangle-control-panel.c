@@ -558,6 +558,7 @@ static void do_setup_camera(EntangleControlPanel *panel)
     EntangleControlPanelPrivate *priv = panel->priv;
     EntangleControlGroup *root;
     EntangleControl *grp;
+    gsize i;
 
     gtk_container_foreach(GTK_CONTAINER(panel), do_control_remove, panel);
 
@@ -577,21 +578,14 @@ static void do_setup_camera(EntangleControlPanel *panel)
         return;
     }
 
-    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
-                                                  "/main/status")))
-        do_setup_control_group_ro(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
-
-    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
-                                                  "/main/settings")))
-        do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
-
-    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
-                                                  "/main/imgsettings")))
-        do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
-
-    if ((grp = entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(root),
-                                                  "/main/capturesettings")))
-        do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+    for (i = 0 ; i < entangle_control_group_count(ENTANGLE_CONTROL_GROUP(root)) ; i++) {
+        grp = entangle_control_group_get(ENTANGLE_CONTROL_GROUP(root), i);
+        if (g_str_equal(entangle_control_get_path(ENTANGLE_CONTROL(grp)),
+                        "/main/status"))
+            do_setup_control_group_ro(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+        else
+            do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+    }
 
     gtk_widget_show_all(GTK_WIDGET(panel));
     g_object_unref(root);
