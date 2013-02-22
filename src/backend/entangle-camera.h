@@ -200,7 +200,7 @@ gboolean entangle_camera_manualfocus_finish(EntangleCamera *cam,
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);
 gboolean entangle_camera_get_has_settings(EntangleCamera *cam);
-
+gboolean entangle_camera_get_has_viewfinder(EntangleCamera *cam);
 
 gboolean entangle_camera_load_controls(EntangleCamera *cam,
                                        GError **error);

@@ -83,6 +83,7 @@ struct _EntangleCameraPrivate {
     gboolean hasCapture;
     gboolean hasPreview;
     gboolean hasSettings;
+    gboolean hasViewfinder;
 };
 
 G_DEFINE_TYPE(EntangleCamera, entangle_camera, G_TYPE_OBJECT);
@@ -98,6 +99,7 @@ enum {
     PROP_HAS_CAPTURE,
     PROP_HAS_PREVIEW,
     PROP_HAS_SETTINGS,
+    PROP_HAS_VIEWFINDER,
 };
 
 #define ENTANGLE_CAMERA_ERROR entangle_camera_error_quark ()
@@ -227,6 +229,10 @@ static void entangle_camera_get_property(GObject *object,
             g_value_set_boolean(value, priv->hasSettings);
             break;
 
+        case PROP_HAS_VIEWFINDER:
+            g_value_set_boolean(value, priv->hasViewfinder);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -269,6 +275,11 @@ static void entangle_camera_set_property(GObject *object,
         case PROP_HAS_SETTINGS:
             priv->hasSettings = g_value_get_boolean(value);
             ENTANGLE_DEBUG("Set has settings %d", priv->hasSettings);
+            break;
+
+        case PROP_HAS_VIEWFINDER:
+            priv->hasViewfinder = g_value_get_boolean(value);
+            ENTANGLE_DEBUG("Set has viewfinder %d", priv->hasViewfinder);
             break;
 
         default:
@@ -495,6 +506,17 @@ static void entangle_camera_class_init(EntangleCameraClass *klass)
                                     g_param_spec_boolean("has-settings",
                                                          "Settings supported",
                                                          "Whether camera settings configuration is supported",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+    g_object_class_install_property(object_class,
+                                    PROP_HAS_VIEWFINDER,
+                                    g_param_spec_boolean("has-viewfinder",
+                                                         "Viewfinder supported",
+                                                         "Whether camera viewfinder configuration is supported",
                                                          FALSE,
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_CONSTRUCT_ONLY |
@@ -728,6 +750,7 @@ gboolean entangle_camera_connect(EntangleCamera *cam,
         priv->hasPreview = TRUE;
     if (cap.operations & GP_OPERATION_CONFIG)
         priv->hasSettings = TRUE;
+    priv->hasViewfinder = FALSE;
 
     gp_camera_get_summary(priv->cam, &txt, priv->ctx);
     priv->summary = g_strdup(txt.text);
@@ -845,7 +868,8 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam,
 
     gp_camera_unref(priv->cam);
     priv->cam = NULL;
-
+    priv->hasViewfinder = FALSE;
+    
     priv->hasCapture = priv->hasPreview = priv->hasSettings = FALSE;
 
     ret = TRUE;
@@ -2001,6 +2025,12 @@ gboolean entangle_camera_load_controls(EntangleCamera *cam,
             priv->controlPaths = NULL;
             goto endjob;
         }
+
+        if (entangle_camera_find_widget(cam, "/main/actions/viewfinder") ||
+            entangle_camera_find_widget(cam, "/main/actions/eosviewfinder"))
+            priv->hasViewfinder = TRUE;
+        else
+            priv->hasViewfinder = FALSE;
     }
 
     ret = do_load_controls(cam, "", priv->widgets, error);
@@ -2624,6 +2654,21 @@ gboolean entangle_camera_get_has_settings(EntangleCamera *cam)
 
     g_mutex_lock(priv->lock);
     ret = priv->hasSettings;
+    g_mutex_unlock(priv->lock);
+
+    return ret;
+}
+
+
+gboolean entangle_camera_get_has_viewfinder(EntangleCamera *cam)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret;
+
+    g_mutex_lock(priv->lock);
+    ret = priv->hasViewfinder;
     g_mutex_unlock(priv->lock);
 
     return ret;
