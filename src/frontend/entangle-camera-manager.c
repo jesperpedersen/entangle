@@ -1097,7 +1097,6 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(iface);
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
-    char *txt;
     GtkWidget *operation;
 
     gdk_threads_enter();
@@ -1107,7 +1106,7 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
 
     gtk_widget_set_tooltip_text(mtr, msg);
-    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), txt);
+    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), msg);
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
 
     gtk_widget_show(operation);
