@@ -1559,6 +1559,39 @@ gboolean entangle_camera_process_events_finish(EntangleCamera *cam,
 }
 
 
+static CameraWidget *
+entangle_camera_find_widget(EntangleCamera *cam,
+                            const gchar *path)
+{
+    EntangleCameraPrivate *priv = cam->priv;
+    gchar **names = g_strsplit(path, "/", 0);
+    CameraWidget *ret = NULL;
+    CameraWidget *curr = priv->widgets;
+    gsize i;
+
+    for (i = 0 ; names[i] != NULL ; i++) {
+        CameraWidget *tmp;
+
+        if (g_str_equal(names[i], "") ||
+            g_str_equal(names[i], "main"))
+            continue;
+
+        if (gp_widget_get_child_by_name(curr,
+                                        names[i],
+                                        &tmp) != GP_OK)
+            goto cleanup;
+
+        curr = tmp;
+    }
+
+    ret = curr;
+
+ cleanup:
+    g_strfreev(names);
+    return ret;
+}
+
+
 static EntangleControl *do_build_controls(EntangleCamera *cam,
                                           const char *path,
                                           CameraWidget *widget,
@@ -2149,38 +2182,6 @@ EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError *
 }
 
 
-static CameraWidget *
-entangle_camera_find_widget(EntangleCamera *cam,
-                            const gchar *path)
-{
-    EntangleCameraPrivate *priv = cam->priv;
-    gchar **names = g_strsplit(path, "/", 0);
-    CameraWidget *ret = NULL;
-    CameraWidget *curr = priv->widgets;
-    gsize i;
-
-    for (i = 0 ; names[i] != NULL ; i++) {
-        CameraWidget *tmp;
-
-        if (g_str_equal(names[i], ""))
-            continue;
-
-        if (gp_widget_get_child_by_name(curr,
-                                        names[i],
-                                        &tmp) != GP_OK)
-            goto cleanup;
-
-        curr = tmp;
-    }
-
-    ret = curr;
-
- cleanup:
-    g_strfreev(names);
-    return ret;
-}
-
-
 gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
                                         gboolean enabled,
                                         GError **error)
@@ -2195,6 +2196,7 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
     int err;
 
     g_mutex_lock(priv->lock);
+    entangle_camera_begin_job(cam);
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2219,8 +2221,8 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
         goto cleanup;
     }
 
-    if (!(err = gp_widget_get_type(widget,
-                                   &type)) != GP_OK) {
+    if ((err = gp_widget_get_type(widget,
+                                  &type)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
                     _("Unable to fetch widget type"));
         goto cleanup;
@@ -2239,6 +2241,12 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
+    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set manual focus state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
     
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
@@ -2252,6 +2260,7 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
     ret = TRUE;
 
  cleanup:
+    entangle_camera_end_job(cam);
     g_mutex_unlock(priv->lock);
     return ret;
 }
@@ -2328,6 +2337,7 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
     int err;
 
     g_mutex_lock(priv->lock);
+    entangle_camera_begin_job(cam);
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2349,8 +2359,8 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
         goto cleanup;
     }
 
-    if (!(err = gp_widget_get_type(widget,
-                                   &type)) != GP_OK) {
+    if ((err = gp_widget_get_type(widget,
+                                  &type)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
                     _("Unable to fetch widget type"));
         goto cleanup;
@@ -2369,6 +2379,12 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
+    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set manual focus state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
     
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
@@ -2382,6 +2398,7 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
     ret = TRUE;
 
  cleanup:
+    entangle_camera_end_job(cam);
     g_mutex_unlock(priv->lock);
     return ret;
 }
@@ -2446,6 +2463,7 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
     int err;
 
     g_mutex_lock(priv->lock);
+    entangle_camera_begin_job(cam);
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2467,8 +2485,8 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
         goto cleanup;
     }
 
-    if (!(err = gp_widget_get_type(widget,
-                                   &type)) != GP_OK) {
+    if ((err = gp_widget_get_type(widget,
+                                  &type)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
                     _("Unable to fetch widget type"));
         goto cleanup;
@@ -2487,6 +2505,12 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
+    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set manual focus state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
     
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
@@ -2500,6 +2524,7 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
     ret = TRUE;
 
  cleanup:
+    entangle_camera_end_job(cam);
     g_mutex_unlock(priv->lock);
     return ret;
 }
