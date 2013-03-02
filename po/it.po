@@ -1,160 +1,206 @@
-# Italian Translation of Entangle-photo.
-# Copyright (C) YEAR THE Entangle-photo'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Entangle-photo package.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
 # Cristian Marchi <cri.penta@gmail.com>, 2013.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-15 20:36+0100\n"
-"PO-Revision-Date: 2013-03-02 10:01+0100\n"
-"Last-Translator: Cristian Marchi <cri.penta@gmail.com>\n"
-"Language-Team: Italian\n"
-"Language: \n"
+"POT-Creation-Date: 2013-03-02 20:12+0000\n"
+"PO-Revision-Date: 2013-03-02 20:13+0000\n"
+"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"Language-Team: Italian <trans-it@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Poedit-Language: Italian\n"
-"X-Poedit-Country: ITALY\n"
+"Language: it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../src/backend/entangle-camera-list.c:208
-#: ../src/backend/entangle-camera.c:630
+#: ../src/backend/entangle-camera-list.c:218
+#: ../src/backend/entangle-camera.c:692
 #, c-format
 msgid "Cannot initialize gphoto2 abilities"
 msgstr "Impossibile inizializzare le funzionalità di gphoto2"
 
-#: ../src/backend/entangle-camera-list.c:211
-#: ../src/backend/entangle-camera.c:636
+#: ../src/backend/entangle-camera-list.c:221
+#: ../src/backend/entangle-camera.c:698
 #, c-format
 msgid "Cannot load gphoto2 abilities"
 msgstr "Impossibile caricare le funzionalità di gphoto2"
 
-#: ../src/backend/entangle-camera-list.c:214
-#: ../src/backend/entangle-camera.c:642
+#: ../src/backend/entangle-camera-list.c:224
+#: ../src/backend/entangle-camera.c:704
 #, c-format
 msgid "Cannot initialize gphoto2 ports"
 msgstr "Impossibile inizializzare le porte di gphoto2"
 
-#: ../src/backend/entangle-camera-list.c:217
-#: ../src/backend/entangle-camera.c:648
+#: ../src/backend/entangle-camera-list.c:227
+#: ../src/backend/entangle-camera.c:710
 #, c-format
 msgid "Cannot load gphoto2 ports"
 msgstr "Impossibile caricare le porte di gphoto2"
 
-#: ../src/backend/entangle-camera.c:679
+#: ../src/backend/entangle-camera.c:741
 #, c-format
 msgid "Unable to initialize camera"
 msgstr "Impossibile inizializzare la fotocamera"
 
-#: ../src/backend/entangle-camera.c:936
+#: ../src/backend/entangle-camera.c:1000
 msgid "Cannot capture image while not connected"
 msgstr "Impossibile catturare l'immagine quando la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:949
+#: ../src/backend/entangle-camera.c:1013
 #, c-format
 msgid "Unable to capture image: %s"
 msgstr "Impossibile catturare l'immagine: %s"
 
-#: ../src/backend/entangle-camera.c:1035
+#: ../src/backend/entangle-camera.c:1099
 msgid "Cannot preview image while not connected"
 msgstr "Impossibile creare l'anteprima dell'immagine quando la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:1050
+#: ../src/backend/entangle-camera.c:1114
 #, c-format
 msgid "Unable to capture preview: %s"
 msgstr "Impossibile catturare l'anteprima: %s"
 
-#: ../src/backend/entangle-camera.c:1056
-#: ../src/backend/entangle-camera.c:1185
+#: ../src/backend/entangle-camera.c:1120 ../src/backend/entangle-camera.c:1249
 #, c-format
 msgid "Unable to get file data: %s"
 msgstr "Impossibile ottenere i dati del file: %s"
 
-#: ../src/backend/entangle-camera.c:1061
+#: ../src/backend/entangle-camera.c:1125
 #, c-format
 msgid "Unable to get filename: %s"
 msgstr "Impossibile ottenere il nome del file: %s"
 
-#: ../src/backend/entangle-camera.c:1157
+#: ../src/backend/entangle-camera.c:1221
 msgid "Cannot download file while not connected"
 msgstr "Impossibile scaricare il file quando la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:1179
+#: ../src/backend/entangle-camera.c:1243
 #, c-format
 msgid "Unable to get camera file: %s"
 msgstr "Impossibile ottenere il file della fotocamera: %s"
 
-#: ../src/backend/entangle-camera.c:1274
+#: ../src/backend/entangle-camera.c:1338
 msgid "Cannot delete file while not connected"
 msgstr "Impossibile eliminare il file quando la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:1291
+#: ../src/backend/entangle-camera.c:1355
 #, c-format
 msgid "Unable to delete file: %s"
 msgstr "Impossibile eliminare il file: %s"
 
-#: ../src/backend/entangle-camera.c:1373
+#: ../src/backend/entangle-camera.c:1437
 msgid "Cannot wait for events while not connected"
 msgstr "Impossibile attendere gli eventi quando la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:1399
+#: ../src/backend/entangle-camera.c:1463
 #, c-format
 msgid "Unable to wait for events: %s"
 msgstr "Impossibile attendere gli eventi: %s"
 
-#: ../src/backend/entangle-camera.c:1539
-#: ../src/backend/entangle-camera.c:1669
-#: ../src/backend/entangle-camera.c:1774
+#: ../src/backend/entangle-camera.c:1636 ../src/backend/entangle-camera.c:1798
+#: ../src/backend/entangle-camera.c:1907 ../src/backend/entangle-camera.c:2257
+#: ../src/backend/entangle-camera.c:2395 ../src/backend/entangle-camera.c:2521
 #, c-format
 msgid "Unable to fetch widget type"
 msgstr "Impossibile ottenere il tipo di widget"
 
-#: ../src/backend/entangle-camera.c:1545
-#: ../src/backend/entangle-camera.c:1675
-#: ../src/backend/entangle-camera.c:1780
+#: ../src/backend/entangle-camera.c:1642 ../src/backend/entangle-camera.c:1804
+#: ../src/backend/entangle-camera.c:1913
 #, c-format
 msgid "Unable to fetch widget name"
 msgstr "Impossibile ottenere il nome del widget"
 
-#: ../src/backend/entangle-camera.c:1872
+#: ../src/backend/entangle-camera.c:2009
 #, c-format
 msgid "Unable to load controls, camera is not connected"
 msgstr "Impossibile caricare i controlli, la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:1880
+#: ../src/backend/entangle-camera.c:2017
 #, c-format
 msgid "Unable to fetch camera control configuration"
 msgstr "Impossibile ottenere la configurazione dei controlli della fotocamera"
 
-#: ../src/backend/entangle-camera.c:1961
+#: ../src/backend/entangle-camera.c:2104
 #, c-format
 msgid "Unable to save controls, camera is not connected"
 msgstr "Impossibile salvare i controlli, la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:1967
+#: ../src/backend/entangle-camera.c:2110
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
 msgstr "Impossibile salvare i controlli, la fotocamera non è configurabile"
 
-#: ../src/backend/entangle-camera.c:1978
+#: ../src/backend/entangle-camera.c:2121 ../src/backend/entangle-camera.c:2285
+#: ../src/backend/entangle-camera.c:2423 ../src/backend/entangle-camera.c:2549
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
 msgstr "Impossibile salvare la configurazione dei controlli della fotocamera: %s %d"
 
-#: ../src/backend/entangle-camera.c:2053
+#: ../src/backend/entangle-camera.c:2196 ../src/backend/entangle-camera.c:2233
+#: ../src/backend/entangle-camera.c:2374 ../src/backend/entangle-camera.c:2500
 #, c-format
 msgid "Controls not available when camera is disconnected"
 msgstr "I controlli non sono disponibili quando la fotocamera non è connessa"
 
-#: ../src/backend/entangle-camera.c:2059
+#: ../src/backend/entangle-camera.c:2202 ../src/backend/entangle-camera.c:2239
+#: ../src/backend/entangle-camera.c:2380 ../src/backend/entangle-camera.c:2506
 #, c-format
 msgid "Controls not available for this camera"
 msgstr "Controlli non disponibili per questa fotocamera"
 
+#: ../src/backend/entangle-camera.c:2250
+#, c-format
+msgid "Viewfinder control not available with this camera"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2263
+#, c-format
+msgid "Viewfinder control was not a toggle widget"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2270
+#, c-format
+msgid "Failed to set viewfinder state: %s %d"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2276 ../src/backend/entangle-camera.c:2414
+#: ../src/backend/entangle-camera.c:2534 ../src/backend/entangle-camera.c:2540
+#, c-format
+msgid "Failed to set manual focus state: %s %d"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2388
+#, c-format
+msgid "Autofocus control not available with this camera"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2401
+#, c-format
+msgid "Autofocus control was not a toggle widget"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2408
+#, c-format
+msgid "Failed to set autofocus state: %s %d"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2514
+#, c-format
+msgid "Manual focus control not available with this camera"
+msgstr ""
+
+#: ../src/backend/entangle-camera.c:2527
+#, c-format
+msgid "Manual focus control was not a range widget"
+msgstr ""
+
 #: ../src/frontend/entangle-camera-info.c:236
-#: ../src/frontend/entangle-camera-manager.c:2891
+#: ../src/frontend/entangle-camera-manager.c:3013
 #: ../src/frontend/entangle-camera-picker.c:521
 #: ../src/frontend/entangle-camera-support.c:192
 #: ../src/frontend/entangle-help-about.c:114
@@ -177,14 +223,13 @@ msgstr "Informazioni fotocamera %s - Entangle"
 msgid "Camera Info - Entangle"
 msgstr "Informazioni fotocamera - Entangle"
 
-#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
-#.
+#. 
 #: ../src/frontend/entangle-camera-info.xml.h:1
 #: ../src/frontend/entangle-camera-support.xml.h:1
 msgid "label"
@@ -208,12 +253,12 @@ msgid "Entangle: Operation failed"
 msgstr "Entangle: operazione non riuscita"
 
 #: ../src/frontend/entangle-camera-manager.c:666
-#: ../src/frontend/entangle-camera-manager.c:1237
+#: ../src/frontend/entangle-camera-manager.c:1264
 msgid "Camera load controls failed"
 msgstr "Caricamento dei controlli della fotocamera non riuscito"
 
 #: ../src/frontend/entangle-camera-manager.c:668
-#: ../src/frontend/entangle-camera-manager.c:1239
+#: ../src/frontend/entangle-camera-manager.c:1266
 msgid "Entangle: Camera load controls failed"
 msgstr "Entangle: caricamento dei controlli della fotocamera non riuscito"
 
@@ -222,7 +267,7 @@ msgid "Monitor"
 msgstr "Schermo"
 
 #: ../src/frontend/entangle-camera-manager.c:865
-#: ../src/frontend/entangle-camera-manager.c:2577
+#: ../src/frontend/entangle-camera-manager.c:2699
 msgid "Delete"
 msgstr "Elimina"
 
@@ -232,7 +277,8 @@ msgstr "Scaricati"
 
 #: ../src/frontend/entangle-camera-manager.c:916
 #: ../src/frontend/entangle-camera-manager.c:954
-#: ../src/frontend/entangle-camera-manager.xml.h:23
+#: ../src/frontend/entangle-camera-manager.c:982
+#: ../src/frontend/entangle-camera-manager.xml.h:22
 #: ../src/frontend/entangle-camera-picker.c:533
 #: ../src/frontend/entangle-preferences-display.c:950
 #: ../src/frontend/entangle-preferences-display.c:956
@@ -240,95 +286,107 @@ msgstr "Scaricati"
 msgid "Capture"
 msgstr "Cattura"
 
-#: ../src/frontend/entangle-camera-manager.c:991
-#: ../src/frontend/entangle-camera-manager.xml.h:25
+#: ../src/frontend/entangle-camera-manager.c:1017
+#: ../src/frontend/entangle-camera-manager.xml.h:24
 msgid "Preview"
 msgstr "Anteprima"
 
-#: ../src/frontend/entangle-camera-manager.c:1189
+#: ../src/frontend/entangle-camera-manager.c:1216
 msgid "Camera Manager - Entangle"
 msgstr "Gestore fotocamera - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1281
-#: ../src/frontend/entangle-camera-manager.c:2432
+#: ../src/frontend/entangle-camera-manager.c:1308
+#: ../src/frontend/entangle-camera-manager.c:2554
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr "Impossibile connettersi alla fotocamera: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:1286
-#: ../src/frontend/entangle-camera-manager.c:2438
+#: ../src/frontend/entangle-camera-manager.c:1313
+#: ../src/frontend/entangle-camera-manager.c:2560
 msgid ""
 "Check that the camera is not\n"
 "\n"
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr ""
-"Controllare che la fotocamera non sia:\n"
-"\n"
-" - in uso da un'altra <b>applicazione</b>;\n"
-" - montata come <b>file system</b>;\n"
-" - in <b>modalità sleep</b> per il risparmio della batteria.\n"
+msgstr "Controllare che la fotocamera non sia:\n\n - in uso da un'altra <b>applicazione</b>;\n - montata come <b>file system</b>;\n - in <b>modalità sleep</b> per il risparmio della batteria.\n"
 
-#: ../src/frontend/entangle-camera-manager.c:1291
-#: ../src/frontend/entangle-camera-manager.c:2443
-#: ../src/frontend/entangle-camera-manager.xml.h:28
+#: ../src/frontend/entangle-camera-manager.c:1318
+#: ../src/frontend/entangle-camera-manager.c:2565
+#: ../src/frontend/entangle-camera-manager.xml.h:27
 msgid "Cancel"
 msgstr "Annulla"
 
-#: ../src/frontend/entangle-camera-manager.c:1292
-#: ../src/frontend/entangle-camera-manager.c:2444
+#: ../src/frontend/entangle-camera-manager.c:1319
+#: ../src/frontend/entangle-camera-manager.c:2566
 msgid "Retry"
 msgstr "Ritenta"
 
-#: ../src/frontend/entangle-camera-manager.c:1323
+#: ../src/frontend/entangle-camera-manager.c:1350
 msgid "Camera is in use"
 msgstr "La fotocamera è in uso"
 
-#: ../src/frontend/entangle-camera-manager.c:1327
-msgid "The camera cannot be opened because it is currently mounted as a filesystem. Do you wish to umount it now ?"
+#: ../src/frontend/entangle-camera-manager.c:1354
+msgid ""
+"The camera cannot be opened because it is currently mounted as a filesystem."
+" Do you wish to umount it now ?"
 msgstr "La fotocamera non può essere aperta perché è montata come un file system. Smontarla ora?"
 
-#: ../src/frontend/entangle-camera-manager.c:1331
+#: ../src/frontend/entangle-camera-manager.c:1358
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "No"
 msgstr "No"
 
-#: ../src/frontend/entangle-camera-manager.c:1332
+#: ../src/frontend/entangle-camera-manager.c:1359
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "Yes"
 msgstr "Sì"
 
-#: ../src/frontend/entangle-camera-manager.c:1368
+#: ../src/frontend/entangle-camera-manager.c:1395
 msgid "Camera connect failed"
 msgstr "Connessione alla fotocamera non riuscita"
 
-#: ../src/frontend/entangle-camera-manager.c:1370
+#: ../src/frontend/entangle-camera-manager.c:1397
 msgid "Entangle: Camera connect failed"
 msgstr "Entangle: connessione alla fotocamera non riuscita"
 
-#: ../src/frontend/entangle-camera-manager.c:1409
+#: ../src/frontend/entangle-camera-manager.c:1436
 #, c-format
 msgid "%s Camera Manager - Entangle"
 msgstr "Gestore fotocamera %s - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1762
-#: ../src/frontend/entangle-camera-manager.xml.h:20
+#: ../src/frontend/entangle-camera-manager.c:1789
+#: ../src/frontend/entangle-camera-manager.xml.h:19
 msgid "Select a folder"
 msgstr "Selezione cartella"
 
-#: ../src/frontend/entangle-camera-manager.c:2706
+#: ../src/frontend/entangle-camera-manager.c:2069
+msgid "Autofocus failed"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:2071
+msgid "Entangle: Camera autofocus failed"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:2102
+msgid "Manual focus failed"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:2104
+msgid "Entangle: Camera manual focus failed"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:2828
 msgid "Select application..."
 msgstr "Selezionare un'applicazione..."
 
-#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
-#.
+#. 
 #: ../src/frontend/entangle-camera-manager.xml.h:1
 msgid "Entangle"
 msgstr "Entangle"
@@ -346,142 +404,128 @@ msgid "Connect camera"
 msgstr "Connetti fotocamera"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:5
-msgid "Disconnect camera"
-msgstr "Disconnetti fotocamera"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:6
 msgid "_Edit"
 msgstr "_Modifica"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:7
+#: ../src/frontend/entangle-camera-manager.xml.h:6
 msgid "_View"
 msgstr "_Visualizza"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:8
+#: ../src/frontend/entangle-camera-manager.xml.h:7
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:9
+#: ../src/frontend/entangle-camera-manager.xml.h:8
 msgid "Fullscreen"
 msgstr "Schermo intero"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:10
+#: ../src/frontend/entangle-camera-manager.xml.h:9
 msgid "Presentation"
 msgstr "Presentazione"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:11
+#: ../src/frontend/entangle-camera-manager.xml.h:10
 msgid "Present on"
 msgstr "Presente su"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:12
+#: ../src/frontend/entangle-camera-manager.xml.h:11
 msgid "Windows"
 msgstr "Finestre"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:13
+#: ../src/frontend/entangle-camera-manager.xml.h:12
 msgid "New window"
 msgstr "Nuova finestra"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:14
+#: ../src/frontend/entangle-camera-manager.xml.h:13
 msgid "Synchronize capture"
 msgstr "Sincronizza cattura"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:15
+#: ../src/frontend/entangle-camera-manager.xml.h:14
 msgid "_Help"
 msgstr "A_iuto"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:16
+#: ../src/frontend/entangle-camera-manager.xml.h:15
 msgid "Camera"
 msgstr "Fotocamera"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:17
+#: ../src/frontend/entangle-camera-manager.xml.h:16
 msgid "Driver"
 msgstr "Driver"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:18
+#: ../src/frontend/entangle-camera-manager.xml.h:17
 msgid "Manual"
 msgstr "Manuale"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:19
+#: ../src/frontend/entangle-camera-manager.xml.h:18
 msgid "Supported Cameras"
 msgstr "Fotocamere supportate"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:21
+#: ../src/frontend/entangle-camera-manager.xml.h:20
 msgid "View the full list of camera settings"
 msgstr "Mostra l'elenco completo delle impostazioni della fotocamera"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:22
+#: ../src/frontend/entangle-camera-manager.xml.h:21
 msgid "Capture an image"
 msgstr "Cattura un'immagine"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:24
+#: ../src/frontend/entangle-camera-manager.xml.h:23
 msgid "Continuous capture preview"
 msgstr "Anteprima a cattura continua"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:26
+#: ../src/frontend/entangle-camera-manager.xml.h:25
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr ""
-"Tentativo di annullamento\n"
-"dell'operazione in corso"
+msgstr "Tentativo di annullamento\ndell'operazione in corso"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:29
+#: ../src/frontend/entangle-camera-manager.xml.h:28
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr ""
-"Riduce la visualizzazione dell'immagine\n"
-"di un fattore"
+msgstr "Riduce la visualizzazione dell'immagine\ndi un fattore"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:31
+#: ../src/frontend/entangle-camera-manager.xml.h:30
 msgid "Zoom Out"
 msgstr "Zoom indietro"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:32
+#: ../src/frontend/entangle-camera-manager.xml.h:31
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr ""
-"Aumenta la visualizzazione dell'immagine\n"
-"di un fattore"
+msgstr "Aumenta la visualizzazione dell'immagine\ndi un fattore"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:34
+#: ../src/frontend/entangle-camera-manager.xml.h:33
 msgid "Zoom In"
 msgstr "Zoom avanti"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:35
+#: ../src/frontend/entangle-camera-manager.xml.h:34
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr ""
-"Ridimensiona l'immagine per occupare automaticamente\n"
-"lo spazio disponibile nella finestra"
+msgstr "Ridimensiona l'immagine per occupare automaticamente\nlo spazio disponibile nella finestra"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:37
+#: ../src/frontend/entangle-camera-manager.xml.h:36
 msgid "Best Fit"
 msgstr "Adattamento migliore"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:38
+#: ../src/frontend/entangle-camera-manager.xml.h:37
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr ""
-"Visualizza l'immagine con la\n"
-"dimensione in pixel nativa"
+msgstr "Visualizza l'immagine con la\ndimensione in pixel nativa"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:40
+#: ../src/frontend/entangle-camera-manager.xml.h:39
 msgid "Normal"
 msgstr "Normale"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:41
+#: ../src/frontend/entangle-camera-manager.xml.h:40
 msgid "Switch to fullscreen display mode"
 msgstr "Abilita la modalità a schermo intero"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:42
+#: ../src/frontend/entangle-camera-manager.xml.h:41
 msgid "Full Screen"
 msgstr "Schermo intero"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:43
+#: ../src/frontend/entangle-camera-manager.xml.h:42
 msgid "Open with"
 msgstr "Apri con"
 
@@ -493,14 +537,13 @@ msgstr "Modello"
 msgid "Port"
 msgstr "Porta"
 
-#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
-#.
+#. 
 #: ../src/frontend/entangle-camera-picker.xml.h:1
 msgid "Select camera - Entangle"
 msgstr "Selezione fotocamera - Entangle"
@@ -520,16 +563,7 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr ""
-"Non è stata individuata alcuna fotocamera; controllare che:\n"
-"\n"
-" - il <b>cavo</b> sia connesso;\n"
-" - la fotocamera sia <b>accesa</b>;\n"
-" - la fotocamera sia nella <b>modalità corretta</b>;\n"
-" - la fotocamera sia <b>supportata</b>.\n"
-"\n"
-"Le fotocamere USB sono identificate automaticamente\n"
-"quando vengono connesse; per le altre provare il comando aggiorna."
+msgstr "Non è stata individuata alcuna fotocamera; controllare che:\n\n - il <b>cavo</b> sia connesso;\n - la fotocamera sia <b>accesa</b>;\n - la fotocamera sia nella <b>modalità corretta</b>;\n - la fotocamera sia <b>supportata</b>.\n\nLe fotocamere USB sono identificate automaticamente\nquando vengono connesse; per le altre provare il comando aggiorna."
 
 #: ../src/frontend/entangle-control-panel.c:79
 msgid "Camera control update failed"
@@ -547,9 +581,13 @@ msgstr "Attivo"
 msgid "Off"
 msgstr "Inattivo"
 
-#: ../src/frontend/entangle-control-panel.c:565
+#: ../src/frontend/entangle-control-panel.c:566
 msgid "No camera connected"
-msgstr "Nessuna fotocamera connessa"
+msgstr ""
+
+#: ../src/frontend/entangle-control-panel.c:575
+msgid "No controls available"
+msgstr ""
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"
@@ -559,14 +597,13 @@ msgstr "Lo svuotamento della schermata non è disponibile su questo schermo"
 msgid "Screen blanking is not implemented on this platform"
 msgstr "Lo svuotamento della schermata non è implementato su questa piattaforma"
 
-#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
-#.
+#. 
 #: ../src/frontend/entangle-help-about.xml.h:1
 msgid "About - Entangle"
 msgstr "Informazioni su Entangle"
@@ -735,14 +772,13 @@ msgstr "Regola dei quinti"
 msgid "Golden sections"
 msgstr "Sezioni auree"
 
-#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
-#.
+#. 
 #: ../src/frontend/entangle-preferences.xml.h:1
 msgid "Perceptual"
 msgstr "Percettivo"
@@ -858,4 +894,3 @@ msgstr "Sovrapponi le immagini precedenti"
 #: ../src/frontend/entangle-preferences.xml.h:33
 msgid "Overlay layers:"
 msgstr "Livelli di sovrapposizione:"
-
