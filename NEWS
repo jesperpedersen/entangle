@@ -1,6 +1,27 @@
       Entangle News
       =============
 
+Release 0.5.1 - "W Boson" - 2012-03-12
+
+ * Update for compatibility with libgphoto 2.5 API
+   callbacks
+ * Avoid warnings about deprecated glib2 mutex
+   and condition variable APIs
+ * Directly disable viewfinder mode using config APIs
+ * Add support for triggering autofocus during preview
+   with 'a' key
+ * Add support for manual focus drive in/out using
+   '.' and ',' keys
+ * Refresh translations from transifex
+ * Import user contributed Italian translation
+ * Add missing translation markers on some strings
+
+Known issues:
+
+ * Compile triggers deprecation warnings about Gdk
+   threads API usage and GtkTable API usage. Harmless
+   but to be addressed in next release.
+
 
 Release 0.5.0 - "Z Boson" - 2012-12-16
 --------------------------------------
