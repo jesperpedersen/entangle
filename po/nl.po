@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Geert Warrink <geert.warrink@onsnet.nu>, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-02 20:12+0000\n"
-"PO-Revision-Date: 2013-03-02 20:13+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"PO-Revision-Date: 2013-03-05 10:38+0000\n"
+"Last-Translator: Geert Warrink <geert.warrink@onsnet.nu>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -232,7 +233,7 @@ msgstr ""
 #: ../src/frontend/entangle-camera-info.xml.h:1
 #: ../src/frontend/entangle-camera-support.xml.h:1
 msgid "label"
-msgstr ""
+msgstr "label"
 
 #: ../src/frontend/entangle-camera-manager.c:518
 msgid "This camera does not support image capture"
@@ -283,12 +284,12 @@ msgstr ""
 #: ../src/frontend/entangle-preferences-display.c:956
 #: ../src/frontend/entangle-preferences.xml.h:10
 msgid "Capture"
-msgstr ""
+msgstr "Vastleggen"
 
 #: ../src/frontend/entangle-camera-manager.c:1017
 #: ../src/frontend/entangle-camera-manager.xml.h:24
 msgid "Preview"
-msgstr ""
+msgstr "Preview"
 
 #: ../src/frontend/entangle-camera-manager.c:1216
 msgid "Camera Manager - Entangle"
@@ -314,7 +315,7 @@ msgstr ""
 #: ../src/frontend/entangle-camera-manager.c:2565
 #: ../src/frontend/entangle-camera-manager.xml.h:27
 msgid "Cancel"
-msgstr ""
+msgstr "Annuleren"
 
 #: ../src/frontend/entangle-camera-manager.c:1319
 #: ../src/frontend/entangle-camera-manager.c:2566
@@ -388,11 +389,11 @@ msgstr ""
 #. 
 #: ../src/frontend/entangle-camera-manager.xml.h:1
 msgid "Entangle"
-msgstr ""
+msgstr "Verstrikken"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:2
 msgid "_File"
-msgstr ""
+msgstr "_Bestand"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:3
 msgid "Select session"
@@ -400,31 +401,31 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.xml.h:4
 msgid "Connect camera"
-msgstr ""
+msgstr "Verbindt camera"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:5
 msgid "_Edit"
-msgstr ""
+msgstr "_Bewerk"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:6
 msgid "_View"
-msgstr ""
+msgstr "_Bekijk"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:7
 msgid "Settings"
-msgstr ""
+msgstr "Instellingen"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:8
 msgid "Fullscreen"
-msgstr ""
+msgstr "Volledig scherm"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:9
 msgid "Presentation"
-msgstr ""
+msgstr "Presentatie"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:10
 msgid "Present on"
-msgstr ""
+msgstr "Presenten op"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:11
 msgid "Windows"
@@ -440,35 +441,35 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.xml.h:14
 msgid "_Help"
-msgstr ""
+msgstr "_Hulp"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:15
 msgid "Camera"
-msgstr ""
+msgstr "Camera"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:16
 msgid "Driver"
-msgstr ""
+msgstr "Driver"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:17
 msgid "Manual"
-msgstr ""
+msgstr "Handmatig"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:18
 msgid "Supported Cameras"
-msgstr ""
+msgstr "Ondersteunde camera's"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:20
 msgid "View the full list of camera settings"
-msgstr ""
+msgstr "Bekijk de volledige lijst met camera instellingen"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:21
 msgid "Capture an image"
-msgstr ""
+msgstr "Leg een afbeelding vast"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:23
 msgid "Continuous capture preview"
-msgstr ""
+msgstr "Continue vastleggen van preview"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:25
 msgid ""
@@ -480,49 +481,49 @@ msgstr ""
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr ""
+msgstr "Verklein de display van de afbeelding\nmet een factor"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:30
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zoom uit"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:31
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr ""
+msgstr "Vergroot het display van de afbeelding\nmet een factor"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:33
 msgid "Zoom In"
-msgstr ""
+msgstr "Zoom in"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:34
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr ""
+msgstr "Verander de grootte van de afbeelding om\nautomatisch in het beschikbare venster te passen"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:36
 msgid "Best Fit"
-msgstr ""
+msgstr "Best passend"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:37
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr ""
+msgstr "Toon de afbeelding met zijn\nnative pixel grootte"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:39
 msgid "Normal"
-msgstr ""
+msgstr "Normaal"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:40
 msgid "Switch to fullscreen display mode"
-msgstr ""
+msgstr "Schakel om naar volledig scherm display modus"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:41
 msgid "Full Screen"
-msgstr ""
+msgstr "Volledig scherm"
 
 #: ../src/frontend/entangle-camera-manager.xml.h:42
 msgid "Open with"
@@ -545,11 +546,11 @@ msgstr ""
 #. 
 #: ../src/frontend/entangle-camera-picker.xml.h:1
 msgid "Select camera - Entangle"
-msgstr ""
+msgstr "Selecteer camera - Entangle"
 
 #: ../src/frontend/entangle-camera-picker.xml.h:2
 msgid "Select a camera to connect to:"
-msgstr ""
+msgstr "Selecteer een camera om te verbinden met:"
 
 #: ../src/frontend/entangle-camera-picker.xml.h:3
 msgid ""
@@ -562,7 +563,7 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr ""
+msgstr "Er werden geen camera's gedetecteerd, contoleer of\n\n  - de <b>kabels</b> verbonden zijn\n  - de camera <b>aangezet</b> is\n  - de camera zich in de <b>correcte modus</b> bevindt\n  - de camera een <b>ondersteund</b> model is\n\nUSB camera's worden automatisch gedetecteerd\nbij het aansluiten, probeer verversen voor andere"
 
 #: ../src/frontend/entangle-control-panel.c:79
 msgid "Camera control update failed"
@@ -605,15 +606,15 @@ msgstr ""
 #. 
 #: ../src/frontend/entangle-help-about.xml.h:1
 msgid "About - Entangle"
-msgstr ""
+msgstr "Over - Entangle"
 
 #: ../src/frontend/entangle-help-about.xml.h:2
 msgid "Copyright (C) 2009-2012 Daniel P. Berrange"
-msgstr ""
+msgstr "Copyright (C) 2009-2012 Daniel P. Berrange"
 
 #: ../src/frontend/entangle-help-about.xml.h:3
 msgid "Tethered Camera Control & Capture"
-msgstr ""
+msgstr "Gebonden camera controle & vastleggen"
 
 #: ../src/frontend/entangle-preferences-display.c:922
 #: ../src/frontend/entangle-preferences-display.c:928
@@ -631,7 +632,7 @@ msgstr ""
 #: ../src/frontend/entangle-preferences-display.c:970
 #: ../src/frontend/entangle-preferences.xml.h:18
 msgid "Color Management"
-msgstr ""
+msgstr "Kleurbeheer"
 
 #: ../src/frontend/entangle-preferences-display.c:978
 #: ../src/frontend/entangle-preferences-display.c:984
@@ -792,7 +793,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:4
 msgid "Absolute colourimetric"
-msgstr ""
+msgstr "Absolute colorimetrie"
 
 #: ../src/frontend/entangle-preferences.xml.h:5
 msgid "Entangle Preferences"
@@ -800,7 +801,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:6
 msgid "<b>Capture</b>"
-msgstr ""
+msgstr "<b>Vastleggen</b>"
 
 #: ../src/frontend/entangle-preferences.xml.h:7
 msgid "Filename pattern:"
@@ -816,7 +817,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:11
 msgid "<b>Colour management</b>"
-msgstr ""
+msgstr "<b>Kleurbeheer</b>"
 
 #: ../src/frontend/entangle-preferences.xml.h:12
 msgid "Mode of operation:"
@@ -844,7 +845,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences.xml.h:19
 msgid "<b>Plugins</b>"
-msgstr ""
+msgstr "<b>Plug-ins</b>"
 
 #: ../src/frontend/entangle-preferences.xml.h:21
 msgid "<b>Interface</b>"

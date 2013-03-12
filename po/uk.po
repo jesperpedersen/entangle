@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Yuri Chornoivan <yurchor@ukr.net>, 2012.
+# Yuri Chornoivan <yurchor@ukr.net>, 2012-2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-02 20:12+0000\n"
-"PO-Revision-Date: 2013-03-02 20:13+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"PO-Revision-Date: 2013-03-02 21:00+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -156,48 +156,48 @@ msgstr "Не вдалося отримати доступ до засобів к
 #: ../src/backend/entangle-camera.c:2250
 #, c-format
 msgid "Viewfinder control not available with this camera"
-msgstr ""
+msgstr "Керування видошукачем для цього фотоапарата не передбачено"
 
 #: ../src/backend/entangle-camera.c:2263
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
-msgstr ""
+msgstr "Віджет керування видошукачем не можна вмикати або вимикати"
 
 #: ../src/backend/entangle-camera.c:2270
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
-msgstr ""
+msgstr "Не вдалося встановити стан видошукача: %s %d"
 
 #: ../src/backend/entangle-camera.c:2276 ../src/backend/entangle-camera.c:2414
 #: ../src/backend/entangle-camera.c:2534 ../src/backend/entangle-camera.c:2540
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
-msgstr ""
+msgstr "Не вдалося встановити стан фокусування вручну: %s %d"
 
 #: ../src/backend/entangle-camera.c:2388
 #, c-format
 msgid "Autofocus control not available with this camera"
-msgstr ""
+msgstr "Керування автофокусуванням для цього фотоапарата не передбачено"
 
 #: ../src/backend/entangle-camera.c:2401
 #, c-format
 msgid "Autofocus control was not a toggle widget"
-msgstr ""
+msgstr "Віджет керування автофокусуванням не можна вмикати або вимикати"
 
 #: ../src/backend/entangle-camera.c:2408
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
-msgstr ""
+msgstr "Не вдалося встановити стан автофокусування: %s %d"
 
 #: ../src/backend/entangle-camera.c:2514
 #, c-format
 msgid "Manual focus control not available with this camera"
-msgstr ""
+msgstr "Керування фокусуванням вручну для цього фотоапарата не передбачено"
 
 #: ../src/backend/entangle-camera.c:2527
 #, c-format
 msgid "Manual focus control was not a range widget"
-msgstr ""
+msgstr "Віджет керування фокусуванням вручну не є віджетом діапазону значень"
 
 #: ../src/frontend/entangle-camera-info.c:236
 #: ../src/frontend/entangle-camera-manager.c:3013
@@ -362,19 +362,19 @@ msgstr "Виберіть теку"
 
 #: ../src/frontend/entangle-camera-manager.c:2069
 msgid "Autofocus failed"
-msgstr ""
+msgstr "Спроба автофокусування зазнала невдачі"
 
 #: ../src/frontend/entangle-camera-manager.c:2071
 msgid "Entangle: Camera autofocus failed"
-msgstr ""
+msgstr "Entangle: спроба автоматично встановити фокус фотоапарата зазнала невдачі"
 
 #: ../src/frontend/entangle-camera-manager.c:2102
 msgid "Manual focus failed"
-msgstr ""
+msgstr "Спроба фокусування вручну зазнала невдачі"
 
 #: ../src/frontend/entangle-camera-manager.c:2104
 msgid "Entangle: Camera manual focus failed"
-msgstr ""
+msgstr "Entangle: не вдалося встановити на фотоапараті фокусування вручну"
 
 #: ../src/frontend/entangle-camera-manager.c:2828
 msgid "Select application..."
@@ -583,11 +583,11 @@ msgstr "Вимкнено"
 
 #: ../src/frontend/entangle-control-panel.c:566
 msgid "No camera connected"
-msgstr ""
+msgstr "Не з’єднано жодного фотоапарата"
 
 #: ../src/frontend/entangle-control-panel.c:575
 msgid "No controls available"
-msgstr ""
+msgstr "Немає доступу до засобів керування"
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"

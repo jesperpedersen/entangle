@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-02 20:12+0000\n"
-"PO-Revision-Date: 2013-03-02 20:13+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"PO-Revision-Date: 2013-03-03 15:53+0000\n"
+"Last-Translator: Jérôme Fenal <jfenal@gmail.com>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -157,48 +157,48 @@ msgstr "Aucun contrôle disponible pour cet appareil"
 #: ../src/backend/entangle-camera.c:2250
 #, c-format
 msgid "Viewfinder control not available with this camera"
-msgstr ""
+msgstr "Le contrôle du viseur n'est pas disponible pour cet appareil"
 
 #: ../src/backend/entangle-camera.c:2263
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
-msgstr ""
+msgstr "Le contrôle du viseur n'est pas un widget à bascule"
 
 #: ../src/backend/entangle-camera.c:2270
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
-msgstr ""
+msgstr "Impossible de définir l'état du viseur : %s %d"
 
 #: ../src/backend/entangle-camera.c:2276 ../src/backend/entangle-camera.c:2414
 #: ../src/backend/entangle-camera.c:2534 ../src/backend/entangle-camera.c:2540
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
-msgstr ""
+msgstr "Impossible de définir l'état manuel de la focale : %s %d"
 
 #: ../src/backend/entangle-camera.c:2388
 #, c-format
 msgid "Autofocus control not available with this camera"
-msgstr ""
+msgstr "Le contrôle de l'autofocus n'est pas disponible pour cet appareil"
 
 #: ../src/backend/entangle-camera.c:2401
 #, c-format
 msgid "Autofocus control was not a toggle widget"
-msgstr ""
+msgstr "Le contrôle de l'autofocus n'est pas un widget à bascule"
 
 #: ../src/backend/entangle-camera.c:2408
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
-msgstr ""
+msgstr "Impossible de définir l'état de l'autofocus : %s %d"
 
 #: ../src/backend/entangle-camera.c:2514
 #, c-format
 msgid "Manual focus control not available with this camera"
-msgstr ""
+msgstr "Le contrôle de la focale n'est pas disponible pour cet appareil"
 
 #: ../src/backend/entangle-camera.c:2527
 #, c-format
 msgid "Manual focus control was not a range widget"
-msgstr ""
+msgstr "Le contrôle manuel de la focale n'est pas un widget à intervalle"
 
 #: ../src/frontend/entangle-camera-info.c:236
 #: ../src/frontend/entangle-camera-manager.c:3013
@@ -363,19 +363,19 @@ msgstr "Sélectionner un dossier"
 
 #: ../src/frontend/entangle-camera-manager.c:2069
 msgid "Autofocus failed"
-msgstr ""
+msgstr "Échec de l'autofocus"
 
 #: ../src/frontend/entangle-camera-manager.c:2071
 msgid "Entangle: Camera autofocus failed"
-msgstr ""
+msgstr "Entangle : échec de l'autofocus de l'appareil"
 
 #: ../src/frontend/entangle-camera-manager.c:2102
 msgid "Manual focus failed"
-msgstr ""
+msgstr "Échec du changement manuel de focale"
 
 #: ../src/frontend/entangle-camera-manager.c:2104
 msgid "Entangle: Camera manual focus failed"
-msgstr ""
+msgstr "Entangle : Échec du changement manuel de focale de l'appareil"
 
 #: ../src/frontend/entangle-camera-manager.c:2828
 msgid "Select application..."
@@ -584,11 +584,11 @@ msgstr "Éteint"
 
 #: ../src/frontend/entangle-control-panel.c:566
 msgid "No camera connected"
-msgstr ""
+msgstr "Aucun appareil connecté"
 
 #: ../src/frontend/entangle-control-panel.c:575
 msgid "No controls available"
-msgstr ""
+msgstr "Aucun contrôle disponible"
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"

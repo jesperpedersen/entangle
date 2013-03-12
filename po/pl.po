@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Piotr Drąg <piotrdrag@gmail.com>, 2012.
+# Piotr Drąg <piotrdrag@gmail.com>, 2012-2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-02 20:12+0000\n"
-"PO-Revision-Date: 2013-03-02 20:13+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"PO-Revision-Date: 2013-03-02 20:40+0000\n"
+"Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -156,48 +156,48 @@ msgstr "Kontrole nie są dostępne dla tego aparatu"
 #: ../src/backend/entangle-camera.c:2250
 #, c-format
 msgid "Viewfinder control not available with this camera"
-msgstr ""
+msgstr "Kontrola widoku wyszukiwania nie jest dostępna dla tego aparatu"
 
 #: ../src/backend/entangle-camera.c:2263
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
-msgstr ""
+msgstr "Kontrola widoku wyszukiwania nie jest widżetem przełączania"
 
 #: ../src/backend/entangle-camera.c:2270
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
-msgstr ""
+msgstr "Ustawienie stanu widoku wyszukiwania się nie powiodło: %s %d"
 
 #: ../src/backend/entangle-camera.c:2276 ../src/backend/entangle-camera.c:2414
 #: ../src/backend/entangle-camera.c:2534 ../src/backend/entangle-camera.c:2540
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
-msgstr ""
+msgstr "Ustawienie stanu ręcznej ostrości się nie powiodło: %s %d"
 
 #: ../src/backend/entangle-camera.c:2388
 #, c-format
 msgid "Autofocus control not available with this camera"
-msgstr ""
+msgstr "Kontrola automatycznej ostrości nie jest dostępna dla tego aparatu"
 
 #: ../src/backend/entangle-camera.c:2401
 #, c-format
 msgid "Autofocus control was not a toggle widget"
-msgstr ""
+msgstr "Kontrola automatycznej ostrości nie jest widżetem przełączania"
 
 #: ../src/backend/entangle-camera.c:2408
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
-msgstr ""
+msgstr "Ustawienie stanu automatycznej ostrości się nie powiodło: %s %d"
 
 #: ../src/backend/entangle-camera.c:2514
 #, c-format
 msgid "Manual focus control not available with this camera"
-msgstr ""
+msgstr "Kontrola ręcznej ostrości nie jest dostępna dla tego aparatu"
 
 #: ../src/backend/entangle-camera.c:2527
 #, c-format
 msgid "Manual focus control was not a range widget"
-msgstr ""
+msgstr "Kontrola ręcznej ostrości nie jest widżetem przełączania"
 
 #: ../src/frontend/entangle-camera-info.c:236
 #: ../src/frontend/entangle-camera-manager.c:3013
@@ -362,19 +362,19 @@ msgstr "Wybierz katalog"
 
 #: ../src/frontend/entangle-camera-manager.c:2069
 msgid "Autofocus failed"
-msgstr ""
+msgstr "Automatyczna ostrość się nie powiodła"
 
 #: ../src/frontend/entangle-camera-manager.c:2071
 msgid "Entangle: Camera autofocus failed"
-msgstr ""
+msgstr "Entangle: automatyczna ostrość aparatu się nie powiodła"
 
 #: ../src/frontend/entangle-camera-manager.c:2102
 msgid "Manual focus failed"
-msgstr ""
+msgstr "Ręczna ostrość się nie powiodła"
 
 #: ../src/frontend/entangle-camera-manager.c:2104
 msgid "Entangle: Camera manual focus failed"
-msgstr ""
+msgstr "Entangle: ręczna ostrość aparatu się nie powiodła"
 
 #: ../src/frontend/entangle-camera-manager.c:2828
 msgid "Select application..."
@@ -583,11 +583,11 @@ msgstr "Wyłączone"
 
 #: ../src/frontend/entangle-control-panel.c:566
 msgid "No camera connected"
-msgstr ""
+msgstr "Nie podłączono aparatu"
 
 #: ../src/frontend/entangle-control-panel.c:575
 msgid "No controls available"
-msgstr ""
+msgstr "Brak dostępnych kontroli"
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"
