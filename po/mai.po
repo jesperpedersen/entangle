@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-02 20:12+0000\n"
+"POT-Creation-Date: 2013-04-01 17:06+0100\n"
 "PO-Revision-Date: 2013-03-02 20:13+0000\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Maithili (http://www.transifex.com/projects/p/fedora/language/mai/)\n"
@@ -199,7 +199,7 @@ msgid "Manual focus control was not a range widget"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-info.c:236
-#: ../src/frontend/entangle-camera-manager.c:3013
+#: ../src/frontend/entangle-camera-manager.c:3015
 #: ../src/frontend/entangle-camera-picker.c:521
 #: ../src/frontend/entangle-camera-support.c:192
 #: ../src/frontend/entangle-help-about.c:114
@@ -266,7 +266,7 @@ msgid "Monitor"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:865
-#: ../src/frontend/entangle-camera-manager.c:2699
+#: ../src/frontend/entangle-camera-manager.c:2701
 msgid "Delete"
 msgstr ""
 
@@ -295,13 +295,13 @@ msgid "Camera Manager - Entangle"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1308
-#: ../src/frontend/entangle-camera-manager.c:2554
+#: ../src/frontend/entangle-camera-manager.c:2556
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1313
-#: ../src/frontend/entangle-camera-manager.c:2560
+#: ../src/frontend/entangle-camera-manager.c:2562
 msgid ""
 "Check that the camera is not\n"
 "\n"
@@ -311,13 +311,13 @@ msgid ""
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1318
-#: ../src/frontend/entangle-camera-manager.c:2565
+#: ../src/frontend/entangle-camera-manager.c:2567
 #: ../src/frontend/entangle-camera-manager.xml.h:27
 msgid "Cancel"
 msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1319
-#: ../src/frontend/entangle-camera-manager.c:2566
+#: ../src/frontend/entangle-camera-manager.c:2568
 msgid "Retry"
 msgstr ""
 
@@ -354,28 +354,28 @@ msgstr ""
 msgid "%s Camera Manager - Entangle"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:1789
+#: ../src/frontend/entangle-camera-manager.c:1791
 #: ../src/frontend/entangle-camera-manager.xml.h:19
 msgid "Select a folder"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:2069
+#: ../src/frontend/entangle-camera-manager.c:2071
 msgid "Autofocus failed"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:2071
+#: ../src/frontend/entangle-camera-manager.c:2073
 msgid "Entangle: Camera autofocus failed"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:2102
+#: ../src/frontend/entangle-camera-manager.c:2104
 msgid "Manual focus failed"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:2104
+#: ../src/frontend/entangle-camera-manager.c:2106
 msgid "Entangle: Camera manual focus failed"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:2828
+#: ../src/frontend/entangle-camera-manager.c:2830
 msgid "Select application..."
 msgstr ""
 
