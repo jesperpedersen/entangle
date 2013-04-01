@@ -102,19 +102,23 @@ static gboolean entangle_pixbuf_is_raw(EntangleImage *image)
         ".crw", ".erf", ".mrw", ".raw", ".rw2", ".raf", NULL
     };
     const char **tmp;
-    const char *filename = entangle_image_get_filename(image);
+    char *filename = g_utf8_strdown(entangle_image_get_filename(image), -1);
+    gboolean ret = TRUE;
 
     tmp = extlist;
     while (*tmp) {
         const char *ext = *tmp;
 
         if (g_str_has_suffix(filename, ext))
-            return TRUE;
+            goto cleanup;
 
         tmp++;
     }
 
-    return FALSE;
+    ret = FALSE;
+ cleanup:
+    g_free(filename);
+    return ret;
 }
 
 
