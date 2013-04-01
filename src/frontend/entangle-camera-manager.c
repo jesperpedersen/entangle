@@ -1540,6 +1540,13 @@ static void entangle_camera_manager_set_property(GObject *object,
             g_signal_connect(cameras, "camera-removed", G_CALLBACK(do_camera_removed), manager);
             directory = entangle_preferences_capture_get_last_session(prefs);
             pattern = entangle_preferences_capture_get_filename_pattern(prefs);
+
+            entangle_camera_manager_update_colour_transform(manager);
+            entangle_camera_manager_update_aspect_ratio(manager);
+            entangle_camera_manager_update_mask_opacity(manager);
+            entangle_camera_manager_update_mask_enabled(manager);
+            entangle_camera_manager_update_image_loader(manager);
+
             priv->session = entangle_session_new(directory, pattern);
 
             chooser = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session-button"));
@@ -1551,11 +1558,6 @@ static void entangle_camera_manager_set_property(GObject *object,
             g_free(directory);
             g_free(pattern);
 
-            entangle_camera_manager_update_colour_transform(manager);
-            entangle_camera_manager_update_aspect_ratio(manager);
-            entangle_camera_manager_update_mask_opacity(manager);
-            entangle_camera_manager_update_mask_enabled(manager);
-            entangle_camera_manager_update_image_loader(manager);
             break;
 
         default:
