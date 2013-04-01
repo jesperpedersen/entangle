@@ -271,6 +271,62 @@ entangle_pixbuf_get_closest_preview(GExiv2PreviewProperties **proplist,
 }
 
 
+static GdkPixbuf *entangle_pixbuf_open_image_preview_raw(EntangleImage *image)
+{
+    GdkPixbuf *result = NULL;
+    GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+    libraw_data_t *raw = libraw_init(0);
+    libraw_processed_image_t *img = NULL;
+    int ret;
+
+    if (!raw) {
+        ENTANGLE_DEBUG("Failed to initialize libraw");
+        goto cleanup;
+    }
+
+    ENTANGLE_DEBUG("Open preview raw %s", entangle_image_get_filename(image));
+    if ((ret = libraw_open_file(raw, entangle_image_get_filename(image))) != 0) {
+        ENTANGLE_DEBUG("Failed to open preview raw file: %s",
+                       libraw_strerror(ret));
+        goto cleanup;
+    }
+
+    ENTANGLE_DEBUG("Unpack preview raw %s", entangle_image_get_filename(image));
+    if ((ret = libraw_unpack_thumb(raw)) != 0) {
+        ENTANGLE_DEBUG("Failed to unpack preview raw file: %s",
+                       libraw_strerror(ret));
+        goto cleanup;
+    }
+
+    ENTANGLE_DEBUG("Adjust preview raw %s", entangle_image_get_filename(image));
+    if ((ret = libraw_adjust_sizes_info_only(raw)) != 0) {
+        ENTANGLE_DEBUG("Failed to adjust preview raw file: %s",
+                       libraw_strerror(ret));
+        goto cleanup;
+    }
+
+    ENTANGLE_DEBUG("Make preview mem %s", entangle_image_get_filename(image));
+    if ((img = libraw_dcraw_make_mem_thumb(raw, &ret)) == NULL) {
+        ENTANGLE_DEBUG("Failed to extract preview raw file: %s",
+                       libraw_strerror(ret));
+        goto cleanup;
+    }
+
+    gdk_pixbuf_loader_write(loader, img->data, img->data_size, NULL);
+    result = gdk_pixbuf_loader_get_pixbuf(loader);
+
+ cleanup:
+    if (img)
+        libraw_dcraw_clear_mem(img);
+
+    libraw_close(raw);
+
+    gdk_pixbuf_loader_close(loader, NULL);
+
+    return result;
+}
+
+
 static GdkPixbuf *entangle_pixbuf_open_image_preview_exiv(EntangleImage *image,
                                                           guint minSize)
 {
@@ -345,20 +401,27 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview_exiv(EntangleImage *image,
 
 static GdkPixbuf *entangle_pixbuf_open_image_preview(EntangleImage *image)
 {
+    GdkPixbuf *result = NULL;
     if (entangle_pixbuf_is_raw(image)) {
-        GdkPixbuf *result = entangle_pixbuf_open_image_preview_exiv(image, 256);
+        result = entangle_pixbuf_open_image_preview_raw(image);
+        if (!result)
+            result = entangle_pixbuf_open_image_preview_exiv(image, 256);
         if (!result)
             result = entangle_pixbuf_open_image_master_raw(image);
-        return result;
     } else {
-        return entangle_pixbuf_open_image_master_gdk(image);
+        result = entangle_pixbuf_open_image_master_gdk(image);
     }
+    return result;
 }
 
 
 static GdkPixbuf *entangle_pixbuf_open_image_thumbnail(EntangleImage *image)
 {
-    GdkPixbuf *result = entangle_pixbuf_open_image_preview_exiv(image, 128);
+    GdkPixbuf *result = NULL;
+    if (entangle_pixbuf_is_raw(image))
+        result = entangle_pixbuf_open_image_preview_raw(image);
+    if (!result)
+        result = entangle_pixbuf_open_image_preview_exiv(image, 128);
     if (!result)
         result = entangle_pixbuf_open_image_master(image);
     return result;
