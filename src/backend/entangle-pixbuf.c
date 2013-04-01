@@ -141,6 +141,17 @@ static GdkPixbuf *entangle_pixbuf_open_image_master_raw(EntangleImage *image)
         goto cleanup;
     }
 
+    /*
+      Use default camera parameters to display image
+      Real work needs to done by a RAW developer anyway
+    */
+    raw->params.use_camera_wb = 1;
+    raw->params.use_auto_wb = 1;
+    raw->params.use_camera_matrix = 1;
+    raw->params.document_mode = 0;
+    raw->params.user_qual = 0;
+    raw->params.fbdd_noiserd = 1;
+
     ENTANGLE_DEBUG("Open raw %s", entangle_image_get_filename(image));
     if ((ret = libraw_open_file(raw, entangle_image_get_filename(image))) != 0) {
         ENTANGLE_DEBUG("Failed to open raw file: %s",
