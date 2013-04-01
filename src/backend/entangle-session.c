@@ -461,6 +461,35 @@ void entangle_session_remove(EntangleSession *session, EntangleImage *image)
 }
 
 
+static gboolean entangle_session_image_supported(const gchar *name)
+{
+    const char *extlist[] = {
+        ".cr2", ".nef", ".nrw", ".arw", ".orf", ".dng", ".pef",
+        ".crw", ".erf", ".mrw", ".raw", ".rw2", ".raf", ".jpg",
+        ".jpeg", ".png", ".tif", ".tiff", NULL
+    };
+    const char **tmp;
+    char *filename = g_utf8_strdown(name, -1);
+    gboolean ret = TRUE;
+
+    tmp = extlist;
+    while (*tmp) {
+        const char *ext = *tmp;
+
+        if (g_str_has_suffix(filename, ext))
+            goto cleanup;
+
+        tmp++;
+    }
+
+    ret = FALSE;
+
+ cleanup:
+    g_free(filename);
+    return ret;
+}
+
+
 gboolean entangle_session_load(EntangleSession *session)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION(session), FALSE);
@@ -479,12 +508,14 @@ gboolean entangle_session_load(EntangleSession *session)
         if (g_file_info_get_file_type(childinfo) == G_FILE_TYPE_REGULAR ||
             g_file_info_get_file_type(childinfo) == G_FILE_TYPE_SYMBOLIC_LINK) {
 
-            EntangleImage *image = entangle_image_new_file(g_file_get_path(child));
+            if (entangle_session_image_supported(thisname)) {
+                EntangleImage *image = entangle_image_new_file(g_file_get_path(child));
 
-            ENTANGLE_DEBUG("Adding '%s'", g_file_get_path(child));
-            entangle_session_add(session, image);
+                ENTANGLE_DEBUG("Adding '%s'", g_file_get_path(child));
+                entangle_session_add(session, image);
 
-            g_object_unref(image);
+                g_object_unref(image);
+            }
         }
         g_object_unref(child);
         g_object_unref(childinfo);
