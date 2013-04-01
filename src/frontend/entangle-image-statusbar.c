@@ -191,23 +191,27 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
 
     if (metadata) {
         gint nom, den;
-        glong fnum;
+        gint fnumn, fnumd;
+        gdouble fnum;
         guint isonum;
         gdouble focalnum;
 
         gexiv2_metadata_get_exposure_time(metadata, &nom, &den);
         if (den == 10)
-            shutter = g_strdup_printf("%0.0lf secs", (double)nom/10.0);
+            shutter = g_strdup_printf("%0.1lf secs", (double)nom/10.0);
         else if (nom == 10)
             shutter = g_strdup_printf("1/%0.0lf secs", (double)den/10.0);
         else
-            shutter = g_strdup_printf("%0.0lf/%0.0lf secs", (double)nom/10.0, (double)den/10.0);
+            shutter = g_strdup_printf("%d/%d secs", nom, den);
 
-        fnum = gexiv2_metadata_get_exif_tag_long(metadata, "Exif.Photo.FNumber");
-        if (!fnum)
-            fnum = gexiv2_metadata_get_exif_tag_long(metadata, "Exit.Photo.Aperture");
-        //fnum = gexiv2_metadata_get_fnumber(metadata);
-        aperture = g_strdup_printf("f/%ld", fnum);
+        if (!gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.FNumber", &fnumn, &fnumd))
+            gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.Aperture", &fnumn, &fnumd);
+
+        fnum = (double)fnumn/(double)fnumd;
+        if (fnum < 10.0)
+            aperture = g_strdup_printf("f/%1.1f", fnum);
+        else
+            aperture = g_strdup_printf("f/%2.0f", fnum);
 
         isonum = gexiv2_metadata_get_iso_speed(metadata);
         iso = g_strdup_printf("ISO %d", isonum);
