@@ -26,7 +26,8 @@
 #include "entangle-pixbuf.h"
 
 /* Performs rotation of the thunbnail based on embedded metadata */
-GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src)
+GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src,
+                                       GExiv2Metadata *metadata)
 {
     GdkPixbuf *dest = gdk_pixbuf_apply_embedded_orientation(src);
     GdkPixbuf *temp;
@@ -34,19 +35,22 @@ GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src)
     ENTANGLE_DEBUG("Auto-rotate %p %p\n", src, dest);
 
     if (dest == src) {
-        const char *orientationstr;
         int transform = 0;
-        orientationstr = gdk_pixbuf_get_option(src, "tEXt::Entangle::Orientation");
+        if (metadata) {
+            transform = gexiv2_metadata_get_orientation(metadata);
+        } else {
+            const char *orientationstr = gdk_pixbuf_get_option(src, "tEXt::Entangle::Orientation");
 
-        /* If not option, then try the gobject data slot */
-        if (!orientationstr)
-            orientationstr = g_object_get_data(G_OBJECT(src),
-                                               "tEXt::Entangle::Orientation");
+            /* If not option, then try the gobject data slot */
+            if (!orientationstr)
+                orientationstr = g_object_get_data(G_OBJECT(src),
+                                                   "tEXt::Entangle::Orientation");
 
-        if (orientationstr)
-            transform = (int)g_ascii_strtoll(orientationstr, NULL, 10);
+            if (orientationstr)
+                transform = (int)g_ascii_strtoll(orientationstr, NULL, 10);
 
-        ENTANGLE_DEBUG("Auto-rotate %s\n", orientationstr);
+            ENTANGLE_DEBUG("Auto-rotate %s\n", orientationstr);
+        }
 
         /* Apply the actual transforms, which involve rotations and flips.
            The meaning of orientation values 1-8 and the required transforms
@@ -180,6 +184,7 @@ static GdkPixbuf *entangle_pixbuf_open_image_master_raw(EntangleImage *image)
         goto cleanup;
     }
 
+    g_printerr("Raw %dx%d %s\n", img->width, img->height, entangle_image_get_filename(image));
     ENTANGLE_DEBUG("New pixbuf %s", entangle_image_get_filename(image));
     result = gdk_pixbuf_new_from_data(img->data,
                                       GDK_COLORSPACE_RGB,
@@ -194,7 +199,9 @@ static GdkPixbuf *entangle_pixbuf_open_image_master_raw(EntangleImage *image)
 }
 
 
-static GdkPixbuf *entangle_pixbuf_open_image_master_gdk(EntangleImage *image)
+static GdkPixbuf *entangle_pixbuf_open_image_master_gdk(EntangleImage *image,
+                                                        GExiv2Metadata *metadata,
+                                                        gboolean applyOrientation)
 {
     GdkPixbuf *master;
     GdkPixbuf *result;
@@ -205,19 +212,33 @@ static GdkPixbuf *entangle_pixbuf_open_image_master_gdk(EntangleImage *image)
     if (!master)
         return NULL;
 
-    result = gdk_pixbuf_apply_embedded_orientation(master);
+    if (applyOrientation) {
+        result = entangle_pixbuf_auto_rotate(master, metadata);
+        g_object_unref(master);
+    } else {
+        GExiv2Orientation orient = gexiv2_metadata_get_orientation(metadata);
+        /* gdk_pixbuf_save doesn't update internal options and there
+           is no set_option method, so abuse gobject data slots :-( */
+        g_object_set_data_full(G_OBJECT(master),
+                               "tEXt::Entangle::Orientation",
+                               g_strdup_printf("%d", orient),
+                               g_free);
+        result = master;
+    }
 
-    g_object_unref(master);
     return result;
 }
 
 
-static GdkPixbuf *entangle_pixbuf_open_image_master(EntangleImage *image)
+static GdkPixbuf *entangle_pixbuf_open_image_master(EntangleImage *image,
+                                                    GExiv2Metadata *metadata,
+                                                    gboolean applyOrientation)
 {
+    g_printerr("Load master %s\n", entangle_image_get_filename(image));
     if (entangle_pixbuf_is_raw(image))
         return entangle_pixbuf_open_image_master_raw(image);
     else
-        return entangle_pixbuf_open_image_master_gdk(image);
+        return entangle_pixbuf_open_image_master_gdk(image, metadata, applyOrientation);
 }
 
 
@@ -271,7 +292,9 @@ entangle_pixbuf_get_closest_preview(GExiv2PreviewProperties **proplist,
 }
 
 
-static GdkPixbuf *entangle_pixbuf_open_image_preview_raw(EntangleImage *image)
+static GdkPixbuf *entangle_pixbuf_open_image_preview_raw(EntangleImage *image,
+                                                         GExiv2Metadata *metadata,
+                                                         gboolean applyOrientation)
 {
     GdkPixbuf *result = NULL;
     GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
@@ -315,6 +338,24 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview_raw(EntangleImage *image)
     gdk_pixbuf_loader_write(loader, img->data, img->data_size, NULL);
     result = gdk_pixbuf_loader_get_pixbuf(loader);
 
+    if (result) {
+        g_object_ref(result);
+        if (applyOrientation) {
+            GdkPixbuf *tmp = entangle_pixbuf_auto_rotate(result, metadata);
+            g_object_unref(result);
+            result = tmp;
+        } else {
+            GExiv2Orientation orient = gexiv2_metadata_get_orientation(metadata);
+            /* gdk_pixbuf_save doesn't update internal options and there
+               is no set_option method, so abuse gobject data slots :-( */
+            g_object_set_data_full(G_OBJECT(result),
+                                   "tEXt::Entangle::Orientation",
+                                   g_strdup_printf("%d", orient),
+                                   g_free);
+        }
+    }
+
+
  cleanup:
     if (img)
         libraw_dcraw_clear_mem(img);
@@ -328,9 +369,9 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview_raw(EntangleImage *image)
 
 
 static GdkPixbuf *entangle_pixbuf_open_image_preview_exiv(EntangleImage *image,
-                                                          guint minSize)
+                                                          guint minSize,
+                                                          GExiv2Metadata *metadata)
 {
-    GExiv2Metadata *metadata = gexiv2_metadata_new();
     GExiv2PreviewImage *preview = NULL;
     GExiv2PreviewProperties **props;
     GExiv2PreviewProperties *best;
@@ -341,11 +382,6 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview_exiv(EntangleImage *image,
     GExiv2Orientation orient;
 
     ENTANGLE_DEBUG("Opening preview %s", entangle_image_get_filename(image));
-
-    if (!gexiv2_metadata_open_path(metadata, entangle_image_get_filename(image), NULL)) {
-        ENTANGLE_DEBUG("Unable to load exiv2 data");
-        goto cleanup;
-    }
 
     props = gexiv2_metadata_get_preview_properties(metadata);
 
@@ -386,66 +422,87 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview_exiv(EntangleImage *image,
                            g_strdup_printf("%d", orient),
                            g_free);
 
-    result = entangle_pixbuf_auto_rotate(master);
-
  cleanup:
     if (loader)
         g_object_unref(loader);
     if (preview)
         g_object_unref(preview);
-    if (metadata)
-        g_object_unref(metadata);
     return result;
 }
 
 
-static GdkPixbuf *entangle_pixbuf_open_image_preview(EntangleImage *image)
+static GdkPixbuf *entangle_pixbuf_open_image_preview(EntangleImage *image,
+                                                     GExiv2Metadata *metadata,
+                                                     gboolean applyOrientation)
 {
     GdkPixbuf *result = NULL;
+    g_printerr("Load previdew %s\n", entangle_image_get_filename(image));
     if (entangle_pixbuf_is_raw(image)) {
-        result = entangle_pixbuf_open_image_preview_raw(image);
-        if (!result)
-            result = entangle_pixbuf_open_image_preview_exiv(image, 256);
+        result = entangle_pixbuf_open_image_preview_raw(image, metadata, applyOrientation);
+        if (!result && metadata)
+            result = entangle_pixbuf_open_image_preview_exiv(image, 256, metadata);
         if (!result)
             result = entangle_pixbuf_open_image_master_raw(image);
     } else {
-        result = entangle_pixbuf_open_image_master_gdk(image);
+        result = entangle_pixbuf_open_image_master_gdk(image, metadata, applyOrientation);
     }
+    g_printerr("Load previdew done %s\n", entangle_image_get_filename(image));
     return result;
 }
 
 
-static GdkPixbuf *entangle_pixbuf_open_image_thumbnail(EntangleImage *image)
+static GdkPixbuf *entangle_pixbuf_open_image_thumbnail(EntangleImage *image,
+                                                       GExiv2Metadata *metadata,
+                                                       gboolean applyOrientation)
 {
     GdkPixbuf *result = NULL;
+    g_printerr("Load tnhumbnail %s\n", entangle_image_get_filename(image));
     if (entangle_pixbuf_is_raw(image))
-        result = entangle_pixbuf_open_image_preview_raw(image);
+        result = entangle_pixbuf_open_image_preview_raw(image, metadata, applyOrientation);
+    if (!result && metadata)
+        result = entangle_pixbuf_open_image_preview_exiv(image, 128, metadata);
     if (!result)
-        result = entangle_pixbuf_open_image_preview_exiv(image, 128);
-    if (!result)
-        result = entangle_pixbuf_open_image_master(image);
+        result = entangle_pixbuf_open_image_master(image, metadata, applyOrientation);
     return result;
 }
 
 
 GdkPixbuf *entangle_pixbuf_open_image(EntangleImage *image,
-                                      EntanglePixbufImageSlot slot)
+                                      EntanglePixbufImageSlot slot,
+                                      gboolean applyOrientation,
+                                      GExiv2Metadata **metadata)
 {
     ENTANGLE_DEBUG("Open image %s %d", entangle_image_get_filename(image), slot);
+    GExiv2Metadata *themetadata = gexiv2_metadata_new();
+    GdkPixbuf *ret = NULL;
+
+    if (!gexiv2_metadata_open_path(themetadata, entangle_image_get_filename(image), NULL)) {
+        g_object_unref(themetadata);
+        themetadata = NULL;
+    }
+
     switch (slot) {
     case ENTANGLE_PIXBUF_IMAGE_SLOT_MASTER:
-        return entangle_pixbuf_open_image_master(image);
+        ret = entangle_pixbuf_open_image_master(image, themetadata, applyOrientation);
+        break;
 
     case ENTANGLE_PIXBUF_IMAGE_SLOT_PREVIEW:
-        return entangle_pixbuf_open_image_preview(image);
+        ret = entangle_pixbuf_open_image_preview(image, themetadata, applyOrientation);
+        break;
 
     case ENTANGLE_PIXBUF_IMAGE_SLOT_THUMBNAIL:
-        return entangle_pixbuf_open_image_thumbnail(image);
+        ret = entangle_pixbuf_open_image_thumbnail(image, themetadata, applyOrientation);
+        break;
 
     default:
         g_warn_if_reached();
-        return NULL;
+        break;
     }
+    if (metadata)
+        *metadata = themetadata;
+    else
+        g_object_unref(themetadata);
+    return ret;
 }
 
 /*

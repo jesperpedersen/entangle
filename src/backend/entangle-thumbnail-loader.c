@@ -133,7 +133,8 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(EntanglePixbufLoader *loade
                                                      EntangleImage *image,
                                                      const char *uri,
                                                      const char *thumbname,
-                                                     time_t mtime)
+                                                     time_t mtime,
+                                                     GExiv2Metadata **metadata)
 {
     GdkPixbuf *master;
     GdkPixbuf *thumb = NULL;
@@ -149,7 +150,9 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(EntanglePixbufLoader *loade
     const char *orientationstr;
 
     master = entangle_pixbuf_open_image(image,
-                                        ENTANGLE_PIXBUF_IMAGE_SLOT_THUMBNAIL);
+                                        ENTANGLE_PIXBUF_IMAGE_SLOT_THUMBNAIL,
+                                        FALSE,
+                                        metadata);
 
     if (!master)
         return NULL;
@@ -209,7 +212,8 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(EntanglePixbufLoader *loade
 
 
 static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *loader,
-                                                        EntangleImage *image)
+                                                        EntangleImage *image,
+                                                        GExiv2Metadata **metadata G_GNUC_UNUSED)
 {
     EntangleThumbnailLoader *tloader = ENTANGLE_THUMBNAIL_LOADER(loader);
     EntangleThumbnailLoaderPrivate *priv = tloader->priv;
@@ -218,6 +222,7 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
     GdkPixbuf *result = NULL;
     GdkPixbuf *thumb = NULL;
     struct stat sb;
+    GExiv2Metadata *themetadata = NULL;
 
     /* Sanity check that the base image still exists */
     if (stat(entangle_image_get_filename(image), &sb) < 0) {
@@ -257,12 +262,13 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
         thumb = entangle_thumbnail_loader_generate(loader,
                                                    image,
                                                    uri, thumbname,
-                                                   sb.st_mtime);
+                                                   sb.st_mtime,
+                                                   &themetadata);
     }
 
     /* Apply any rotation hints so it is "normal" for the viewer */
     if (thumb) {
-        GdkPixbuf *tmp = entangle_pixbuf_auto_rotate(thumb);
+        GdkPixbuf *tmp = entangle_pixbuf_auto_rotate(thumb, themetadata);
         g_object_unref(thumb);
         thumb = tmp;
     }
@@ -316,6 +322,8 @@ static GdkPixbuf *entangle_thumbnail_loader_pixbuf_load(EntanglePixbufLoader *lo
     }
 
  cleanup:
+    if (themetadata)
+        g_object_unref(themetadata);
     g_free(uri);
     g_free(thumbname);
 

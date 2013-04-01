@@ -228,15 +228,12 @@ static gboolean entangle_pixbuf_loader_result(gpointer data)
 }
 
 
-static GdkPixbuf *entangle_pixbuf_load(EntanglePixbufLoader *loader, EntangleImage *image)
+static GdkPixbuf *entangle_pixbuf_load(EntanglePixbufLoader *loader, EntangleImage *image,
+                                       GExiv2Metadata **metadata)
 {
-    return ENTANGLE_PIXBUF_LOADER_GET_CLASS(loader)->pixbuf_load(loader, image);
+    return ENTANGLE_PIXBUF_LOADER_GET_CLASS(loader)->pixbuf_load(loader, image, metadata);
 }
 
-static GExiv2Metadata *entangle_metadata_load(EntanglePixbufLoader *loader, EntangleImage *image)
-{
-    return ENTANGLE_PIXBUF_LOADER_GET_CLASS(loader)->metadata_load(loader, image);
-}
 
 static void entangle_pixbuf_loader_worker(gpointer data,
                                           gpointer opaque)
@@ -267,7 +264,9 @@ static void entangle_pixbuf_loader_worker(gpointer data,
         g_object_ref(transform);
     g_mutex_unlock(priv->lock);
 
-    pixbuf = entangle_pixbuf_load(loader, image);
+    pixbuf = entangle_pixbuf_load(loader, image,
+                                  priv->withMetadata ?
+                                  &result->metadata : NULL);
     if (pixbuf) {
         if (transform) {
             result->pixbuf = entangle_colour_profile_transform_apply(transform,
@@ -276,9 +275,6 @@ static void entangle_pixbuf_loader_worker(gpointer data,
         } else {
             result->pixbuf = pixbuf;
         }
-    }
-    if (priv->withMetadata) {
-        result->metadata = entangle_metadata_load(loader, image);
     }
 
     result->loader = loader;

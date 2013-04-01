@@ -22,11 +22,13 @@
 #define __ENTANGLE_PIXBUF_H__
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gexiv2.h>
 #include "entangle-image.h"
 
 G_BEGIN_DECLS
 
-GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src);
+GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src,
+                                       GExiv2Metadata *metadata);
 
 typedef enum {
   ENTANGLE_PIXBUF_IMAGE_SLOT_MASTER,
@@ -35,7 +37,9 @@ typedef enum {
 } EntanglePixbufImageSlot;
 
 GdkPixbuf *entangle_pixbuf_open_image(EntangleImage *image,
-                                      EntanglePixbufImageSlot slot);
+                                      EntanglePixbufImageSlot slot,
+                                      gboolean applyOrientation,
+                                      GExiv2Metadata **metadata);
 
 #endif /* __ENTANGLE_PIXBUF_H__ */
 
