@@ -82,7 +82,7 @@ static void do_entangle_image_display_render_pixmap(EntangleImageDisplay *displa
 
     pw = gdk_pixbuf_get_width(pixbuf);
     ph = gdk_pixbuf_get_height(pixbuf);
-    priv->pixmap = cairo_image_surface_create(CAIRO_FORMAT_RGB24, pw, ph);
+    priv->pixmap = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, pw, ph);
 
     /* Paint the stack of images - the first one
      * is completely opaque. Others are layers

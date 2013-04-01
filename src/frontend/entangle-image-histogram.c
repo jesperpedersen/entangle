@@ -31,7 +31,9 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_HISTOGRAM, EntangleImageHistogramPrivate))
 
 struct _EntangleImageHistogramPrivate {
-    double freq[255];
+    double freq_red[255];
+    double freq_green[255];
+    double freq_blue[255];
     gboolean hasFreq;
     gulong imageNotifyID;
     EntangleImage *image;
@@ -56,7 +58,9 @@ static void do_entangle_pixmap_setup(EntangleImageHistogram *histogram)
 
     if (priv->image)
         pixbuf = entangle_image_get_pixbuf(priv->image);
-    memset(priv->freq, 0, sizeof(priv->freq));
+    memset(priv->freq_red, 0, sizeof(priv->freq_red));
+    memset(priv->freq_green, 0, sizeof(priv->freq_green));
+    memset(priv->freq_blue, 0, sizeof(priv->freq_blue));
 
     if (!pixbuf) {
         priv->hasFreq = FALSE;
@@ -73,8 +77,14 @@ static void do_entangle_pixmap_setup(EntangleImageHistogram *histogram)
     for (y = 0 ; y < h ; y++) {
         guchar *pixel = pixels;
         for (x = 0 ; x < w ; x++) {
-            double level = round(pixel[0] + pixel[1] + pixel[2])/3.0;
-            priv->freq[((int)level) & 0xff]++;
+            guchar level_red = pixel[0];
+            guchar level_green = pixel[1];
+            guchar level_blue = pixel[2];
+
+            priv->freq_red[level_red]++;
+            priv->freq_green[level_green]++;
+            priv->freq_blue[level_blue]++;
+
             pixel+=3;
         }
 
@@ -82,7 +92,9 @@ static void do_entangle_pixmap_setup(EntangleImageHistogram *histogram)
     }
 
     for (x = 0 ; x < 255 ; x++) {
-        priv->freq[x] = DOUBLE_EQUAL(priv->freq[x], 0.0) ? 0.0 : log(priv->freq[x]);
+        priv->freq_red[x] = DOUBLE_EQUAL(priv->freq_red[x], 0.0) ? 0.0 : log(priv->freq_red[x]);
+        priv->freq_green[x] = DOUBLE_EQUAL(priv->freq_green[x], 0.0) ? 0.0 : log(priv->freq_green[x]);
+        priv->freq_blue[x] = DOUBLE_EQUAL(priv->freq_blue[x], 0.0) ? 0.0 : log(priv->freq_blue[x]);
     }
 
     priv->hasFreq = TRUE;
@@ -144,6 +156,23 @@ static void entangle_image_histogram_finalize(GObject *object)
 }
 
 
+static void entangle_image_histogram_draw_line(cairo_t *cr, float from_x, float from_y, float to_x, float to_y)
+{
+    cairo_move_to(cr, from_x, from_y);
+    cairo_line_to(cr, to_x,  to_y);
+}
+
+
+static void entangle_image_histogram_draw_grid(cairo_t *cr, const float width, const float height)
+{
+    for (int k = 1; k < 4; k++) {
+        entangle_image_histogram_draw_line(cr, k/(float)4 * width, 0, k/(float)4 * width, height);
+        cairo_stroke(cr);
+        entangle_image_histogram_draw_line(cr, 0, k/(float)4 * height, width, k/(float)4 * height);
+        cairo_stroke(cr);
+    }
+}
+
 static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(widget), FALSE);
@@ -157,32 +186,84 @@ static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
     ww = gdk_window_get_width(gtk_widget_get_window(widget));
     wh = gdk_window_get_height(gtk_widget_get_window(widget));
 
+    cairo_save(cr);
+
     /* We need to fill the background first */
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
     cairo_rectangle(cr, 0, 0, ww, wh);
     cairo_fill(cr);
 
+    /* Draw a grid */
+    cairo_save(cr);
+    cairo_set_line_width(cr, 0.4);
+    cairo_set_source_rgba(cr, 0.4, 0.4, 0.4, 0.2);
+    entangle_image_histogram_draw_grid(cr, ww, wh);
+    cairo_restore(cr); 
+
     if (priv->hasFreq) {
         for (idx = 0 ; idx < 255 ; idx++) {
-            if (priv->freq[idx] > peak)
-                peak = priv->freq[idx];
+            if (priv->freq_red[idx] > peak)
+                peak = priv->freq_red[idx];
+            if (priv->freq_green[idx] > peak)
+                peak = priv->freq_green[idx];
+            if (priv->freq_blue[idx] > peak)
+                peak = priv->freq_blue[idx];
         }
         cairo_set_line_width(cr, 3);
         cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-        cairo_set_source_rgba(cr, 0.3, 0.3, 0.3, 1.0);
+        cairo_set_operator(cr, CAIRO_OPERATOR_ADD);
         /* Draw the actual histogram */
+
+        /* Red channel */
+        cairo_save(cr);
+        cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
         cairo_move_to(cr, 0, wh);
 
         for (idx = 0 ; idx < 255 ; idx++) {
             double x = (double)ww * (double)idx / 255.0;
-            double y = (double)(wh - 2) * (double)priv->freq[idx] / peak;
+            double y = (double)(wh - 2) * (double)priv->freq_red[idx] / peak;
 
             cairo_line_to(cr, x, wh - y);
         }
         cairo_line_to(cr, ww, wh);
         cairo_line_to(cr, 0, wh);
         cairo_fill(cr);
+        cairo_restore(cr);
+
+        /* Green channel */
+        cairo_save(cr);
+        cairo_set_source_rgba(cr, 0.0, 1.0, 0.0, 0.7);
+        cairo_move_to(cr, 0, wh);
+
+        for (idx = 0 ; idx < 255 ; idx++) {
+            double x = (double)ww * (double)idx / 255.0;
+            double y = (double)(wh - 2) * (double)priv->freq_green[idx] / peak;
+
+            cairo_line_to(cr, x, wh - y);
+        }
+        cairo_line_to(cr, ww, wh);
+        cairo_line_to(cr, 0, wh);
+        cairo_fill(cr);
+        cairo_restore(cr);
+
+        /* Blue channel */
+        cairo_save(cr);
+        cairo_set_source_rgba(cr, 0.0, 0.0, 1.0, 0.7);
+        cairo_move_to(cr, 0, wh);
+
+        for (idx = 0 ; idx < 255 ; idx++) {
+            double x = (double)ww * (double)idx / 255.0;
+            double y = (double)(wh - 2) * (double)priv->freq_blue[idx] / peak;
+
+            cairo_line_to(cr, x, wh - y);
+        }
+        cairo_line_to(cr, ww, wh);
+        cairo_line_to(cr, 0, wh);
+        cairo_fill(cr);
+        cairo_restore(cr);
     }
+
+    cairo_restore(cr);
 
     return TRUE;
 }
@@ -304,7 +385,6 @@ EntangleImage *entangle_image_histogram_get_image(EntangleImageHistogram *histog
 
     return priv->image;
 }
-
 
 /*
  * Local variables:
