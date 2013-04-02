@@ -184,7 +184,6 @@ static GdkPixbuf *entangle_pixbuf_open_image_master_raw(EntangleImage *image)
         goto cleanup;
     }
 
-    g_printerr("Raw %dx%d %s\n", img->width, img->height, entangle_image_get_filename(image));
     ENTANGLE_DEBUG("New pixbuf %s", entangle_image_get_filename(image));
     result = gdk_pixbuf_new_from_data(img->data,
                                       GDK_COLORSPACE_RGB,
@@ -234,7 +233,6 @@ static GdkPixbuf *entangle_pixbuf_open_image_master(EntangleImage *image,
                                                     GExiv2Metadata *metadata,
                                                     gboolean applyOrientation)
 {
-    g_printerr("Load master %s\n", entangle_image_get_filename(image));
     if (entangle_pixbuf_is_raw(image))
         return entangle_pixbuf_open_image_master_raw(image);
     else
@@ -436,7 +434,6 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview(EntangleImage *image,
                                                      gboolean applyOrientation)
 {
     GdkPixbuf *result = NULL;
-    g_printerr("Load previdew %s\n", entangle_image_get_filename(image));
     if (entangle_pixbuf_is_raw(image)) {
         result = entangle_pixbuf_open_image_preview_raw(image, metadata, applyOrientation);
         if (!result && metadata)
@@ -446,7 +443,6 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview(EntangleImage *image,
     } else {
         result = entangle_pixbuf_open_image_master_gdk(image, metadata, applyOrientation);
     }
-    g_printerr("Load previdew done %s\n", entangle_image_get_filename(image));
     return result;
 }
 
@@ -456,7 +452,6 @@ static GdkPixbuf *entangle_pixbuf_open_image_thumbnail(EntangleImage *image,
                                                        gboolean applyOrientation)
 {
     GdkPixbuf *result = NULL;
-    g_printerr("Load tnhumbnail %s\n", entangle_image_get_filename(image));
     if (entangle_pixbuf_is_raw(image))
         result = entangle_pixbuf_open_image_preview_raw(image, metadata, applyOrientation);
     if (!result && metadata)

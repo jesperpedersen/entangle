@@ -84,7 +84,6 @@ static GdkPixbuf *entangle_image_loader_pixbuf_load(EntanglePixbufLoader *loader
                                                     GExiv2Metadata **metadata)
 {
     EntangleImageLoaderPrivate *priv = (ENTANGLE_IMAGE_LOADER(loader))->priv;
-    g_printerr("Preview %d\n", priv->embeddedPreview);
     if (priv->embeddedPreview)
         return entangle_pixbuf_open_image(image,
                                           ENTANGLE_PIXBUF_IMAGE_SLOT_PREVIEW,
@@ -151,7 +150,6 @@ gboolean entangle_image_loader_get_embedded_preview(EntangleImageLoader *loader)
 void entangle_image_loader_set_embedded_preview(EntangleImageLoader *loader, gboolean enable)
 {
     EntangleImageLoaderPrivate *priv = loader->priv;
-    g_printerr("Set preview %d\n", enable);
     priv->embeddedPreview = enable;
     entangle_pixbuf_loader_trigger_reload(ENTANGLE_PIXBUF_LOADER(loader));
 }
