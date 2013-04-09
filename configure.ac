@@ -54,7 +54,7 @@ dnl ****************************************************************************
 AC_PROG_CC_STDC
 AM_PROG_CC_C_O
 
-AM_PROG_LIBTOOL
+LT_INIT([disable-static])
 
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0 >= $GLIB_REQUIRED])
