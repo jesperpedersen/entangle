@@ -330,8 +330,6 @@ static char *entangle_session_next_file_prefix(EntangleSession *session)
     char *prefix;
     char *format;
     char *filename;
-    int i;
-    int max;
     int ndigits;
 
     ENTANGLE_DEBUG("NEXT FILENAME '%s'", template);
@@ -352,9 +350,6 @@ static char *entangle_session_next_file_prefix(EntangleSession *session)
                        template - priv->filenamePattern);
 
     ndigits = postfix - template;
-
-    for (max = 1, i = 0 ; i < ndigits ; i++)
-        max *= 10;
 
     format = g_strdup_printf("%%s%%0%dd%%s", ndigits);
 

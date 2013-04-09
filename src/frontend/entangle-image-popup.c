@@ -267,8 +267,6 @@ void entangle_image_popup_show(EntangleImagePopup *popup,
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
-    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
-
     gtk_widget_realize(win);
 
     gtk_window_set_transient_for(GTK_WINDOW(win), parent);
@@ -306,8 +304,6 @@ void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monito
     EntangleImagePopupPrivate *priv = popup->priv;
     GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
     GdkCursor *null_cursor = gdk_cursor_new(GDK_BLANK_CURSOR);
-
-    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-popup"));
 
     gtk_widget_realize(win);
 

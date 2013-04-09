@@ -496,7 +496,6 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
             int date;
             gchar *text;
 
-            value = gtk_entry_new();
             g_object_get(control, "value", &date, NULL);
             text = g_strdup_printf("%d", date);
             value = gtk_label_new(text);
