@@ -10,12 +10,12 @@ msgstr ""
 "POT-Creation-Date: 2013-04-24 19:44+0100\n"
 "PO-Revision-Date: 2013-04-24 18:44+0000\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
-"Language-Team: Interlingua <trans-ia@lists.fedoraproject.org>\n"
+"Language-Team: Tibetan <trans-bo@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ia\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: bo\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../src/backend/entangle-camera-list.c:218
 #: ../src/backend/entangle-camera.c:692
