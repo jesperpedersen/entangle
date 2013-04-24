@@ -71,6 +71,36 @@ enum {
 };
 
 
+struct idle_emit_data {
+    EntangleImage *image;
+    EntanglePixbufLoader *loader;
+    const char *name;
+};
+
+static gboolean do_idle_emit_func(gpointer opaque)
+{
+    struct idle_emit_data *data = opaque;
+
+    g_signal_emit_by_name(data->loader, data->name, data->image);
+    g_object_unref(data->image);
+    g_object_unref(data->loader);
+    g_free(data);
+
+    return FALSE;
+}
+
+static void do_idle_emit(EntanglePixbufLoader *loader,
+                         const char *name,
+                         EntangleImage *image)
+{
+    struct idle_emit_data *data = g_new0(struct idle_emit_data, 1);
+    data->loader = g_object_ref(loader);
+    data->image = g_object_ref(image);
+    data->name = name;
+    g_idle_add(do_idle_emit_func, data);
+}
+
+
 static void entangle_pixbuf_loader_get_property(GObject *object,
                                                 guint prop_id,
                                                 GValue *value,
@@ -211,9 +241,9 @@ static gboolean entangle_pixbuf_loader_result(gpointer data)
     if (entry->refs) {
         g_mutex_unlock(priv->lock);
         ENTANGLE_DEBUG("Emit loaded %p %p %p", result->image, result->pixbuf, result->metadata);
-        g_signal_emit_by_name(loader, "pixbuf-loaded", result->image);
+        do_idle_emit(loader, "pixbuf-loaded", result->image);
         if (result->metadata)
-            g_signal_emit_by_name(loader, "metadata-loaded", result->image);
+            do_idle_emit(loader, "metadata-loaded", result->image);
         g_mutex_lock(priv->lock);
     } else if (!entry->pending) {
         g_hash_table_remove(priv->pixbufs, entangle_image_get_filename(result->image));
@@ -477,35 +507,6 @@ GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader
     return metadata;
 }
 
-
-struct idle_emit_data {
-    EntangleImage *image;
-    EntanglePixbufLoader *loader;
-    const char *name;
-};
-
-static gboolean do_idle_emit_func(gpointer opaque)
-{
-    struct idle_emit_data *data = opaque;
-
-    g_signal_emit_by_name(data->loader, data->name, data->image);
-    g_object_unref(data->image);
-    g_object_unref(data->loader);
-    g_free(data);
-
-    return FALSE;
-}
-
-static void do_idle_emit(EntanglePixbufLoader *loader,
-                         const char *name,
-                         EntangleImage *image)
-{
-    struct idle_emit_data *data = g_new0(struct idle_emit_data, 1);
-    data->loader = g_object_ref(loader);
-    data->image = g_object_ref(image);
-    data->name = name;
-    g_idle_add(do_idle_emit_func, data);
-}
 
 gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
                                      EntangleImage *image)

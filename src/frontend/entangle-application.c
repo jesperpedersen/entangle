@@ -161,7 +161,6 @@ static void entangle_application_startup(GApplication *gapp)
     EntangleApplicationPrivate *priv = app->priv;
     GList *cameras = NULL, *tmp;
 
-    gdk_threads_enter();
     if (entangle_preferences_interface_get_auto_connect(priv->preferences))
         cameras = tmp = entangle_camera_list_get_cameras(priv->cameras);
 
@@ -184,8 +183,6 @@ static void entangle_application_startup(GApplication *gapp)
         }
         g_list_free(cameras);
     }
-
-    gdk_threads_leave();
 
     (*G_APPLICATION_CLASS(entangle_application_parent_class)->startup)(gapp);
 }

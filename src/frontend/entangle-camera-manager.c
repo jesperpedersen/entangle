@@ -637,7 +637,6 @@ static void do_camera_task_error(EntangleCameraManager *manager,
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
-    gdk_threads_enter();
     GtkWidget *msg = gtk_message_dialog_new(NULL,
                                             0,
                                             GTK_MESSAGE_ERROR,
@@ -653,7 +652,6 @@ static void do_camera_task_error(EntangleCameraManager *manager,
                              G_CALLBACK (gtk_widget_destroy),
                              msg);
     gtk_widget_show_all(msg);
-    gdk_threads_leave();
 }
 
 
@@ -672,7 +670,6 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
     GError *error = NULL;
 
     if (!entangle_camera_load_controls_finish(camera, result, &error)) {
-        gdk_threads_enter();
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
@@ -688,7 +685,6 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
                                  G_CALLBACK (gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
-        gdk_threads_leave();
 
         g_error_free(error);
     }
@@ -724,12 +720,10 @@ static void do_camera_process_events_finish(GObject *src,
         return;
     }
 
-    gdk_threads_enter();
     if (!priv->cameraReady) {
         priv->cameraReady = TRUE;
         do_capture_widget_sensitivity(manager);
     }
-    gdk_threads_leave();
 
     if (!priv->camera)
         return;
@@ -814,7 +808,6 @@ static void do_camera_task_complete(EntangleCameraFileTaskData *data)
                                             do_camera_preview_image_finish,
                                             data);
     } else {
-        gdk_threads_enter();
 
         preview = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-preview"));
         gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(preview), FALSE);
@@ -822,7 +815,6 @@ static void do_camera_task_complete(EntangleCameraFileTaskData *data)
         priv->taskActive = priv->taskPreview = priv->taskCapture = FALSE;
 
         do_capture_widget_sensitivity(data->manager);
-        gdk_threads_leave();
 
         g_cancellable_reset(priv->taskConfirm);
         g_cancellable_reset(priv->taskCancel);
@@ -855,10 +847,8 @@ static void do_camera_file_download(EntangleCamera *cam G_GNUC_UNUSED, EntangleC
     ENTANGLE_DEBUG("Saved to %s", localpath);
     image = entangle_image_new_file(localpath);
 
-    gdk_threads_enter();
     entangle_session_add(priv->session, image);
     do_select_image(manager, image);
-    gdk_threads_leave();
 
     g_object_unref(image);
 
@@ -1127,9 +1117,7 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
 
     image = entangle_image_new_pixbuf(pixbuf);
 
-    gdk_threads_enter();
     do_select_image(manager, image);
-    gdk_threads_leave();
 
     g_object_unref(pixbuf);
     g_object_unref(is);
@@ -1146,8 +1134,6 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     GtkWidget *mtr;
     GtkWidget *operation;
 
-    gdk_threads_enter();
-
     priv->taskTarget = target;
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
     operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
@@ -1157,8 +1143,6 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
 
     gtk_widget_show(operation);
-
-    gdk_threads_leave();
 }
 
 
@@ -1170,13 +1154,9 @@ static void do_entangle_camera_progress_update(EntangleProgress *iface, float cu
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
 
-    gdk_threads_enter();
-
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
 
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), current / priv->taskTarget);
-
-    gdk_threads_leave();
 }
 
 
@@ -1189,8 +1169,6 @@ static void do_entangle_camera_progress_stop(EntangleProgress *iface)
     GtkWidget *mtr;
     GtkWidget *operation;
 
-    gdk_threads_enter();
-
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
     operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
 
@@ -1199,8 +1177,6 @@ static void do_entangle_camera_progress_stop(EntangleProgress *iface)
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
 
     gtk_widget_hide(operation);
-
-    gdk_threads_leave();
 }
 
 
@@ -1265,12 +1241,9 @@ static void do_camera_load_controls_finish(GObject *source,
     GError *error = NULL;
 
     if (entangle_camera_load_controls_finish(cam, result, &error)) {
-        gdk_threads_enter();
         do_capture_widget_sensitivity(manager);
         entangle_control_panel_set_camera(priv->controlPanel, priv->camera);
-        gdk_threads_leave();
     } else {
-        gdk_threads_enter();
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
@@ -1286,7 +1259,6 @@ static void do_camera_load_controls_finish(GObject *source,
                                  G_CALLBACK (gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
-        gdk_threads_leave();
 
         g_error_free(error);
     }
@@ -1314,7 +1286,6 @@ static void do_camera_connect_finish(GObject *source,
                                             manager);
     } else {
         int response;
-        gdk_threads_enter();
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_ERROR,
@@ -1344,7 +1315,6 @@ static void do_camera_connect_finish(GObject *source,
                                           do_camera_connect_finish,
                                           manager);
         }
-        gdk_threads_leave();
         g_error_free(error);
     }
 }
@@ -1401,7 +1371,6 @@ static void do_camera_unmount_finish(GObject *source,
                                       do_camera_connect_finish,
                                       manager);
     } else {
-        gdk_threads_enter();
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
@@ -1418,7 +1387,6 @@ static void do_camera_unmount_finish(GObject *source,
                                  msg);
         gtk_widget_show_all(msg);
         entangle_camera_manager_set_camera(manager, NULL);
-        gdk_threads_leave();
 
         g_error_free(error);
     }
@@ -1433,9 +1401,7 @@ static void do_camera_control_changed(EntangleCamera *cam G_GNUC_UNUSED,
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(data);
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    gdk_threads_enter();
     priv->cameraChanged = TRUE;
-    gdk_threads_leave();
 }
 
 
@@ -1511,12 +1477,9 @@ static void do_camera_removed(EntangleCameraList *cameras G_GNUC_UNUSED,
 
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(data);
     EntangleCameraManagerPrivate *priv = manager->priv;
-    gdk_threads_enter();
 
     if (priv->camera == camera)
         entangle_camera_manager_set_camera(manager, NULL);
-
-    gdk_threads_leave();
 }
 
 
@@ -2078,7 +2041,6 @@ static void do_camera_autofocus_finish(GObject *source,
     GError *error = NULL;
 
     if (!entangle_camera_autofocus_finish(camera, result, &error)) {
-        gdk_threads_enter();
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
@@ -2094,7 +2056,6 @@ static void do_camera_autofocus_finish(GObject *source,
                                  G_CALLBACK (gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
-        gdk_threads_leave();
 
         g_error_free(error);
     }
@@ -2111,7 +2072,6 @@ static void do_camera_manualfocus_finish(GObject *source,
     GError *error = NULL;
 
     if (!entangle_camera_manualfocus_finish(camera, result, &error)) {
-        gdk_threads_enter();
         GtkWidget *msg = gtk_message_dialog_new(NULL,
                                                 0,
                                                 GTK_MESSAGE_ERROR,
@@ -2127,7 +2087,6 @@ static void do_camera_manualfocus_finish(GObject *source,
                                  G_CALLBACK (gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
-        gdk_threads_leave();
 
         g_error_free(error);
     }
@@ -2934,9 +2893,7 @@ static void do_pixbuf_loaded(EntanglePixbufLoader *loader,
 
     GdkPixbuf *pixbuf = entangle_pixbuf_loader_get_pixbuf(loader, image);
 
-    gdk_threads_enter();
     entangle_image_set_pixbuf(image, pixbuf);
-    gdk_threads_leave();
 }
 
 
@@ -2947,9 +2904,7 @@ static void do_metadata_loaded(EntanglePixbufLoader *loader,
 
     GExiv2Metadata *metadata = entangle_pixbuf_loader_get_metadata(loader, image);
 
-    gdk_threads_enter();
     entangle_image_set_metadata(image, metadata);
-    gdk_threads_leave();
 }
 
 
@@ -2958,9 +2913,7 @@ static void do_pixbuf_unloaded(EntanglePixbufLoader *loader G_GNUC_UNUSED,
 {
     g_return_if_fail(ENTANGLE_IS_IMAGE(image));
 
-    gdk_threads_enter();
     entangle_image_set_pixbuf(image, NULL);
-    gdk_threads_leave();
 }
 
 
@@ -2969,9 +2922,7 @@ static void do_metadata_unloaded(EntanglePixbufLoader *loader G_GNUC_UNUSED,
 {
     g_return_if_fail(ENTANGLE_IS_IMAGE(image));
 
-    gdk_threads_enter();
     entangle_image_set_metadata(image, NULL);
-    gdk_threads_leave();
 }
 
 
@@ -2982,9 +2933,7 @@ static gboolean do_image_status_hide(gpointer data)
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    gdk_threads_enter();
     ViewAutoDrawer_SetPinned(VIEW_AUTODRAWER(priv->imageDrawer), FALSE);
-    gdk_threads_leave();
     priv->imageDrawerTimer = 0;
     return FALSE;
 }

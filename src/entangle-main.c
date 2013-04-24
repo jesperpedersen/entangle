@@ -57,9 +57,6 @@ int main(int argc, char **argv)
 
     g_set_application_name("Entangle");
 
-    g_thread_init(NULL);
-    gdk_threads_init();
-
     group = g_option_group_new("entangle",
                                "Entangle application options",
                                "Show Entangle options",
