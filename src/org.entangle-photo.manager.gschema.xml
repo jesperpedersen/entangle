@@ -37,6 +37,12 @@
       <description>Blank screen while capturing images</description>
     </key>
 
+    <key type="b" name="histogram-linear">
+      <default>false</default>
+      <summary>Show linear histogram</summary>
+      <description>Show linear histogram instead of logarithmic</description>
+    </key>
+
     <key type="as" name="plugins">
       <default>[]</default>
       <summary>Plugins</summary>
@@ -150,6 +156,5 @@
       <summary>Onion skin</summary>
       <description>Enable image overlay display</description>
     </key>
-
   </schema>
 </schemalist>

@@ -344,6 +344,18 @@ static void entangle_camera_manager_update_mask_enabled(EntangleCameraManager *m
 }
 
 
+static void entangle_camera_manager_update_histogram_linear(EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean histogram_linear = entangle_preferences_interface_get_histogram_linear(prefs);
+
+    entangle_image_histogram_set_histogram_linear(priv->imageHistogram, histogram_linear);
+}
+
+
 static void do_presentation_monitor_toggled(GtkCheckMenuItem *menu, gpointer data)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(data));
@@ -440,7 +452,9 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
 
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(data);
 
-    if (g_str_equal(spec->name, "cms-enabled") ||
+    if (g_str_equal(spec->name, "interface-histogram-linear")) {
+        entangle_camera_manager_update_histogram_linear(manager);
+    } else if (g_str_equal(spec->name, "cms-enabled") ||
         g_str_equal(spec->name, "cms-rgb-profile") ||
         g_str_equal(spec->name, "cms-monitor-profile") ||
         g_str_equal(spec->name, "cms-detect-system-profile") ||
@@ -1541,6 +1555,7 @@ static void entangle_camera_manager_set_property(GObject *object,
             directory = entangle_preferences_capture_get_last_session(prefs);
             pattern = entangle_preferences_capture_get_filename_pattern(prefs);
 
+            entangle_camera_manager_update_histogram_linear(manager);
             entangle_camera_manager_update_colour_transform(manager);
             entangle_camera_manager_update_aspect_ratio(manager);
             entangle_camera_manager_update_mask_opacity(manager);
@@ -2152,6 +2167,12 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
         EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
         gboolean enabled = entangle_preferences_img_get_mask_enabled(prefs);
         entangle_preferences_img_set_mask_enabled(prefs, !enabled);
+    }   break;
+
+    case GDK_KEY_h: {
+        EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+        gboolean linear = entangle_preferences_interface_get_histogram_linear(prefs);
+        entangle_preferences_interface_set_histogram_linear(prefs, !linear);
     }   break;
 
     case GDK_KEY_a: {

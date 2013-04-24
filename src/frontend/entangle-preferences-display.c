@@ -69,6 +69,7 @@ void do_cms_rendering_intent_changed(GtkComboBox *src, EntanglePreferencesDispla
 
 void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_interface_histogram_linear_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
 void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
@@ -186,6 +187,15 @@ static void entangle_preferences_display_notify(GObject *object,
         if (newvalue != oldvalue)
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
     } else if (strcmp(spec->name, "interface-screen-blank") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "interface-histogram-linear") == 0) {
         gboolean newvalue;
         gboolean oldvalue;
 
@@ -402,6 +412,9 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_interface_get_auto_connect(prefs));
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-screen-blank"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_interface_get_screen_blank(prefs));
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-histogram-linear"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp),
+                                 entangle_preferences_interface_get_histogram_linear(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-filename-pattern"));
     gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_capture_get_filename_pattern(prefs));
@@ -685,6 +698,18 @@ void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferences
     gboolean enabled = gtk_toggle_button_get_active(src);
 
     entangle_preferences_interface_set_screen_blank(prefs, enabled);
+}
+
+
+void do_interface_histogram_linear_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+
+    entangle_preferences_interface_set_histogram_linear(prefs, enabled);
 }
 
 

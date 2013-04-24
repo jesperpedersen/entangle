@@ -51,6 +51,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_INTERFACE_AUTO_CONNECT     "auto-connect"
 #define SETTING_INTERFACE_SCREEN_BLANK     "screen-blank"
 #define SETTING_INTERFACE_PLUGINS          "plugins"
+#define SETTING_INTERFACE_HISTOGRAM_LINEAR "histogram-linear"
 
 #define SETTING_CAPTURE_FILENAME_PATTERN   "filename-pattern"
 #define SETTING_CAPTURE_LAST_SESSION       "last-session"
@@ -72,8 +73,10 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_IMG_ONION_SKIN             "onion-skin"
 #define SETTING_IMG_ONION_LAYERS           "onion-layers"
 
+
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
 #define PROP_NAME_INTERFACE_SCREEN_BLANK     SETTING_INTERFACE "-" SETTING_INTERFACE_SCREEN_BLANK
+#define PROP_NAME_INTERFACE_HISTOGRAM_LINEAR SETTING_INTERFACE "-" SETTING_INTERFACE_HISTOGRAM_LINEAR
 
 #define PROP_NAME_CAPTURE_FILENAME_PATTERN   SETTING_CAPTURE "-" SETTING_CAPTURE_FILENAME_PATTERN
 #define PROP_NAME_CAPTURE_LAST_SESSION       SETTING_CAPTURE "-" SETTING_CAPTURE_LAST_SESSION
@@ -100,6 +103,7 @@ enum {
 
     PROP_INTERFACE_AUTO_CONNECT,
     PROP_INTERFACE_SCREEN_BLANK,
+    PROP_INTERFACE_HISTOGRAM_LINEAR,
 
     PROP_CAPTURE_FILENAME_PATTERN,
     PROP_CAPTURE_LAST_SESSION,
@@ -170,6 +174,12 @@ static void entangle_preferences_get_property(GObject *object,
             g_value_set_boolean(value,
                                 g_settings_get_boolean(priv->interfaceSettings,
                                                        SETTING_INTERFACE_SCREEN_BLANK));
+            break;
+
+        case PROP_INTERFACE_HISTOGRAM_LINEAR:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->interfaceSettings,
+                                                       SETTING_INTERFACE_HISTOGRAM_LINEAR));
             break;
 
         case PROP_CAPTURE_LAST_SESSION:
@@ -313,6 +323,12 @@ static void entangle_preferences_set_property(GObject *object,
         case PROP_INTERFACE_SCREEN_BLANK:
             g_settings_set_boolean(priv->interfaceSettings,
                                    SETTING_INTERFACE_SCREEN_BLANK,
+                                   g_value_get_boolean(value));
+            break;
+
+        case PROP_INTERFACE_HISTOGRAM_LINEAR:
+            g_settings_set_boolean(priv->interfaceSettings,
+                                   SETTING_INTERFACE_HISTOGRAM_LINEAR,
                                    g_value_get_boolean(value));
             break;
 
@@ -477,6 +493,17 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                     g_param_spec_boolean(PROP_NAME_INTERFACE_SCREEN_BLANK,
                                                          "Screen blank",
                                                          "Blank screen while capturing images",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_INTERFACE_HISTOGRAM_LINEAR,
+                                    g_param_spec_boolean(PROP_NAME_INTERFACE_HISTOGRAM_LINEAR,
+                                                         "Linear histogram",
+                                                         "Use linear histogram",
                                                          FALSE,
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_STATIC_NAME |
@@ -768,6 +795,29 @@ void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs,
     g_settings_set_boolean(priv->interfaceSettings,
                            SETTING_INTERFACE_SCREEN_BLANK, blank);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_INTERFACE_SCREEN_BLANK);
+}
+
+
+gboolean entangle_preferences_interface_get_histogram_linear(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->interfaceSettings,
+                                  SETTING_INTERFACE_HISTOGRAM_LINEAR);
+}
+
+
+void entangle_preferences_interface_set_histogram_linear(EntanglePreferences *prefs, gboolean enabled)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->interfaceSettings,
+                           SETTING_INTERFACE_HISTOGRAM_LINEAR, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_INTERFACE_HISTOGRAM_LINEAR);
 }
 
 

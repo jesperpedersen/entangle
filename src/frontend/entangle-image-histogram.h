@@ -60,6 +60,10 @@ void entangle_image_histogram_set_image(EntangleImageHistogram *histogram,
                                         EntangleImage *image);
 EntangleImage *entangle_image_histogram_get_image(EntangleImageHistogram *histogram);
 
+void entangle_image_histogram_set_histogram_linear(EntangleImageHistogram *histogram,
+                                                   gboolean linear);
+gboolean entangle_image_histogram_get_histogram_linear(EntangleImageHistogram *histogram);
+
 G_END_DECLS
 
 #endif /* __ENTANGLE_IMAGE_HISTOGRAM_H__ */
