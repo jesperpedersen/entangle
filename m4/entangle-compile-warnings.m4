@@ -98,7 +98,7 @@ AC_DEFUN([ENTANGLE_COMPILE_WARNINGS],[
     gl_WARN_ADD([-Wno-suggest-attribute=pure])
     gl_WARN_ADD([-Wno-suggest-attribute=const])
 
-    if test "$enable_werror" = "yes"
+    if test "$set_werror" = "yes"
     then
       gl_WARN_ADD([-Werror])
     fi
