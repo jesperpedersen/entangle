@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-24 19:44+0100\n"
-"PO-Revision-Date: 2013-04-24 18:44+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"POT-Creation-Date: 2013-07-08 20:36+0100\n"
+"PO-Revision-Date: 2013-04-24 18:57+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -200,7 +200,7 @@ msgid "Manual focus control was not a range widget"
 msgstr "Віджет керування фокусуванням вручну не є віджетом діапазону значень"
 
 #: ../src/frontend/entangle-camera-info.c:236
-#: ../src/frontend/entangle-camera-manager.c:3036
+#: ../src/frontend/entangle-camera-manager.c:2985
 #: ../src/frontend/entangle-camera-picker.c:521
 #: ../src/frontend/entangle-camera-support.c:192
 #: ../src/frontend/entangle-help-about.c:114
@@ -243,41 +243,41 @@ msgstr "Для цього фотоапарата не передбачено з�
 msgid "This camera does not support image preview"
 msgstr "Для цього фотоапарата не передбачено попереднього перегляду знімків"
 
-#: ../src/frontend/entangle-camera-manager.c:645
+#: ../src/frontend/entangle-camera-manager.c:644
 #, c-format
 msgid "Operation: %s"
 msgstr "Дія: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:647
+#: ../src/frontend/entangle-camera-manager.c:646
 msgid "Entangle: Operation failed"
 msgstr "Entangle: помилка дії"
 
-#: ../src/frontend/entangle-camera-manager.c:680
-#: ../src/frontend/entangle-camera-manager.c:1278
+#: ../src/frontend/entangle-camera-manager.c:677
+#: ../src/frontend/entangle-camera-manager.c:1251
 msgid "Camera load controls failed"
 msgstr "Помилка завантаження засобів керування фотоапаратом"
 
-#: ../src/frontend/entangle-camera-manager.c:682
-#: ../src/frontend/entangle-camera-manager.c:1280
+#: ../src/frontend/entangle-camera-manager.c:679
+#: ../src/frontend/entangle-camera-manager.c:1253
 msgid "Entangle: Camera load controls failed"
 msgstr "Entangle: не вдалося завантажити засоби керування фотоапаратом"
 
-#: ../src/frontend/entangle-camera-manager.c:721
+#: ../src/frontend/entangle-camera-manager.c:717
 msgid "Monitor"
 msgstr "Монітор"
 
-#: ../src/frontend/entangle-camera-manager.c:879
-#: ../src/frontend/entangle-camera-manager.c:2722
+#: ../src/frontend/entangle-camera-manager.c:869
+#: ../src/frontend/entangle-camera-manager.c:2681
 msgid "Delete"
 msgstr "Вилучити"
 
-#: ../src/frontend/entangle-camera-manager.c:899
+#: ../src/frontend/entangle-camera-manager.c:889
 msgid "Download"
 msgstr "Звантажити"
 
-#: ../src/frontend/entangle-camera-manager.c:930
-#: ../src/frontend/entangle-camera-manager.c:968
-#: ../src/frontend/entangle-camera-manager.c:996
+#: ../src/frontend/entangle-camera-manager.c:920
+#: ../src/frontend/entangle-camera-manager.c:958
+#: ../src/frontend/entangle-camera-manager.c:986
 #: ../src/frontend/entangle-camera-manager.xml.h:22
 #: ../src/frontend/entangle-camera-picker.c:533
 #: ../src/frontend/entangle-preferences-display.c:975
@@ -286,23 +286,23 @@ msgstr "Звантажити"
 msgid "Capture"
 msgstr "Захопити"
 
-#: ../src/frontend/entangle-camera-manager.c:1031
+#: ../src/frontend/entangle-camera-manager.c:1021
 #: ../src/frontend/entangle-camera-manager.xml.h:24
 msgid "Preview"
 msgstr "Перегляд"
 
-#: ../src/frontend/entangle-camera-manager.c:1230
+#: ../src/frontend/entangle-camera-manager.c:1206
 msgid "Camera Manager - Entangle"
 msgstr "Керування фотоапаратами — Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1322
-#: ../src/frontend/entangle-camera-manager.c:2577
+#: ../src/frontend/entangle-camera-manager.c:1293
+#: ../src/frontend/entangle-camera-manager.c:2536
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr "Не вдалося встановити з’єднання з фотоапаратом: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:1327
-#: ../src/frontend/entangle-camera-manager.c:2583
+#: ../src/frontend/entangle-camera-manager.c:1298
+#: ../src/frontend/entangle-camera-manager.c:2542
 msgid ""
 "Check that the camera is not\n"
 "\n"
@@ -311,72 +311,72 @@ msgid ""
 " - in <b>sleep mode</b> to save battery power\n"
 msgstr "Переконайтеся, що виконуються такі умови:\n\n - з фотоапаратом не працює ніяка стороння <b>програма</b>;\n - фотоапарат не змонтовано як <b>файлову систему</b> стільничним середовищем;\n - фотоапарат не перебуває у <b>режимі сну</b>, призначеному для економії заряду акумуляторів.\n"
 
-#: ../src/frontend/entangle-camera-manager.c:1332
-#: ../src/frontend/entangle-camera-manager.c:2588
+#: ../src/frontend/entangle-camera-manager.c:1303
+#: ../src/frontend/entangle-camera-manager.c:2547
 #: ../src/frontend/entangle-camera-manager.xml.h:27
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: ../src/frontend/entangle-camera-manager.c:1333
-#: ../src/frontend/entangle-camera-manager.c:2589
+#: ../src/frontend/entangle-camera-manager.c:1304
+#: ../src/frontend/entangle-camera-manager.c:2548
 msgid "Retry"
 msgstr "Повторити"
 
-#: ../src/frontend/entangle-camera-manager.c:1364
+#: ../src/frontend/entangle-camera-manager.c:1334
 msgid "Camera is in use"
 msgstr "Фотоапарат використовується"
 
-#: ../src/frontend/entangle-camera-manager.c:1368
+#: ../src/frontend/entangle-camera-manager.c:1338
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
 msgstr "Робота з фотоапаратом неможлива, оскільки зараз його змонтовано як сховище даних. Демонтувати відповідне сховище даних?"
 
-#: ../src/frontend/entangle-camera-manager.c:1372
+#: ../src/frontend/entangle-camera-manager.c:1342
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "No"
 msgstr "Ні"
 
-#: ../src/frontend/entangle-camera-manager.c:1373
+#: ../src/frontend/entangle-camera-manager.c:1343
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "Yes"
 msgstr "Так"
 
-#: ../src/frontend/entangle-camera-manager.c:1409
+#: ../src/frontend/entangle-camera-manager.c:1378
 msgid "Camera connect failed"
 msgstr "Помилка з’єднання з фотоапаратом"
 
-#: ../src/frontend/entangle-camera-manager.c:1411
+#: ../src/frontend/entangle-camera-manager.c:1380
 msgid "Entangle: Camera connect failed"
 msgstr "Entangle: не вдалося встановити з’єднання з фотоапаратом"
 
-#: ../src/frontend/entangle-camera-manager.c:1450
+#: ../src/frontend/entangle-camera-manager.c:1416
 #, c-format
 msgid "%s Camera Manager - Entangle"
 msgstr "Керування фотоапаратами %s — Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1806
+#: ../src/frontend/entangle-camera-manager.c:1769
 #: ../src/frontend/entangle-camera-manager.xml.h:19
 msgid "Select a folder"
 msgstr "Виберіть теку"
 
-#: ../src/frontend/entangle-camera-manager.c:2086
+#: ../src/frontend/entangle-camera-manager.c:2048
 msgid "Autofocus failed"
 msgstr "Спроба автофокусування зазнала невдачі"
 
-#: ../src/frontend/entangle-camera-manager.c:2088
+#: ../src/frontend/entangle-camera-manager.c:2050
 msgid "Entangle: Camera autofocus failed"
 msgstr "Entangle: спроба автоматично встановити фокус фотоапарата зазнала невдачі"
 
-#: ../src/frontend/entangle-camera-manager.c:2119
+#: ../src/frontend/entangle-camera-manager.c:2079
 msgid "Manual focus failed"
 msgstr "Спроба фокусування вручну зазнала невдачі"
 
-#: ../src/frontend/entangle-camera-manager.c:2121
+#: ../src/frontend/entangle-camera-manager.c:2081
 msgid "Entangle: Camera manual focus failed"
 msgstr "Entangle: не вдалося встановити на фотоапараті фокусування вручну"
 
-#: ../src/frontend/entangle-camera-manager.c:2851
+#: ../src/frontend/entangle-camera-manager.c:2810
 msgid "Select application..."
 msgstr "Виберіть програму…"
 
@@ -573,19 +573,19 @@ msgstr "Помилка оновлення списку фотоапаратів"
 msgid "Entangle: Camera control update failed"
 msgstr "Entangle: спроба оновлення списку керування фотоапаратами зазнала невдачі"
 
-#: ../src/frontend/entangle-control-panel.c:244
+#: ../src/frontend/entangle-control-panel.c:232
 msgid "On"
 msgstr "Увімкнено"
 
-#: ../src/frontend/entangle-control-panel.c:244
+#: ../src/frontend/entangle-control-panel.c:232
 msgid "Off"
 msgstr "Вимкнено"
 
-#: ../src/frontend/entangle-control-panel.c:565
+#: ../src/frontend/entangle-control-panel.c:550
 msgid "No camera connected"
 msgstr "Не з’єднано жодного фотоапарата"
 
-#: ../src/frontend/entangle-control-panel.c:574
+#: ../src/frontend/entangle-control-panel.c:559
 msgid "No controls available"
 msgstr "Немає доступу до засобів керування"
 
@@ -861,7 +861,7 @@ msgstr "Спорожняти екран під час захоплення зо�
 
 #: ../src/frontend/entangle-preferences.xml.h:24
 msgid "Show linear histogram"
-msgstr ""
+msgstr "Показати лінійну гістограму"
 
 #: ../src/frontend/entangle-preferences.xml.h:26
 msgid "<b>Image Viewer</b>"

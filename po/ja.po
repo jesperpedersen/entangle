@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-24 19:44+0100\n"
-"PO-Revision-Date: 2013-04-24 18:44+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"POT-Creation-Date: 2013-07-08 20:36+0100\n"
+"PO-Revision-Date: 2013-06-10 07:11+0000\n"
+"Last-Translator: Tomoyuki KATO <tomo@dream.daynight.jp>\n"
 "Language-Team: Japanese <trans-ja@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -156,51 +156,51 @@ msgstr "このカメラに対して制御は利用できません"
 #: ../src/backend/entangle-camera.c:2250
 #, c-format
 msgid "Viewfinder control not available with this camera"
-msgstr ""
+msgstr "Viewfinder 制御がこのカメラで利用できません"
 
 #: ../src/backend/entangle-camera.c:2263
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
-msgstr ""
+msgstr "Viewfinder 制御がトグルウィジェットではありませんでした"
 
 #: ../src/backend/entangle-camera.c:2270
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
-msgstr ""
+msgstr "viewfinder の状態の設定に失敗しました: %s %d"
 
 #: ../src/backend/entangle-camera.c:2276 ../src/backend/entangle-camera.c:2414
 #: ../src/backend/entangle-camera.c:2534 ../src/backend/entangle-camera.c:2540
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
-msgstr ""
+msgstr "マニュアルフォーカスの状態を設定できません: %s %d"
 
 #: ../src/backend/entangle-camera.c:2388
 #, c-format
 msgid "Autofocus control not available with this camera"
-msgstr ""
+msgstr "オートフォーカスの制御がこのカメラで利用できません"
 
 #: ../src/backend/entangle-camera.c:2401
 #, c-format
 msgid "Autofocus control was not a toggle widget"
-msgstr ""
+msgstr "オートフォーカス制御がトグルウィジェットではありませんでした"
 
 #: ../src/backend/entangle-camera.c:2408
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
-msgstr ""
+msgstr "オートフォーカスの状態を設定できませんでした: %s %d"
 
 #: ../src/backend/entangle-camera.c:2514
 #, c-format
 msgid "Manual focus control not available with this camera"
-msgstr ""
+msgstr "手動フォーカス制御がこのカメラで利用できません"
 
 #: ../src/backend/entangle-camera.c:2527
 #, c-format
 msgid "Manual focus control was not a range widget"
-msgstr ""
+msgstr "手動フォーカス制御が範囲ウィジェットではありませんでした"
 
 #: ../src/frontend/entangle-camera-info.c:236
-#: ../src/frontend/entangle-camera-manager.c:3036
+#: ../src/frontend/entangle-camera-manager.c:2985
 #: ../src/frontend/entangle-camera-picker.c:521
 #: ../src/frontend/entangle-camera-support.c:192
 #: ../src/frontend/entangle-help-about.c:114
@@ -243,41 +243,41 @@ msgstr "このカメラは画像のキャプチャーをサポートしません
 msgid "This camera does not support image preview"
 msgstr "このカメラは画像のプレビューをサポートしません"
 
-#: ../src/frontend/entangle-camera-manager.c:645
+#: ../src/frontend/entangle-camera-manager.c:644
 #, c-format
 msgid "Operation: %s"
 msgstr "オペレーション: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:647
+#: ../src/frontend/entangle-camera-manager.c:646
 msgid "Entangle: Operation failed"
 msgstr "Entangle: オペレーションに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:680
-#: ../src/frontend/entangle-camera-manager.c:1278
+#: ../src/frontend/entangle-camera-manager.c:677
+#: ../src/frontend/entangle-camera-manager.c:1251
 msgid "Camera load controls failed"
 msgstr "カメラが制御内容の読み込みに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:682
-#: ../src/frontend/entangle-camera-manager.c:1280
+#: ../src/frontend/entangle-camera-manager.c:679
+#: ../src/frontend/entangle-camera-manager.c:1253
 msgid "Entangle: Camera load controls failed"
 msgstr "Entangle: カメラが制御内容の読み込みに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:721
+#: ../src/frontend/entangle-camera-manager.c:717
 msgid "Monitor"
 msgstr "モニター"
 
-#: ../src/frontend/entangle-camera-manager.c:879
-#: ../src/frontend/entangle-camera-manager.c:2722
+#: ../src/frontend/entangle-camera-manager.c:869
+#: ../src/frontend/entangle-camera-manager.c:2681
 msgid "Delete"
 msgstr "削除"
 
-#: ../src/frontend/entangle-camera-manager.c:899
+#: ../src/frontend/entangle-camera-manager.c:889
 msgid "Download"
 msgstr "ダウンロード"
 
-#: ../src/frontend/entangle-camera-manager.c:930
-#: ../src/frontend/entangle-camera-manager.c:968
-#: ../src/frontend/entangle-camera-manager.c:996
+#: ../src/frontend/entangle-camera-manager.c:920
+#: ../src/frontend/entangle-camera-manager.c:958
+#: ../src/frontend/entangle-camera-manager.c:986
 #: ../src/frontend/entangle-camera-manager.xml.h:22
 #: ../src/frontend/entangle-camera-picker.c:533
 #: ../src/frontend/entangle-preferences-display.c:975
@@ -286,23 +286,23 @@ msgstr "ダウンロード"
 msgid "Capture"
 msgstr "キャプチャー"
 
-#: ../src/frontend/entangle-camera-manager.c:1031
+#: ../src/frontend/entangle-camera-manager.c:1021
 #: ../src/frontend/entangle-camera-manager.xml.h:24
 msgid "Preview"
 msgstr "プレビュー"
 
-#: ../src/frontend/entangle-camera-manager.c:1230
+#: ../src/frontend/entangle-camera-manager.c:1206
 msgid "Camera Manager - Entangle"
 msgstr "カメラマネージャー - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1322
-#: ../src/frontend/entangle-camera-manager.c:2577
+#: ../src/frontend/entangle-camera-manager.c:1293
+#: ../src/frontend/entangle-camera-manager.c:2536
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr "カメラに接続できません: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:1327
-#: ../src/frontend/entangle-camera-manager.c:2583
+#: ../src/frontend/entangle-camera-manager.c:1298
+#: ../src/frontend/entangle-camera-manager.c:2542
 msgid ""
 "Check that the camera is not\n"
 "\n"
@@ -311,72 +311,72 @@ msgid ""
 " - in <b>sleep mode</b> to save battery power\n"
 msgstr "カメラが以下であることを確認します\n\n - 他の写真 <b>アプリケーション</b> により開かれていない\n - デスクトップに <b>ファイルシステム</b> としてマウントされていない\n - バッテリー電源を節約するために <b>スリープモード</b> になっていない\n"
 
-#: ../src/frontend/entangle-camera-manager.c:1332
-#: ../src/frontend/entangle-camera-manager.c:2588
+#: ../src/frontend/entangle-camera-manager.c:1303
+#: ../src/frontend/entangle-camera-manager.c:2547
 #: ../src/frontend/entangle-camera-manager.xml.h:27
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../src/frontend/entangle-camera-manager.c:1333
-#: ../src/frontend/entangle-camera-manager.c:2589
+#: ../src/frontend/entangle-camera-manager.c:1304
+#: ../src/frontend/entangle-camera-manager.c:2548
 msgid "Retry"
 msgstr "再試行"
 
-#: ../src/frontend/entangle-camera-manager.c:1364
+#: ../src/frontend/entangle-camera-manager.c:1334
 msgid "Camera is in use"
 msgstr "カメラは使用中です"
 
-#: ../src/frontend/entangle-camera-manager.c:1368
+#: ../src/frontend/entangle-camera-manager.c:1338
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
 msgstr "現在ファイルシステムとしてマウントされているので、カメラを開けませんでした。今すぐアンマウントしたいですか?"
 
-#: ../src/frontend/entangle-camera-manager.c:1372
+#: ../src/frontend/entangle-camera-manager.c:1342
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "No"
 msgstr "いいえ"
 
-#: ../src/frontend/entangle-camera-manager.c:1373
+#: ../src/frontend/entangle-camera-manager.c:1343
 #: ../src/frontend/entangle-camera-picker.c:125
 msgid "Yes"
 msgstr "はい"
 
-#: ../src/frontend/entangle-camera-manager.c:1409
+#: ../src/frontend/entangle-camera-manager.c:1378
 msgid "Camera connect failed"
 msgstr "カメラの接続に失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:1411
+#: ../src/frontend/entangle-camera-manager.c:1380
 msgid "Entangle: Camera connect failed"
 msgstr "Entangle: カメラの接続に失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:1450
+#: ../src/frontend/entangle-camera-manager.c:1416
 #, c-format
 msgid "%s Camera Manager - Entangle"
 msgstr "%s カメラマネージャー - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1806
+#: ../src/frontend/entangle-camera-manager.c:1769
 #: ../src/frontend/entangle-camera-manager.xml.h:19
 msgid "Select a folder"
 msgstr "フォルダーの選択"
 
-#: ../src/frontend/entangle-camera-manager.c:2086
+#: ../src/frontend/entangle-camera-manager.c:2048
 msgid "Autofocus failed"
-msgstr ""
+msgstr "オートフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2088
+#: ../src/frontend/entangle-camera-manager.c:2050
 msgid "Entangle: Camera autofocus failed"
-msgstr ""
+msgstr "Entangle: カメラのオートフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2119
+#: ../src/frontend/entangle-camera-manager.c:2079
 msgid "Manual focus failed"
-msgstr ""
+msgstr "マニュアルフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2121
+#: ../src/frontend/entangle-camera-manager.c:2081
 msgid "Entangle: Camera manual focus failed"
-msgstr ""
+msgstr "Entangle: カメラのマニュアルフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2851
+#: ../src/frontend/entangle-camera-manager.c:2810
 msgid "Select application..."
 msgstr "アプリケーションの選択..."
 
@@ -573,21 +573,21 @@ msgstr "カメラの制御内容の更新に失敗しました"
 msgid "Entangle: Camera control update failed"
 msgstr "Entangle: カメラの制御内容の更新に失敗しました"
 
-#: ../src/frontend/entangle-control-panel.c:244
+#: ../src/frontend/entangle-control-panel.c:232
 msgid "On"
 msgstr "オン"
 
-#: ../src/frontend/entangle-control-panel.c:244
+#: ../src/frontend/entangle-control-panel.c:232
 msgid "Off"
 msgstr "オフ"
 
-#: ../src/frontend/entangle-control-panel.c:565
+#: ../src/frontend/entangle-control-panel.c:550
 msgid "No camera connected"
-msgstr ""
+msgstr "カメラが接続されていません"
 
-#: ../src/frontend/entangle-control-panel.c:574
+#: ../src/frontend/entangle-control-panel.c:559
 msgid "No controls available"
-msgstr ""
+msgstr "制御できるデバイスがありません"
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"
@@ -861,7 +861,7 @@ msgstr "イメージのキャプチャー中に画面を写さない。"
 
 #: ../src/frontend/entangle-preferences.xml.h:24
 msgid "Show linear histogram"
-msgstr ""
+msgstr "リニアヒストグラムの表示"
 
 #: ../src/frontend/entangle-preferences.xml.h:26
 msgid "<b>Image Viewer</b>"
