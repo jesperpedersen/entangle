@@ -1,0 +1,14 @@
+  Entangle Translations
+  =====================
+
+The translations for Entangle are managed via the Transifex
+tool. The Entangle application is outsourced to the Fedora
+translation team in Transifex.
+
+  https://fedora.transifex.com/projects/p/entangle/
+
+If you are interested in doing translations of Entangle, we
+request that you join the Fedora team in Transifex & submit
+them that way. We cannot accept translations done outside of
+Transifex, because we do not wish to have multiple translators
+stepping on each others toes.
