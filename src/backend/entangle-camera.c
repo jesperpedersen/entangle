@@ -2747,16 +2747,14 @@ static GMount *entangle_device_manager_find_mount(EntangleCamera *cam,
  * CPU burn loop in a bg thread from DBus messages. So we
  * have made this static for now
  */
-static GStaticMutex monitorLock = G_STATIC_MUTEX_INIT;
-static GVolumeMonitor *monitor;
 
 gboolean entangle_camera_is_mounted(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+    static GVolumeMonitor *monitor;
 
     GMount *mount;
     gboolean ret;
-    g_static_mutex_lock(&monitorLock);
     if (!monitor)
         monitor = g_volume_monitor_get();
     mount = entangle_device_manager_find_mount(cam, monitor);
@@ -2767,7 +2765,6 @@ gboolean entangle_camera_is_mounted(EntangleCamera *cam)
     } else {
         ret = FALSE;
     }
-    g_static_mutex_unlock(&monitorLock);
 
     return ret;
 }
