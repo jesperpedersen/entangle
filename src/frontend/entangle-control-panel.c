@@ -450,7 +450,11 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
     int i;
 
     GtkWidget *frame = gtk_expander_new(entangle_control_get_label(ENTANGLE_CONTROL(grp)));
+#if GTK_CHECK_VERSION(3, 2, 0)
+    GtkWidget *subbox = gtk_grid_new();
+#else
     GtkWidget *subbox = gtk_table_new(entangle_control_group_count(grp), 2, FALSE);
+#endif
 
     gtk_container_add(GTK_CONTAINER(frame), subbox);
     gtk_box_pack_start(GTK_BOX(box), frame, FALSE, FALSE, 0);
@@ -528,8 +532,13 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
             gtk_misc_set_alignment(GTK_MISC(value), 0, 0);
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
+#if GTK_CHECK_VERSION(3, 2, 0)
+            gtk_grid_attach(GTK_GRID(subbox), label, 0, 1, i, i+1);
+            gtk_grid_attach(GTK_GRID(subbox), value, 1, 2, i, i+1);
+#else
             gtk_table_attach(GTK_TABLE(subbox), label, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_EXPAND, 3, 3);
             gtk_table_attach(GTK_TABLE(subbox), value, 1, 2, i, i+1, GTK_FILL, GTK_EXPAND, 3, 3);
+#endif
         }
 
     }
