@@ -569,18 +569,66 @@ const char *entangle_camera_get_port(EntangleCamera *cam)
     return priv->port;
 }
 
+struct EntangleCameraProgressData {
+    EntangleCamera *cam;    
+    enum {
+        ENTANGLE_CAMERA_PROGRESS_START,
+        ENTANGLE_CAMERA_PROGRESS_UPDATE,
+        ENTANGLE_CAMERA_PROGRESS_STOP
+    } op;
+    float value;
+    char *msg;
+};
+
+static gboolean entangle_camera_progress_idle(gpointer opaque)
+{
+    struct EntangleCameraProgressData *data = opaque;
+
+    if (data->cam->priv->progress) {
+        switch (data->op) {
+        case ENTANGLE_CAMERA_PROGRESS_START:
+            entangle_progress_start(data->cam->priv->progress,
+                                    data->value,
+                                    data->msg);
+            break;
+
+        case ENTANGLE_CAMERA_PROGRESS_UPDATE:
+            entangle_progress_update(data->cam->priv->progress,
+                                     data->value);
+            break;
+
+        case ENTANGLE_CAMERA_PROGRESS_STOP:
+            entangle_progress_stop(data->cam->priv->progress);
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    if (data->op == ENTANGLE_CAMERA_PROGRESS_START)
+        g_free(data->msg);
+    g_object_unref(data->cam);
+    g_free(data);
+
+    return FALSE;
+}
 
 #ifdef HAVE_GPHOTO25
 static unsigned int do_entangle_camera_progress_start(GPContext *ctx G_GNUC_UNUSED,
                                                       float target,
                                                       const char *msg,
-                                                      void *data)
+                                                      void *opaque)
 {
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
+    EntangleCamera *cam = opaque;
+    struct EntangleCameraProgressData *data = g_new0(struct EntangleCameraProgressData, 1);
 
-    if (priv->progress)
-        entangle_progress_start(priv->progress, target, msg);
+    data->cam = g_object_ref(cam);
+    data->op = ENTANGLE_CAMERA_PROGRESS_START;
+    data->value = target;
+    data->msg = g_strdup(msg);
+
+    g_idle_add(entangle_camera_progress_idle, data);
 
     return 0; /* XXX what is this actually useful for ? */
 }
@@ -589,16 +637,17 @@ static unsigned int do_entangle_camera_progress_start(GPContext *ctx G_GNUC_UNUS
                                                       float target,
                                                       const char *format,
                                                       va_list args,
-                                                      void *data)
+                                                      void *opaque)
 {
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
+    EntangleCamera *cam = opaque;
+    struct EntangleCameraProgressData *data = g_new0(struct EntangleCameraProgressData, 1);
 
-    if (priv->progress) {
-        char *str = g_strdup_vprintf(format, args);
-        entangle_progress_start(priv->progress, target, str);
-        g_free(str);
-    }
+    data->cam = g_object_ref(cam);
+    data->op = ENTANGLE_CAMERA_PROGRESS_START;
+    data->value = target;
+    data->msg = g_strdup_vprintf(format, args);
+
+    g_idle_add(entangle_camera_progress_idle, data);
 
     return 0; /* XXX what is this actually useful for ? */
 }
@@ -607,24 +656,29 @@ static unsigned int do_entangle_camera_progress_start(GPContext *ctx G_GNUC_UNUS
 static void do_entangle_camera_progress_update(GPContext *ctx G_GNUC_UNUSED,
                                                unsigned int id G_GNUC_UNUSED,
                                                float current,
-                                               void *data)
+                                               void *opaque)
 {
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
+    EntangleCamera *cam = opaque;
+    struct EntangleCameraProgressData *data = g_new0(struct EntangleCameraProgressData, 1);
 
-    if (priv->progress)
-        entangle_progress_update(priv->progress, current);
+    data->cam = g_object_ref(cam);
+    data->op = ENTANGLE_CAMERA_PROGRESS_UPDATE;
+    data->value = current;
+
+    g_idle_add(entangle_camera_progress_idle, data);
 }
 
 static void do_entangle_camera_progress_stop(GPContext *ctx G_GNUC_UNUSED,
                                              unsigned int id G_GNUC_UNUSED,
-                                             void *data)
+                                             void *opaque)
 {
-    EntangleCamera *cam = data;
-    EntangleCameraPrivate *priv = cam->priv;
+    EntangleCamera *cam = opaque;
+    struct EntangleCameraProgressData *data = g_new0(struct EntangleCameraProgressData, 1);
 
-    if (priv->progress)
-        entangle_progress_stop(priv->progress);
+    data->cam = g_object_ref(cam);
+    data->op = ENTANGLE_CAMERA_PROGRESS_STOP;
+
+    g_idle_add(entangle_camera_progress_idle, data);
 }
 
 static void entangle_camera_reset_last_error(EntangleCamera *cam)
