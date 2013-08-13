@@ -2960,7 +2960,6 @@ static void do_image_status_show(GtkWidget *widget G_GNUC_UNUSED,
 static void entangle_camera_manager_init(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv;
-    GtkWidget *viewport;
     GtkWidget *display;
     GtkWidget *imageScroll;
     GtkWidget *iconScroll;
@@ -2970,6 +2969,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     GtkWidget *menu;
     GtkWidget *monitorMenu;
     GtkWidget *operation;
+    GtkWidget *imageViewport;
     GError *error = NULL;
 
     priv = manager->priv = ENTANGLE_CAMERA_MANAGER_GET_PRIVATE(manager);
@@ -2994,7 +2994,11 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     monitorMenu = entangle_camera_manager_monitor_menu(manager);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu), monitorMenu);
 
-    viewport = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-viewport"));
+    imageViewport = gtk_viewport_new(NULL, NULL);
+    imageScroll = gtk_scrolled_window_new(gtk_scrollable_get_hadjustment(GTK_SCROLLABLE(imageViewport)),
+                                          gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(imageViewport)));
+
+    gtk_container_add(GTK_CONTAINER(imageScroll), imageViewport);
 
     priv->imageLoader = entangle_image_loader_new();
     priv->thumbLoader = entangle_thumbnail_loader_new(96, 96);
@@ -3022,18 +3026,14 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     g_signal_connect(priv->sessionBrowser, "drag-failed",
                      G_CALLBACK(do_session_browser_drag_failed), manager);
 
-    imageScroll = GTK_WIDGET(gtk_builder_get_object(priv->builder, "image-scroll"));
-    iconScroll = GTK_WIDGET(gtk_builder_get_object(priv->builder, "icon-scroll"));
     settingsBox = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-box"));
     settingsViewport = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-viewport"));
     display = GTK_WIDGET(gtk_builder_get_object(priv->builder, "display-panel"));
 
+    iconScroll = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(iconScroll),
                                    GTK_POLICY_AUTOMATIC,
                                    GTK_POLICY_NEVER);
-
-    gtk_container_child_set(GTK_CONTAINER(display), imageScroll, "resize", TRUE, NULL);
-    gtk_container_child_set(GTK_CONTAINER(display), iconScroll, "resize", FALSE, NULL);
 
     /* XXX match icon size + padding + scrollbar needs */
     gtk_widget_set_size_request(settingsBox, 300, 100);
@@ -3044,9 +3044,10 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
                                          g_free,
                                          g_object_unref);
 
+    gtk_container_add(GTK_CONTAINER(imageViewport), GTK_WIDGET(priv->imageDisplay));
 
     ViewOvBox_SetOver(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageStatusbar));
-    ViewOvBox_SetUnder(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageDisplay));
+    ViewOvBox_SetUnder(VIEW_OV_BOX(priv->imageDrawer), imageScroll);
     ViewAutoDrawer_SetOffset(VIEW_AUTODRAWER(priv->imageDrawer), -1);
     ViewAutoDrawer_SetFill(VIEW_AUTODRAWER(priv->imageDrawer), TRUE);
     ViewAutoDrawer_SetOverlapPixels(VIEW_AUTODRAWER(priv->imageDrawer), 1);
@@ -3063,8 +3064,11 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     g_signal_connect(GTK_WIDGET(win), "motion-notify-event",
                      G_CALLBACK(do_image_status_show), manager);
 
-    ENTANGLE_DEBUG("Adding %p to %p", priv->imageDisplay, viewport);
-    gtk_container_add(GTK_CONTAINER(viewport), GTK_WIDGET(priv->imageDrawer));
+    ENTANGLE_DEBUG("Adding %p to %p", priv->imageDisplay, imageViewport);
+    gtk_paned_pack1(GTK_PANED(display), GTK_WIDGET(priv->imageDrawer), TRUE, TRUE);
+    gtk_paned_pack2(GTK_PANED(display), GTK_WIDGET(iconScroll), FALSE, TRUE);
+    gtk_widget_show_all(display);
+
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
     gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));
     gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(priv->imageHistogram), FALSE, TRUE, 0);
