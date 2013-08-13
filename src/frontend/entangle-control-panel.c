@@ -533,8 +533,8 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
             gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
             gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
 #if GTK_CHECK_VERSION(3, 2, 0)
-            gtk_grid_attach(GTK_GRID(subbox), label, 0, 1, i, i+1);
-            gtk_grid_attach(GTK_GRID(subbox), value, 1, 2, i, i+1);
+            gtk_grid_attach(GTK_GRID(subbox), label, 0, i, 1, 1);
+            gtk_grid_attach(GTK_GRID(subbox), value, 1, i, 1, 1);
 #else
             gtk_table_attach(GTK_TABLE(subbox), label, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_EXPAND, 3, 3);
             gtk_table_attach(GTK_TABLE(subbox), value, 1, 2, i, i+1, GTK_FILL, GTK_EXPAND, 3, 3);
