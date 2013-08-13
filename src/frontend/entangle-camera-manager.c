@@ -73,6 +73,7 @@ struct _EntangleCameraManagerPrivate {
     EntangleImageLoader *imageLoader;
     EntangleThumbnailLoader *thumbLoader;
     EntangleColourProfileTransform *colourTransform;
+    GtkScrolledWindow *imageScroll;
     EntangleImageDisplay *imageDisplay;
     EntangleImageStatusbar *imageStatusbar;
     ViewAutoDrawer *imageDrawer;
@@ -89,6 +90,10 @@ struct _EntangleCameraManagerPrivate {
     EntangleImagePopup *imagePresentation;
     gint presentationMonitor;
     GHashTable *popups;
+
+    gdouble imageScrollVOffset;
+    gdouble imageScrollHOffset;
+    gboolean imageScrollRestored;
 
     int zoomLevel;
 
@@ -559,6 +564,29 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 }
 
 
+static void do_restore_scroll(GtkWidget *widget,
+                              GdkRectangle *allocation G_GNUC_UNUSED,
+                              EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+    GtkAdjustment *hadjust;
+    GtkAdjustment *vadjust;
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (!entangle_image_display_get_loaded(ENTANGLE_IMAGE_DISPLAY(widget)))
+        return;
+
+    hadjust = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(priv->imageScroll));
+    vadjust = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(priv->imageScroll));
+
+    gtk_adjustment_set_value(hadjust,
+                             priv->imageScrollHOffset);
+    gtk_adjustment_set_value(vadjust,
+                             priv->imageScrollVOffset);
+    priv->imageScrollRestored = TRUE;
+}
+
+
 static void do_select_image(EntangleCameraManager *manager,
                             EntangleImage *image)
 {
@@ -567,6 +595,8 @@ static void do_select_image(EntangleCameraManager *manager,
     GList *newimages = NULL;
     GList *oldimages;
     GList *tmp;
+    GtkAdjustment *hadjust;
+    GtkAdjustment *vadjust;
 
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
@@ -610,6 +640,15 @@ static void do_select_image(EntangleCameraManager *manager,
                                           thisimage);
 
         tmp = tmp->next;
+    }
+
+    hadjust = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(priv->imageScroll));
+    vadjust = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(priv->imageScroll));
+
+    if (priv->imageScrollRestored) {
+        priv->imageScrollHOffset = gtk_adjustment_get_value(hadjust);
+        priv->imageScrollVOffset = gtk_adjustment_get_value(vadjust);
+        priv->imageScrollRestored = FALSE;
     }
 
     entangle_image_display_set_image_list(priv->imageDisplay, newimages);
@@ -2961,7 +3000,6 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
 {
     EntangleCameraManagerPrivate *priv;
     GtkWidget *display;
-    GtkWidget *imageScroll;
     GtkWidget *iconScroll;
     GtkWidget *settingsBox;
     GtkWidget *settingsViewport;
@@ -2984,6 +3022,9 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     if (error)
         g_error(_("Could not load user interface definition file: %s"), error->message);
 
+    priv->imageScrollHOffset = 0;
+    priv->imageScrollVOffset = 0;
+
     gtk_builder_connect_signals(priv->builder, manager);
 
     win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-manager"));
@@ -2995,10 +3036,11 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu), monitorMenu);
 
     imageViewport = gtk_viewport_new(NULL, NULL);
-    imageScroll = gtk_scrolled_window_new(gtk_scrollable_get_hadjustment(GTK_SCROLLABLE(imageViewport)),
-                                          gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(imageViewport)));
+    priv->imageScroll = GTK_SCROLLED_WINDOW
+        (gtk_scrolled_window_new(gtk_scrollable_get_hadjustment(GTK_SCROLLABLE(imageViewport)),
+                                 gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(imageViewport))));
 
-    gtk_container_add(GTK_CONTAINER(imageScroll), imageViewport);
+    gtk_container_add(GTK_CONTAINER(priv->imageScroll), imageViewport);
 
     priv->imageLoader = entangle_image_loader_new();
     priv->thumbLoader = entangle_thumbnail_loader_new(96, 96);
@@ -3018,6 +3060,9 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_widget_show(GTK_WIDGET(priv->imageHistogram));
 
     g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
+
+    g_signal_connect(priv->imageDisplay, "size-allocate",
+                     G_CALLBACK(do_restore_scroll), manager);
 
     g_signal_connect(priv->sessionBrowser, "selection-changed",
                      G_CALLBACK(do_session_image_selected), manager);
@@ -3047,7 +3092,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_container_add(GTK_CONTAINER(imageViewport), GTK_WIDGET(priv->imageDisplay));
 
     ViewOvBox_SetOver(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageStatusbar));
-    ViewOvBox_SetUnder(VIEW_OV_BOX(priv->imageDrawer), imageScroll);
+    ViewOvBox_SetUnder(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageScroll));
     ViewAutoDrawer_SetOffset(VIEW_AUTODRAWER(priv->imageDrawer), -1);
     ViewAutoDrawer_SetFill(VIEW_AUTODRAWER(priv->imageDrawer), TRUE);
     ViewAutoDrawer_SetOverlapPixels(VIEW_AUTODRAWER(priv->imageDrawer), 1);

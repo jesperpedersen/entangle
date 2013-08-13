@@ -1025,6 +1025,17 @@ EntangleImageDisplayGrid entangle_image_display_get_grid_display(EntangleImageDi
 }
 
 
+gboolean entangle_image_display_get_loaded(EntangleImageDisplay *display)
+{
+    EntangleImage *image = entangle_image_display_get_image(display);
+    GdkPixbuf *pixbuf = NULL;
+
+    if (image)
+        pixbuf = entangle_image_get_pixbuf(image);
+
+    return pixbuf != NULL;
+}
+
 
 /*
  * Local variables:

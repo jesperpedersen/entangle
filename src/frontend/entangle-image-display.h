@@ -91,6 +91,8 @@ void entangle_image_display_set_focus_point(EntangleImageDisplay *display,
                                             gboolean enabled);
 gboolean entangle_image_display_get_focus_point(EntangleImageDisplay *display);
 
+gboolean entangle_image_display_get_loaded(EntangleImageDisplay *display);
+
 typedef enum {
     ENTANGLE_IMAGE_DISPLAY_GRID_NONE,
     ENTANGLE_IMAGE_DISPLAY_GRID_CENTER_LINES,
