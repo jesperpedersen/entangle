@@ -196,28 +196,39 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
         guint isonum;
         gdouble focalnum;
 
-        gexiv2_metadata_get_exposure_time(metadata, &nom, &den);
-        if (den == 10)
-            shutter = g_strdup_printf("%0.1lf secs", (double)nom/10.0);
-        else if (nom == 10)
-            shutter = g_strdup_printf("1/%0.0lf secs", (double)den/10.0);
-        else
-            shutter = g_strdup_printf("%d/%d secs", nom, den);
+        if (gexiv2_metadata_has_tag(metadata, "Exif.Photo.ExposureTime")) {
+            gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.ExposureTime", &nom, &den);
+            if (den == 10)
+                shutter = g_strdup_printf("%0.1lf secs", (double)nom/10.0);
+            else if (nom == 10)
+                shutter = g_strdup_printf("1/%0.0lf secs", (double)den/10.0);
+            else
+                shutter = g_strdup_printf("%d/%d secs", nom, den);
+        }
 
-        if (!gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.FNumber", &fnumn, &fnumd))
-            gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.Aperture", &fnumn, &fnumd);
+        if ((gexiv2_metadata_has_tag(metadata, "Exif.Photo.FNumber") &&
+             gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.FNumber", &fnumn, &fnumd)) ||
+            (gexiv2_metadata_has_tag(metadata, "Exif.Photo.Aperture") &&
+             gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.Aperture", &fnumn, &fnumd))) {
+            fnum = (double)fnumn/(double)fnumd;
+            if (fnum < 10.0)
+                aperture = g_strdup_printf("f/%1.1f", fnum);
+            else
+                aperture = g_strdup_printf("f/%2.0f", fnum);
+        }
 
-        fnum = (double)fnumn/(double)fnumd;
-        if (fnum < 10.0)
-            aperture = g_strdup_printf("f/%1.1f", fnum);
-        else
-            aperture = g_strdup_printf("f/%2.0f", fnum);
+        if (gexiv2_metadata_has_tag(metadata, "Exif.Photo.ISOSpeedRatings")) {
+            isonum = gexiv2_metadata_get_exif_tag_long(metadata, "Exif.Photo.ISOSpeedRatings");
+            iso = g_strdup_printf("ISO %d", isonum);
+        }
 
-        isonum = gexiv2_metadata_get_iso_speed(metadata);
-        iso = g_strdup_printf("ISO %d", isonum);
-
-        focalnum = gexiv2_metadata_get_focal_length(metadata);
-        focal = g_strdup_printf("%0.0lf mm", focalnum);
+        if (gexiv2_metadata_has_tag(metadata, "Exif.Photo.FocalLength")) {
+            gexiv2_metadata_get_exif_tag_rational(metadata, "Exif.Photo.FocalLength", &nom, &den);
+            if (den > 0.0001) {
+                focalnum = (nom / den);
+                focal = g_strdup_printf("%0.0lf mm", focalnum);
+            }
+        }
 
         dimensions = g_strdup_printf("%d x %d",
                                      gexiv2_metadata_get_pixel_width(metadata),
