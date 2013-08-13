@@ -94,8 +94,6 @@ GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src,
 
     }
 
-    g_object_unref(src);
-
     return dest;
 }
 
