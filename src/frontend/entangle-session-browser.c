@@ -1027,7 +1027,7 @@ entangle_session_browser_queue_draw_item(EntangleSessionBrowser *browser,
     rect.width  = item_area->width  + priv->item_padding * 2;
     rect.height = item_area->height + priv->item_padding * 2;
 
-    if (priv->bin_window)
+    if (priv->bin_window && item_area->width != -1 && item_area->height != -1)
         gdk_window_invalidate_rect(priv->bin_window, &rect, TRUE);
 }
 
