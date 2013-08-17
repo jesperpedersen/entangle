@@ -570,7 +570,7 @@ const char *entangle_camera_get_port(EntangleCamera *cam)
 }
 
 struct EntangleCameraProgressData {
-    EntangleCamera *cam;    
+    EntangleCamera *cam;
     enum {
         ENTANGLE_CAMERA_PROGRESS_START,
         ENTANGLE_CAMERA_PROGRESS_UPDATE,
@@ -923,7 +923,7 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam,
     gp_camera_unref(priv->cam);
     priv->cam = NULL;
     priv->hasViewfinder = FALSE;
-    
+
     priv->hasCapture = priv->hasPreview = priv->hasSettings = FALSE;
 
     ret = TRUE;
@@ -2331,7 +2331,7 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
-    
+
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
                                     priv->ctx)) != GP_OK) {
@@ -2469,7 +2469,7 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
-    
+
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
                                     priv->ctx)) != GP_OK) {
@@ -2595,7 +2595,7 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
-    
+
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
                                     priv->ctx)) != GP_OK) {

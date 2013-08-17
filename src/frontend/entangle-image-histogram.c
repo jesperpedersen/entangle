@@ -204,7 +204,7 @@ static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
     cairo_set_line_width(cr, 0.4);
     cairo_set_source_rgba(cr, 0.4, 0.4, 0.4, 0.2);
     entangle_image_histogram_draw_grid(cr, ww, wh);
-    cairo_restore(cr); 
+    cairo_restore(cr);
 
     if (priv->hasFreq) {
         for (idx = 0 ; idx < 255 ; idx++) {
