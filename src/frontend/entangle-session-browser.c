@@ -1266,6 +1266,32 @@ entangle_session_browser_convert_widget_to_bin_window_coords(EntangleSessionBrow
 }
 
 
+static void
+entangle_session_browser_set_tooltip_cell(EntangleSessionBrowser *browser,
+                                          GtkTooltip *tooltip,
+                                          EntangleSessionBrowserItem *item)
+{
+    GdkRectangle rect;
+    gint x, y;
+
+    g_return_if_fail(ENTANGLE_SESSION_BROWSER(browser));
+    g_return_if_fail (GTK_IS_TOOLTIP (tooltip));
+
+    rect.x = item->cell_area.x - browser->priv->item_padding;
+    rect.y = item->cell_area.y - browser->priv->item_padding;
+    rect.width  = item->cell_area.width  + browser->priv->item_padding * 2;
+    rect.height = item->cell_area.height + browser->priv->item_padding * 2;
+
+    if (browser->priv->bin_window) {
+        gdk_window_get_position (browser->priv->bin_window, &x, &y);
+        rect.x += x;
+        rect.y += y;
+    }
+
+    gtk_tooltip_set_tip_area (tooltip, &rect);
+}
+
+
 static gboolean
 entangle_session_browser_query_tooltip(GtkWidget  *widget,
                                        gint        x,
@@ -1301,6 +1327,7 @@ entangle_session_browser_query_tooltip(GtkWidget  *widget,
         if (file_name) {
             gtk_tooltip_set_text(tooltip, file_name);
 
+            entangle_session_browser_set_tooltip_cell(browser, tooltip, item);
             return TRUE;
         }
     }
