@@ -54,7 +54,6 @@ struct _EntangleSessionBrowserPrivate {
     GtkCellAreaContext *cell_area_context;
 
     GtkCellRenderer *pixbuf_cell;
-    GtkCellRenderer *text_cell;
 
     gulong sigImageAdded;
     gulong sigThumbReady;
@@ -1243,6 +1242,73 @@ entangle_session_browser_button_release(GtkWidget *widget,
     return event->button == 1;
 }
 
+
+static void
+entangle_session_browser_convert_widget_to_bin_window_coords(EntangleSessionBrowser *browser,
+                                                             gint wx,
+                                                             gint wy,
+                                                             gint *bx,
+                                                             gint *by)
+{
+    gint x, y;
+
+    g_return_if_fail(ENTANGLE_SESSION_BROWSER(browser));
+
+    if (browser->priv->bin_window)
+        gdk_window_get_position(browser->priv->bin_window, &x, &y);
+    else
+        x = y = 0;
+
+    if (bx)
+        *bx = wx - x;
+    if (by)
+        *by = wy - y;
+}
+
+
+static gboolean
+entangle_session_browser_query_tooltip(GtkWidget  *widget,
+                                       gint        x,
+                                       gint        y,
+                                       gboolean    keyboard_mode G_GNUC_UNUSED,
+                                       GtkTooltip *tooltip,
+                                       gpointer    user_data)
+{
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(widget), FALSE);
+
+    EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
+    EntangleSessionBrowserItem *item;
+    GtkCellRenderer *cell = NULL;
+    gint bx = 0;
+    gint by = 0;
+
+    entangle_session_browser_convert_widget_to_bin_window_coords(browser,
+                                                                 x, y,
+                                                                 &bx, &by);
+
+    item = entangle_session_browser_get_item_at_coords(browser,
+                                                       bx, by,
+                                                       FALSE,
+                                                       &cell);
+
+    if (item != NULL) {
+        GtkTreeModel *model = (GtkTreeModel*)user_data;
+        GtkTreeIter iter = item->iter;
+        gchar *file_name = NULL;
+
+        gtk_tree_model_get(model, &iter, FIELD_NAME, &file_name, -1);
+
+        if (file_name) {
+            gtk_tooltip_set_text(tooltip, file_name);
+
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+
 static gboolean
 entangle_session_browser_scroll(GtkWidget *widget,
                                 GdkEventScroll *event)
@@ -1556,7 +1622,6 @@ EntangleSessionBrowser *entangle_session_browser_new(void)
 static void entangle_session_browser_init(EntangleSessionBrowser *browser)
 {
     EntangleSessionBrowserPrivate *priv;
-    GdkRGBA fg;
 
     priv = browser->priv = ENTANGLE_SESSION_BROWSER_GET_PRIVATE(browser);
 
@@ -1594,27 +1659,7 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
                  "yalign", 1.0,
                  NULL);
 
-
-    priv->text_cell = gtk_cell_renderer_text_new();
-    gtk_cell_layout_pack_end(GTK_CELL_LAYOUT(browser), priv->text_cell, FALSE);
-    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(browser),
-                                   priv->text_cell,
-                                   "text", FIELD_NAME,
-                                   NULL);
-
-    fg.red = 1;
-    fg.blue = 1;
-    fg.green = 1;
-    fg.alpha = 1;
-
-    g_object_set(priv->text_cell,
-                 "alignment", PANGO_ALIGN_CENTER,
-                 "wrap-mode", PANGO_WRAP_WORD_CHAR,
-                 "xalign", 0.5,
-                 "yalign", 0.0,
-                 "foreground-set", TRUE,
-                 "foreground-rgba", &fg,
-                 NULL);
+    gtk_widget_set_has_tooltip(GTK_WIDGET(browser), TRUE);
 
     g_signal_connect(priv->model,
                      "row-changed",
@@ -1632,6 +1677,11 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
                      "rows-reordered",
                      G_CALLBACK (entangle_session_browser_rows_reordered),
                      browser);
+
+    g_signal_connect(GTK_WIDGET(browser),
+                     "query-tooltip",
+                     G_CALLBACK (entangle_session_browser_query_tooltip),
+                     priv->model);
 
     entangle_session_browser_build_items(browser);
     entangle_session_browser_queue_layout(browser);
@@ -2013,9 +2063,6 @@ adjust_wrap_width(EntangleSessionBrowser *browser)
 
         wrap_width = MAX(wrap_width * 2, 50);
     }
-
-    g_object_set(browser->priv->text_cell, "wrap-width", wrap_width, NULL);
-    g_object_set(browser->priv->text_cell, "width", wrap_width, NULL);
 }
 
 
