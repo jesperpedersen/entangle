@@ -2046,27 +2046,6 @@ entangle_session_browser_layout_row(EntangleSessionBrowser *browser,
 
 
 static void
-adjust_wrap_width(EntangleSessionBrowser *browser)
-{
-    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
-
-    gint wrap_width = 50;
-
-    /* Here we go with the same old guess, try the icon size and set double
-     * the size of the first icon found in the list, naive but works much
-     * of the time */
-    if (browser->priv->items) {
-        entangle_session_browser_set_cell_data(browser, browser->priv->items->data);
-        gtk_cell_renderer_get_preferred_width(browser->priv->pixbuf_cell,
-                                              GTK_WIDGET(browser),
-                                              &wrap_width, NULL);
-
-        wrap_width = MAX(wrap_width * 2, 50);
-    }
-}
-
-
-static void
 entangle_session_browser_layout(EntangleSessionBrowser *browser)
 {
     g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
@@ -2082,9 +2061,6 @@ entangle_session_browser_layout(EntangleSessionBrowser *browser)
         g_source_remove (priv->layout_idle_id);
         priv->layout_idle_id = 0;
     }
-
-    /* Update the wrap width for the text cell before going and requesting sizes */
-    adjust_wrap_width (browser);
 
     /* Update the context widths for any invalidated items */
     entangle_session_browser_cache_widths(browser);
