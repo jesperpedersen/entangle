@@ -1,6 +1,8 @@
 
 SUBDIRS = icons
 
+GITIGNOREFILES = org.entangle-photo.manager.gschema.valid
+
 noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
 bin_PROGRAMS = entangle
@@ -22,8 +24,9 @@ desktop_DATA = entangle.desktop
 icondir = $(pkgdatadir)
 icon_DATA = $(PACKAGE).svg $(wildcard *.png)
 
-gsettingsdir = $(datadir)/glib-2.0/schemas
-gsettings_DATA = org.entangle-photo.manager.gschema.xml
+gsettings_SCHEMAS = org.entangle-photo.manager.gschema.xml
+
+@GSETTINGS_RULES@
 
 iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
@@ -35,7 +38,7 @@ BUILT_SOURCES = \
 	frontend/entangle-image-display-enums.c \
 	$(NULL)
 
-EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA) $(gsettings_DATA)
+EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA) $(gsettings_SCHEMAS)
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-camera.h backend/entangle-camera.c \
@@ -267,17 +270,11 @@ install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/entangle/plugins
 	$(MKDIR_P) $(DESTDIR)$(datadir)/entangle/plugins
 
-install-data-hook:
-	$(AM_V_GEN)$(GLIB_COMPILE_SCHEMAS) $(DESTDIR)$(gsettingsdir)
-
 uninstall-local::
 	rmdir $(DESTDIR)$(libdir)/entangle/plugins ||:
 	rmdir $(DESTDIR)$(libdir)/entangle ||:
 	rmdir $(DESTDIR)$(datadir)/entangle/plugins ||:
 	rmdir $(DESTDIR)$(datadir)/entangle ||:
-
-uninstall-hook:
-	$(AM_V_GEN)$(GLIB_COMPILE_SCHEMAS) $(DESTDIR)$(gsettingsdir)
 
 Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
 	$(AM_V_GEN)$(G_IR_SCANNER) -v --quiet \

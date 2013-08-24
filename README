@@ -31,6 +31,10 @@ variable to point to the data directory, eg in the above example use:
   XDG_DATA_DIRS=/usr/share:/usr/local/share:$HOME/libvirt-sandbox/share
   export XDG_DATA_DIRS
 
+OS distro packagers should use the --disable-schemas-compile arg
+to configure to skip the compilation stage for schema files if
+installing to the /usr prefix
+
 Building entangle requires the following external packages to
 be present
 

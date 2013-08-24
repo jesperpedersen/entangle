@@ -65,14 +65,6 @@ PKG_CHECK_MODULES([GIO], [glib-2.0 >= $GIO_REQUIRED])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
-AC_MSG_CHECKING([for glib-compile-schemas])
-AC_SUBST([GLIB_COMPILE_SCHEMAS], [$($PKG_CONFIG --variable=glib_compile_schemas gio-2.0)])
-if [ test -n "$GLIB_COMPILE_SCHEMAS" ]; then
-  AC_MSG_RESULT([$GLIB_COMPILE_SCHEMAS])
-else
-  AC_MSG_ERROR([The $GLIB_COMPILE_SCHEMAS binary must be installed before building entangle])
-fi
-
 PKG_CHECK_MODULES([GMODULE], [gmodule-2.0 >= $GLIB_REQUIRED])
 AC_SUBST(GMODULE_CFLAGS)
 AC_SUBST(GMODULE_LIBS)
@@ -130,6 +122,7 @@ if test "$have_xext" = "yes"; then
   AC_DEFINE_UNQUOTED([HAVE_XEXT], [], [Use Xext library])
 fi
 
+GLIB_GSETTINGS
 
 GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 

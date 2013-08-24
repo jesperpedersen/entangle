@@ -39,15 +39,14 @@ and 'hands off' shooting directly from the controlling computer.
 
 %build
 
-%configure
+%configure --disable-schemas-compile
 make %{?_smp_mflags} V=1
 
 %install
 rm -fr %{buildroot}
 
-%makeinstall
+make install DESTDIR=$RPM_BUILD_ROOT
 rm -rf %{buildroot}%{_datadir}/%{name}/website
-rm -f %{buildroot}%{_datadir}/glib-2.0/schemas/gschemas.compiled
 %find_lang %{name}
 
 %clean
