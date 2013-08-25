@@ -66,6 +66,8 @@ void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const
 void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, const char *name);
 gboolean entangle_preferences_interface_get_histogram_linear(EntanglePreferences *prefs);
 void entangle_preferences_interface_set_histogram_linear(EntanglePreferences *prefs, gboolean enabled);
+gint entangle_preferences_interface_get_preview_size(EntanglePreferences *prefs);
+void entangle_preferences_interface_set_preview_size(EntanglePreferences *prefs, gint opacity);
 
 char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs);
 void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, const gchar *dir);

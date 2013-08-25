@@ -361,6 +361,20 @@ static void entangle_camera_manager_update_histogram_linear(EntangleCameraManage
 }
 
 
+static void entangle_camera_manager_update_preview_size(EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+ 
+    gint preview_size = entangle_preferences_interface_get_preview_size(prefs);
+    priv->thumbLoader = entangle_thumbnail_loader_new(preview_size, preview_size);
+
+    g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
+}
+
+
 static void do_presentation_monitor_toggled(GtkCheckMenuItem *menu, gpointer data)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(data));
@@ -459,6 +473,8 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
 
     if (g_str_equal(spec->name, "interface-histogram-linear")) {
         entangle_camera_manager_update_histogram_linear(manager);
+    } else if (g_str_equal(spec->name, "interface-preview-size")) {
+        entangle_camera_manager_update_preview_size(manager);
     } else if (g_str_equal(spec->name, "cms-enabled") ||
         g_str_equal(spec->name, "cms-rgb-profile") ||
         g_str_equal(spec->name, "cms-monitor-profile") ||
@@ -1558,6 +1574,7 @@ static void entangle_camera_manager_set_property(GObject *object,
             pattern = entangle_preferences_capture_get_filename_pattern(prefs);
 
             entangle_camera_manager_update_histogram_linear(manager);
+            entangle_camera_manager_update_preview_size(manager);
             entangle_camera_manager_update_colour_transform(manager);
             entangle_camera_manager_update_aspect_ratio(manager);
             entangle_camera_manager_update_mask_opacity(manager);
@@ -3043,7 +3060,6 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     gtk_container_add(GTK_CONTAINER(priv->imageScroll), imageViewport);
 
     priv->imageLoader = entangle_image_loader_new();
-    priv->thumbLoader = entangle_thumbnail_loader_new(140, 140);
 
     g_signal_connect(priv->imageLoader, "pixbuf-loaded", G_CALLBACK(do_pixbuf_loaded), NULL);
     g_signal_connect(priv->imageLoader, "metadata-loaded", G_CALLBACK(do_metadata_loaded), NULL);
@@ -3058,8 +3074,6 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     priv->controlPanel = entangle_control_panel_new();
     priv->imageHistogram = entangle_image_histogram_new();
     gtk_widget_show(GTK_WIDGET(priv->imageHistogram));
-
-    g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
 
     g_signal_connect(priv->imageDisplay, "size-allocate",
                      G_CALLBACK(do_restore_scroll), manager);

@@ -43,6 +43,12 @@
       <description>Show linear histogram instead of logarithmic</description>
     </key>
 
+    <key type="i" name="preview-size">
+      <default>140</default>
+      <summary>Preview image size</summary>
+      <description>The size of the preview images</description>
+    </key>
+
     <key type="as" name="plugins">
       <default>[]</default>
       <summary>Plugins</summary>

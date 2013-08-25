@@ -70,6 +70,7 @@ void do_cms_rendering_intent_changed(GtkComboBox *src, EntanglePreferencesDispla
 void do_interface_auto_connect_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_interface_screen_blank_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_interface_histogram_linear_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_interface_preview_size_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
 
 void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
@@ -204,6 +205,16 @@ static void entangle_preferences_display_notify(GObject *object,
 
         if (newvalue != oldvalue)
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "interface-preview-size") == 0) {
+        GtkAdjustment *adjust = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(tmp));
+        gint newvalue;
+        gfloat oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_adjustment_get_value(adjust);
+
+        if (fabs(newvalue - oldvalue)  > 0.0005)
+            gtk_adjustment_set_value(adjust, newvalue);
     } else if (strcmp(spec->name, "capture-filename-pattern") == 0) {
         gchar *newvalue;
         const gchar *oldvalue;
@@ -415,6 +426,12 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-histogram-linear"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp),
                                  entangle_preferences_interface_get_histogram_linear(prefs));
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-preview-size"));
+    GtkSpinButton *previewSizeButton = GTK_SPIN_BUTTON(tmp);
+    gtk_spin_button_set_range(previewSizeButton, 50, 1024);
+    adjust = gtk_spin_button_get_adjustment(previewSizeButton);
+    gtk_adjustment_set_value(adjust,
+                             entangle_preferences_interface_get_preview_size(prefs));
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-filename-pattern"));
     gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_capture_get_filename_pattern(prefs));
@@ -710,6 +727,19 @@ void do_interface_histogram_linear_toggled(GtkToggleButton *src, EntanglePrefere
     gboolean enabled = gtk_toggle_button_get_active(src);
 
     entangle_preferences_interface_set_histogram_linear(prefs, enabled);
+}
+
+
+void do_interface_preview_size_changed(GtkSpinButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
+    EntanglePreferences *prefs = entangle_application_get_preferences(priv->application);
+    GtkAdjustment *adjust = gtk_spin_button_get_adjustment(src);
+
+    entangle_preferences_interface_set_preview_size(prefs,
+                                                    gtk_adjustment_get_value(adjust));
 }
 
 
