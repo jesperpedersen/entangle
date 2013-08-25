@@ -42,26 +42,19 @@ typedef struct _EntangleCameraSupportClass EntangleCameraSupportClass;
 
 struct _EntangleCameraSupport
 {
-    GObject parent;
+    GtkDialog parent;
 
     EntangleCameraSupportPrivate *priv;
 };
 
 struct _EntangleCameraSupportClass
 {
-    GObjectClass parent_class;
-
-    void (*support_close)(EntangleCameraSupport *support);
+    GtkDialogClass parent_class;
 };
 
 GType entangle_camera_support_get_type(void) G_GNUC_CONST;
 
-EntangleCameraSupport* entangle_camera_support_new(EntangleCameraList *list);
-
-GtkWindow *entangle_camera_support_get_window(EntangleCameraSupport *support);
-
-void entangle_camera_support_show(EntangleCameraSupport *support);
-void entangle_camera_support_hide(EntangleCameraSupport *support);
+EntangleCameraSupport* entangle_camera_support_new(void);
 
 void entangle_camera_support_set_camera_list(EntangleCameraSupport *support,
                                              EntangleCameraList *list);

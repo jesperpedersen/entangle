@@ -27,15 +27,25 @@
 
 #include "entangle-debug.h"
 #include "entangle-help-about.h"
+#include "entangle-window.h"
+
 
 #define ENTANGLE_HELP_ABOUT_GET_PRIVATE(obj)                            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_HELP_ABOUT, EntangleHelpAboutPrivate))
+
+gboolean do_about_delete(GtkWidget *src,
+                         GdkEvent *ev,
+                         gpointer data);
 
 struct _EntangleHelpAboutPrivate {
     GtkBuilder *builder;
 };
 
-G_DEFINE_TYPE(EntangleHelpAbout, entangle_help_about, G_TYPE_OBJECT);
+static void entangle_help_about_window_interface_init(gpointer g_iface,
+                                                      gpointer iface_data);
+
+G_DEFINE_TYPE_EXTENDED(EntangleHelpAbout, entangle_help_about, GTK_TYPE_ABOUT_DIALOG, 0,
+                       G_IMPLEMENT_INTERFACE(ENTANGLE_TYPE_WINDOW, entangle_help_about_window_interface_init));
 
 
 static void entangle_help_about_finalize(GObject *object)
@@ -46,6 +56,16 @@ static void entangle_help_about_finalize(GObject *object)
     g_object_unref(priv->builder);
 
     G_OBJECT_CLASS (entangle_help_about_parent_class)->finalize (object);
+}
+
+static void do_entangle_help_about_set_builder(EntangleWindow *window,
+                                               GtkBuilder *builder);
+
+static void entangle_help_about_window_interface_init(gpointer g_iface,
+                                                      gpointer iface_data G_GNUC_UNUSED)
+{
+    EntangleWindowInterface *iface = g_iface;
+    iface->set_builder = do_entangle_help_about_set_builder;
 }
 
 
@@ -61,104 +81,60 @@ static void entangle_help_about_class_init(EntangleHelpAboutClass *klass)
 
 EntangleHelpAbout *entangle_help_about_new(void)
 {
-    return ENTANGLE_HELP_ABOUT(g_object_new(ENTANGLE_TYPE_HELP_ABOUT, NULL));
+    return ENTANGLE_HELP_ABOUT(entangle_window_new(ENTANGLE_TYPE_HELP_ABOUT,
+                                                   GTK_TYPE_ABOUT_DIALOG,
+                                                   "help-about"));
 }
 
 
-static void do_about_response(GtkDialog *dialog G_GNUC_UNUSED,
+static void do_about_response(GtkDialog *dialog,
                               gint response G_GNUC_UNUSED,
-                              EntangleHelpAbout *about)
+                              gpointer data G_GNUC_UNUSED)
 {
-    g_return_if_fail(ENTANGLE_IS_HELP_ABOUT(about));
+    g_return_if_fail(ENTANGLE_IS_HELP_ABOUT(dialog));
 
-    EntangleHelpAboutPrivate *priv = about->priv;
     ENTANGLE_DEBUG("about response");
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
-    gtk_widget_hide(win);
+    gtk_widget_hide(GTK_WIDGET(dialog));
 }
 
 
-static gboolean do_about_delete(GtkWidget *src G_GNUC_UNUSED,
-                                GdkEvent *ev G_GNUC_UNUSED,
-                                EntangleHelpAbout *about)
+gboolean do_about_delete(GtkWidget *src,
+                         GdkEvent *ev G_GNUC_UNUSED,
+                         gpointer data G_GNUC_UNUSED)
 {
-    g_return_val_if_fail(ENTANGLE_IS_HELP_ABOUT(about), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_HELP_ABOUT(src), FALSE);
 
-    EntangleHelpAboutPrivate *priv = about->priv;
     ENTANGLE_DEBUG("about delete");
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
 
-    gtk_widget_hide(win);
+    gtk_widget_hide(src);
     return TRUE;
 }
 
+static void do_entangle_help_about_set_builder(EntangleWindow *win,
+                                               GtkBuilder *builder)
+{
+    EntangleHelpAbout *about = ENTANGLE_HELP_ABOUT(win);
+    EntangleHelpAboutPrivate *priv = about->priv;
+
+    priv->builder = g_object_ref(builder);
+}
 
 static void entangle_help_about_init(EntangleHelpAbout *about)
 {
-    EntangleHelpAboutPrivate *priv;
-    GtkWidget *win;
     GdkPixbuf *buf;
-    GError *error = NULL;
 
-    priv = about->priv = ENTANGLE_HELP_ABOUT_GET_PRIVATE(about);
+    about->priv = ENTANGLE_HELP_ABOUT_GET_PRIVATE(about);
 
-    priv->builder = gtk_builder_new();
-
-    if (access("./entangle", R_OK) == 0)
-        gtk_builder_add_from_file(priv->builder, "frontend/entangle-help-about.xml", &error);
-    else
-        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-help-about.xml", &error);
-
-    if (error)
-        g_error(_("Could not load user interface definition file: %s"), error->message);
-
-    gtk_builder_connect_signals(priv->builder, about);
-
-    win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
-
-    g_signal_connect(win, "delete-event", G_CALLBACK(do_about_delete), about);
-    g_signal_connect(win, "response", G_CALLBACK(do_about_response), about);
+    g_signal_connect(about, "response", G_CALLBACK(do_about_response), about);
 
     if (access("./entangle-256x256.png", R_OK) < 0)
         buf = gdk_pixbuf_new_from_file(PKGDATADIR "/entangle-256x256.png", NULL);
     else
         buf = gdk_pixbuf_new_from_file("./entangle-256x256.png", NULL);
-    gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(win),buf);
+    gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about), buf);
 
-    gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(win), VERSION);
-}
-
-
-GtkWindow *entangle_help_about_get_window(EntangleHelpAbout *about)
-{
-    g_return_val_if_fail(ENTANGLE_IS_HELP_ABOUT(about), NULL);
-
-    EntangleHelpAboutPrivate *priv = about->priv;
-
-    return GTK_WINDOW(gtk_builder_get_object(priv->builder, "help-about"));
-}
-
-
-void entangle_help_about_show(EntangleHelpAbout *about)
-{
-    g_return_if_fail(ENTANGLE_IS_HELP_ABOUT(about));
-
-    EntangleHelpAboutPrivate *priv = about->priv;
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
-
-    gtk_widget_show(win);
-    gtk_window_present(GTK_WINDOW(win));
-}
-
-void entangle_help_about_hide(EntangleHelpAbout *about)
-{
-    g_return_if_fail(ENTANGLE_IS_HELP_ABOUT(about));
-
-    EntangleHelpAboutPrivate *priv = about->priv;
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "help-about"));
-
-    gtk_widget_hide(win);
+    gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about), VERSION);
 }
 
 

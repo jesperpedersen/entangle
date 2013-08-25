@@ -39,14 +39,14 @@ typedef struct _EntangleHelpAboutClass EntangleHelpAboutClass;
 
 struct _EntangleHelpAbout
 {
-    GObject parent;
+    GtkAboutDialog parent;
 
     EntangleHelpAboutPrivate *priv;
 };
 
 struct _EntangleHelpAboutClass
 {
-    GObjectClass parent_class;
+    GtkAboutDialogClass parent_class;
 
     void (*about_close)(EntangleHelpAbout *about);
 };
@@ -55,11 +55,6 @@ struct _EntangleHelpAboutClass
 GType entangle_help_about_get_type(void) G_GNUC_CONST;
 
 EntangleHelpAbout* entangle_help_about_new(void);
-
-GtkWindow *entangle_help_about_get_window(EntangleHelpAbout *about);
-
-void entangle_help_about_show(EntangleHelpAbout *about);
-void entangle_help_about_hide(EntangleHelpAbout *about);
 
 G_END_DECLS
 

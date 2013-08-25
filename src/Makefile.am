@@ -103,6 +103,7 @@ libentangle_backend_la_CFLAGS = \
 	$(NULL)
 
 libentangle_frontend_la_SOURCES = \
+	frontend/entangle-window.h frontend/entangle-window.c \
 	frontend/entangle-application.h frontend/entangle-application.c \
 	frontend/entangle-camera-info.h frontend/entangle-camera-info.c \
 	frontend/entangle-camera-support.h frontend/entangle-camera-support.c \
@@ -280,7 +281,7 @@ uninstall-local::
 	rmdir $(DESTDIR)$(datadir)/entangle ||:
 
 Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
-	$(AM_V_GEN)$(G_IR_SCANNER) -v --quiet \
+	$(AM_V_GEN)$(G_IR_SCANNER) -v --warn-all \
                 --namespace Entangle \
                 --nsversion 0.1 \
 		--include GObject-2.0 \

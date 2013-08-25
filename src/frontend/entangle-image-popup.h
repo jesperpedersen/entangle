@@ -41,14 +41,14 @@ typedef struct _EntangleImagePopupClass EntangleImagePopupClass;
 
 struct _EntangleImagePopup
 {
-    GObject parent;
+    GtkWindow parent;
 
     EntangleImagePopupPrivate *priv;
 };
 
 struct _EntangleImagePopupClass
 {
-    GObjectClass parent_class;
+    GtkWindowClass parent_class;
 
     void (*popup_close)(EntangleImagePopup *popup);
 };
@@ -63,7 +63,6 @@ void entangle_image_popup_show(EntangleImagePopup *popup,
                                int x, int y);
 void entangle_image_popup_move_to_monitor(EntangleImagePopup *popup, gint monitor);
 void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monitor);
-void entangle_image_popup_hide(EntangleImagePopup *popup);
 
 void entangle_image_popup_set_image(EntangleImagePopup *popup, EntangleImage *image);
 EntangleImage *entangle_image_popup_get_image(EntangleImagePopup *popup);

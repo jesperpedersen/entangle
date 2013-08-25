@@ -42,29 +42,25 @@ typedef struct _EntangleCameraPickerClass EntangleCameraPickerClass;
 
 struct _EntangleCameraPicker
 {
-    GObject parent;
+    GtkDialog parent;
 
     EntangleCameraPickerPrivate *priv;
 };
 
 struct _EntangleCameraPickerClass
 {
-    GObjectClass parent_class;
+    GtkDialogClass parent_class;
 
     void (*picker_connect)(EntangleCameraPicker *picker, EntangleCamera *cam);
     void (*picker_refresh)(EntangleCameraPicker *picker);
-    void (*picker_close)(EntangleCameraPicker *picker);
 };
 
 
 GType entangle_camera_picker_get_type(void) G_GNUC_CONST;
-EntangleCameraPicker* entangle_camera_picker_new(EntangleCameraList *cameras);
+EntangleCameraPicker* entangle_camera_picker_new(void);
 
-GtkWindow *entangle_camera_picker_get_window(EntangleCameraPicker *picker);
-
-void entangle_camera_picker_show(EntangleCameraPicker *picker);
-void entangle_camera_picker_hide(EntangleCameraPicker *picker);
-gboolean entangle_camera_picker_visible(EntangleCameraPicker *picker);
+void entangle_camera_picker_set_camera_list(EntangleCameraPicker *picker,
+                                            EntangleCameraList *cameras);
 
 G_END_DECLS
 

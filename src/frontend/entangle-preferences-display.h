@@ -25,6 +25,7 @@
 
 #include "entangle-application.h"
 
+
 G_BEGIN_DECLS
 
 #define ENTANGLE_TYPE_PREFERENCES_DISPLAY            (entangle_preferences_display_get_type ())
@@ -41,26 +42,20 @@ typedef struct _EntanglePreferencesDisplayClass EntanglePreferencesDisplayClass;
 
 struct _EntanglePreferencesDisplay
 {
-    GObject parent;
+    GtkDialog parent;
 
     EntanglePreferencesDisplayPrivate *priv;
 };
 
 struct _EntanglePreferencesDisplayClass
 {
-    GObjectClass parent_class;
+    GtkDialogClass parent_class;
 
 };
 
 
 GType entangle_preferences_display_get_type(void) G_GNUC_CONST;
-EntanglePreferencesDisplay* entangle_preferences_display_new(EntangleApplication *application);
-
-GtkWindow *entangle_preferences_display_get_window(EntanglePreferencesDisplay *preferences);
-
-void entangle_preferences_display_show(EntanglePreferencesDisplay *preferences);
-
-EntangleApplication *entangle_camera_preferences_get_application(EntanglePreferencesDisplay *preferences);
+EntanglePreferencesDisplay *entangle_preferences_display_new(void);
 
 G_END_DECLS
 

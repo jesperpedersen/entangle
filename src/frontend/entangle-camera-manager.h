@@ -42,14 +42,14 @@ typedef struct _EntangleCameraManagerClass EntangleCameraManagerClass;
 
 struct _EntangleCameraManager
 {
-    GObject parent;
+    GtkWindow parent;
 
     EntangleCameraManagerPrivate *priv;
 };
 
 struct _EntangleCameraManagerClass
 {
-    GObjectClass parent_class;
+    GtkWindowClass parent_class;
 
     void (*manager_connect)(EntangleCameraManager *manager);
     void (*manager_disconnect)(EntangleCameraManager *manager);
@@ -57,24 +57,15 @@ struct _EntangleCameraManagerClass
 
 
 GType entangle_camera_manager_get_type(void) G_GNUC_CONST;
-EntangleCameraManager* entangle_camera_manager_new(EntangleApplication *app);
-
-GtkWindow *entangle_camera_manager_get_window(EntangleCameraManager *manager);
-
-void entangle_camera_manager_show(EntangleCameraManager *manager);
-void entangle_camera_manager_hide(EntangleCameraManager *manager);
+EntangleCameraManager* entangle_camera_manager_new(void);
 
 void entangle_camera_manager_capture(EntangleCameraManager *manager);
 void entangle_camera_manager_preview_begin(EntangleCameraManager *manager);
 void entangle_camera_manager_preview_cancel(EntangleCameraManager *manager);
 
-gboolean entangle_camera_manager_visible(EntangleCameraManager *manager);
-
 void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
                                         EntangleCamera *cam);
 EntangleCamera *entangle_camera_manager_get_camera(EntangleCameraManager *manager);
-
-EntangleApplication *entangle_camera_manager_get_application(EntangleCameraManager *manager);
 
 G_END_DECLS
 

@@ -28,15 +28,16 @@
 #include "entangle-debug.h"
 #include "entangle-camera-info.h"
 #include "entangle-camera.h"
+#include "entangle-window.h"
+
 
 #define ENTANGLE_CAMERA_INFO_GET_PRIVATE(obj)                           \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_INFO, EntangleCameraInfoPrivate))
 
 gboolean do_info_close(GtkButton *src,
-                       EntangleCameraInfo *info);
+                       gpointer data);
 gboolean do_info_delete(GtkWidget *src,
-                        GdkEvent *ev,
-                        EntangleCameraInfo *info);
+                        GdkEvent *ev);
 
 struct _EntangleCameraInfoPrivate {
     EntangleCamera *camera;
@@ -45,7 +46,11 @@ struct _EntangleCameraInfoPrivate {
     GtkBuilder *builder;
 };
 
-G_DEFINE_TYPE(EntangleCameraInfo, entangle_camera_info, G_TYPE_OBJECT);
+static void entangle_camera_info_window_interface_init(gpointer g_iface,
+                                                      gpointer iface_data);
+
+G_DEFINE_TYPE_EXTENDED(EntangleCameraInfo, entangle_camera_info, GTK_TYPE_DIALOG, 0,
+                       G_IMPLEMENT_INTERFACE(ENTANGLE_TYPE_WINDOW, entangle_camera_info_window_interface_init));
 
 enum {
     PROP_O,
@@ -115,6 +120,16 @@ static void entangle_camera_info_finalize(GObject *object)
     G_OBJECT_CLASS (entangle_camera_info_parent_class)->finalize (object);
 }
 
+static void do_entangle_camera_info_set_builder(EntangleWindow *window,
+                                                GtkBuilder *builder);
+
+static void entangle_camera_info_window_interface_init(gpointer g_iface,
+                                                       gpointer iface_data G_GNUC_UNUSED)
+{
+    EntangleWindowInterface *iface = g_iface;
+    iface->set_builder = do_entangle_camera_info_set_builder;
+}
+
 
 static void entangle_camera_info_class_init(EntangleCameraInfoClass *klass)
 {
@@ -123,15 +138,6 @@ static void entangle_camera_info_class_init(EntangleCameraInfoClass *klass)
     object_class->finalize = entangle_camera_info_finalize;
     object_class->get_property = entangle_camera_info_get_property;
     object_class->set_property = entangle_camera_info_set_property;
-
-    g_signal_new("info-close",
-                 G_TYPE_FROM_CLASS(klass),
-                 G_SIGNAL_RUN_FIRST,
-                 G_STRUCT_OFFSET(EntangleCameraInfoClass, info_close),
-                 NULL, NULL,
-                 g_cclosure_marshal_VOID__VOID,
-                 G_TYPE_NONE,
-                 0);
 
     g_object_class_install_property(object_class,
                                     PROP_CAMERA,
@@ -177,97 +183,52 @@ GType entangle_camera_info_data_get_type(void)
 }
 
 
-EntangleCameraInfo *entangle_camera_info_new(EntangleCamera *camera,
-                                             EntangleCameraInfoData data)
+EntangleCameraInfo *entangle_camera_info_new(void)
 {
-    return ENTANGLE_CAMERA_INFO(g_object_new(ENTANGLE_TYPE_CAMERA_INFO,
-                                             "camera", camera,
-                                             "data", data,
-                                             NULL));
+    return ENTANGLE_CAMERA_INFO(entangle_window_new(ENTANGLE_TYPE_CAMERA_INFO,
+                                                    GTK_TYPE_DIALOG,
+                                                    "camera-info"));
 }
-
 
 gboolean do_info_close(GtkButton *src G_GNUC_UNUSED,
-                       EntangleCameraInfo *info)
+                       gpointer data)
 {
-    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(data), FALSE);
 
-    EntangleCameraInfoPrivate *priv = info->priv;
+    EntangleCameraInfo *info = ENTANGLE_CAMERA_INFO(data);
+
     ENTANGLE_DEBUG("info close");
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
-    gtk_widget_hide(win);
-    return TRUE;
+    gtk_widget_hide(GTK_WIDGET(info));
+    return FALSE;
 }
 
 
-gboolean do_info_delete(GtkWidget *src G_GNUC_UNUSED,
-                        GdkEvent *ev G_GNUC_UNUSED,
-                        EntangleCameraInfo *info)
+gboolean do_info_delete(GtkWidget *src,
+                        GdkEvent *ev G_GNUC_UNUSED)
 {
-    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), FALSE);
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(src), FALSE);
 
-    EntangleCameraInfoPrivate *priv = info->priv;
     ENTANGLE_DEBUG("info delete");
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
 
-    gtk_widget_hide(win);
+    gtk_widget_hide(src);
     return FALSE;
+}
+
+
+static void do_entangle_camera_info_set_builder(EntangleWindow *win,
+                                                GtkBuilder *builder)
+{
+    EntangleCameraInfo *info = ENTANGLE_CAMERA_INFO(win);
+    EntangleCameraInfoPrivate *priv = info->priv;
+
+    priv->builder = g_object_ref(builder);
 }
 
 
 static void entangle_camera_info_init(EntangleCameraInfo *info)
 {
-    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
-
-    EntangleCameraInfoPrivate *priv;
-    GError *error = NULL;
-
-    priv = info->priv = ENTANGLE_CAMERA_INFO_GET_PRIVATE(info);
-
-    priv->builder = gtk_builder_new();
-
-    if (access("./entangle", R_OK) == 0)
-        gtk_builder_add_from_file(priv->builder, "frontend/entangle-camera-info.xml", &error);
-    else
-        gtk_builder_add_from_file(priv->builder, PKGDATADIR "/entangle-camera-info.xml", &error);
-
-    if (error)
-        g_error(_("Could not load user interface definition file: %s"), error->message);
-
-    gtk_builder_connect_signals(priv->builder, info);
-}
-
-
-GtkWindow *entangle_camera_info_get_window(EntangleCameraInfo *info)
-{
-    g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), NULL);
-
-    EntangleCameraInfoPrivate *priv = info->priv;
-    return GTK_WINDOW(gtk_builder_get_object(priv->builder, "camera-info"));
-}
-
-
-void entangle_camera_info_show(EntangleCameraInfo *info)
-{
-    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
-
-    EntangleCameraInfoPrivate *priv = info->priv;
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
-
-    gtk_widget_show(win);
-    gtk_window_present(GTK_WINDOW(win));
-}
-
-
-void entangle_camera_info_hide(EntangleCameraInfo *info)
-{
-    g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
-
-    EntangleCameraInfoPrivate *priv = info->priv;
-    GtkWidget *win = GTK_WIDGET(gtk_builder_get_object(priv->builder, "camera-info"));
-
-    gtk_widget_hide(win);
+    info->priv = ENTANGLE_CAMERA_INFO_GET_PRIVATE(info);
 }
 
 

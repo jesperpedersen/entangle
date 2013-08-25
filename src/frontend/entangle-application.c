@@ -144,11 +144,8 @@ static void entangle_application_activate(GApplication *gapp)
     GList *wins = gtk_application_get_windows(GTK_APPLICATION(gapp));
     while (wins) {
         GtkWindow *win = wins->data;
-        EntangleCameraManager *manager = g_object_get_data(G_OBJECT(win), "manager");
-        if (manager) {
-            entangle_camera_manager_show(manager);
-            break;
-        }
+        gtk_widget_show(GTK_WIDGET(win));
+        gtk_window_present(win);
         wins = wins->next;
     }
 }
@@ -165,8 +162,9 @@ static void entangle_application_startup(GApplication *gapp)
         cameras = tmp = entangle_camera_list_get_cameras(priv->cameras);
 
     if (!cameras) {
-        EntangleCameraManager *manager = entangle_camera_manager_new(app);
-        entangle_camera_manager_show(manager);
+        EntangleCameraManager *manager = entangle_camera_manager_new();
+        gtk_application_add_window(GTK_APPLICATION(gapp), GTK_WINDOW(manager));
+        gtk_widget_show(GTK_WIDGET(manager));
     } else {
         while (tmp) {
             EntangleCamera *cam = ENTANGLE_CAMERA(tmp->data);
@@ -174,10 +172,10 @@ static void entangle_application_startup(GApplication *gapp)
             ENTANGLE_DEBUG("Opening window for %s",
                            entangle_camera_get_port(cam));
 
-            EntangleCameraManager *manager = entangle_camera_manager_new(app);
-            entangle_camera_manager_show(manager);
+            EntangleCameraManager *manager = entangle_camera_manager_new();
+            gtk_application_add_window(GTK_APPLICATION(gapp), GTK_WINDOW(manager));
+            gtk_widget_show(GTK_WIDGET(manager));
             entangle_camera_manager_set_camera(manager, cam);
-            //g_object_unref(manager);
 
             tmp = tmp->next;
         }
@@ -303,7 +301,7 @@ static void entangle_application_init(EntangleApplication *app)
     g_mkdir_with_parents(userdir, 0777);
 
     priv->pluginEngine = peas_engine_get_default();
-    peas_engine_enable_loader(priv->pluginEngine, "python");
+    peas_engine_enable_loader(priv->pluginEngine, "gjs");
 
     peas_engine_add_search_path(priv->pluginEngine,
                                 userdir, userdir);

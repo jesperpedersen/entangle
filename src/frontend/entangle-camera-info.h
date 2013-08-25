@@ -42,16 +42,14 @@ typedef struct _EntangleCameraInfoClass EntangleCameraInfoClass;
 
 struct _EntangleCameraInfo
 {
-    GObject parent;
+    GtkDialog parent;
 
     EntangleCameraInfoPrivate *priv;
 };
 
 struct _EntangleCameraInfoClass
 {
-    GObjectClass parent_class;
-
-    void (*info_close)(EntangleCameraInfo *info);
+    GtkDialogClass parent_class;
 };
 
 typedef enum {
@@ -63,22 +61,15 @@ typedef enum {
 GType entangle_camera_info_get_type(void) G_GNUC_CONST;
 GType entangle_camera_info_data_get_type(void) G_GNUC_CONST;
 
-EntangleCameraInfo* entangle_camera_info_new(EntangleCamera *camera,
-                                             EntangleCameraInfoData data);
-
-GtkWindow *entangle_camera_info_get_window(EntangleCameraInfo *info);
-
-void entangle_camera_info_show(EntangleCameraInfo *info);
-void entangle_camera_info_hide(EntangleCameraInfo *info);
-
+EntangleCameraInfo* entangle_camera_info_new(void);
 
 void entangle_camera_info_set_data(EntangleCameraInfo *info,
-                               EntangleCameraInfoData data);
+                                   EntangleCameraInfoData data);
 
 EntangleCameraInfoData entangle_camera_info_get_data(EntangleCameraInfo *info);
 
 void entangle_camera_info_set_camera(EntangleCameraInfo *info,
-                                 EntangleCamera *camera);
+                                     EntangleCamera *camera);
 
 EntangleCamera *entangle_camera_info_get_camera(EntangleCameraInfo *info);
 
