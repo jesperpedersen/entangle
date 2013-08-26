@@ -80,8 +80,8 @@ static void entangle_image_set_property(GObject *object,
                                         const GValue *value,
                                         GParamSpec *pspec)
 {
-    EntangleImage *picker = ENTANGLE_IMAGE(object);
-    EntangleImagePrivate *priv = picker->priv;
+    EntangleImage *image = ENTANGLE_IMAGE(object);
+    EntangleImagePrivate *priv = image->priv;
 
     switch (prop_id)
         {
@@ -192,11 +192,11 @@ EntangleImage *entangle_image_new_pixbuf(GdkPixbuf *pixbuf)
 }
 
 
-static void entangle_image_init(EntangleImage *picker)
+static void entangle_image_init(EntangleImage *image)
 {
     EntangleImagePrivate *priv;
 
-    priv = picker->priv = ENTANGLE_IMAGE_GET_PRIVATE(picker);
+    priv = image->priv = ENTANGLE_IMAGE_GET_PRIVATE(image);
 
     priv->dirty = TRUE;
 }
