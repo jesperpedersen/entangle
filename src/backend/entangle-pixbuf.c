@@ -36,6 +36,9 @@ GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src,
 
     if (dest == src) {
         int transform = 0;
+
+        g_object_unref(dest);
+
         if (metadata) {
             transform = gexiv2_metadata_get_orientation(metadata);
         } else {
