@@ -1834,6 +1834,12 @@ static gboolean entangle_str_equal_null(gchar *a, gchar *b)
 }
 
 
+/*
+ * XXX this method causes signals to be emitted from controls
+ * in non-main threads, if triggered via an _async() method.
+ * Investigate if we can fix this to always run in main thread
+ * to simplify thread safety for GTK frontend
+ */
 static gboolean do_load_controls(EntangleCamera *cam,
                                  const char *path,
                                  CameraWidget *widget,

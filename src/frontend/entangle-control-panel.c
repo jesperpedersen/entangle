@@ -92,21 +92,28 @@ static void do_update_control_finish(GObject *src,
 }
 
 
-static void do_refresh_control_entry(GObject *object,
-                                     GParamSpec *pspec G_GNUC_UNUSED,
-                                     gpointer data)
+static gboolean do_refresh_control_entry_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gchar *text;
 
-    g_object_get(object, "value", &text, NULL);
+    g_object_get(control, "value", &text, NULL);
     if (GTK_IS_LABEL(widget))
         gtk_label_set_text(GTK_LABEL(widget), text);
     else
         gtk_entry_set_text(GTK_ENTRY(widget), text);
     g_free(text);
+
+    return FALSE;
 }
 
+static void do_refresh_control_entry(GObject *object G_GNUC_UNUSED,
+                                     GParamSpec *pspec G_GNUC_UNUSED,
+                                     gpointer data)
+{
+    g_idle_add(do_refresh_control_entry_idle, data);
+}
 
 static void do_update_control_entry(GtkWidget *widget,
                                     GdkEventFocus *ev G_GNUC_UNUSED,
@@ -131,14 +138,13 @@ static void do_update_control_entry(GtkWidget *widget,
 }
 
 
-static void do_refresh_control_range(GObject *object,
-                                     GParamSpec *pspec G_GNUC_UNUSED,
-                                     gpointer data)
+static gboolean do_refresh_control_range_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gfloat val;
 
-    g_object_get(object, "value", &val, NULL);
+    g_object_get(control, "value", &val, NULL);
     if (GTK_IS_LABEL(widget)) {
         gchar *text = g_strdup_printf("%0.02f", val);
         gtk_label_set_text(GTK_LABEL(widget), text);
@@ -146,6 +152,16 @@ static void do_refresh_control_range(GObject *object,
     } else {
         gtk_range_set_value(GTK_RANGE(widget), val);
     }
+
+    return FALSE;
+}
+
+
+static void do_refresh_control_range(GObject *object G_GNUC_UNUSED,
+                                     GParamSpec *pspec G_GNUC_UNUSED,
+                                     gpointer data)
+{
+    g_idle_add(do_refresh_control_range_idle, data);
 }
 
 
@@ -170,26 +186,35 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
 }
 
 
-static void do_refresh_control_combo(GObject *object,
-                                     GParamSpec *pspec G_GNUC_UNUSED,
-                                     gpointer data)
+static gboolean do_refresh_control_combo_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gchar *text;
 
-    g_object_get(object, "value", &text, NULL);
+    g_object_get(control, "value", &text, NULL);
 
     if (GTK_IS_LABEL(widget)) {
         gtk_label_set_text(GTK_LABEL(widget), text);
     } else {
         int active = 0;
-        for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(object)) ; n++) {
-            if (g_strcmp0(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(object), n)) == 0)
+        for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)) ; n++) {
+            if (g_strcmp0(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n)) == 0)
                 active = n;
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(widget), active);
     }
     g_free(text);
+
+    return FALSE;
+}
+
+
+static void do_refresh_control_combo(GObject *object G_GNUC_UNUSED,
+                                     GParamSpec *pspec G_GNUC_UNUSED,
+                                     gpointer data)
+{
+    g_idle_add(do_refresh_control_combo_idle, data);
 }
 
 
@@ -220,19 +245,28 @@ static void do_update_control_combo(GtkComboBox *widget,
 }
 
 
-static void do_refresh_control_toggle(GObject *object,
-                                      GParamSpec *pspec G_GNUC_UNUSED,
-                                      gpointer data)
+static gboolean do_refresh_control_toggle_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gboolean state;
 
-    g_object_get(object, "value", &state, NULL);
+    g_object_get(control, "value", &state, NULL);
     if (GTK_IS_LABEL(widget))
         gtk_label_set_text(GTK_LABEL(widget), state ? _("On") : _("Off"));
     else
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
                                      state);
+
+    return FALSE;
+}
+
+
+static void do_refresh_control_toggle(GObject *object G_GNUC_UNUSED,
+                                      GParamSpec *pspec G_GNUC_UNUSED,
+                                      gpointer data)
+{
+    g_idle_add(do_refresh_control_toggle_idle, data);
 }
 
 
