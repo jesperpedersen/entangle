@@ -290,6 +290,27 @@ static void do_update_control_toggle(GtkToggleButton *widget,
                                         panel);
 }
 
+static gboolean do_update_control_readonly_idle(gpointer data)
+{
+    GtkWidget *widget = GTK_WIDGET(data);
+    GObject *control = g_object_get_data(G_OBJECT(widget), "control");
+    gboolean state;
+
+    g_object_get(control, "readonly", &state, NULL);
+    gtk_widget_set_sensitive(widget, !state);
+
+    return FALSE;
+}
+
+
+static void do_update_control_readonly(GObject *object G_GNUC_UNUSED,
+                                       GParamSpec *pspec G_GNUC_UNUSED,
+                                       gpointer data)
+{
+    g_idle_add(do_update_control_readonly_idle, data);
+}
+
+
 static void do_setup_control_group(EntangleControlPanel *panel,
                                    GtkVBox *box,
                                    EntangleControlGroup *grp)
@@ -325,6 +346,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
             gtk_container_add(GTK_CONTAINER(subbox), value);
+            g_signal_connect(control, "notify::readonly",
+                             G_CALLBACK(do_update_control_readonly), value);
         } else if (ENTANGLE_IS_CONTROL_CHOICE(control)) {
             GtkCellRenderer *cell;
             GtkListStore *store;
@@ -382,6 +405,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                              G_CALLBACK(do_update_control_combo), panel);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_combo), value);
+            g_signal_connect(control, "notify::readonly",
+                             G_CALLBACK(do_update_control_readonly), value);
             gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_DATE(control)) {
             GtkWidget *label;
@@ -431,6 +456,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                              G_CALLBACK(do_update_control_range), panel);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_range), value);
+            g_signal_connect(control, "notify::readonly",
+                             G_CALLBACK(do_update_control_readonly), value);
             gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_TEXT(control)) {
             GtkWidget *label;
@@ -453,6 +480,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                              G_CALLBACK(do_update_control_entry), panel);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_entry), value);
+            g_signal_connect(control, "notify::readonly",
+                             G_CALLBACK(do_update_control_readonly), value);
             gtk_container_add(GTK_CONTAINER(subbox), value);
         } else if (ENTANGLE_IS_CONTROL_TOGGLE(control)) {
             GtkWidget *value;
@@ -468,6 +497,8 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                              G_CALLBACK(do_update_control_toggle), panel);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_toggle), value);
+            g_signal_connect(control, "notify::readonly",
+                             G_CALLBACK(do_update_control_readonly), value);
             gtk_container_add(GTK_CONTAINER(subbox), value);
         }
     }
