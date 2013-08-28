@@ -1,7 +1,23 @@
       Entangle News
       =============
 
+
+Release 0.5.3 - "Photon" - 2013-08-28
+--------------------------------------
+
+ * Move file name of image thumbnails to tooltip popup
+ * Add --disable-schemas-compile configure arg to
+   disable schema compilation
+ * Remove "Encoding" key from desktop file
+ * Fix massive memory leak in pixbuf loading
+ * Fix thread safety in camera control updates which caused
+   hangs in GTK
+ * Fix updating of control readonly state when camera modes
+   change
+
+
 Release 0.5.2 - "Graviton" - 2013-08-17
+--------------------------------------
 
  * Split histogram into RGB colour channels
  * Fix aperture / shutter speed calculations in status bar
@@ -25,6 +41,7 @@ Release 0.5.2 - "Graviton" - 2013-08-17
 
 
 Release 0.5.1 - "W Boson" - 2012-03-12
+--------------------------------------
 
  * Update for compatibility with libgphoto 2.5 API
    callbacks

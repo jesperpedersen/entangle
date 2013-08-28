@@ -23,7 +23,7 @@ Bosons
  0.5.0 - Z Boson
  0.5.1 - W Boson
  0.5.2 - Graviton
- x.x.x - Photon
+ 0.5.3 - Photon
 
 
 Quarks
