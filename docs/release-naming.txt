@@ -1,0 +1,37 @@
+  Entangle Release Names
+  ======================
+
+Entangle releases are named after sub-atomic particles (either confirmed
+or theorized)
+
+Leptons
+-------
+
+ 0.1.0 - Electron
+ 0.2.0 - Electron Neutrino
+ 0.3.0 - Tau
+ 0.3.1 - Tau Neutrino
+ 0.3.2 - Muon
+ 0.3.3 - Muon Neutrino
+
+
+Bosons
+------
+
+ 0.4.0 - Higgs Boson
+ 0.4.1 - Gluon
+ 0.5.0 - Z Boson
+ 0.5.1 - W Boson
+ 0.5.2 - Graviton
+ x.x.x - Photon
+
+
+Quarks
+------
+
+ x.x.x - Up
+ x.x.x - Down
+ x.x.x - Strange
+ x.x.x - Charm
+ x.x.x - Top
+ x.x.x - Bottom
