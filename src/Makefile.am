@@ -178,7 +178,7 @@ entangle_CFLAGS = \
 
 
 %.desktop: $(srcdir)/%.desktop.in
-	$(AM_V_GEN)sed -e "s,::PACKAGE::,$(PACKAGE),g" -e "s,::DATADIR::,$(datadir),g" < $< > $@
+	$(AM_V_GEN)sed -e "s,::DATADIR::,$(datadir),g" < $< > $@
 
 backend/entangle-colour-profile-enums.c: backend/entangle-colour-profile.h backend/entangle-colour-profile-enums.h Makefile.am
 	$(AM_V_GEN)glib-mkenums \

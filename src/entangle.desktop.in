@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Name=Entangle
-Comment=Tethered Camera Control
-Icon=::DATADIR::/::PACKAGE::/::PACKAGE::.svg
-Exec=::PACKAGE::
+Comment=Tethered Camera Control & Capture
+Icon=::DATADIR::/entangle/entangle.svg
+Exec=entangle
 Type=Application
 Terminal=false
 Categories=Graphics;GTK;
