@@ -337,7 +337,6 @@ static GdkPixbuf *entangle_pixbuf_open_image_preview_raw(EntangleImage *image,
     result = gdk_pixbuf_loader_get_pixbuf(loader);
 
     if (result) {
-        g_object_ref(result);
         if (applyOrientation) {
             GdkPixbuf *tmp = entangle_pixbuf_auto_rotate(result, metadata);
             g_object_unref(result);
