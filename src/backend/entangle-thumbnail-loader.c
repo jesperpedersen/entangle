@@ -128,6 +128,18 @@ static char *entangle_thumbnail_loader_uri_to_thumb(const char *uri)
 }
 
 
+static void entangle_thumbnail_ensure_thumbnail_dir(void)
+{
+    char *dir;
+
+    dir = g_strdup_printf("%s/.thumbnails/normal/",
+                          g_get_home_dir());
+
+    g_mkdir_with_parents(dir, 0700);
+
+    g_free(dir);
+}
+
 /* Loads the master image and downsizes it to produce a thumbnail */
 static GdkPixbuf *entangle_thumbnail_loader_generate(EntanglePixbufLoader *loader G_GNUC_UNUSED,
                                                      EntangleImage *image,
@@ -183,6 +195,9 @@ static GdkPixbuf *entangle_thumbnail_loader_generate(EntanglePixbufLoader *loade
     thumbnametmp = g_strdup_printf("%s.entangle-tmp", thumbname);
 
     orientationstr = gdk_pixbuf_get_option(master, "orientation");
+
+    entangle_thumbnail_ensure_thumbnail_dir();
+
     if (gdk_pixbuf_save(thumb, thumbnametmp,
                         "png", NULL,
                         "tEXt::Thumb::Image::Width", widthStr,
