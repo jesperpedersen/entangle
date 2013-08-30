@@ -21,6 +21,9 @@ desktopdir = $(datadir)/applications
 desktop_DATA_IN = entangle.desktop.in
 desktop_DATA = entangle.desktop
 
+appdatadir = $(datadir)/appdata
+appdata_DATA = entangle.appdata.xml
+
 icondir = $(pkgdatadir)
 icon_DATA = $(PACKAGE).svg $(wildcard *.png)
 
@@ -38,7 +41,7 @@ BUILT_SOURCES = \
 	frontend/entangle-image-display-enums.c \
 	$(NULL)
 
-EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(icon_DATA) $(icc_DATA) $(gsettings_SCHEMAS)
+EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(appdata_DATA) $(icon_DATA) $(icc_DATA) $(gsettings_SCHEMAS)
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-camera.h backend/entangle-camera.c \
