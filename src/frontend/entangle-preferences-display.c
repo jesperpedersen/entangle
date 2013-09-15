@@ -499,7 +499,7 @@ EntanglePreferencesDisplay *entangle_preferences_display_new(void)
 {
     return ENTANGLE_PREFERENCES_DISPLAY(entangle_window_new(ENTANGLE_TYPE_PREFERENCES_DISPLAY,
                                                             GTK_TYPE_DIALOG,
-                                                            "preferences"));
+                                                            "preferences-display"));
 }
 
 void do_preferences_close(GtkButton *src G_GNUC_UNUSED, EntanglePreferencesDisplay *preferences)

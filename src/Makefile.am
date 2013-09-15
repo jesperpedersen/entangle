@@ -9,13 +9,13 @@ bin_PROGRAMS = entangle
 
 builderdir = $(pkgdatadir)
 builder_DATA = \
-	frontend/entangle-camera-info.xml \
-	frontend/entangle-camera-support.xml \
-	frontend/entangle-camera-manager.xml \
-	frontend/entangle-camera-picker.xml \
-	frontend/entangle-help-about.xml \
-	frontend/entangle-image-popup.xml \
-	frontend/entangle-preferences.xml
+	frontend/entangle-camera-info.ui \
+	frontend/entangle-camera-support.ui \
+	frontend/entangle-camera-manager.ui \
+	frontend/entangle-camera-picker.ui \
+	frontend/entangle-help-about.ui \
+	frontend/entangle-image-popup.ui \
+	frontend/entangle-preferences-display.ui
 
 desktopdir = $(datadir)/applications
 desktop_DATA_IN = entangle.desktop.in

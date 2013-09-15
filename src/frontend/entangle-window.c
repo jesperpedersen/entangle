@@ -39,9 +39,9 @@ EntangleWindow *entangle_window_new(GType wintype,
     builder = gtk_builder_new();
 
     if (access("./entangle", R_OK) == 0)
-        filename = g_strdup_printf("%s/entangle-%s.xml", "frontend", winname);
+        filename = g_strdup_printf("%s/entangle-%s.ui", "frontend", winname);
     else
-        filename = g_strdup_printf("%s/entangle-%s.xml", PKGDATADIR, winname);
+        filename = g_strdup_printf("%s/entangle-%s.ui", PKGDATADIR, winname);
 
     if (!g_file_get_contents (filename, &buffer, &length, &error))
         g_error(_("Could not load user interface definition file: %s"), error->message);

@@ -33,7 +33,7 @@
       </row>
     </data>
   </object>
-  <object class="GtkDialog" id="preferences">
+  <object class="GtkDialog" id="preferences-display">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Entangle Preferences</property>

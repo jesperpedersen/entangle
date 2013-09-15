@@ -65,13 +65,13 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %doc README COPYING AUTHORS NEWS ChangeLog
 %{_bindir}/entangle
 %{_mandir}/man1/entangle.1*
-%{_datadir}/%{name}/%{name}-camera-info.xml
-%{_datadir}/%{name}/%{name}-camera-manager.xml
-%{_datadir}/%{name}/%{name}-camera-picker.xml
-%{_datadir}/%{name}/%{name}-camera-support.xml
-%{_datadir}/%{name}/%{name}-help-about.xml
-%{_datadir}/%{name}/%{name}-image-popup.xml
-%{_datadir}/%{name}/%{name}-preferences.xml
+%{_datadir}/%{name}/%{name}-camera-info.ui
+%{_datadir}/%{name}/%{name}-camera-manager.ui
+%{_datadir}/%{name}/%{name}-camera-picker.ui
+%{_datadir}/%{name}/%{name}-camera-support.ui
+%{_datadir}/%{name}/%{name}-help-about.ui
+%{_datadir}/%{name}/%{name}-image-popup.ui
+%{_datadir}/%{name}/%{name}-preferences-display.ui
 %{_datadir}/%{name}/%{name}-16x16.png
 %{_datadir}/%{name}/%{name}-32x32.png
 %{_datadir}/%{name}/%{name}-48x48.png

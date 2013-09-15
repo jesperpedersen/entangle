@@ -1,16 +1,16 @@
 src/backend/entangle-camera-list.c
 src/backend/entangle-camera.c
 src/frontend/entangle-camera-info.c
-[type: gettext/glade] src/frontend/entangle-camera-info.xml
+[type: gettext/glade] src/frontend/entangle-camera-info.ui
 src/frontend/entangle-camera-manager.c
-[type: gettext/glade] src/frontend/entangle-camera-manager.xml
+[type: gettext/glade] src/frontend/entangle-camera-manager.ui
 src/frontend/entangle-camera-picker.c
-[type: gettext/glade] src/frontend/entangle-camera-picker.xml
-[type: gettext/glade] src/frontend/entangle-camera-support.xml
+[type: gettext/glade] src/frontend/entangle-camera-picker.ui
+[type: gettext/glade] src/frontend/entangle-camera-support.ui
 src/frontend/entangle-control-panel.c
 src/frontend/entangle-dpms.c
-[type: gettext/glade] src/frontend/entangle-help-about.xml
-[type: gettext/glade] src/frontend/entangle-image-popup.xml
+[type: gettext/glade] src/frontend/entangle-help-about.ui
+[type: gettext/glade] src/frontend/entangle-image-popup.ui
 src/frontend/entangle-preferences-display.c
-[type: gettext/glade] src/frontend/entangle-preferences.xml
+[type: gettext/glade] src/frontend/entangle-preferences-display.ui
 src/frontend/entangle-window.c
