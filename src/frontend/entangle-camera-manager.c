@@ -50,7 +50,7 @@
 #include "entangle-progress.h"
 #include "entangle-dpms.h"
 #include "entangle-window.h"
-#include "view/autoDrawer.h"
+#include "entangle-auto-drawer.h"
 
 #define ENTANGLE_CAMERA_MANAGER_GET_PRIVATE(obj)                        \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CAMERA_MANAGER, EntangleCameraManagerPrivate))
@@ -75,7 +75,7 @@ struct _EntangleCameraManagerPrivate {
     GtkScrolledWindow *imageScroll;
     EntangleImageDisplay *imageDisplay;
     EntangleImageStatusbar *imageStatusbar;
-    ViewAutoDrawer *imageDrawer;
+    EntangleAutoDrawer *imageDrawer;
     gulong imageDrawerTimer;
     EntangleSessionBrowser *sessionBrowser;
     GtkMenu *sessionBrowserMenu;
@@ -3017,7 +3017,7 @@ static gboolean do_image_status_hide(gpointer data)
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    ViewAutoDrawer_SetPinned(VIEW_AUTODRAWER(priv->imageDrawer), FALSE);
+    entangle_auto_drawer_set_pinned(ENTANGLE_AUTO_DRAWER(priv->imageDrawer), FALSE);
     priv->imageDrawerTimer = 0;
     return FALSE;
 }
@@ -3032,7 +3032,7 @@ static void do_image_status_show(GtkWidget *widget G_GNUC_UNUSED,
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    ViewAutoDrawer_SetPinned(VIEW_AUTODRAWER(priv->imageDrawer), TRUE);
+    entangle_auto_drawer_set_pinned(ENTANGLE_AUTO_DRAWER(priv->imageDrawer), TRUE);
     if (priv->imageDrawerTimer)
         g_source_remove(priv->imageDrawerTimer);
     priv->imageDrawerTimer = g_timeout_add_seconds(3,
@@ -3091,7 +3091,7 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
 
     priv->imageDisplay = entangle_image_display_new();
     priv->imageStatusbar = entangle_image_statusbar_new();
-    priv->imageDrawer = VIEW_AUTODRAWER(ViewAutoDrawer_New());
+    priv->imageDrawer = entangle_auto_drawer_new();
     priv->sessionBrowser = entangle_session_browser_new();
     priv->sessionBrowserMenu = GTK_MENU(gtk_builder_get_object(priv->builder, "menu-session-browser"));
     priv->controlPanel = entangle_control_panel_new();
@@ -3130,16 +3130,16 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
 
     gtk_container_add(GTK_CONTAINER(imageViewport), GTK_WIDGET(priv->imageDisplay));
 
-    ViewOvBox_SetOver(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageStatusbar));
-    ViewOvBox_SetUnder(VIEW_OV_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageScroll));
-    ViewAutoDrawer_SetOffset(VIEW_AUTODRAWER(priv->imageDrawer), -1);
-    ViewAutoDrawer_SetFill(VIEW_AUTODRAWER(priv->imageDrawer), TRUE);
-    ViewAutoDrawer_SetOverlapPixels(VIEW_AUTODRAWER(priv->imageDrawer), 1);
-    ViewAutoDrawer_SetNoOverlapPixels(VIEW_AUTODRAWER(priv->imageDrawer), 0);
-    ViewDrawer_SetSpeed(VIEW_DRAWER(priv->imageDrawer), 20, 0.05);
+    entangle_overlay_box_set_over(ENTANGLE_OVERLAY_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageStatusbar));
+    entangle_overlay_box_set_under(ENTANGLE_OVERLAY_BOX(priv->imageDrawer), GTK_WIDGET(priv->imageScroll));
+    entangle_auto_drawer_set_offset(priv->imageDrawer, -1);
+    entangle_auto_drawer_set_fill(priv->imageDrawer, TRUE);
+    entangle_auto_drawer_set_overlap_pixels(priv->imageDrawer, 1);
+    entangle_auto_drawer_set_no_overlap_pixels(priv->imageDrawer, 0);
+    entangle_drawer_set_speed(ENTANGLE_DRAWER(priv->imageDrawer), 20, 0.05);
     gtk_widget_show(GTK_WIDGET(priv->imageDrawer));
     gtk_widget_show(GTK_WIDGET(priv->imageStatusbar));
-    ViewAutoDrawer_SetActive(priv->imageDrawer, TRUE);
+    entangle_auto_drawer_set_active(priv->imageDrawer, TRUE);
 
     gtk_widget_realize(GTK_WIDGET(manager));
     GdkWindow *imgWin = gtk_widget_get_window(GTK_WIDGET(manager));
