@@ -535,16 +535,15 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     gtk_widget_set_sensitive(menuHelp,
                              priv->camera ? TRUE : FALSE);
 
+    gtk_widget_set_tooltip_text(toolCapture, _("Capture an image"));
+    gtk_widget_set_tooltip_text(toolPreview, _("Continuous capture preview"));
+
     if (priv->camera) {
         if (!entangle_camera_get_has_capture(priv->camera))
             gtk_widget_set_tooltip_text(toolCapture, _("This camera does not support image capture"));
-        else
-            gtk_widget_set_tooltip_text(toolCapture, "");
         if (!entangle_camera_get_has_capture(priv->camera) ||
             !entangle_camera_get_has_preview(priv->camera))
             gtk_widget_set_tooltip_text(toolPreview, _("This camera does not support image preview"));
-        else
-            gtk_widget_set_tooltip_text(toolPreview, "");
     }
 
 #if 0
