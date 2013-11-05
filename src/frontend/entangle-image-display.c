@@ -69,7 +69,7 @@ static void entangle_image_display_image_pixbuf_notify(GObject *image,
 static void do_entangle_image_display_render_pixmap(EntangleImageDisplay *display)
 {
     EntangleImageDisplayPrivate *priv = display->priv;
-    int pw, ph;
+    int width, height;
     GdkPixbuf *pixbuf = NULL;
     GList *tmp = priv->images;
     EntangleImage *image = ENTANGLE_IMAGE(priv->images->data);
@@ -80,19 +80,33 @@ static void do_entangle_image_display_render_pixmap(EntangleImageDisplay *displa
     image = ENTANGLE_IMAGE(tmp->data);
     pixbuf = entangle_image_get_pixbuf(image);
 
-    pw = gdk_pixbuf_get_width(pixbuf);
-    ph = gdk_pixbuf_get_height(pixbuf);
-    priv->pixmap = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, pw, ph);
+    width = gdk_pixbuf_get_width(pixbuf);
+    height = gdk_pixbuf_get_height(pixbuf);
+    priv->pixmap = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
 
     /* Paint the stack of images - the first one
-     * is completely opaque. Others are layers
-     * on top */
+     * is completely opaque and determine the base
+     * dimensions. Others are scaled layers on top. */
     cairo_t *cr = cairo_create(priv->pixmap);
     while (tmp) {
+        int pw, ph;
+
         image = ENTANGLE_IMAGE(tmp->data);
         pixbuf = entangle_image_get_pixbuf(image);
+        pw = gdk_pixbuf_get_width(pixbuf);
+        ph = gdk_pixbuf_get_height(pixbuf);
 
-        gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
+        if (pw != width || ph != height) {
+            GdkPixbuf *scaled;
+            scaled = gdk_pixbuf_scale_simple(pixbuf,
+                                             width, height,
+                                             GDK_INTERP_BILINEAR);
+            gdk_cairo_set_source_pixbuf(cr, scaled, 0, 0);
+            g_object_unref(scaled);
+        } else {
+            gdk_cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
+        }
+
         if (tmp == priv->images)
             cairo_paint(cr);
         else
