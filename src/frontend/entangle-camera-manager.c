@@ -1145,25 +1145,30 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
     g_return_if_fail(ENTANGLE_IS_CAMERA_FILE(file));
 
     EntangleCameraManager *manager = data;
+    EntangleCameraManagerPrivate *priv = manager->priv;
     GdkPixbuf *pixbuf;
     GByteArray *bytes;
     GInputStream *is;
     EntangleImage *image;
 
-    ENTANGLE_DEBUG("File preview %p %p %p", cam, file, data);
+    if (priv->taskPreview &&
+        priv->taskCancel  &&
+        !g_cancellable_is_cancelled(priv->taskCancel)) {
+        ENTANGLE_DEBUG("File preview %p %p %p", cam, file, data);
 
-    bytes = entangle_camera_file_get_data(file);
-    is = g_memory_input_stream_new_from_data(bytes->data, bytes->len, NULL);
+        bytes = entangle_camera_file_get_data(file);
+        is = g_memory_input_stream_new_from_data(bytes->data, bytes->len, NULL);
 
-    pixbuf = gdk_pixbuf_new_from_stream(is, NULL, NULL);
+        pixbuf = gdk_pixbuf_new_from_stream(is, NULL, NULL);
 
-    image = entangle_image_new_pixbuf(pixbuf);
+        image = entangle_image_new_pixbuf(pixbuf);
 
-    do_select_image(manager, image);
+        do_select_image(manager, image);
 
-    g_object_unref(pixbuf);
-    g_object_unref(is);
-    g_object_unref(image);
+        g_object_unref(pixbuf);
+        g_object_unref(is);
+        g_object_unref(image);
+    }
 }
 
 
@@ -2023,6 +2028,7 @@ void entangle_camera_manager_preview_cancel(EntangleCameraManager *manager)
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
     EntangleCameraManagerPrivate *priv = manager->priv;
+    EntangleImage *img;
 
     if (!priv->camera)
         return;
@@ -2030,6 +2036,10 @@ void entangle_camera_manager_preview_cancel(EntangleCameraManager *manager)
     if (priv->taskPreview) {
         ENTANGLE_DEBUG("Cancelling capture operation");
         g_cancellable_cancel(priv->taskCancel);
+
+        img = entangle_session_browser_selected_image(priv->sessionBrowser);
+        if (img)
+            do_select_image(manager, img);
     }
 }
 
