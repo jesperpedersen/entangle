@@ -1780,6 +1780,7 @@ EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *b
 
 
 GList *entangle_session_browser_earlier_images(EntangleSessionBrowser *browser,
+                                               gboolean include_selected,
                                                gsize count)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
@@ -1796,7 +1797,10 @@ GList *entangle_session_browser_earlier_images(EntangleSessionBrowser *browser,
     }
 
     if (list) {
-        for (list = list->prev ; list != NULL && count ; list = list->prev, count--) {
+        if (!include_selected)
+            list = list->prev;
+
+        for (; list != NULL && count ; list = list->prev, count--) {
             EntangleSessionBrowserItem *item = list->data;
             GtkTreePath *path = gtk_tree_path_new_from_indices(item->idx, -1);
             GtkTreeIter iter;

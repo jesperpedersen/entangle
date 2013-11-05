@@ -62,6 +62,7 @@ EntangleSessionBrowser* entangle_session_browser_new(void);
 EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *browser);
 
 GList *entangle_session_browser_earlier_images(EntangleSessionBrowser *browser,
+                                               gboolean include_selected,
                                                gsize count);
 
 void entangle_session_browser_set_thumbnail_loader(EntangleSessionBrowser *browser,

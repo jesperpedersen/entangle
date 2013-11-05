@@ -611,6 +611,7 @@ static void do_select_image(EntangleCameraManager *manager,
         if (entangle_preferences_img_get_onion_skin(prefs))
             newimages = entangle_session_browser_earlier_images
                 (priv->sessionBrowser,
+                 entangle_image_get_filename(image) == NULL,
                  entangle_preferences_img_get_onion_layers(prefs));
 
         newimages = g_list_prepend(newimages, g_object_ref(image));
