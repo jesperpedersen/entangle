@@ -23,7 +23,7 @@
 
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gexiv2.h>
+#include <gexiv2/gexiv2.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 

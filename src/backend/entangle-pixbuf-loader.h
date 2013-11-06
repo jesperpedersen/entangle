@@ -23,7 +23,7 @@
 
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gexiv2.h>
+#include <gexiv2/gexiv2.h>
 
 #include "entangle-colour-profile.h"
 #include "entangle-image.h"

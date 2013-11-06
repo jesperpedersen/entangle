@@ -22,7 +22,7 @@
 #define __ENTANGLE_PIXBUF_H__
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gexiv2.h>
+#include <gexiv2/gexiv2.h>
 #include "entangle-image.h"
 
 G_BEGIN_DECLS
