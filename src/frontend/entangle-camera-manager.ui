@@ -120,6 +120,43 @@
                         <signal name="activate" handler="do_menu_disconnect" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="menuitem8">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu-capture">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Capture</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="s" signal="activate"/>
+                        <accelerator key="space" signal="activate"/>
+                        <signal name="activate" handler="do_menu_capture" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="menu-preview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Preview</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="p" signal="activate"/>
+                        <signal name="toggled" handler="do_menu_preview" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu-cancel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Cancel</property>
+                        <property name="use_underline">True</property>
+                        <accelerator key="Escape" signal="activate"/>
+                        <signal name="activate" handler="do_menu_cancel" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

@@ -198,6 +198,12 @@ void do_menu_connect(GtkMenuItem *src,
                      EntangleCameraManager *manager);
 void do_menu_disconnect(GtkMenuItem *src,
                         EntangleCameraManager *manager);
+void do_menu_capture(GtkMenuItem *src,
+                     EntangleCameraManager *manager);
+void do_menu_preview(GtkMenuItem *src,
+                     EntangleCameraManager *manager);
+void do_menu_cancel(GtkMenuItem *src,
+                    EntangleCameraManager *manager);
 gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                 GdkEventKey *ev,
                                 gpointer data);
@@ -494,6 +500,10 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *toolCapture;
     GtkWidget *toolPreview;
+    GtkWidget *toolCancel;
+    GtkWidget *menuCapture;
+    GtkWidget *menuPreview;
+    GtkWidget *menuCancel;
 
     GtkWidget *toolSession;
     GtkWidget *menuSession;
@@ -501,10 +511,13 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     GtkWidget *menuDisconnect;
     GtkWidget *menuHelp;
 
-    GtkWidget *cancel;
 
     toolCapture = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-capture"));
     toolPreview = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-preview"));
+    toolCancel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-cancel"));
+    menuCapture = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-capture"));
+    menuPreview = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-preview"));
+    menuCancel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-cancel"));
 
     toolSession = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-session"));
     menuSession = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-session"));
@@ -512,13 +525,19 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     menuDisconnect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-disconnect"));
     menuHelp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-help-camera"));
 
-    cancel = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-cancel"));
-
 
     gtk_widget_set_sensitive(toolCapture,
                              priv->cameraReady && !priv->taskCapture && priv->camera &&
                              entangle_camera_get_has_capture(priv->camera) ? TRUE : FALSE);
     gtk_widget_set_sensitive(toolPreview,
+                             priv->cameraReady && !priv->taskCapture && priv->camera &&
+                             entangle_camera_get_has_capture(priv->camera) &&
+                             entangle_camera_get_has_preview(priv->camera) &&
+                             !priv->taskCapture ? TRUE : FALSE);
+    gtk_widget_set_sensitive(menuCapture,
+                             priv->cameraReady && !priv->taskCapture && priv->camera &&
+                             entangle_camera_get_has_capture(priv->camera) ? TRUE : FALSE);
+    gtk_widget_set_sensitive(menuPreview,
                              priv->cameraReady && !priv->taskCapture && priv->camera &&
                              entangle_camera_get_has_capture(priv->camera) &&
                              entangle_camera_get_has_preview(priv->camera) &&
@@ -557,9 +576,11 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 #endif
 
     if (priv->taskCapture) {
-        gtk_widget_show(cancel);
+        gtk_widget_show(toolCancel);
+        gtk_widget_set_sensitive(menuCancel, True);
     } else {
-        gtk_widget_hide(cancel);
+        gtk_widget_hide(toolCancel);
+        gtk_widget_set_sensitive(menuCancel, False);
     }
 
     entangle_camera_manager_update_viewfinder(manager);
@@ -2057,10 +2078,63 @@ void do_toolbar_preview(GtkToggleToolButton *src,
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
-    if (gtk_toggle_tool_button_get_active(src))
-        do_camera_manager_preview_begin(manager);
-    else
-        do_camera_manager_preview_cancel(manager);
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GtkCheckMenuItem *item = GTK_CHECK_MENU_ITEM(gtk_builder_get_object(priv->builder, "menu-preview"));
+
+    if (gtk_toggle_tool_button_get_active(src)) {
+        if (!gtk_check_menu_item_get_active(item)) {
+            gtk_check_menu_item_set_active(item, True);
+            do_camera_manager_preview_begin(manager);
+        }
+    } else {
+        if (gtk_check_menu_item_get_active(item)) {
+            gtk_check_menu_item_set_active(item, False);
+            do_camera_manager_preview_cancel(manager);
+        }
+    }
+}
+
+
+void do_menu_capture(GtkMenuItem *src G_GNUC_UNUSED,
+                     EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    do_camera_manager_capture(manager);
+}
+
+
+void do_menu_preview(GtkMenuItem *src,
+                     EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    GtkToggleToolButton *button = GTK_TOGGLE_TOOL_BUTTON(gtk_builder_get_object(priv->builder, "toolbar-preview"));
+
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(src))) {
+        if (!gtk_toggle_tool_button_get_active(button)) {
+            gtk_toggle_tool_button_set_active(button, True);
+            do_camera_manager_preview_begin(manager);
+        }
+    } else {
+        if (gtk_toggle_tool_button_get_active(button)) {
+            gtk_toggle_tool_button_set_active(button, False);
+            do_camera_manager_preview_cancel(manager);
+        }
+    }
+}
+
+
+void do_menu_cancel(GtkMenuItem *src G_GNUC_UNUSED,
+                    EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->taskCancel)
+        g_cancellable_cancel(priv->taskCancel);
 }
 
 
@@ -2137,24 +2211,6 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
     GtkToggleToolButton *preview;
 
     switch (ev->keyval) {
-    case GDK_KEY_Escape:
-        if (priv->taskCancel) {
-            ENTANGLE_DEBUG("cancelling operation");
-            g_cancellable_cancel(priv->taskCancel);
-            return TRUE;
-        }
-        break;
-
-    case GDK_KEY_s:
-        do_camera_manager_capture(manager);
-        break;
-
-    case GDK_KEY_p:
-        preview = GTK_TOGGLE_TOOL_BUTTON(gtk_builder_get_object(priv->builder, "toolbar-preview"));
-        gtk_toggle_tool_button_set_active(preview,
-                                          !gtk_toggle_tool_button_get_active(preview));
-        break;
-
     case GDK_KEY_m: {
         EntanglePreferences *prefs = entangle_camera_manager_get_preferences(manager);
         gboolean enabled = entangle_preferences_img_get_mask_enabled(prefs);
