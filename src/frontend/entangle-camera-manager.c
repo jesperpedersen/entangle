@@ -2208,7 +2208,6 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
 
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(data);
     EntangleCameraManagerPrivate *priv = manager->priv;
-    GtkToggleToolButton *preview;
 
     switch (ev->keyval) {
     case GDK_KEY_m: {
