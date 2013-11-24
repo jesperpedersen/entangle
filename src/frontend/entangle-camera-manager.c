@@ -2229,7 +2229,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                             do_camera_autofocus_finish,
                                             manager);
         }
-    }
+    }   break;
 
     case GDK_KEY_comma: {
         if (priv->taskPreview) {
@@ -2239,7 +2239,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                               do_camera_manualfocus_finish,
                                               manager);
         }
-    }
+    }   break;
 
     case GDK_KEY_period: {
         if (priv->taskPreview) {
@@ -2249,7 +2249,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                               do_camera_manualfocus_finish,
                                               manager);
         }
-    }
+    }   break;
 
     default:
         break;
