@@ -109,8 +109,10 @@ static void do_entangle_image_display_render_pixmap(EntangleImageDisplay *displa
 
         if (tmp == priv->images)
             cairo_paint(cr);
-        else
+        else if (tmp->next)
             cairo_paint_with_alpha(cr, 0.5);
+        else
+            cairo_paint_with_alpha(cr, 0.65);
 
         tmp = tmp->next;
     }
