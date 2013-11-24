@@ -1228,6 +1228,9 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
 
+    if (priv->taskPreview && !g_cancellable_is_cancelled(priv->taskConfirm))
+        return;
+
     priv->taskTarget = target;
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
 
@@ -1245,6 +1248,9 @@ static void do_entangle_camera_progress_update(EntangleProgress *iface, float cu
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
 
+    if (priv->taskPreview && !g_cancellable_is_cancelled(priv->taskConfirm))
+        return;
+
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
 
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), current / priv->taskTarget);
@@ -1258,6 +1264,9 @@ static void do_entangle_camera_progress_stop(EntangleProgress *iface)
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(iface);
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
+
+    if (priv->taskPreview && !g_cancellable_is_cancelled(priv->taskConfirm))
+        return;
 
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
 
