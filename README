@@ -86,7 +86,8 @@ There are a number of shortcuts available for common operations
  - 'm' - Toggle aspect ratio image mask
  - 'h' - Toggle linear / logarithmic histogram
  - 'a' - Drive autofocus during preview
- - ',' or '.' - Drive manual focus during preview
+ - ',' or '.' - Drive manual focus during preview (fine control)
+ - '<' or '>' - Drive manual focus during preview (coarse control)
 
 License
 -------

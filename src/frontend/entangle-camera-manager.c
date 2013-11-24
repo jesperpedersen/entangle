@@ -2234,7 +2234,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
     case GDK_KEY_comma: {
         if (priv->taskPreview) {
             entangle_camera_manualfocus_async(priv->camera,
-                                              -1024,
+                                              -64,
                                               NULL,
                                               do_camera_manualfocus_finish,
                                               manager);
@@ -2244,7 +2244,27 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
     case GDK_KEY_period: {
         if (priv->taskPreview) {
             entangle_camera_manualfocus_async(priv->camera,
-                                              1024,
+                                              64,
+                                              NULL,
+                                              do_camera_manualfocus_finish,
+                                              manager);
+        }
+    }   break;
+
+    case GDK_KEY_less: {
+        if (priv->taskPreview) {
+            entangle_camera_manualfocus_async(priv->camera,
+                                              -512,
+                                              NULL,
+                                              do_camera_manualfocus_finish,
+                                              manager);
+        }
+    }   break;
+
+    case GDK_KEY_greater: {
+        if (priv->taskPreview) {
+            entangle_camera_manualfocus_async(priv->camera,
+                                              512,
                                               NULL,
                                               do_camera_manualfocus_finish,
                                               manager);
