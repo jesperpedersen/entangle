@@ -79,12 +79,6 @@
 
 #include "entangle-overlay-box.h"
 
-#if ! GTK_CHECK_VERSION(3, 0, 0)
-#define gtk_widget_set_realized(widget, val)	\
-    GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED)
-#define gtk_widget_get_realized(widget)		\
-    GTK_WIDGET_REALIZED(widget)
-#endif
 
 struct _EntangleOverlayBoxPrivate
 {
@@ -507,7 +501,6 @@ entangle_overlay_box_size_request(GtkWidget *widget,
     requisition->height = MAX(underR.height + min, priv->overR.height);
 }
 
-#if GTK_CHECK_VERSION(3, 0, 0)
 static void
 entangle_overlay_box_get_preferred_width(GtkWidget *widget,
                                          gint      *minimal_width,
@@ -531,7 +524,6 @@ entangle_overlay_box_get_preferred_height(GtkWidget *widget,
 
     *minimal_height = *natural_height = requisition.height;
 }
-#endif
 
 
 /*
@@ -696,12 +688,8 @@ entangle_overlay_box_class_init(EntangleOverlayBoxClass *klass)
     widgetClass->unmap = entangle_overlay_box_unmap;
     widgetClass->realize = entangle_overlay_box_realize;
     widgetClass->unrealize = entangle_overlay_box_unrealize;
-#if GTK_CHECK_VERSION(3, 0, 0)
     widgetClass->get_preferred_width = entangle_overlay_box_get_preferred_width;
     widgetClass->get_preferred_height = entangle_overlay_box_get_preferred_height;
-#else
-    widgetClass->size_request = entangle_overlay_box_size_request;
-#endif
     widgetClass->size_allocate = entangle_overlay_box_size_allocate;
     widgetClass->style_set = entangle_overlay_box_style_set;
 
