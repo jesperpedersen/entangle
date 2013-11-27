@@ -87,12 +87,12 @@ static void entangle_control_text_finalize(GObject *object)
 
     g_free(priv->value);
 
-    G_OBJECT_CLASS (entangle_control_text_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_control_text_parent_class)->finalize(object);
 }
 
 static void entangle_control_text_class_init(EntangleControlTextClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_control_text_finalize;
     object_class->get_property = entangle_control_get_property;

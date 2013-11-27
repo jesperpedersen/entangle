@@ -75,9 +75,9 @@ static void do_entangle_pixmap_setup(EntangleImageHistogram *histogram)
     guint stride = gdk_pixbuf_get_rowstride(pixbuf);
     int x, y;
 
-    for (y = 0 ; y < h ; y++) {
+    for (y = 0; y < h; y++) {
         guchar *pixel = pixels;
-        for (x = 0 ; x < w ; x++) {
+        for (x = 0; x < w; x++) {
             guchar level_red = pixel[0];
             guchar level_green = pixel[1];
             guchar level_blue = pixel[2];
@@ -147,7 +147,7 @@ static void entangle_image_histogram_finalize(GObject *object)
         g_object_unref(priv->image);
     }
 
-    G_OBJECT_CLASS (entangle_image_histogram_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_image_histogram_parent_class)->finalize(object);
 }
 
 
@@ -207,7 +207,7 @@ static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
     cairo_restore(cr);
 
     if (priv->hasFreq) {
-        for (idx = 0 ; idx < 255 ; idx++) {
+        for (idx = 0; idx < 255; idx++) {
             double rv = entangle_image_histogram_calculate_value(priv->freq_red[idx], priv->linear);
             double gv = entangle_image_histogram_calculate_value(priv->freq_green[idx], priv->linear);
             double bv = entangle_image_histogram_calculate_value(priv->freq_blue[idx], priv->linear);
@@ -229,7 +229,7 @@ static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
         cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
         cairo_move_to(cr, 0, wh);
 
-        for (idx = 0 ; idx < 255 ; idx++) {
+        for (idx = 0; idx < 255; idx++) {
             double rv = entangle_image_histogram_calculate_value(priv->freq_red[idx], priv->linear);
             double x = (double)ww * (double)idx / 255.0;
             double y = (double)(wh - 2) * (double)rv / peak;
@@ -246,7 +246,7 @@ static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
         cairo_set_source_rgba(cr, 0.0, 1.0, 0.0, 0.7);
         cairo_move_to(cr, 0, wh);
 
-        for (idx = 0 ; idx < 255 ; idx++) {
+        for (idx = 0; idx < 255; idx++) {
             double gv = entangle_image_histogram_calculate_value(priv->freq_green[idx], priv->linear);
             double x = (double)ww * (double)idx / 255.0;
             double y = (double)(wh - 2) * (double)gv / peak;
@@ -263,7 +263,7 @@ static gboolean entangle_image_histogram_draw(GtkWidget *widget, cairo_t *cr)
         cairo_set_source_rgba(cr, 0.0, 0.0, 1.0, 0.7);
         cairo_move_to(cr, 0, wh);
 
-        for (idx = 0 ; idx < 255 ; idx++) {
+        for (idx = 0; idx < 255; idx++) {
             double bv = entangle_image_histogram_calculate_value(priv->freq_blue[idx], priv->linear);
             double x = (double)ww * (double)idx / 255.0;
             double y = (double)(wh - 2) * (double)bv / peak;

@@ -470,7 +470,7 @@ static void entangle_preferences_finalize(GObject *object)
 
 static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_preferences_finalize;
     object_class->get_property = entangle_preferences_get_property;
@@ -717,7 +717,7 @@ static void entangle_preferences_ensure_data_dir(void)
     const char *const *dirs;
     const char *dir;
 
-    for (dirs = g_get_system_data_dirs (); *dirs; dirs++) {
+    for (dirs = g_get_system_data_dirs(); *dirs; dirs++) {
         if (g_str_equal(*dirs, DATADIR)) {
             ENTANGLE_DEBUG("Found dir %s in system search dirs", *dirs);
             return;
@@ -860,7 +860,7 @@ void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, co
     gsize len = g_strv_length(plugins);
     gsize i, j;
     gchar **newplugins = g_new0(gchar *, len + 1);
-    for (i = 0, j = 0 ; i < len ; i++) {
+    for (i = 0, j = 0; i < len; i++) {
         if (!g_str_equal(plugins[i], name)) {
             newplugins[j++] = plugins[i];
         } else {

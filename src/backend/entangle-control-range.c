@@ -111,12 +111,12 @@ static void entangle_control_range_set_property(GObject *object,
 
 static void entangle_control_range_finalize(GObject *object)
 {
-    G_OBJECT_CLASS (entangle_control_range_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_control_range_parent_class)->finalize(object);
 }
 
 static void entangle_control_range_class_init(EntangleControlRangeClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_control_range_finalize;
     object_class->get_property = entangle_control_range_get_property;

@@ -101,7 +101,7 @@ static void entangle_image_statusbar_finalize(GObject *object)
         g_object_unref(priv->image);
     }
 
-    G_OBJECT_CLASS (entangle_image_statusbar_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_image_statusbar_parent_class)->finalize(object);
 }
 
 

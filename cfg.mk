@@ -131,6 +131,14 @@ sc_libvirt_unmarked_diagnostics:
           { echo '$(ME): found unmarked diagnostic(s)' 1>&2;            \
             exit 1; } || :
 
+syntax-check: bracket-spacing
+
+bracket-spacing:
+	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
+	$(PERL) $(top_srcdir)/build-aux/bracket-spacing.pl $$files || \
+	  { echo '$(ME): incorrect whitespace, see HACKING for rules' 1>&2; \
+	    exit 1; }
+
 exclude_file_name_regexp--sc_prohibit_strcmp = ^*/*.[ch]
 
 # Due to enum rules - fixme

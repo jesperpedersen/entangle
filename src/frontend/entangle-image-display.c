@@ -292,7 +292,7 @@ static void entangle_image_display_finalize(GObject *object)
     if (priv->pixmap)
         cairo_surface_destroy(priv->pixmap);
 
-    G_OBJECT_CLASS (entangle_image_display_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_image_display_parent_class)->finalize(object);
 }
 
 
@@ -448,7 +448,7 @@ static void entangle_image_display_draw_grid_display(GtkWidget *widget, cairo_t 
         break;
     }
 
-    for (i = 0 ; i < count ; i++) {
+    for (i = 0; i < count; i++) {
         /* Horizontal line */
         cairo_move_to(cr, mx, my + offy[i] - 1);
         cairo_line_to(cr, ww - mx, my + offy[i] - 1);

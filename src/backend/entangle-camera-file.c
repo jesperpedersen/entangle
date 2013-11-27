@@ -132,13 +132,13 @@ static void entangle_camera_file_finalize(GObject *object)
     if (priv->data)
         g_byte_array_unref(priv->data);
 
-    G_OBJECT_CLASS (entangle_camera_file_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_camera_file_parent_class)->finalize(object);
 }
 
 
 static void entangle_camera_file_class_init(EntangleCameraFileClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_camera_file_finalize;
     object_class->get_property = entangle_camera_file_get_property;

@@ -487,7 +487,7 @@ static void entangle_preferences_display_window_interface_init(gpointer g_iface,
 
 static void entangle_preferences_display_class_init(EntanglePreferencesDisplayClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_preferences_display_finalize;
 

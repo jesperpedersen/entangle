@@ -43,7 +43,7 @@ EntangleWindow *entangle_window_new(GType wintype,
     else
         filename = g_strdup_printf("%s/entangle-%s.ui", PKGDATADIR, winname);
 
-    if (!g_file_get_contents (filename, &buffer, &length, &error))
+    if (!g_file_get_contents(filename, &buffer, &length, &error))
         g_error(_("Could not load user interface definition file: %s"), error->message);
 
     gchar *offset = strstr(buffer, g_type_name(oldwintype));
@@ -75,14 +75,14 @@ EntangleWindow *entangle_window_new(GType wintype,
 }
 
 GType
-entangle_window_get_type (void)
+entangle_window_get_type(void)
 {
     static GType window_type = 0;
 
     if (!window_type) {
         window_type =
             g_type_register_static_simple(G_TYPE_INTERFACE, "EntangleWindow",
-                                          sizeof (EntangleWindowInterface),
+                                          sizeof(EntangleWindowInterface),
                                           NULL, 0, NULL, 0);
 
         g_type_interface_add_prerequisite(window_type, G_TYPE_OBJECT);

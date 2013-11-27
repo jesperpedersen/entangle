@@ -191,7 +191,7 @@ static void entangle_colour_profile_finalize(GObject *object)
         cmsCloseProfile(priv->profile);
     g_mutex_free(priv->lock);
 
-    G_OBJECT_CLASS (entangle_colour_profile_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_colour_profile_parent_class)->finalize(object);
 }
 
 
@@ -206,13 +206,13 @@ static void entangle_colour_profile_transform_finalize(GObject *object)
     if (priv->dstProfile)
         g_object_unref(priv->dstProfile);
 
-    G_OBJECT_CLASS (entangle_colour_profile_transform_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_colour_profile_transform_parent_class)->finalize(object);
 }
 
 
 static void entangle_colour_profile_class_init(EntangleColourProfileClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_colour_profile_finalize;
     object_class->get_property = entangle_colour_profile_get_property;
@@ -250,7 +250,7 @@ static void entangle_colour_profile_class_init(EntangleColourProfileClass *klass
 
 static void entangle_colour_profile_transform_class_init(EntangleColourProfileTransformClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_colour_profile_transform_finalize;
     object_class->get_property = entangle_colour_profile_transform_get_property;
@@ -558,7 +558,7 @@ GdkPixbuf *entangle_colour_profile_transform_apply(EntangleColourProfileTransfor
 
     /* We do it row-wise, since lcms can't cope with a
      * rowstride that isn't equal to width */
-    for (int row = 0 ; row < height ; row++)
+    for (int row = 0; row < height; row++)
         cmsDoTransform(transform,
                        srcpixels + (row * stride),
                        dstpixels + (row * stride),

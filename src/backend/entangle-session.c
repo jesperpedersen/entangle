@@ -131,13 +131,13 @@ static void entangle_session_finalize(GObject *object)
     g_free(priv->filenamePattern);
     g_free(priv->directory);
 
-    G_OBJECT_CLASS (entangle_session_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_session_parent_class)->finalize(object);
 }
 
 
 static void entangle_session_class_init(EntangleSessionClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_session_finalize;
     object_class->get_property = entangle_session_get_property;

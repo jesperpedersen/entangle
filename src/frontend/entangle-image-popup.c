@@ -117,7 +117,7 @@ static void entangle_image_popup_finalize(GObject *object)
     if (priv->image)
         g_object_unref(priv->image);
 
-    G_OBJECT_CLASS (entangle_image_popup_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_image_popup_parent_class)->finalize(object);
 }
 
 
@@ -187,7 +187,7 @@ static void entangle_image_popup_window_interface_init(gpointer g_iface,
 
 static void entangle_image_popup_class_init(EntangleImagePopupClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_image_popup_finalize;
     object_class->get_property = entangle_image_popup_get_property;

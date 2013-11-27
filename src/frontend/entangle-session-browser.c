@@ -138,7 +138,7 @@ entangle_session_browser_layout(EntangleSessionBrowser *browser);
 G_DEFINE_TYPE_WITH_CODE(EntangleSessionBrowser, entangle_session_browser, GTK_TYPE_DRAWING_AREA,
                         G_IMPLEMENT_INTERFACE(GTK_TYPE_CELL_LAYOUT,
                                               entangle_session_browser_cell_layout_init)
-                        G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, NULL))
+                        G_IMPLEMENT_INTERFACE(GTK_TYPE_SCROLLABLE, NULL))
 
 enum {
     PROP_O,
@@ -282,7 +282,7 @@ static void do_model_unload(EntangleSessionBrowser *browser)
                                 priv->sigThumbReady);
 
     count = entangle_session_image_count(priv->session);
-    for (int i = 0 ; i < count ; i++) {
+    for (int i = 0; i < count; i++) {
         EntangleImage *img = entangle_session_image_get(priv->session, i);
         entangle_pixbuf_loader_unload(ENTANGLE_PIXBUF_LOADER(priv->loader), img);
     }
@@ -318,7 +318,7 @@ static void do_model_load(EntangleSessionBrowser *browser)
                                            G_CALLBACK(do_thumb_loaded), browser);
 
     count = entangle_session_image_count(priv->session);
-    for (int i = 0 ; i < count ; i++) {
+    for (int i = 0; i < count; i++) {
         EntangleImage *img = entangle_session_image_get(priv->session, i);
         int mod = entangle_image_get_last_modified(img);
         GtkTreeIter iter;
@@ -381,19 +381,19 @@ static void entangle_session_browser_get_property(GObject *object,
         break;
 
     case PROP_HADJUSTMENT:
-        g_value_set_object (value, priv->hadjustment);
+        g_value_set_object(value, priv->hadjustment);
         break;
 
     case PROP_VADJUSTMENT:
-        g_value_set_object (value, priv->vadjustment);
+        g_value_set_object(value, priv->vadjustment);
         break;
 
     case PROP_HSCROLL_POLICY:
-        g_value_set_enum (value, priv->hscroll_policy);
+        g_value_set_enum(value, priv->hscroll_policy);
         break;
 
     case PROP_VSCROLL_POLICY:
-        g_value_set_enum (value, priv->vscroll_policy);
+        g_value_set_enum(value, priv->vscroll_policy);
         break;
 
     default:
@@ -430,13 +430,13 @@ static void entangle_session_browser_set_property(GObject *object,
         break;
 
     case PROP_HSCROLL_POLICY:
-        priv->hscroll_policy = g_value_get_enum (value);
-        gtk_widget_queue_resize (GTK_WIDGET (browser));
+        priv->hscroll_policy = g_value_get_enum(value);
+        gtk_widget_queue_resize(GTK_WIDGET(browser));
         break;
 
     case PROP_VSCROLL_POLICY:
-        priv->vscroll_policy = g_value_get_enum (value);
-        gtk_widget_queue_resize (GTK_WIDGET (browser));
+        priv->vscroll_policy = g_value_get_enum(value);
+        gtk_widget_queue_resize(GTK_WIDGET(browser));
         break;
 
     default:
@@ -486,10 +486,10 @@ entangle_session_browser_set_cell_data(EntangleSessionBrowser *browser,
     if (!iters_persist) {
         GtkTreePath *path;
 
-        path = gtk_tree_path_new_from_indices (item->idx, -1);
-        if (!gtk_tree_model_get_iter (browser->priv->model, &iter, path))
+        path = gtk_tree_path_new_from_indices(item->idx, -1);
+        if (!gtk_tree_model_get_iter(browser->priv->model, &iter, path))
             return;
-        gtk_tree_path_free (path);
+        gtk_tree_path_free(path);
     } else {
         iter = item->iter;
     }
@@ -510,8 +510,8 @@ entangle_session_browser_cache_widths(EntangleSessionBrowser *browser)
 
     GList *items;
 
-    g_signal_handler_block (browser->priv->cell_area_context,
-                            browser->priv->context_changed_id);
+    g_signal_handler_block(browser->priv->cell_area_context,
+                           browser->priv->context_changed_id);
 
     for (items = browser->priv->items; items; items = items->next) {
         EntangleSessionBrowserItem *item = items->data;
@@ -539,21 +539,21 @@ entangle_session_browser_item_invalidate_size(EntangleSessionBrowserItem *item)
 
 
 static void
-entangle_session_browser_invalidate_sizes (EntangleSessionBrowser *browser)
+entangle_session_browser_invalidate_sizes(EntangleSessionBrowser *browser)
 {
     g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
 
     /* Clear all item sizes */
-    g_list_foreach (browser->priv->items,
-                    (GFunc)entangle_session_browser_item_invalidate_size, NULL);
+    g_list_foreach(browser->priv->items,
+                   (GFunc)entangle_session_browser_item_invalidate_size, NULL);
 
     /* Reset the context */
     if (browser->priv->cell_area_context) {
-        g_signal_handler_block (browser->priv->cell_area_context,
-                                browser->priv->context_changed_id);
-        gtk_cell_area_context_reset (browser->priv->cell_area_context);
-        g_signal_handler_unblock (browser->priv->cell_area_context,
-                                  browser->priv->context_changed_id);
+        g_signal_handler_block(browser->priv->cell_area_context,
+                               browser->priv->context_changed_id);
+        gtk_cell_area_context_reset(browser->priv->cell_area_context);
+        g_signal_handler_unblock(browser->priv->cell_area_context,
+                                 browser->priv->context_changed_id);
     }
 
     /* Re-layout the items */
@@ -628,7 +628,7 @@ static EntangleSessionBrowserItem *entangle_session_browser_item_new(void)
 
 static void entangle_session_browser_item_free(EntangleSessionBrowserItem *item)
 {
-    g_return_if_fail (item != NULL);
+    g_return_if_fail(item != NULL);
 
     g_slice_free(EntangleSessionBrowserItem, item);
 }
@@ -670,7 +670,7 @@ entangle_session_browser_row_inserted(GtkTreeModel *model G_GNUC_UNUSED,
     browser->priv->items = g_list_insert(browser->priv->items,
                                          item, idx);
 
-    list = g_list_nth (browser->priv->items, idx + 1);
+    list = g_list_nth(browser->priv->items, idx + 1);
     for (; list; list = list->next) {
         item = list->data;
         item->idx++;
@@ -848,8 +848,8 @@ entangle_session_browser_realize(GtkWidget *widget)
     /* Make the window for the icon view */
     attributes.x = 0;
     attributes.y = 0;
-    attributes.width = MAX (priv->width, allocation.width);
-    attributes.height = MAX (priv->height, allocation.height);
+    attributes.width = MAX(priv->width, allocation.width);
+    attributes.height = MAX(priv->height, allocation.height);
     attributes.event_mask = (GDK_EXPOSURE_MASK |
                              GDK_SCROLL_MASK |
                              GDK_POINTER_MOTION_MASK |
@@ -1097,7 +1097,7 @@ entangle_session_browser_select_path(EntangleSessionBrowser *browser,
     EntangleSessionBrowserPrivate *priv = browser->priv;
     EntangleSessionBrowserItem *item = NULL;
 
-    if (gtk_tree_path_get_depth (path) > 0)
+    if (gtk_tree_path_get_depth(path) > 0)
         item = g_list_nth_data(priv->items,
                                gtk_tree_path_get_indices(path)[0]);
 
@@ -1126,7 +1126,7 @@ entangle_session_browser_scroll_to_path(EntangleSessionBrowser *browser,
                                gtk_tree_path_get_indices(path)[0]);
 
     if (!item || item->cell_area.width < 0 ||
-        !gtk_widget_get_realized (widget)) {
+        !gtk_widget_get_realized(widget)) {
         if (priv->scroll_to_path)
             gtk_tree_row_reference_free(priv->scroll_to_path);
 
@@ -1275,7 +1275,7 @@ entangle_session_browser_set_tooltip_cell(EntangleSessionBrowser *browser,
     gint x, y;
 
     g_return_if_fail(ENTANGLE_SESSION_BROWSER(browser));
-    g_return_if_fail (GTK_IS_TOOLTIP (tooltip));
+    g_return_if_fail(GTK_IS_TOOLTIP(tooltip));
 
     rect.x = item->cell_area.x - browser->priv->item_padding;
     rect.y = item->cell_area.y - browser->priv->item_padding;
@@ -1283,12 +1283,12 @@ entangle_session_browser_set_tooltip_cell(EntangleSessionBrowser *browser,
     rect.height = item->cell_area.height + browser->priv->item_padding * 2;
 
     if (browser->priv->bin_window) {
-        gdk_window_get_position (browser->priv->bin_window, &x, &y);
+        gdk_window_get_position(browser->priv->bin_window, &x, &y);
         rect.x += x;
         rect.y += y;
     }
 
-    gtk_tooltip_set_tip_area (tooltip, &rect);
+    gtk_tooltip_set_tip_area(tooltip, &rect);
 }
 
 
@@ -1569,7 +1569,7 @@ static void entangle_session_browser_finalize(GObject *object)
     if (priv->loader)
         g_object_unref(priv->loader);
 
-    G_OBJECT_CLASS (entangle_session_browser_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_session_browser_parent_class)->finalize(object);
 }
 
 
@@ -1664,9 +1664,9 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
                                          GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID,
                                          GTK_SORT_ASCENDING);
 
-    priv->cell_area = gtk_cell_area_box_new ();
+    priv->cell_area = gtk_cell_area_box_new();
     g_object_ref_sink(priv->cell_area);
-    gtk_orientable_set_orientation(GTK_ORIENTABLE (priv->cell_area), GTK_ORIENTATION_VERTICAL);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(priv->cell_area), GTK_ORIENTATION_VERTICAL);
 
     priv->cell_area_context = gtk_cell_area_create_context(priv->cell_area);
     priv->context_changed_id =
@@ -1690,24 +1690,24 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
 
     g_signal_connect(priv->model,
                      "row-changed",
-                     G_CALLBACK (entangle_session_browser_row_changed),
+                     G_CALLBACK(entangle_session_browser_row_changed),
                      browser);
     g_signal_connect(priv->model,
                      "row-inserted",
-                     G_CALLBACK (entangle_session_browser_row_inserted),
+                     G_CALLBACK(entangle_session_browser_row_inserted),
                      browser);
     g_signal_connect(priv->model,
                      "row-deleted",
-                     G_CALLBACK (entangle_session_browser_row_deleted),
+                     G_CALLBACK(entangle_session_browser_row_deleted),
                      browser);
     g_signal_connect(priv->model,
                      "rows-reordered",
-                     G_CALLBACK (entangle_session_browser_rows_reordered),
+                     G_CALLBACK(entangle_session_browser_rows_reordered),
                      browser);
 
     g_signal_connect(GTK_WIDGET(browser),
                      "query-tooltip",
-                     G_CALLBACK (entangle_session_browser_query_tooltip),
+                     G_CALLBACK(entangle_session_browser_query_tooltip),
                      priv->model);
 
     entangle_session_browser_build_items(browser);
@@ -1800,7 +1800,7 @@ GList *entangle_session_browser_earlier_images(EntangleSessionBrowser *browser,
         if (!include_selected)
             list = list->prev;
 
-        for (; list != NULL && count ; list = list->prev, count--) {
+        for (; list != NULL && count; list = list->prev, count--) {
             EntangleSessionBrowserItem *item = list->data;
             GtkTreePath *path = gtk_tree_path_new_from_indices(item->idx, -1);
             GtkTreeIter iter;
@@ -1903,7 +1903,7 @@ entangle_session_browser_paint_item(EntangleSessionBrowser *browser,
     GtkStateFlags state = 0;
     GtkCellRendererState flags = 0;
     GtkStyleContext *style_context;
-    GtkWidget *widget = GTK_WIDGET (browser);
+    GtkWidget *widget = GTK_WIDGET(browser);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     entangle_session_browser_set_cell_data(browser, item);
@@ -1958,7 +1958,7 @@ entangle_session_browser_draw(GtkWidget *widget,
     cairo_rectangle(cr, 0, 0, ww, wh);
     cairo_fill(cr);
 
-    if (!gtk_cairo_should_draw_window (cr, priv->bin_window))
+    if (!gtk_cairo_should_draw_window(cr, priv->bin_window))
         return FALSE;
 
     cairo_save(cr);
@@ -2089,7 +2089,7 @@ entangle_session_browser_layout(EntangleSessionBrowser *browser)
     gboolean size_changed = FALSE;
 
     if (priv->layout_idle_id != 0) {
-        g_source_remove (priv->layout_idle_id);
+        g_source_remove(priv->layout_idle_id);
         priv->layout_idle_id = 0;
     }
 
@@ -2124,7 +2124,7 @@ entangle_session_browser_layout(EntangleSessionBrowser *browser)
     entangle_session_browser_set_vadjustment_values(browser);
 
     if (size_changed)
-        gtk_widget_queue_resize_no_redraw (widget);
+        gtk_widget_queue_resize_no_redraw(widget);
 
     gtk_widget_get_allocation(widget, &allocation);
     if (gtk_widget_get_realized(widget))
@@ -2274,7 +2274,7 @@ entangle_session_browser_set_vadjustment(EntangleSessionBrowser *browser,
         g_signal_handlers_disconnect_matched(priv->vadjustment,
                                              G_SIGNAL_MATCH_DATA,
                                              0, 0, NULL, NULL, browser);
-        g_object_unref (priv->vadjustment);
+        g_object_unref(priv->vadjustment);
     }
 
     if (!adjustment)
@@ -2283,8 +2283,8 @@ entangle_session_browser_set_vadjustment(EntangleSessionBrowser *browser,
 
     g_signal_connect(adjustment, "value-changed",
                      G_CALLBACK(entangle_session_browser_adjustment_changed), browser);
-    priv->vadjustment = g_object_ref_sink (adjustment);
-    entangle_session_browser_set_vadjustment_values (browser);
+    priv->vadjustment = g_object_ref_sink(adjustment);
+    entangle_session_browser_set_vadjustment_values(browser);
 
     g_object_notify(G_OBJECT(browser), "vadjustment");
 }

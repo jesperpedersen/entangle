@@ -117,7 +117,7 @@ static void entangle_camera_info_finalize(GObject *object)
         g_object_unref(priv->camera);
     g_object_unref(priv->builder);
 
-    G_OBJECT_CLASS (entangle_camera_info_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_camera_info_parent_class)->finalize(object);
 }
 
 static void do_entangle_camera_info_set_builder(EntangleWindow *window,
@@ -133,7 +133,7 @@ static void entangle_camera_info_window_interface_init(gpointer g_iface,
 
 static void entangle_camera_info_class_init(EntangleCameraInfoClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_camera_info_finalize;
     object_class->get_property = entangle_camera_info_get_property;
@@ -176,7 +176,7 @@ GType entangle_camera_info_data_get_type(void)
             { ENTANGLE_CAMERA_INFO_DATA_DRIVER, "ENTANGLE_CAMERA_INFO_DATA_DRIVER", "driver" },
             { 0, NULL, NULL }
         };
-        etype = g_enum_register_static ("EntangleCameraInfoData", values );
+        etype = g_enum_register_static("EntangleCameraInfoData", values);
     }
 
     return etype;

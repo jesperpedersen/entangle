@@ -84,7 +84,7 @@ static void do_update_control_finish(GObject *src,
                                                  error->message);
         g_signal_connect_swapped(msg,
                                  "response",
-                                 G_CALLBACK (gtk_widget_destroy),
+                                 G_CALLBACK(gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
         g_error_free(error);
@@ -198,7 +198,7 @@ static gboolean do_refresh_control_combo_idle(gpointer data)
         gtk_label_set_text(GTK_LABEL(widget), text);
     } else {
         int active = 0;
-        for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)) ; n++) {
+        for (int n = 0; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)); n++) {
             if (g_strcmp0(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n)) == 0)
                 active = n;
         }
@@ -330,7 +330,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
     gtk_expander_set_expanded(GTK_EXPANDER(frame), TRUE);
     gtk_container_set_border_width(GTK_CONTAINER(subbox), 6);
 
-    for (i = 0 ; i < entangle_control_group_count(grp) ; i++) {
+    for (i = 0; i < entangle_control_group_count(grp); i++) {
         EntangleControl *control = entangle_control_group_get(grp, i);
 
         priv->hasControls = TRUE;
@@ -377,7 +377,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
 
             store = gtk_list_store_new(1, G_TYPE_STRING);
             value = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
-            g_object_unref (store);
+            g_object_unref(store);
 
             cell = gtk_cell_renderer_text_new();
             gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(value), cell, TRUE);
@@ -386,7 +386,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                                            NULL);
 
             g_object_get(control, "value", &text, NULL);
-            for (int n = 0 ; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)) ; n++) {
+            for (int n = 0; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)); n++) {
                 GtkTreeIter iter;
                 if (g_strcmp0(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n)) == 0)
                     active = n;
@@ -527,7 +527,7 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
     gtk_expander_set_expanded(GTK_EXPANDER(frame), TRUE);
     gtk_container_set_border_width(GTK_CONTAINER(subbox), 6);
 
-    for (i = 0 ; i < entangle_control_group_count(grp) ; i++) {
+    for (i = 0; i < entangle_control_group_count(grp); i++) {
         EntangleControl *control = entangle_control_group_get(grp, i);
         GtkWidget *label;
         GtkWidget *value = NULL;
@@ -636,7 +636,7 @@ static void do_setup_camera(EntangleControlPanel *panel)
         return;
     }
 
-    for (i = 0 ; i < entangle_control_group_count(ENTANGLE_CONTROL_GROUP(root)) ; i++) {
+    for (i = 0; i < entangle_control_group_count(ENTANGLE_CONTROL_GROUP(root)); i++) {
         grp = entangle_control_group_get(ENTANGLE_CONTROL_GROUP(root), i);
         if (g_str_equal(entangle_control_get_path(ENTANGLE_CONTROL(grp)),
                         "/main/status"))
@@ -702,7 +702,7 @@ static void entangle_control_panel_finalize(GObject *object)
     if (priv->camera)
         g_object_unref(priv->camera);
 
-    G_OBJECT_CLASS (entangle_control_panel_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_control_panel_parent_class)->finalize(object);
 }
 
 

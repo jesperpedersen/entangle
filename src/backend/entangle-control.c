@@ -130,7 +130,7 @@ static void entangle_control_set_property(GObject *object,
         }
 }
 
-static void entangle_control_finalize (GObject *object)
+static void entangle_control_finalize(GObject *object)
 {
     EntangleControl *picker = ENTANGLE_CONTROL(object);
     EntangleControlPrivate *priv = picker->priv;
@@ -139,12 +139,12 @@ static void entangle_control_finalize (GObject *object)
     g_free(priv->label);
     g_free(priv->info);
 
-    G_OBJECT_CLASS (entangle_control_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_control_parent_class)->finalize(object);
 }
 
 static void entangle_control_class_init(EntangleControlClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_control_finalize;
     object_class->get_property = entangle_control_get_property;

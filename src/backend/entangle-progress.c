@@ -45,17 +45,17 @@ void entangle_progress_stop(EntangleProgress *prog)
 }
 
 GType
-entangle_progress_get_type (void)
+entangle_progress_get_type(void)
 {
     static GType progress_type = 0;
 
     if (!progress_type) {
         progress_type =
-            g_type_register_static_simple (G_TYPE_INTERFACE, "EntangleProgress",
-                                           sizeof (EntangleProgressInterface),
-                                           NULL, 0, NULL, 0);
+            g_type_register_static_simple(G_TYPE_INTERFACE, "EntangleProgress",
+                                          sizeof(EntangleProgressInterface),
+                                          NULL, 0, NULL, 0);
 
-        g_type_interface_add_prerequisite (progress_type, G_TYPE_OBJECT);
+        g_type_interface_add_prerequisite(progress_type, G_TYPE_OBJECT);
     }
 
     return progress_type;

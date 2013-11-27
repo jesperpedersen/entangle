@@ -119,7 +119,7 @@ entangle_overlay_box_init(EntangleOverlayBox *box)
 
     priv = box->priv = ENTANGLE_OVERLAY_BOX_GET_PRIVATE(box);
 
-    gtk_widget_set_has_window (GTK_WIDGET (box), TRUE);
+    gtk_widget_set_has_window(GTK_WIDGET(box), TRUE);
 
     priv->underWin = NULL;
     priv->under = NULL;
@@ -152,7 +152,7 @@ entangle_overlay_box_init(EntangleOverlayBox *box)
 static void
 entangle_overlay_box_map(GtkWidget *widget)
 {
-    gdk_window_show(gtk_widget_get_window (widget));
+    gdk_window_show(gtk_widget_get_window(widget));
     GTK_WIDGET_CLASS(entangle_overlay_box_parent_class)->map(widget);
 }
 
@@ -176,7 +176,7 @@ entangle_overlay_box_map(GtkWidget *widget)
 static void
 entangle_overlay_box_unmap(GtkWidget *widget)
 {
-    gdk_window_hide(gtk_widget_get_window (widget));
+    gdk_window_hide(gtk_widget_get_window(widget));
     GTK_WIDGET_CLASS(entangle_overlay_box_parent_class)->unmap(widget);
 }
 
@@ -365,7 +365,7 @@ entangle_overlay_box_realize(GtkWidget *widget)
     GtkAllocation allocation;
     GdkWindow *window;
 
-    gtk_widget_set_realized (widget, TRUE);
+    gtk_widget_set_realized(widget, TRUE);
 
     box = ENTANGLE_OVERLAY_BOX(widget);
     priv = box->priv;
@@ -551,7 +551,7 @@ entangle_overlay_box_size_allocate(GtkWidget *widget,
     GtkAllocation under;
     GtkAllocation over;
 
-    gtk_widget_set_allocation (widget, allocation);
+    gtk_widget_set_allocation(widget, allocation);
 
     box = ENTANGLE_OVERLAY_BOX(widget);
     priv = box->priv;
@@ -559,7 +559,7 @@ entangle_overlay_box_size_allocate(GtkWidget *widget,
     entangle_overlay_box_get_under_geometry(box, &under.x, &under.y, &under.width,
                                             &under.height);
     entangle_overlay_box_get_over_geometry(box, &over.x, &over.y, &over.width, &over.height);
-    
+
     if (gtk_widget_get_realized(widget)) {
         gdk_window_move_resize(gtk_widget_get_window(widget),
                                allocation->x, allocation->y,
@@ -775,7 +775,7 @@ entangle_overlay_box_set_fraction(EntangleOverlayBox *box,
     g_return_if_fail(fraction >=0 && fraction <= 1);
 
     box->priv->fraction = fraction;
-    if (gtk_widget_get_realized(GTK_WIDGET (box))) {
+    if (gtk_widget_get_realized(GTK_WIDGET(box))) {
         int x;
         int y;
         int width;

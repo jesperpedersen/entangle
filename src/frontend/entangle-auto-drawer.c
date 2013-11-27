@@ -81,7 +81,7 @@ G_DEFINE_TYPE(EntangleAutoDrawer, entangle_auto_drawer, ENTANGLE_TYPE_DRAWER);
 
 static void
 entangle_auto_drawer_enforce(EntangleAutoDrawer *drawer,
-			     gboolean animate)
+                             gboolean animate)
 {
     double fraction;
     GtkAllocation allocation;
@@ -102,7 +102,7 @@ entangle_auto_drawer_enforce(EntangleAutoDrawer *drawer,
     if (priv->opened && !priv->forceClosing) {
         fraction = 1;
     } else {
-        gtk_widget_get_allocation (priv->over, &allocation);
+        gtk_widget_get_allocation(priv->over, &allocation);
         fraction = ((double)priv->overlapPixels / allocation.height);
     }
 
@@ -229,10 +229,10 @@ entangle_auto_drawer_update(EntangleAutoDrawer *drawer,
                                        dev, &x, &y, NULL);
 
         gtk_widget_get_allocation(priv->evBox, &allocation);
-        g_assert(gtk_container_get_border_width(   GTK_CONTAINER(priv->evBox))
+        g_assert(gtk_container_get_border_width(GTK_CONTAINER(priv->evBox))
                  == 0);
-        if (   (guint)x < (guint)allocation.width
-               && (guint)y < (guint)allocation.height) {
+        if ((guint)x < (guint)allocation.width &&
+            (guint)y < (guint)allocation.height) {
             priv->opened = TRUE;
         }
     }
@@ -259,9 +259,9 @@ entangle_auto_drawer_update(EntangleAutoDrawer *drawer,
     if (!priv->inputUngrabbed) {
         GtkWidget *grabbed = NULL;
 
-        if (gtk_window_has_group (window)) {
-            GtkWindowGroup *group = gtk_window_get_group (window);
-            grabbed = gtk_window_group_get_current_grab (group);
+        if (gtk_window_has_group(window)) {
+            GtkWindowGroup *group = gtk_window_get_group(window);
+            grabbed = gtk_window_group_get_current_grab(group);
         }
         if (!grabbed) {
             grabbed = gtk_grab_get_current();

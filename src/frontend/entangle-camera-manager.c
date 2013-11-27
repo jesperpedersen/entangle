@@ -403,7 +403,7 @@ static GtkWidget *entangle_camera_manager_monitor_menu(EntangleCameraManager *ma
     int active = 0;
 #endif
 
-    for (int i = 0 ; i < gdk_screen_get_n_monitors(screen) ; i++) {
+    for (int i = 0; i < gdk_screen_get_n_monitors(screen); i++) {
         const gchar *name = gdk_screen_get_monitor_plug_name(screen, i);
         GtkWidget *submenu = gtk_radio_menu_item_new_with_label(group, name);
         g_object_set_data(G_OBJECT(submenu), "monitor", GINT_TO_POINTER(i));
@@ -712,7 +712,7 @@ static void do_camera_task_error(EntangleCameraManager *manager,
                                              error->message);
     g_signal_connect_swapped(msg,
                              "response",
-                             G_CALLBACK (gtk_widget_destroy),
+                             G_CALLBACK(gtk_widget_destroy),
                              msg);
     gtk_widget_show_all(msg);
 }
@@ -745,7 +745,7 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
                                                  error->message);
         g_signal_connect_swapped(msg,
                                  "response",
-                                 G_CALLBACK (gtk_widget_destroy),
+                                 G_CALLBACK(gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
 
@@ -1331,7 +1331,7 @@ static void do_camera_load_controls_finish(GObject *source,
                                                  error->message);
         g_signal_connect_swapped(msg,
                                  "response",
-                                 G_CALLBACK (gtk_widget_destroy),
+                                 G_CALLBACK(gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
 
@@ -1458,7 +1458,7 @@ static void do_camera_unmount_finish(GObject *source,
                                                  error->message);
         g_signal_connect_swapped(msg,
                                  "response",
-                                 G_CALLBACK (gtk_widget_destroy),
+                                 G_CALLBACK(gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
         entangle_camera_manager_set_camera(manager, NULL);
@@ -1659,7 +1659,7 @@ static void entangle_camera_manager_finalize(GObject *object)
 
 static void entangle_camera_manager_class_init(EntangleCameraManagerClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_camera_manager_finalize;
     object_class->get_property = entangle_camera_manager_get_property;
@@ -2160,7 +2160,7 @@ static void do_camera_autofocus_finish(GObject *source,
                                                  error->message);
         g_signal_connect_swapped(msg,
                                  "response",
-                                 G_CALLBACK (gtk_widget_destroy),
+                                 G_CALLBACK(gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
 
@@ -2191,7 +2191,7 @@ static void do_camera_manualfocus_finish(GObject *source,
                                                  error->message);
         g_signal_connect_swapped(msg,
                                  "response",
-                                 G_CALLBACK (gtk_widget_destroy),
+                                 G_CALLBACK(gtk_widget_destroy),
                                  msg);
         gtk_widget_show_all(msg);
 

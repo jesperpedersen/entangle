@@ -337,13 +337,13 @@ static void entangle_pixbuf_loader_finalize(GObject *object)
     g_hash_table_unref(priv->pixbufs);
     g_mutex_free(priv->lock);
 
-    G_OBJECT_CLASS (entangle_pixbuf_loader_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_pixbuf_loader_parent_class)->finalize(object);
 }
 
 
 static void entangle_pixbuf_loader_class_init(EntanglePixbufLoaderClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_pixbuf_loader_finalize;
     object_class->get_property = entangle_pixbuf_loader_get_property;

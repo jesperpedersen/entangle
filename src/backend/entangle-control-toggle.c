@@ -81,12 +81,12 @@ static void entangle_control_set_property(GObject *object,
 
 static void entangle_control_toggle_finalize(GObject *object)
 {
-    G_OBJECT_CLASS (entangle_control_toggle_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_control_toggle_parent_class)->finalize(object);
 }
 
 static void entangle_control_toggle_class_init(EntangleControlToggleClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_control_toggle_finalize;
     object_class->get_property = entangle_control_get_property;

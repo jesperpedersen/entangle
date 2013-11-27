@@ -79,14 +79,14 @@ static void entangle_control_set_property(GObject *object,
 }
 
 
-static void entangle_control_date_finalize (GObject *object)
+static void entangle_control_date_finalize(GObject *object)
 {
-    G_OBJECT_CLASS (entangle_control_date_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_control_date_parent_class)->finalize(object);
 }
 
 static void entangle_control_date_class_init(EntangleControlDateClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_control_date_finalize;
     object_class->get_property = entangle_control_get_property;

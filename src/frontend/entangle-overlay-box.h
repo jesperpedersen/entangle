@@ -62,19 +62,19 @@ EntangleOverlayBox *entangle_overlay_box_new(void);
 
 void
 entangle_overlay_box_set_under(EntangleOverlayBox *box,
-			       GtkWidget *widget);
+                               GtkWidget *widget);
 
 void
 entangle_overlay_box_set_over(EntangleOverlayBox *box,
-			      GtkWidget *widget);
+                              GtkWidget *widget);
 
 void
 entangle_overlay_box_set_min(EntangleOverlayBox *box,
-			     unsigned int min);
+                             unsigned int min);
 
 void
 entangle_overlay_box_set_fraction(EntangleOverlayBox *box,
-				  double fraction);
+                                  double fraction);
 
 double
 entangle_overlay_box_get_fraction(EntangleOverlayBox *box);

@@ -41,7 +41,7 @@ struct _EntangleDeviceManagerPrivate {
 G_DEFINE_TYPE(EntangleDeviceManager, entangle_device_manager, G_TYPE_OBJECT);
 
 
-static void entangle_device_manager_finalize (GObject *object)
+static void entangle_device_manager_finalize(GObject *object)
 {
     EntangleDeviceManager *manager = ENTANGLE_DEVICE_MANAGER(object);
     EntangleDeviceManagerPrivate *priv = manager->priv;
@@ -50,13 +50,13 @@ static void entangle_device_manager_finalize (GObject *object)
     if (priv->ctx)
         g_object_unref(priv->ctx);
 
-    G_OBJECT_CLASS (entangle_device_manager_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_device_manager_parent_class)->finalize(object);
 }
 
 
 static void entangle_device_manager_class_init(EntangleDeviceManagerClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_device_manager_finalize;
 

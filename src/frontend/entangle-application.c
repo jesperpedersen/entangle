@@ -135,7 +135,7 @@ static void entangle_application_finalize(GObject *object)
     if (priv->pluginExt)
         g_object_unref(priv->pluginExt);
 
-    G_OBJECT_CLASS (entangle_application_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_application_parent_class)->finalize(object);
 }
 
 
@@ -297,7 +297,7 @@ static void entangle_application_init(EntangleApplication *app)
     g_irepository_require(g_irepository_get_default(),
                           "Peas", "1.0", 0, NULL);
 
-    userdir = g_build_filename(g_get_user_config_dir (), "entangle/plugins", NULL);
+    userdir = g_build_filename(g_get_user_config_dir(), "entangle/plugins", NULL);
     g_mkdir_with_parents(userdir, 0777);
 
     priv->pluginEngine = peas_engine_get_default();
@@ -329,7 +329,7 @@ static void entangle_application_init(EntangleApplication *app)
                      G_CALLBACK(on_plugin_unload), app);
 
     plugins = entangle_preferences_interface_get_plugins(priv->preferences);
-    for (i = 0 ; plugins[i] != NULL ; i++) {
+    for (i = 0; plugins[i] != NULL; i++) {
         PeasPluginInfo *plugin = peas_engine_get_plugin_info(priv->pluginEngine,
                                                              plugins[i]);
         if (plugin) {

@@ -41,17 +41,17 @@ static void entangle_control_group_finalize(GObject *object)
     EntangleControlGroup *picker = ENTANGLE_CONTROL_GROUP(object);
     EntangleControlGroupPrivate *priv = picker->priv;
 
-    for (int i = 0 ; i < priv->ncontrol ; i++) {
+    for (int i = 0; i < priv->ncontrol; i++) {
         g_object_unref(priv->controls[i]);
     }
     g_free(priv->controls);
 
-    G_OBJECT_CLASS (entangle_control_group_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_control_group_parent_class)->finalize(object);
 }
 
 static void entangle_control_group_class_init(EntangleControlGroupClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_control_group_finalize;
 
@@ -129,7 +129,7 @@ EntangleControl *entangle_control_group_get_by_path(EntangleControlGroup *group,
     EntangleControlGroupPrivate *priv = group->priv;
     size_t i;
 
-    for (i = 0 ; i < priv->ncontrol ; i++) {
+    for (i = 0; i < priv->ncontrol; i++) {
         if (g_str_equal(path, entangle_control_get_path(priv->controls[i])))
             return priv->controls[i];
     }

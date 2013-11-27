@@ -127,13 +127,13 @@ static void entangle_image_finalize(GObject *object)
 
     g_free(priv->filename);
 
-    G_OBJECT_CLASS (entangle_image_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_image_parent_class)->finalize(object);
 }
 
 
 static void entangle_image_class_init(EntangleImageClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_image_finalize;
     object_class->get_property = entangle_image_get_property;

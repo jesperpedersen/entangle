@@ -70,8 +70,8 @@ int main(int argc, char **argv)
     g_option_context_add_group(optContext, group);
     g_option_context_parse(optContext, &argc, &argv, &error);
     if (error) {
-        g_print ("%s\n%s\n", error->message, help_msg);
-        g_error_free (error);
+        g_print("%s\n%s\n", error->message, help_msg);
+        g_error_free(error);
         return 1;
     }
 

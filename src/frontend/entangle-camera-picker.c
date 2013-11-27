@@ -172,7 +172,7 @@ static void do_model_refresh(EntangleCameraPicker *picker)
         return;
     }
 
-    for (int i = 0 ; i < entangle_camera_list_count(priv->cameras) ; i++) {
+    for (int i = 0; i < entangle_camera_list_count(priv->cameras); i++) {
         EntangleCamera *cam = entangle_camera_list_get(priv->cameras, i);
         GtkTreeIter iter;
 
@@ -312,7 +312,7 @@ static void entangle_camera_picker_window_interface_init(gpointer g_iface,
 
 static void entangle_camera_picker_class_init(EntangleCameraPickerClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_camera_picker_finalize;
     object_class->get_property = entangle_camera_picker_get_property;

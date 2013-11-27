@@ -321,13 +321,13 @@ static void entangle_camera_finalize(GObject *object)
     g_mutex_free(priv->lock);
     g_cond_free(priv->jobCond);
 
-    G_OBJECT_CLASS (entangle_camera_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_camera_parent_class)->finalize(object);
 }
 
 
 static void entangle_camera_class_init(EntangleCameraClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_camera_finalize;
     object_class->get_property = entangle_camera_get_property;
@@ -1647,7 +1647,7 @@ entangle_camera_find_widget(EntangleCamera *cam,
     CameraWidget *curr = priv->widgets;
     gsize i;
 
-    for (i = 0 ; names[i] != NULL ; i++) {
+    for (i = 0; names[i] != NULL; i++) {
         CameraWidget *tmp;
 
         if (g_str_equal(names[i], "") ||
@@ -1713,7 +1713,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
             EntangleControlGroup *grp;
             ENTANGLE_DEBUG("Add group %s %d %s", fullpath, id, label);
             grp = entangle_control_group_new(fullpath, id, label, info, ro);
-            for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+            for (int i = 0; i < gp_widget_count_children(widget); i++) {
                 CameraWidget *child;
                 EntangleControl *subctl;
                 const char *childname;
@@ -1746,7 +1746,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
             EntangleControlGroup *grp;
             ENTANGLE_DEBUG("Add group %s %d %s", fullpath, id, label);
             grp = entangle_control_group_new(fullpath, id, label, info, ro);
-            for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+            for (int i = 0; i < gp_widget_count_children(widget); i++) {
                 CameraWidget *child;
                 EntangleControl *subctl;
                 if (gp_widget_get_child(widget, i, &child) != GP_OK) {
@@ -1777,7 +1777,7 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
             ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_choice_new(fullpath, id, label, info, ro));
 
-            for (int i = 0 ; i < gp_widget_count_choices(widget) ; i++) {
+            for (int i = 0; i < gp_widget_count_choices(widget); i++) {
                 const char *choice;
                 gp_widget_get_choice(widget, i, &choice);
                 entangle_control_choice_add_entry(ENTANGLE_CONTROL_CHOICE(ret), choice);
@@ -1879,7 +1879,7 @@ static gboolean do_load_controls(EntangleCamera *cam,
         /* We treat both window and section as just groups */
     case GP_WIDGET_WINDOW:
     case GP_WIDGET_SECTION:
-        for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+        for (int i = 0; i < gp_widget_count_children(widget); i++) {
             CameraWidget *child;
             if (gp_widget_get_child(widget, i, &child) == GP_OK)
                 if (!do_load_controls(cam, fullpath, child, error))
@@ -1985,7 +1985,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
         /* We treat both window and section as just groups */
     case GP_WIDGET_WINDOW:
     case GP_WIDGET_SECTION:
-        for (int i = 0 ; i < gp_widget_count_children(widget) ; i++) {
+        for (int i = 0; i < gp_widget_count_children(widget); i++) {
             CameraWidget *child;
             if (gp_widget_get_child(widget, i, &child) == GP_OK)
                 if (!do_save_controls(cam, fullpath, child, error))

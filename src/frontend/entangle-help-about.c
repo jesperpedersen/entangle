@@ -55,7 +55,7 @@ static void entangle_help_about_finalize(GObject *object)
 
     g_object_unref(priv->builder);
 
-    G_OBJECT_CLASS (entangle_help_about_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_help_about_parent_class)->finalize(object);
 }
 
 static void do_entangle_help_about_set_builder(EntangleWindow *window,
@@ -71,7 +71,7 @@ static void entangle_help_about_window_interface_init(gpointer g_iface,
 
 static void entangle_help_about_class_init(EntangleHelpAboutClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_help_about_finalize;
 

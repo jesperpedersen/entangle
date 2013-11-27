@@ -92,13 +92,13 @@ static void entangle_camera_list_set_property(GObject *object,
 }
 
 
-static void entangle_camera_list_finalize (GObject *object)
+static void entangle_camera_list_finalize(GObject *object)
 {
     EntangleCameraList *list = ENTANGLE_CAMERA_LIST(object);
     EntangleCameraListPrivate *priv = list->priv;
     ENTANGLE_DEBUG("Finalize list");
 
-    for (int i = 0 ; i < priv->ncamera ; i++) {
+    for (int i = 0; i < priv->ncamera; i++) {
         ENTANGLE_DEBUG("Unref camera in list %p", priv->cameras[i]);
         g_object_unref(priv->cameras[i]);
     }
@@ -113,7 +113,7 @@ static void entangle_camera_list_finalize (GObject *object)
         gp_abilities_list_free(priv->caps);
     gp_context_unref(priv->ctx);
 
-    G_OBJECT_CLASS (entangle_camera_list_parent_class)->finalize (object);
+    G_OBJECT_CLASS(entangle_camera_list_parent_class)->finalize(object);
 }
 
 
@@ -152,7 +152,7 @@ static void entangle_camera_list_gphoto_log(GPLogLevel level G_GNUC_UNUSED,
 
 static void entangle_camera_list_class_init(EntangleCameraListClass *klass)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->finalize = entangle_camera_list_finalize;
     object_class->get_property = entangle_camera_list_get_property;
@@ -259,7 +259,7 @@ gboolean entangle_camera_list_refresh(EntangleCameraList *list,
 
     gp_abilities_list_detect(priv->caps, priv->ports, cams, priv->ctx);
 
-    for (int i = 0 ; i < gp_list_count(cams) ; i++) {
+    for (int i = 0; i < gp_list_count(cams); i++) {
         const char *model, *port;
         int n;
         EntangleCamera *cam;
@@ -293,13 +293,13 @@ gboolean entangle_camera_list_refresh(EntangleCameraList *list,
     }
 
     toRemove = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-    for (int i = 0 ; i < entangle_camera_list_count(list) ; i++) {
+    for (int i = 0; i < entangle_camera_list_count(list); i++) {
         gboolean found = FALSE;
         EntangleCamera *cam = entangle_camera_list_get(list, i);
 
         ENTANGLE_DEBUG("Checking if %s exists", entangle_camera_get_port(cam));
 
-        for (int j = 0 ; j < gp_list_count(cams) ; j++) {
+        for (int j = 0; j < gp_list_count(cams); j++) {
             const char *port;
             gp_list_get_value(cams, j, &port);
 
@@ -359,7 +359,7 @@ void entangle_camera_list_remove(EntangleCameraList *list,
 
     EntangleCameraListPrivate *priv = list->priv;
 
-    for (int i = 0 ; i < priv->ncamera ; i++) {
+    for (int i = 0; i < priv->ncamera; i++) {
         if (priv->cameras[i] == cam) {
             if (i < (priv->ncamera-1))
                 memmove(priv->cameras + i,
@@ -400,7 +400,7 @@ GList *entangle_camera_list_get_cameras(EntangleCameraList *list)
     EntangleCameraListPrivate *priv = list->priv;
     GList *cameras = NULL;
 
-    for (int i = (priv->ncamera - 1) ; i >= 0 ; i--) {
+    for (int i = (priv->ncamera - 1); i >= 0; i--) {
         cameras = g_list_append(cameras, priv->cameras[i]);
     }
     return cameras;
@@ -413,7 +413,7 @@ EntangleCamera *entangle_camera_list_find(EntangleCameraList *list,
     EntangleCameraListPrivate *priv = list->priv;
     int i;
 
-    for (i = 0 ; i < priv->ncamera ; i++) {
+    for (i = 0; i < priv->ncamera; i++) {
         const char *thisport = entangle_camera_get_port(priv->cameras[i]);
 
         ENTANGLE_DEBUG("Compare '%s' '%s'", port, thisport);
@@ -454,7 +454,7 @@ gchar **entangle_camera_list_get_supported(EntangleCameraList *list)
 
     ret = g_new0(gchar *, cnt + 1);
 
-    for (i = 0 ; i < cnt ; i++) {
+    for (i = 0; i < cnt; i++) {
         CameraAbilities ab;
         gp_abilities_list_get_abilities(priv->caps, i, &ab);
 

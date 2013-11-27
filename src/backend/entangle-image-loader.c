@@ -100,7 +100,7 @@ static GdkPixbuf *entangle_image_loader_pixbuf_load(EntanglePixbufLoader *loader
 static void entangle_image_loader_class_init(EntangleImageLoaderClass *klass)
 {
     EntanglePixbufLoaderClass *loader_class = ENTANGLE_PIXBUF_LOADER_CLASS(klass);
-    GObjectClass *object_class = G_OBJECT_CLASS (klass);
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->get_property = entangle_image_loader_get_property;
     object_class->set_property = entangle_image_loader_set_property;
