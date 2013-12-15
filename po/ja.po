@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Hajime Taira <htaira@redhat.com>, 2013
 # Tomoyuki KATO <tomo@dream.daynight.jp>, 2012-2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Entangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-17 18:57+0100\n"
-"PO-Revision-Date: 2013-06-10 07:11+0000\n"
-"Last-Translator: Tomoyuki KATO <tomo@dream.daynight.jp>\n"
-"Language-Team: Japanese <trans-ja@lists.fedoraproject.org>\n"
+"POT-Creation-Date: 2013-12-15 22:17+0000\n"
+"PO-Revision-Date: 2013-12-15 22:18+0000\n"
+"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"Language-Team: Japanese (http://www.transifex.com/projects/p/fedora/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -102,124 +103,113 @@ msgstr "接続されていないときにイベントを待機できません"
 msgid "Unable to wait for events: %s"
 msgstr "イベントを待機できません: %s"
 
-#: ../src/backend/entangle-camera.c:1690 ../src/backend/entangle-camera.c:1852
-#: ../src/backend/entangle-camera.c:1961 ../src/backend/entangle-camera.c:2311
-#: ../src/backend/entangle-camera.c:2449 ../src/backend/entangle-camera.c:2575
+#: ../src/backend/entangle-camera.c:1690 ../src/backend/entangle-camera.c:1858
+#: ../src/backend/entangle-camera.c:1967 ../src/backend/entangle-camera.c:2317
+#: ../src/backend/entangle-camera.c:2455 ../src/backend/entangle-camera.c:2581
 #, c-format
 msgid "Unable to fetch widget type"
 msgstr "ウィジェットの形式を取り出せません"
 
-#: ../src/backend/entangle-camera.c:1696 ../src/backend/entangle-camera.c:1858
-#: ../src/backend/entangle-camera.c:1967
+#: ../src/backend/entangle-camera.c:1696 ../src/backend/entangle-camera.c:1864
+#: ../src/backend/entangle-camera.c:1973
 #, c-format
 msgid "Unable to fetch widget name"
 msgstr "装置名を取得できません"
 
-#: ../src/backend/entangle-camera.c:2063
+#: ../src/backend/entangle-camera.c:2069
 #, c-format
 msgid "Unable to load controls, camera is not connected"
-msgstr "制御内容を読み込めません、カメラが接続されていません"
+msgstr "制御情報を読み込めません、カメラが接続されていません"
 
-#: ../src/backend/entangle-camera.c:2071
+#: ../src/backend/entangle-camera.c:2077
 #, c-format
 msgid "Unable to fetch camera control configuration"
 msgstr "カメラ制御の設定を取得できません"
 
-#: ../src/backend/entangle-camera.c:2158
-#, c-format
-msgid "Unable to save controls, camera is not connected"
-msgstr "制御内容を保存できません、カメラが接続されていません"
-
 #: ../src/backend/entangle-camera.c:2164
 #, c-format
-msgid "Unable to save controls, camera is not configurable"
-msgstr "制御内容を保存できません、カメラが設定可能ではありません"
+msgid "Unable to save controls, camera is not connected"
+msgstr "制御情報を保存できません、カメラが接続されていません"
 
-#: ../src/backend/entangle-camera.c:2175 ../src/backend/entangle-camera.c:2339
-#: ../src/backend/entangle-camera.c:2477 ../src/backend/entangle-camera.c:2603
+#: ../src/backend/entangle-camera.c:2170
+#, c-format
+msgid "Unable to save controls, camera is not configurable"
+msgstr "制御情報を保存できません、カメラが設定可能ではありません"
+
+#: ../src/backend/entangle-camera.c:2181 ../src/backend/entangle-camera.c:2345
+#: ../src/backend/entangle-camera.c:2483 ../src/backend/entangle-camera.c:2609
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
 msgstr "カメラ制御の設定を保存できません: %s %d"
 
-#: ../src/backend/entangle-camera.c:2250 ../src/backend/entangle-camera.c:2287
-#: ../src/backend/entangle-camera.c:2428 ../src/backend/entangle-camera.c:2554
+#: ../src/backend/entangle-camera.c:2256 ../src/backend/entangle-camera.c:2293
+#: ../src/backend/entangle-camera.c:2434 ../src/backend/entangle-camera.c:2560
 #, c-format
 msgid "Controls not available when camera is disconnected"
 msgstr "カメラが切断されているときに制御は利用可能ではありません"
 
-#: ../src/backend/entangle-camera.c:2256 ../src/backend/entangle-camera.c:2293
-#: ../src/backend/entangle-camera.c:2434 ../src/backend/entangle-camera.c:2560
+#: ../src/backend/entangle-camera.c:2262 ../src/backend/entangle-camera.c:2299
+#: ../src/backend/entangle-camera.c:2440 ../src/backend/entangle-camera.c:2566
 #, c-format
 msgid "Controls not available for this camera"
-msgstr "このカメラに対して制御は利用できません"
+msgstr "このカメラに対して制御できません"
 
-#: ../src/backend/entangle-camera.c:2304
+#: ../src/backend/entangle-camera.c:2310
 #, c-format
 msgid "Viewfinder control not available with this camera"
 msgstr "Viewfinder 制御がこのカメラで利用できません"
 
-#: ../src/backend/entangle-camera.c:2317
+#: ../src/backend/entangle-camera.c:2323
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
 msgstr "Viewfinder 制御がトグルウィジェットではありませんでした"
 
-#: ../src/backend/entangle-camera.c:2324
+#: ../src/backend/entangle-camera.c:2330
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
 msgstr "viewfinder の状態の設定に失敗しました: %s %d"
 
-#: ../src/backend/entangle-camera.c:2330 ../src/backend/entangle-camera.c:2468
-#: ../src/backend/entangle-camera.c:2588 ../src/backend/entangle-camera.c:2594
+#: ../src/backend/entangle-camera.c:2336 ../src/backend/entangle-camera.c:2474
+#: ../src/backend/entangle-camera.c:2594 ../src/backend/entangle-camera.c:2600
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
 msgstr "マニュアルフォーカスの状態を設定できません: %s %d"
 
-#: ../src/backend/entangle-camera.c:2442
+#: ../src/backend/entangle-camera.c:2448
 #, c-format
 msgid "Autofocus control not available with this camera"
 msgstr "オートフォーカスの制御がこのカメラで利用できません"
 
-#: ../src/backend/entangle-camera.c:2455
+#: ../src/backend/entangle-camera.c:2461
 #, c-format
 msgid "Autofocus control was not a toggle widget"
 msgstr "オートフォーカス制御がトグルウィジェットではありませんでした"
 
-#: ../src/backend/entangle-camera.c:2462
+#: ../src/backend/entangle-camera.c:2468
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
 msgstr "オートフォーカスの状態を設定できませんでした: %s %d"
 
-#: ../src/backend/entangle-camera.c:2568
+#: ../src/backend/entangle-camera.c:2574
 #, c-format
 msgid "Manual focus control not available with this camera"
 msgstr "手動フォーカス制御がこのカメラで利用できません"
 
-#: ../src/backend/entangle-camera.c:2581
+#: ../src/backend/entangle-camera.c:2587
 #, c-format
 msgid "Manual focus control was not a range widget"
 msgstr "手動フォーカス制御が範囲ウィジェットではありませんでした"
 
-#: ../src/frontend/entangle-camera-info.c:236
-#: ../src/frontend/entangle-camera-manager.c:3023
-#: ../src/frontend/entangle-camera-picker.c:521
-#: ../src/frontend/entangle-camera-support.c:192
-#: ../src/frontend/entangle-help-about.c:114
-#: ../src/frontend/entangle-image-popup.c:242
-#: ../src/frontend/entangle-preferences-display.c:888
-#, c-format
-msgid "Could not load user interface definition file: %s"
-msgstr "ユーザーインターフェース定義ファイルを読み込めませんでした: %s"
-
-#: ../src/frontend/entangle-camera-info.c:299
+#: ../src/frontend/entangle-camera-info.c:260
 msgid "Unknown information"
 msgstr "未知の情報"
 
-#: ../src/frontend/entangle-camera-info.c:346
+#: ../src/frontend/entangle-camera-info.c:307
 #, c-format
 msgid "%s Camera Info - Entangle"
 msgstr "%s カメラ情報 - Entangle"
 
-#: ../src/frontend/entangle-camera-info.c:349
+#: ../src/frontend/entangle-camera-info.c:310
 msgid "Camera Info - Entangle"
 msgstr "カメラ情報 - Entangle"
 
@@ -230,153 +220,163 @@ msgstr "カメラ情報 - Entangle"
 #. *  tab-width: 8
 #. * End:
 #. 
-#: ../src/frontend/entangle-camera-info.xml.h:1
-#: ../src/frontend/entangle-camera-support.xml.h:1
+#: ../src/frontend/entangle-camera-info.ui.h:1
+#: ../src/frontend/entangle-camera-support.ui.h:1
 msgid "label"
 msgstr "ラベル"
 
-#: ../src/frontend/entangle-camera-manager.c:537
+#: ../src/frontend/entangle-camera-manager.c:557
+#: ../src/frontend/entangle-camera-manager.ui.h:24
+msgid "Capture an image"
+msgstr "画像をキャプチャーする"
+
+#: ../src/frontend/entangle-camera-manager.c:558
+#: ../src/frontend/entangle-camera-manager.ui.h:25
+msgid "Continuous capture preview"
+msgstr "連続的なキャプチャーのプレビュー"
+
+#: ../src/frontend/entangle-camera-manager.c:562
 msgid "This camera does not support image capture"
 msgstr "このカメラは画像のキャプチャーをサポートしません"
 
-#: ../src/frontend/entangle-camera-manager.c:542
+#: ../src/frontend/entangle-camera-manager.c:565
 msgid "This camera does not support image preview"
 msgstr "このカメラは画像のプレビューをサポートしません"
 
-#: ../src/frontend/entangle-camera-manager.c:683
+#: ../src/frontend/entangle-camera-manager.c:707
 #, c-format
 msgid "Operation: %s"
 msgstr "オペレーション: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:685
+#: ../src/frontend/entangle-camera-manager.c:709
 msgid "Entangle: Operation failed"
 msgstr "Entangle: オペレーションに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:716
-#: ../src/frontend/entangle-camera-manager.c:1290
+#: ../src/frontend/entangle-camera-manager.c:740
+#: ../src/frontend/entangle-camera-manager.c:1314
 msgid "Camera load controls failed"
-msgstr "カメラが制御内容の読み込みに失敗しました"
+msgstr "カメラが制御情報の読み込みに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:718
-#: ../src/frontend/entangle-camera-manager.c:1292
+#: ../src/frontend/entangle-camera-manager.c:742
+#: ../src/frontend/entangle-camera-manager.c:1316
 msgid "Entangle: Camera load controls failed"
-msgstr "Entangle: カメラが制御内容の読み込みに失敗しました"
+msgstr "Entangle: カメラが制御情報の読み込みに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:756
+#: ../src/frontend/entangle-camera-manager.c:780
 msgid "Monitor"
 msgstr "モニター"
 
-#: ../src/frontend/entangle-camera-manager.c:908
-#: ../src/frontend/entangle-camera-manager.c:2720
+#: ../src/frontend/entangle-camera-manager.c:932
+#: ../src/frontend/entangle-camera-manager.c:2756
 msgid "Delete"
 msgstr "削除"
 
-#: ../src/frontend/entangle-camera-manager.c:928
+#: ../src/frontend/entangle-camera-manager.c:951
 msgid "Download"
 msgstr "ダウンロード"
 
-#: ../src/frontend/entangle-camera-manager.c:959
-#: ../src/frontend/entangle-camera-manager.c:997
-#: ../src/frontend/entangle-camera-manager.c:1025
-#: ../src/frontend/entangle-camera-manager.xml.h:22
-#: ../src/frontend/entangle-camera-picker.c:533
-#: ../src/frontend/entangle-preferences-display.c:975
-#: ../src/frontend/entangle-preferences-display.c:981
-#: ../src/frontend/entangle-preferences.xml.h:10
+#: ../src/frontend/entangle-camera-manager.c:982
+#: ../src/frontend/entangle-camera-manager.c:1020
+#: ../src/frontend/entangle-camera-manager.c:1048
+#: ../src/frontend/entangle-camera-manager.ui.h:7
+#: ../src/frontend/entangle-camera-picker.c:509
+#: ../src/frontend/entangle-preferences-display.c:920
+#: ../src/frontend/entangle-preferences-display.c:926
+#: ../src/frontend/entangle-preferences-display.ui.h:10
 msgid "Capture"
 msgstr "キャプチャー"
 
-#: ../src/frontend/entangle-camera-manager.c:1060
-#: ../src/frontend/entangle-camera-manager.xml.h:24
+#: ../src/frontend/entangle-camera-manager.c:1083
+#: ../src/frontend/entangle-camera-manager.ui.h:8
 msgid "Preview"
 msgstr "プレビュー"
 
-#: ../src/frontend/entangle-camera-manager.c:1245
+#: ../src/frontend/entangle-camera-manager.c:1272
 msgid "Camera Manager - Entangle"
 msgstr "カメラマネージャー - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1332
-#: ../src/frontend/entangle-camera-manager.c:2575
+#: ../src/frontend/entangle-camera-manager.c:1356
+#: ../src/frontend/entangle-camera-manager.c:2625
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr "カメラに接続できません: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:1337
-#: ../src/frontend/entangle-camera-manager.c:2581
+#: ../src/frontend/entangle-camera-manager.c:1361
+#: ../src/frontend/entangle-camera-manager.c:2631
 msgid ""
 "Check that the camera is not\n"
 "\n"
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "カメラが以下であることを確認します\n\n - 他の写真 <b>アプリケーション</b> により開かれていない\n - デスクトップに <b>ファイルシステム</b> としてマウントされていない\n - バッテリー電源を節約するために <b>スリープモード</b> になっていない\n"
+msgstr "カメラが次の状態であることを確認してください\n\n - 他の写真 <b>アプリケーション</b> により利用されていない\n - デスクトップに <b>ファイルシステム</b> としてマウントされていない\n - バッテリー電源を節約するために <b>スリープモード</b> になっていない\n"
 
-#: ../src/frontend/entangle-camera-manager.c:1342
-#: ../src/frontend/entangle-camera-manager.c:2586
-#: ../src/frontend/entangle-camera-manager.xml.h:27
+#: ../src/frontend/entangle-camera-manager.c:1366
+#: ../src/frontend/entangle-camera-manager.c:2636
+#: ../src/frontend/entangle-camera-manager.ui.h:9
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../src/frontend/entangle-camera-manager.c:1343
-#: ../src/frontend/entangle-camera-manager.c:2587
+#: ../src/frontend/entangle-camera-manager.c:1367
+#: ../src/frontend/entangle-camera-manager.c:2637
 msgid "Retry"
 msgstr "再試行"
 
-#: ../src/frontend/entangle-camera-manager.c:1373
+#: ../src/frontend/entangle-camera-manager.c:1397
 msgid "Camera is in use"
 msgstr "カメラは使用中です"
 
-#: ../src/frontend/entangle-camera-manager.c:1377
+#: ../src/frontend/entangle-camera-manager.c:1401
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "現在ファイルシステムとしてマウントされているので、カメラを開けませんでした。今すぐアンマウントしたいですか?"
+msgstr "現在ファイルシステムとしてマウントされているので、カメラを開けません。今すぐアンマウントしたいですか？"
 
-#: ../src/frontend/entangle-camera-manager.c:1381
-#: ../src/frontend/entangle-camera-picker.c:125
+#: ../src/frontend/entangle-camera-manager.c:1405
+#: ../src/frontend/entangle-camera-picker.c:130
 msgid "No"
 msgstr "いいえ"
 
-#: ../src/frontend/entangle-camera-manager.c:1382
-#: ../src/frontend/entangle-camera-picker.c:125
+#: ../src/frontend/entangle-camera-manager.c:1406
+#: ../src/frontend/entangle-camera-picker.c:130
 msgid "Yes"
 msgstr "はい"
 
-#: ../src/frontend/entangle-camera-manager.c:1417
+#: ../src/frontend/entangle-camera-manager.c:1441
 msgid "Camera connect failed"
 msgstr "カメラの接続に失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:1419
+#: ../src/frontend/entangle-camera-manager.c:1443
 msgid "Entangle: Camera connect failed"
 msgstr "Entangle: カメラの接続に失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:1455
+#: ../src/frontend/entangle-camera-manager.c:1478
 #, c-format
 msgid "%s Camera Manager - Entangle"
 msgstr "%s カメラマネージャー - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1808
-#: ../src/frontend/entangle-camera-manager.xml.h:19
+#: ../src/frontend/entangle-camera-manager.c:1805
+#: ../src/frontend/entangle-camera-manager.ui.h:22
 msgid "Select a folder"
 msgstr "フォルダーの選択"
 
-#: ../src/frontend/entangle-camera-manager.c:2087
+#: ../src/frontend/entangle-camera-manager.c:2145
 msgid "Autofocus failed"
 msgstr "オートフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2089
+#: ../src/frontend/entangle-camera-manager.c:2147
 msgid "Entangle: Camera autofocus failed"
 msgstr "Entangle: カメラのオートフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2118
+#: ../src/frontend/entangle-camera-manager.c:2176
 msgid "Manual focus failed"
 msgstr "マニュアルフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2120
+#: ../src/frontend/entangle-camera-manager.c:2178
 msgid "Entangle: Camera manual focus failed"
 msgstr "Entangle: カメラのマニュアルフォーカスに失敗しました"
 
-#: ../src/frontend/entangle-camera-manager.c:2849
+#: ../src/frontend/entangle-camera-manager.c:2885
 msgid "Select application..."
 msgstr "アプリケーションの選択..."
 
@@ -387,153 +387,145 @@ msgstr "アプリケーションの選択..."
 #. *  tab-width: 8
 #. * End:
 #. 
-#: ../src/frontend/entangle-camera-manager.xml.h:1
+#: ../src/frontend/entangle-camera-manager.ui.h:1
 msgid "Entangle"
 msgstr "Entangle"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:2
+#: ../src/frontend/entangle-camera-manager.ui.h:2
 msgid "_File"
 msgstr "ファイル(_F)"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:3
+#: ../src/frontend/entangle-camera-manager.ui.h:3
 msgid "Select session"
 msgstr "セッションの選択"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:4
-msgid "Connect camera"
-msgstr "カメラに接続する"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:5
+#: ../src/frontend/entangle-camera-manager.ui.h:4
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:6
-msgid "_View"
-msgstr "表示(_V)"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:7
-msgid "Settings"
-msgstr "設定"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:8
-msgid "Fullscreen"
-msgstr "フルスクリーン"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:9
-msgid "Presentation"
-msgstr "プレゼンテーション"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:10
-msgid "Present on"
-msgstr "次のところに存在する"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:11
-msgid "Windows"
-msgstr "Windows"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:12
-msgid "New window"
-msgstr "新しいウィンドウ"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:13
-msgid "Synchronize capture"
-msgstr "同期キャプチャー"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:14
-msgid "_Help"
-msgstr "ヘルプ(_H)"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:15
+#: ../src/frontend/entangle-camera-manager.ui.h:5
 msgid "Camera"
 msgstr "カメラ"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:16
+#: ../src/frontend/entangle-camera-manager.ui.h:6
+msgid "Connect"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.ui.h:10
+msgid "_View"
+msgstr "表示(_V)"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:11
+msgid "Settings"
+msgstr "設定"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:12
+msgid "Fullscreen"
+msgstr "フルスクリーン"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:13
+msgid "Presentation"
+msgstr "プレゼンテーション"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:14
+msgid "Present on"
+msgstr "次のところに存在する"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:15
+msgid "Windows"
+msgstr "ウィンドウ"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:16
+msgid "New window"
+msgstr "新しいウィンドウ"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:17
+msgid "Synchronize capture"
+msgstr "同期キャプチャー"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:18
+msgid "_Help"
+msgstr "ヘルプ(_H)"
+
+#: ../src/frontend/entangle-camera-manager.ui.h:19
 msgid "Driver"
 msgstr "ドライバー"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:17
+#: ../src/frontend/entangle-camera-manager.ui.h:20
 msgid "Manual"
 msgstr "マニュアル"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:18
+#: ../src/frontend/entangle-camera-manager.ui.h:21
 msgid "Supported Cameras"
 msgstr "サポートされるカメラ"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:20
+#: ../src/frontend/entangle-camera-manager.ui.h:23
 msgid "View the full list of camera settings"
 msgstr "カメラ設定の完全な一覧を表示する"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:21
-msgid "Capture an image"
-msgstr "画像をキャプチャーする"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:23
-msgid "Continuous capture preview"
-msgstr "連続的なキャプチャーのプレビュー"
-
-#: ../src/frontend/entangle-camera-manager.xml.h:25
+#: ../src/frontend/entangle-camera-manager.ui.h:26
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
 msgstr "現在実行しているカメラ操作を\n取り消そうとしています。"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:28
+#: ../src/frontend/entangle-camera-manager.ui.h:28
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
 msgstr "ある要素により画像の表示を縮小する"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:30
+#: ../src/frontend/entangle-camera-manager.ui.h:30
 msgid "Zoom Out"
 msgstr "ズームアウト"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:31
+#: ../src/frontend/entangle-camera-manager.ui.h:31
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
 msgstr "ある要素により画像の表示を拡大する"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:33
+#: ../src/frontend/entangle-camera-manager.ui.h:33
 msgid "Zoom In"
 msgstr "ズームイン"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:34
+#: ../src/frontend/entangle-camera-manager.ui.h:34
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
 msgstr "利用可能なウィンドウの実サイズに合うよう\n画像の大きさを自動的に変更します。"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:36
+#: ../src/frontend/entangle-camera-manager.ui.h:36
 msgid "Best Fit"
 msgstr "最適"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:37
+#: ../src/frontend/entangle-camera-manager.ui.h:37
 msgid ""
 "Display the image with its\n"
 "native pixel size"
 msgstr "元の画素数で画像を表示する"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:39
+#: ../src/frontend/entangle-camera-manager.ui.h:39
 msgid "Normal"
 msgstr "ノーマル"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:40
+#: ../src/frontend/entangle-camera-manager.ui.h:40
 msgid "Switch to fullscreen display mode"
 msgstr "フルスクリーンのディスプレイモードに切り替える"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:41
+#: ../src/frontend/entangle-camera-manager.ui.h:41
 msgid "Full Screen"
 msgstr "フルスクリーン"
 
-#: ../src/frontend/entangle-camera-manager.xml.h:42
+#: ../src/frontend/entangle-camera-manager.ui.h:42
 msgid "Open with"
 msgstr "開く"
 
-#: ../src/frontend/entangle-camera-picker.c:531
+#: ../src/frontend/entangle-camera-picker.c:507
 msgid "Model"
 msgstr "型名"
 
-#: ../src/frontend/entangle-camera-picker.c:532
+#: ../src/frontend/entangle-camera-picker.c:508
 msgid "Port"
 msgstr "ポート"
 
@@ -544,15 +536,15 @@ msgstr "ポート"
 #. *  tab-width: 8
 #. * End:
 #. 
-#: ../src/frontend/entangle-camera-picker.xml.h:1
+#: ../src/frontend/entangle-camera-picker.ui.h:1
 msgid "Select camera - Entangle"
 msgstr "カメラの選択 - Entangle"
 
-#: ../src/frontend/entangle-camera-picker.xml.h:2
+#: ../src/frontend/entangle-camera-picker.ui.h:2
 msgid "Select a camera to connect to:"
-msgstr "接続するカメラを選択します:"
+msgstr "接続するカメラを選択してください:"
 
-#: ../src/frontend/entangle-camera-picker.xml.h:3
+#: ../src/frontend/entangle-camera-picker.ui.h:3
 msgid ""
 "No cameras were detected, check that\n"
 "\n"
@@ -563,7 +555,7 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "カメラを検知できません。以下を確認してください\n\n  - <b>ケーブル</b> が接続されている\n  - カメラの <b>電源が入っている</b>\n  - カメラが <b>接続モード</b> になっている\n  - カメラが <b>サポートされている</b> 型である\n\nUSB カメラは、接続されたときに自動的に検知されます\n他のものは更新を試してください"
+msgstr "カメラを検知できません。以下を確認してください\n\n  - <b>ケーブル</b> が接続されている\n  - カメラの <b>電源が入っている</b>\n  - カメラが <b>接続モード</b> になっている\n  - カメラが <b>サポートされている</b> 型名である\n\nUSB カメラは、接続されたときに自動的に検知されます\n他のものは更新を試してください"
 
 #: ../src/frontend/entangle-control-panel.c:79
 msgid "Camera control update failed"
@@ -573,19 +565,19 @@ msgstr "カメラの制御内容の更新に失敗しました"
 msgid "Entangle: Camera control update failed"
 msgstr "Entangle: カメラの制御内容の更新に失敗しました"
 
-#: ../src/frontend/entangle-control-panel.c:232
+#: ../src/frontend/entangle-control-panel.c:256
 msgid "On"
 msgstr "オン"
 
-#: ../src/frontend/entangle-control-panel.c:232
+#: ../src/frontend/entangle-control-panel.c:256
 msgid "Off"
 msgstr "オフ"
 
-#: ../src/frontend/entangle-control-panel.c:559
+#: ../src/frontend/entangle-control-panel.c:624
 msgid "No camera connected"
 msgstr "カメラが接続されていません"
 
-#: ../src/frontend/entangle-control-panel.c:568
+#: ../src/frontend/entangle-control-panel.c:633
 msgid "No controls available"
 msgstr "制御できるデバイスがありません"
 
@@ -604,173 +596,173 @@ msgstr "このディスプレイにおいて画面を空白にする機能が実
 #. *  tab-width: 8
 #. * End:
 #. 
-#: ../src/frontend/entangle-help-about.xml.h:1
+#: ../src/frontend/entangle-help-about.ui.h:1
 msgid "About - Entangle"
 msgstr "Entangle について"
 
-#: ../src/frontend/entangle-help-about.xml.h:2
+#: ../src/frontend/entangle-help-about.ui.h:2
 msgid "Copyright (C) 2009-2012 Daniel P. Berrange"
 msgstr "Copyright (C) 2009-2012 Daniel P. Berrange"
 
-#: ../src/frontend/entangle-help-about.xml.h:3
+#: ../src/frontend/entangle-help-about.ui.h:3
 msgid "Tethered Camera Control & Capture"
 msgstr "接続されたカメラの制御とキャプチャー"
 
-#: ../src/frontend/entangle-preferences-display.c:947
-#: ../src/frontend/entangle-preferences-display.c:953
-#: ../src/frontend/entangle-preferences.xml.h:25
+#: ../src/frontend/entangle-preferences-display.c:892
+#: ../src/frontend/entangle-preferences-display.c:898
+#: ../src/frontend/entangle-preferences-display.ui.h:25
 msgid "Interface"
 msgstr "インターフェース"
 
-#: ../src/frontend/entangle-preferences-display.c:961
-#: ../src/frontend/entangle-preferences-display.c:967
-#: ../src/frontend/entangle-preferences.xml.h:35
+#: ../src/frontend/entangle-preferences-display.c:906
+#: ../src/frontend/entangle-preferences-display.c:912
+#: ../src/frontend/entangle-preferences-display.ui.h:35
 msgid "Image Viewer"
 msgstr "イメージビューアー"
 
-#: ../src/frontend/entangle-preferences-display.c:989
-#: ../src/frontend/entangle-preferences-display.c:995
-#: ../src/frontend/entangle-preferences.xml.h:18
+#: ../src/frontend/entangle-preferences-display.c:934
+#: ../src/frontend/entangle-preferences-display.c:940
+#: ../src/frontend/entangle-preferences-display.ui.h:18
 msgid "Color Management"
-msgstr "カラー管理"
+msgstr "カラーマネジメント"
 
-#: ../src/frontend/entangle-preferences-display.c:1003
-#: ../src/frontend/entangle-preferences-display.c:1009
-#: ../src/frontend/entangle-preferences.xml.h:20
+#: ../src/frontend/entangle-preferences-display.c:948
+#: ../src/frontend/entangle-preferences-display.c:954
+#: ../src/frontend/entangle-preferences-display.ui.h:20
 msgid "Plugins"
 msgstr "プラグイン"
 
-#: ../src/frontend/entangle-preferences-display.c:1030
+#: ../src/frontend/entangle-preferences-display.c:975
 msgid "ICC profiles (*.icc, *.icm)"
 msgstr "ICC プロファイル (*.icc, *.icm)"
 
-#: ../src/frontend/entangle-preferences-display.c:1035
+#: ../src/frontend/entangle-preferences-display.c:980
 msgid "All files (*.*)"
 msgstr "すべてのファイル (*.*)"
 
-#: ../src/frontend/entangle-preferences-display.c:1061
+#: ../src/frontend/entangle-preferences-display.c:1006
 msgid "1:1 - Square / MF 6x6"
 msgstr "1:1 - 正方形 / MF 6x6"
 
-#: ../src/frontend/entangle-preferences-display.c:1066
+#: ../src/frontend/entangle-preferences-display.c:1011
 msgid "1.15:1 - Movietone"
 msgstr "1.15:1 - ムービートーン"
 
-#: ../src/frontend/entangle-preferences-display.c:1071
+#: ../src/frontend/entangle-preferences-display.c:1016
 msgid "1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"
 msgstr "1.33:1 (4:3, 12:9) - スーパー 35mm / DSLR / MF 645"
 
-#: ../src/frontend/entangle-preferences-display.c:1076
+#: ../src/frontend/entangle-preferences-display.c:1021
 msgid "1.37:1 - 35mm movie"
 msgstr "1.37:1 - 35mm ムービー"
 
-#: ../src/frontend/entangle-preferences-display.c:1081
+#: ../src/frontend/entangle-preferences-display.c:1026
 msgid "1.44:1 - IMAX"
 msgstr "1.44:1 - IMAX"
 
-#: ../src/frontend/entangle-preferences-display.c:1086
+#: ../src/frontend/entangle-preferences-display.c:1031
 msgid "1.50:1 (3:2, 15:10)- 35mm SLR"
 msgstr "1.50:1 (3:2, 15:10)- 35mm SLR"
 
-#: ../src/frontend/entangle-preferences-display.c:1091
+#: ../src/frontend/entangle-preferences-display.c:1036
 msgid "1.6:1 (8:5, 16:10) - Widescreen"
 msgstr "1.6:1 (8:5, 16:10) - ワイドスクリーン"
 
-#: ../src/frontend/entangle-preferences-display.c:1096
+#: ../src/frontend/entangle-preferences-display.c:1041
 msgid "1.66:1 (5:3, 15:9) - Super 16mm"
 msgstr "1.66:1 (5:3, 15:9) - スーパー 16mm"
 
-#: ../src/frontend/entangle-preferences-display.c:1101
+#: ../src/frontend/entangle-preferences-display.c:1046
 msgid "1.75:1 (7:4) - Widescreen"
 msgstr "1.75:1 (7:4) - ワイドスクリーン"
 
-#: ../src/frontend/entangle-preferences-display.c:1106
+#: ../src/frontend/entangle-preferences-display.c:1051
 msgid "1.77:1 (16:9) - APS-H / HDTV / Widescreen"
 msgstr "1.77:1 (16:9) - APS-H / HDTV / ワイドスクリーン"
 
-#: ../src/frontend/entangle-preferences-display.c:1111
+#: ../src/frontend/entangle-preferences-display.c:1056
 msgid "1.85:1 - 35mm Widescreen"
 msgstr "1.85:1 - 35mm ワイドスクリーン"
 
-#: ../src/frontend/entangle-preferences-display.c:1116
+#: ../src/frontend/entangle-preferences-display.c:1061
 msgid "2.00:1 - SuperScope"
 msgstr "2.00:1 - スーパースコープ"
 
-#: ../src/frontend/entangle-preferences-display.c:1121
+#: ../src/frontend/entangle-preferences-display.c:1066
 msgid "2.10:1 (21:10) - Planned HDTV"
 msgstr "2.10:1 (21:10) - Planned HDTV"
 
-#: ../src/frontend/entangle-preferences-display.c:1126
+#: ../src/frontend/entangle-preferences-display.c:1071
 msgid "2.20:1 (11:5, 22:10) - 70mm movie"
 msgstr "2.20:1 (11:5, 22:10) - 70mm ムービー"
 
-#: ../src/frontend/entangle-preferences-display.c:1131
+#: ../src/frontend/entangle-preferences-display.c:1076
 msgid "2.35:1 - CinemaScope"
 msgstr "2.35:1 - シネマスコープ"
 
-#: ../src/frontend/entangle-preferences-display.c:1136
+#: ../src/frontend/entangle-preferences-display.c:1081
 msgid "2.37:1 (64:27)- HDTV cinema"
 msgstr "2.37:1 (64:27)- HDTV シネマ"
 
-#: ../src/frontend/entangle-preferences-display.c:1141
+#: ../src/frontend/entangle-preferences-display.c:1086
 msgid "2.39:1 (12:5)- Panavision"
 msgstr "2.39:1 (12:5)- パナビジョン"
 
-#: ../src/frontend/entangle-preferences-display.c:1146
+#: ../src/frontend/entangle-preferences-display.c:1091
 msgid "2.55:1 (23:9)- CinemaScope 55"
 msgstr "2.55:1 (23:9)- CinemaScope 55"
 
-#: ../src/frontend/entangle-preferences-display.c:1151
+#: ../src/frontend/entangle-preferences-display.c:1096
 msgid "2.59:1 (13:5)- Cinerama"
 msgstr "2.59:1 (13:5)- Cinerama"
 
-#: ../src/frontend/entangle-preferences-display.c:1156
+#: ../src/frontend/entangle-preferences-display.c:1101
 msgid "2.66:1 (8:3, 24:9)- Super 16mm"
 msgstr "2.66:1 (8:3, 24:9)- スーパー 16mm"
 
-#: ../src/frontend/entangle-preferences-display.c:1161
+#: ../src/frontend/entangle-preferences-display.c:1106
 msgid "2.76:1 (11:4) - Ultra Panavision"
 msgstr "2.76:1 (11:4) - ウルトラパナビジョン"
 
-#: ../src/frontend/entangle-preferences-display.c:1166
+#: ../src/frontend/entangle-preferences-display.c:1111
 msgid "2.93:1 - MGM Camera 65"
 msgstr "2.93:1 - MGM カメラ 65"
 
-#: ../src/frontend/entangle-preferences-display.c:1171
+#: ../src/frontend/entangle-preferences-display.c:1116
 msgid "3:1 APS Panorama"
 msgstr "3:1 APS パノラマ"
 
-#: ../src/frontend/entangle-preferences-display.c:1176
+#: ../src/frontend/entangle-preferences-display.c:1121
 msgid "4.00:1 - Polyvision"
 msgstr "4.00:1 - Polyvision"
 
-#: ../src/frontend/entangle-preferences-display.c:1181
+#: ../src/frontend/entangle-preferences-display.c:1126
 msgid "12.00:1 - Circle-Vision 360"
 msgstr "12.00:1 - Circle-Vision 360"
 
-#: ../src/frontend/entangle-preferences-display.c:1199
+#: ../src/frontend/entangle-preferences-display.c:1144
 msgid "None"
 msgstr "なし"
 
-#: ../src/frontend/entangle-preferences-display.c:1204
+#: ../src/frontend/entangle-preferences-display.c:1149
 msgid "Center lines"
 msgstr "センターライン"
 
-#: ../src/frontend/entangle-preferences-display.c:1209
+#: ../src/frontend/entangle-preferences-display.c:1154
 msgid "Rule of 3rds"
 msgstr "三分割法"
 
-#: ../src/frontend/entangle-preferences-display.c:1214
+#: ../src/frontend/entangle-preferences-display.c:1159
 msgid "Quarters"
 msgstr "クォーター"
 
-#: ../src/frontend/entangle-preferences-display.c:1219
+#: ../src/frontend/entangle-preferences-display.c:1164
 msgid "Rule of 5ths"
 msgstr "五分割法"
 
-#: ../src/frontend/entangle-preferences-display.c:1224
+#: ../src/frontend/entangle-preferences-display.c:1169
 msgid "Golden sections"
-msgstr "ゴールデンセクション"
+msgstr "黄金分割"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -779,122 +771,127 @@ msgstr "ゴールデンセクション"
 #. *  tab-width: 8
 #. * End:
 #. 
-#: ../src/frontend/entangle-preferences.xml.h:1
+#: ../src/frontend/entangle-preferences-display.ui.h:1
 msgid "Perceptual"
-msgstr "知覚的"
+msgstr "知覚"
 
-#: ../src/frontend/entangle-preferences.xml.h:2
+#: ../src/frontend/entangle-preferences-display.ui.h:2
 msgid "Relative colourimetric"
-msgstr "相対的カラーメトリック"
+msgstr "相対カラーメトリック"
 
-#: ../src/frontend/entangle-preferences.xml.h:3
+#: ../src/frontend/entangle-preferences-display.ui.h:3
 msgid "Saturation"
 msgstr "彩度"
 
-#: ../src/frontend/entangle-preferences.xml.h:4
+#: ../src/frontend/entangle-preferences-display.ui.h:4
 msgid "Absolute colourimetric"
-msgstr "絶対的カラーメトリック"
+msgstr "絶対カラーメトリック"
 
-#: ../src/frontend/entangle-preferences.xml.h:5
+#: ../src/frontend/entangle-preferences-display.ui.h:5
 msgid "Entangle Preferences"
-msgstr "Entangle 設定"
+msgstr "Entangleの設定"
 
-#: ../src/frontend/entangle-preferences.xml.h:6
+#: ../src/frontend/entangle-preferences-display.ui.h:6
 msgid "<b>Capture</b>"
 msgstr "<b>キャプチャー</b>"
 
-#: ../src/frontend/entangle-preferences.xml.h:7
+#: ../src/frontend/entangle-preferences-display.ui.h:7
 msgid "Filename pattern:"
 msgstr "ファイル名のパターン:"
 
-#: ../src/frontend/entangle-preferences.xml.h:8
+#: ../src/frontend/entangle-preferences-display.ui.h:8
 msgid "Continue preview mode after capture"
 msgstr "キャプチャー後にプレビューモードを続けます"
 
-#: ../src/frontend/entangle-preferences.xml.h:9
+#: ../src/frontend/entangle-preferences-display.ui.h:9
 msgid "Delete file from camera after downloading"
 msgstr "ダウンロード後にカメラからファイルを削除します"
 
-#: ../src/frontend/entangle-preferences.xml.h:11
+#: ../src/frontend/entangle-preferences-display.ui.h:11
 msgid "<b>Colour management</b>"
-msgstr "<b>カラー管理</b>"
+msgstr "<b>カラーマネジメント</b>"
 
-#: ../src/frontend/entangle-preferences.xml.h:12
+#: ../src/frontend/entangle-preferences-display.ui.h:12
 msgid "Mode of operation:"
-msgstr "操作のモード:"
+msgstr "操作モード:"
 
-#: ../src/frontend/entangle-preferences.xml.h:13
+#: ../src/frontend/entangle-preferences-display.ui.h:13
 msgid "RGB profile:"
 msgstr "RGB プロファイル:"
 
-#: ../src/frontend/entangle-preferences.xml.h:14
+#: ../src/frontend/entangle-preferences-display.ui.h:14
 msgid "Monitor profile:"
 msgstr "モニタープロファイル:"
 
-#: ../src/frontend/entangle-preferences.xml.h:15
+#: ../src/frontend/entangle-preferences-display.ui.h:15
 msgid "Rendering intent:"
-msgstr "描画の計画:"
+msgstr "レンダリング用途:"
 
-#: ../src/frontend/entangle-preferences.xml.h:16
+#: ../src/frontend/entangle-preferences-display.ui.h:16
 msgid "Detect the system monitor profile"
-msgstr "システムモニタープロファイルを検知します"
+msgstr "システムのモニタープロファイルを検知します"
 
-#: ../src/frontend/entangle-preferences.xml.h:17
+#: ../src/frontend/entangle-preferences-display.ui.h:17
 msgid "Colour managed display"
-msgstr "カラー管理されたディスプレイ"
+msgstr "カラーマネジメントされたディスプレイ"
 
-#: ../src/frontend/entangle-preferences.xml.h:19
+#: ../src/frontend/entangle-preferences-display.ui.h:19
 msgid "<b>Plugins</b>"
 msgstr "<b>プラグイン</b>"
 
-#: ../src/frontend/entangle-preferences.xml.h:21
+#: ../src/frontend/entangle-preferences-display.ui.h:21
 msgid "<b>Interface</b>"
 msgstr "<b>インターフェース</b>"
 
-#: ../src/frontend/entangle-preferences.xml.h:22
+#: ../src/frontend/entangle-preferences-display.ui.h:22
 msgid "Automatically connect to cameras at startup"
 msgstr "起動するとき自動的にカメラに接続する"
 
-#: ../src/frontend/entangle-preferences.xml.h:23
+#: ../src/frontend/entangle-preferences-display.ui.h:23
 msgid "Blank screen when capturing images"
-msgstr "イメージのキャプチャー中に画面を写さない。"
+msgstr "イメージのキャプチャー中に画面を表示しない"
 
-#: ../src/frontend/entangle-preferences.xml.h:24
+#: ../src/frontend/entangle-preferences-display.ui.h:24
 msgid "Show linear histogram"
 msgstr "リニアヒストグラムの表示"
 
-#: ../src/frontend/entangle-preferences.xml.h:26
+#: ../src/frontend/entangle-preferences-display.ui.h:26
 msgid "<b>Image Viewer</b>"
 msgstr "<b>イメージビューアー</b>"
 
-#: ../src/frontend/entangle-preferences.xml.h:27
+#: ../src/frontend/entangle-preferences-display.ui.h:27
 msgid "Apply mask to alter aspect ratio"
-msgstr "アスペクト比を変更するにはマスクを適用します"
+msgstr "アスペクト比を変更する場合はマスクを適用します"
 
-#: ../src/frontend/entangle-preferences.xml.h:28
+#: ../src/frontend/entangle-preferences-display.ui.h:28
 msgid "Aspect ratio:"
 msgstr "アスペクト比:"
 
-#: ../src/frontend/entangle-preferences.xml.h:29
+#: ../src/frontend/entangle-preferences-display.ui.h:29
 msgid "Mask opacity:"
 msgstr "不透明度マスク:"
 
-#: ../src/frontend/entangle-preferences.xml.h:30
+#: ../src/frontend/entangle-preferences-display.ui.h:30
 msgid "Display focus point during preview"
 msgstr "プレビュー中に焦点を表示する"
 
-#: ../src/frontend/entangle-preferences.xml.h:31
+#: ../src/frontend/entangle-preferences-display.ui.h:31
 msgid "Grid lines:"
-msgstr "グリッド行:"
+msgstr "グリッド線:"
 
-#: ../src/frontend/entangle-preferences.xml.h:32
+#: ../src/frontend/entangle-preferences-display.ui.h:32
 msgid "Use embedded preview from raw files"
 msgstr "元ファイルから埋め込みプレビューを使用する"
 
-#: ../src/frontend/entangle-preferences.xml.h:33
+#: ../src/frontend/entangle-preferences-display.ui.h:33
 msgid "Overlay earlier images"
 msgstr "これまでのイメージを重ね合わせる"
 
-#: ../src/frontend/entangle-preferences.xml.h:34
+#: ../src/frontend/entangle-preferences-display.ui.h:34
 msgid "Overlay layers:"
 msgstr "重ね合わせ層:"
+
+#: ../src/frontend/entangle-window.c:47 ../src/frontend/entangle-window.c:65
+#, c-format
+msgid "Could not load user interface definition file: %s"
+msgstr "ユーザーインターフェース定義ファイルを読み込めませんでした: %s"
