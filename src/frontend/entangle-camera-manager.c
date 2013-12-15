@@ -576,10 +576,10 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
 #endif
 
     if (priv->taskCapture) {
-        gtk_widget_show(toolCancel);
+        gtk_widget_set_sensitive(toolCancel, True);
         gtk_widget_set_sensitive(menuCancel, True);
     } else {
-        gtk_widget_hide(toolCancel);
+        gtk_widget_set_sensitive(toolCancel, False);
         gtk_widget_set_sensitive(menuCancel, False);
     }
 
@@ -1199,17 +1199,13 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(iface);
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
-    GtkWidget *operation;
 
     priv->taskTarget = target;
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
-    operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
 
     gtk_widget_set_tooltip_text(mtr, msg);
     gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), msg);
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
-
-    gtk_widget_show(operation);
 }
 
 
@@ -1234,16 +1230,12 @@ static void do_entangle_camera_progress_stop(EntangleProgress *iface)
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(iface);
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
-    GtkWidget *operation;
 
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
-    operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
 
     gtk_widget_set_tooltip_text(mtr, "");
     gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), "");
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
-
-    gtk_widget_hide(operation);
 }
 
 
@@ -1273,7 +1265,6 @@ static void do_remove_camera(EntangleCameraManager *manager)
 
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *mtr;
-    GtkWidget *operation;
 
     g_cancellable_cancel(priv->monitorCancel);
     g_cancellable_cancel(priv->taskCancel);
@@ -1294,12 +1285,9 @@ static void do_remove_camera(EntangleCameraManager *manager)
     }
 
     mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
-    operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
     gtk_widget_set_tooltip_text(mtr, "");
     gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), "");
     gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
-
-    gtk_widget_hide(operation);
 }
 
 
@@ -3067,7 +3055,6 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     GtkWidget *settingsViewport;
     GtkWidget *menu;
     GtkWidget *monitorMenu;
-    GtkWidget *operation;
     GtkWidget *imageViewport;
 
     priv->builder = g_object_ref(builder);
@@ -3162,9 +3149,6 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     priv->monitorCancel = g_cancellable_new();
     priv->taskCancel = g_cancellable_new();
     priv->taskConfirm = g_cancellable_new();
-
-    operation = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-operation"));
-    gtk_widget_hide(operation);
 
     do_zoom_widget_sensitivity(manager);
     do_capture_widget_sensitivity(manager);
