@@ -988,6 +988,16 @@ entangle_session_browser_get_item_at_coords(EntangleSessionBrowser *browser,
 }
 
 
+/**
+ * entangle_session_browser_get_image_at_coords:
+ * @browser: (transfer none): the session browser
+ * @x: the horizontal co-ordinate
+ * @y: the vertical co-ordinate
+ *
+ * Retrieve the image displayed at the co-ordinates (@x, @y)
+ *
+ * Returns: (transfer none): the image, or NULL
+ */
 EntangleImage *entangle_session_browser_get_image_at_coords(EntangleSessionBrowser *browser,
                                                             gint x, gint y)
 {
@@ -1744,6 +1754,12 @@ entangle_session_browser_get_selected_items(EntangleSessionBrowser *browser)
 }
 
 
+/**
+ * entangle_session_browser_selected_image:
+ * @browser: (transfer none): the session browser
+ *
+ * Returns: (transfer full): the selected image or NULL
+ */
 EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *browser)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
@@ -1779,6 +1795,18 @@ EntangleImage *entangle_session_browser_selected_image(EntangleSessionBrowser *b
 }
 
 
+/**
+ * entangle_session_browser_earlier_images:
+ * @browser: (transfer none): the session browser
+ * @include_selected: true to include the current image in the list
+ * @count: maximum number of images to return
+ *
+ * Get a list of images prior to the currently selected image.
+ * If @include_selected is true, then the currently selected
+ * image will be included in the returned list
+ *
+ * Returns: (transfer full)(element-type EntangleImage): the list of images
+ */
 GList *entangle_session_browser_earlier_images(EntangleSessionBrowser *browser,
                                                gboolean include_selected,
                                                gsize count)
@@ -1825,6 +1853,14 @@ GList *entangle_session_browser_earlier_images(EntangleSessionBrowser *browser,
 }
 
 
+/**
+ * entangle_session_browser_set_thumbnail_loader:
+ * @browser: (transfer none): the session browser
+ * @loader: (transfer none): the thumbnail loader to use
+ *
+ * Set the thumbnail loader to use for generating image
+ * thumbnails
+ */
 void entangle_session_browser_set_thumbnail_loader(EntangleSessionBrowser *browser,
                                                    EntangleThumbnailLoader *loader)
 {
@@ -1848,6 +1884,14 @@ void entangle_session_browser_set_thumbnail_loader(EntangleSessionBrowser *brows
 }
 
 
+/**
+ * entangle_session_browser_get_thumbnail_loader:
+ * @browser: the session browser
+ *
+ * Get the thumbnail loader used by the session browser
+ *
+ * Returns: (transfer none): the session browser
+ */
 EntangleThumbnailLoader *entangle_session_browser_get_thumbnail_loader(EntangleSessionBrowser *browser)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
@@ -1858,6 +1902,13 @@ EntangleThumbnailLoader *entangle_session_browser_get_thumbnail_loader(EntangleS
 }
 
 
+/**
+ * entangle_session_browser_set_session:
+ * @browser: (transfer none): the session browser
+ * @session: (transfer none): the session to display
+ *
+ * Set the session to be displayed
+ */
 void entangle_session_browser_set_session(EntangleSessionBrowser *browser,
                                           EntangleSession *session)
 {
@@ -1880,6 +1931,14 @@ void entangle_session_browser_set_session(EntangleSessionBrowser *browser,
 }
 
 
+/**
+ * entangle_session_browser_get_session:
+ * @browser: (transfer none): the session browser
+ *
+ * Get the session being displayed
+ *
+ * Returns: (transfer none): the session
+ */
 EntangleSession *entangle_session_browser_get_session(EntangleSessionBrowser *browser)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
