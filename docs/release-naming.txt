@@ -29,7 +29,7 @@ Bosons
 Quarks
 ------
 
- x.x.x - Up
+ 0.5.4 - Up
  x.x.x - Down
  x.x.x - Strange
  x.x.x - Charm
