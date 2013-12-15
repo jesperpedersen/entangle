@@ -2058,8 +2058,10 @@ void entangle_camera_manager_preview_cancel(EntangleCameraManager *manager)
         g_cancellable_cancel(priv->taskCancel);
 
         img = entangle_session_browser_selected_image(priv->sessionBrowser);
-        if (img)
+        if (img) {
             do_select_image(manager, img);
+            g_object_unref(img);
+        }
     }
 }
 
