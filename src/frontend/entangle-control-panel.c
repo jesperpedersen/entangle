@@ -43,7 +43,7 @@ struct _EntangleControlPanelPrivate {
     gboolean hasControls;
 };
 
-G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_VBOX);
+G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_BOX);
 
 enum {
     PROP_O,
@@ -312,7 +312,7 @@ static void do_update_control_readonly(GObject *object G_GNUC_UNUSED,
 
 
 static void do_setup_control_group(EntangleControlPanel *panel,
-                                   GtkVBox *box,
+                                   GtkBox *box,
                                    EntangleControlGroup *grp)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
@@ -505,7 +505,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
 }
 
 static void do_setup_control_group_ro(EntangleControlPanel *panel,
-                                      GtkVBox *box,
+                                      GtkBox *box,
                                       EntangleControlGroup *grp)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
@@ -640,9 +640,9 @@ static void do_setup_camera(EntangleControlPanel *panel)
         grp = entangle_control_group_get(ENTANGLE_CONTROL_GROUP(root), i);
         if (g_str_equal(entangle_control_get_path(ENTANGLE_CONTROL(grp)),
                         "/main/status"))
-            do_setup_control_group_ro(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+            do_setup_control_group_ro(panel, GTK_BOX(panel), ENTANGLE_CONTROL_GROUP(grp));
         else
-            do_setup_control_group(panel, GTK_VBOX(panel), ENTANGLE_CONTROL_GROUP(grp));
+            do_setup_control_group(panel, GTK_BOX(panel), ENTANGLE_CONTROL_GROUP(grp));
     }
 
     gtk_widget_show_all(GTK_WIDGET(panel));
@@ -751,6 +751,8 @@ static void entangle_control_panel_init(EntangleControlPanel *panel)
     panel->priv = ENTANGLE_CONTROL_PANEL_GET_PRIVATE(panel);
 
     gtk_container_set_border_width(GTK_CONTAINER(panel), 0);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(panel),
+                                   GTK_ORIENTATION_VERTICAL);
 
     do_setup_camera(panel);
 }
