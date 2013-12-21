@@ -139,7 +139,8 @@ static void entangle_image_statusbar_init(EntangleImageStatusbar *statusbar)
     g_return_if_fail(ENTANGLE_IS_IMAGE_STATUSBAR(statusbar));
 
     EntangleImageStatusbarPrivate *priv;
-    GdkColor color;
+    GdkRGBA white = { 1.0, 1.0, 1.0, 1.0 };
+    GdkRGBA black = { 0.0, 0.0, 0.0, 1.0 };
 
     priv = statusbar->priv = ENTANGLE_IMAGE_STATUSBAR_GET_PRIVATE(statusbar);
 
@@ -162,16 +163,13 @@ static void entangle_image_statusbar_init(EntangleImageStatusbar *statusbar)
 
     gtk_container_add(GTK_CONTAINER(statusbar), priv->metaBox);
 
-    /* XXX somehow this isn't working */
-    gdk_color_parse("black", &color);
-    gtk_widget_modify_bg(GTK_WIDGET(statusbar), GTK_STATE_NORMAL, &color);
+    gtk_widget_override_background_color(GTK_WIDGET(statusbar), GTK_STATE_FLAG_NORMAL, &black);
 
-    gdk_color_parse("white", &color);
-    gtk_widget_modify_fg(GTK_WIDGET(priv->metaAperture), GTK_STATE_NORMAL, &color);
-    gtk_widget_modify_fg(GTK_WIDGET(priv->metaShutter), GTK_STATE_NORMAL, &color);
-    gtk_widget_modify_fg(GTK_WIDGET(priv->metaFocal), GTK_STATE_NORMAL, &color);
-    gtk_widget_modify_fg(GTK_WIDGET(priv->metaIso), GTK_STATE_NORMAL, &color);
-    gtk_widget_modify_fg(GTK_WIDGET(priv->metaDimensions), GTK_STATE_NORMAL, &color);
+    gtk_widget_override_color(GTK_WIDGET(priv->metaAperture), GTK_STATE_FLAG_NORMAL, &white);
+    gtk_widget_override_color(GTK_WIDGET(priv->metaShutter), GTK_STATE_FLAG_NORMAL, &white);
+    gtk_widget_override_color(GTK_WIDGET(priv->metaFocal), GTK_STATE_FLAG_NORMAL, &white);
+    gtk_widget_override_color(GTK_WIDGET(priv->metaIso), GTK_STATE_FLAG_NORMAL, &white);
+    gtk_widget_override_color(GTK_WIDGET(priv->metaDimensions), GTK_STATE_FLAG_NORMAL, &white);
 
     gtk_widget_show_all(GTK_WIDGET(statusbar));
 }
