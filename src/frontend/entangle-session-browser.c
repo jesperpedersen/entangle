@@ -1420,11 +1420,12 @@ entangle_session_browser_motion_notify(GtkWidget *widget,
 
     tlist = gtk_target_list_new(tentry, G_N_ELEMENTS(tentry));
 
-    ctx = gtk_drag_begin(widget,
-                         tlist,
-                         GDK_ACTION_PRIVATE,
-                         1,
-                         (GdkEvent*)event);
+    ctx = gtk_drag_begin_with_coordinates(widget,
+                                          tlist,
+                                          GDK_ACTION_PRIVATE,
+                                          1,
+                                          (GdkEvent*)event,
+                                          -1, -1);
     gtk_drag_set_icon_pixbuf(ctx, pixbuf, 0, 0);
 
     gtk_target_list_unref(tlist);
