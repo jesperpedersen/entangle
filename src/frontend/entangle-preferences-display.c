@@ -843,7 +843,7 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
     //gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), 2);
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-box"));
-    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./interface.png");
@@ -851,7 +851,7 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/interface.png");
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-box"));
-    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./color-management.png");
@@ -859,7 +859,7 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/color-management.png");
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-box"));
-    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./capture.png");
@@ -867,7 +867,7 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
         gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/capture.png");
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-box"));
-    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./plugins.png");
@@ -876,7 +876,7 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
 
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-box"));
-    gtk_widget_set_state(box, GTK_STATE_SELECTED);
+    gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-image"));
     if (local)
         gtk_image_set_from_file(GTK_IMAGE(image), "./imageviewer.png");
