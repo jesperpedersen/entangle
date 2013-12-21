@@ -1805,9 +1805,9 @@ void do_menu_select_session(GtkImageMenuItem *src G_GNUC_UNUSED,
     chooser = gtk_file_chooser_dialog_new(_("Select a folder"),
                                           GTK_WINDOW(manager),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                          GTK_STOCK_CANCEL,
+                                          _("_Cancel"),
                                           GTK_RESPONSE_REJECT,
-                                          GTK_STOCK_OK,
+                                          _("_Open"),
                                           GTK_RESPONSE_ACCEPT,
                                           NULL);
     gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(chooser), TRUE);
