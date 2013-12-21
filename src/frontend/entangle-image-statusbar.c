@@ -216,7 +216,7 @@ static void entangle_image_statusbar_update_labels(EntangleImageStatusbar *statu
         }
 
         if (gexiv2_metadata_has_tag(metadata, "Exif.Photo.ISOSpeedRatings")) {
-            isonum = gexiv2_metadata_get_exif_tag_long(metadata, "Exif.Photo.ISOSpeedRatings");
+            isonum = gexiv2_metadata_get_iso_speed(metadata);
             iso = g_strdup_printf("ISO %d", isonum);
         }
 
