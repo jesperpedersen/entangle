@@ -31,6 +31,7 @@
 #include "entangle-camera-manager.h"
 
 /**
+ * SECTION:entangle-application
  * @Short_description: Global application state base class
  * @Title: EntangleApplication
  *
@@ -342,7 +343,9 @@ static void entangle_application_init(EntangleApplication *app)
 
 
 /**
- * entangle_application_get_cameras: Retrieve the camera list
+ * entangle_application_get_cameras:
+ *
+ * Retrieve the camera list
  *
  * Returns: (transfer none): the camera list
  */
@@ -356,7 +359,9 @@ EntangleCameraList *entangle_application_get_cameras(EntangleApplication *app)
 
 
 /**
- * entangle_application_get_preferences: Retrieve the application preferences object
+ * entangle_application_get_preferences:
+ *
+ * Retrieve the application preferences object
  *
  * Returns: (transfer none): the application preferences
  */
@@ -369,7 +374,9 @@ EntanglePreferences *entangle_application_get_preferences(EntangleApplication *a
 }
 
 /**
- * entangle_application_get_plugin_engine: Retrieve the plugin manager
+ * entangle_application_get_plugin_engine:
+ *
+ * Retrieve the plugin manager
  *
  * Returns: (transfer none): the plugin engine
  */
