@@ -325,6 +325,13 @@ void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monito
 }
 
 
+/**
+ * entangle_image_popup_set_image:
+ * @popup: (transfer none): the popup widget
+ * @image: (transfer none)(allow-none): the image to display, or NULL
+ *
+ * Set the image to be displayed by the popup
+ */
 void entangle_image_popup_set_image(EntangleImagePopup *popup, EntangleImage *image)
 {
     g_return_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup));
@@ -334,6 +341,14 @@ void entangle_image_popup_set_image(EntangleImagePopup *popup, EntangleImage *im
 }
 
 
+/**
+ * entangle_image_popup_get_image:
+ * @popup: (transfer none): the popup widget
+ *
+ * Retrieve the image that the popup is currently displaying
+ *
+ * Returns: (transfer none): the image displayed
+ */
 EntangleImage *entangle_image_popup_get_image(EntangleImagePopup *popup)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup), NULL);

@@ -25,7 +25,20 @@
 #include "entangle-debug.h"
 #include "entangle-window.h"
 
-EntangleWindow *entangle_window_new(GType wintype,
+/**
+ * entangle_window_new:
+ * @newwintype: the desired window type
+ * @oldwintype: the UI file window type
+ * @winname: the UI file window name
+ *
+ * Construct a new window from the UI file.
+ * Loads a UI file and finds the top level window with
+ * type of @oldwintype and changes it to have type of
+ * @newwintype. Then it constructs the window
+ *
+ * Returns: (transfer full): the new window
+ */
+EntangleWindow *entangle_window_new(GType newwintype,
                                     GType oldwintype,
                                     const gchar *winname)
 {
@@ -52,7 +65,7 @@ EntangleWindow *entangle_window_new(GType wintype,
 
     tmp = g_strdup_printf("%s%s%s",
                           buffer,
-                          g_type_name(wintype),
+                          g_type_name(newwintype),
                           offset + strlen(g_type_name(oldwintype)));
     g_free(buffer);
     buffer = tmp;

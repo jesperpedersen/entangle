@@ -3225,6 +3225,14 @@ void entangle_camera_manager_set_camera(EntangleCameraManager *manager,
 }
 
 
+/**
+ * entangle_camera_manager_get_camera:
+ * @manager: the camera manager window
+ *
+ * Get the camera currently being used
+ *
+ * Returns: (transfer none): the camera or NULL
+ */
 EntangleCamera *entangle_camera_manager_get_camera(EntangleCameraManager *manager)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager), NULL);

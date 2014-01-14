@@ -63,7 +63,7 @@ void entangle_image_display_set_image(EntangleImageDisplay *display,
 EntangleImage *entangle_image_display_get_image(EntangleImageDisplay *display);
 
 void entangle_image_display_set_image_list(EntangleImageDisplay *display,
-                                           GList *image);
+                                           GList *images);
 GList *entangle_image_display_get_image_list(EntangleImageDisplay *display);
 
 void entangle_image_display_set_autoscale(EntangleImageDisplay *displsy,

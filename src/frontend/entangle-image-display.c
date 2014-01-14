@@ -805,6 +805,14 @@ static void entangle_image_display_init(EntangleImageDisplay *display)
 }
 
 
+/**
+ * entangle_image_display_set_image:
+ * @display: the display widget
+ * @image: (allow-none)(transfer none): the image to display, or NULL
+ *
+ * Set the image to be displayed by the widget. This is a
+ * shortcut for setting an image list of length 1.
+ */
 void entangle_image_display_set_image(EntangleImageDisplay *display,
                                       EntangleImage *image)
 {
@@ -817,6 +825,15 @@ void entangle_image_display_set_image(EntangleImageDisplay *display,
 }
 
 
+/**
+ * entangle_image_display_get_image:
+ * @display: the display widget
+ *
+ * Retrieve the image being displayed. If there are multiple
+ * images to be displayed, then only the first image is returned.
+ *
+ * Returns: (transfer none): the image being displayed, or NULL
+ */
 EntangleImage *entangle_image_display_get_image(EntangleImageDisplay *display)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE_DISPLAY(display), NULL);
@@ -830,6 +847,14 @@ EntangleImage *entangle_image_display_get_image(EntangleImageDisplay *display)
 }
 
 
+/**
+ * entangle_image_display_set_image_list:
+ * @display: the display widget
+ * @images: (transfer none)(element-type EntangleImage): the images to display
+ *
+ * Set the list of images to be displayed. If multiple images
+ * are provided they are overlayed with opacity
+ */
 void entangle_image_display_set_image_list(EntangleImageDisplay *display,
                                            GList *images)
 {
@@ -869,6 +894,14 @@ void entangle_image_display_set_image_list(EntangleImageDisplay *display,
 }
 
 
+/**
+ * entangle_image_display_get_image_list:
+ * @display: the display widget
+ *
+ * Get the list of images being displayed
+ *
+ * Returns: (transfer full)(element-type EntangleImage): the list of images
+ */
 GList *entangle_image_display_get_image_list(EntangleImageDisplay *display)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE_DISPLAY(display), FALSE);

@@ -289,6 +289,13 @@ EntangleCameraInfoData entangle_camera_info_get_data(EntangleCameraInfo *info)
 }
 
 
+/**
+ * entangle_camera_info_set_camera:
+ * @info: the camera information widget
+ * @camera: (transfer none)(allow-none): the camera to display info for or NULL
+ *
+ * Set the camera to display information for
+ */
 void entangle_camera_info_set_camera(EntangleCameraInfo *info,
                                      EntangleCamera *camera)
 {
@@ -318,6 +325,14 @@ void entangle_camera_info_set_camera(EntangleCameraInfo *info,
 }
 
 
+/**
+ * entangle_camera_info_get_camera:
+ * @info: the camera information widget
+ *
+ * Get the camera whose information is being displayed
+ *
+ * Returns: (transfer none): the camera or NULL
+ */
 EntangleCamera *entangle_camera_info_get_camera(EntangleCameraInfo *info)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_INFO(info), NULL);

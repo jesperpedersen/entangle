@@ -58,7 +58,7 @@ EntangleControlPanel* entangle_control_panel_new(void);
 
 
 void entangle_control_panel_set_camera(EntangleControlPanel *panel,
-                                       EntangleCamera *cam);
+                                       EntangleCamera *camera);
 EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel);
 
 gboolean entangle_control_panel_get_has_controls(EntangleControlPanel *panel);

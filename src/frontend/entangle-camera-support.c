@@ -209,17 +209,24 @@ static void do_support_refresh(EntangleCameraSupport *support)
 }
 
 
+/**
+ * entangle_camera_support_set_camera_list:
+ * @support: the camera support widget
+ * @list: (transfer none)(allow-none): the list of cameras
+ *
+ * Set the camera list for the widget
+ */
 void entangle_camera_support_set_camera_list(EntangleCameraSupport *support,
-                                             EntangleCameraList *cameraList)
+                                             EntangleCameraList *list)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support));
-    g_return_if_fail(ENTANGLE_IS_CAMERA_LIST(cameraList));
+    g_return_if_fail(ENTANGLE_IS_CAMERA_LIST(list));
 
     EntangleCameraSupportPrivate *priv = support->priv;
 
     if (priv->cameraList)
         g_object_unref(priv->cameraList);
-    priv->cameraList = cameraList;
+    priv->cameraList = list;
     if (priv->cameraList)
         g_object_ref(priv->cameraList);
 
@@ -227,6 +234,14 @@ void entangle_camera_support_set_camera_list(EntangleCameraSupport *support,
 }
 
 
+/**
+ * entangle_camera_support_get_camera_list:
+ * @support: the camera support widget
+ *
+ * Get the camera list
+ *
+ * Returns: (transfer none): the camera list or NULL
+ */
 EntangleCameraList *entangle_camera_support_get_camera_list(EntangleCameraSupport *support)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_SUPPORT(support), NULL);

@@ -758,23 +758,39 @@ static void entangle_control_panel_init(EntangleControlPanel *panel)
 }
 
 
+
+/**
+ * entangle_control_panel_set_camera:
+ * @panel: the control widget
+ * @camera: (transfer none)(allow-none): the camera to display controls for, or NULL
+ *
+ * Set the camera to display controls for
+ */
 void entangle_control_panel_set_camera(EntangleControlPanel *panel,
-                                       EntangleCamera *cam)
+                                       EntangleCamera *camera)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
-    g_return_if_fail(!cam || ENTANGLE_IS_CAMERA(cam));
+    g_return_if_fail(!camera || ENTANGLE_IS_CAMERA(camera));
 
     EntangleControlPanelPrivate *priv = panel->priv;
 
     if (priv->camera)
         g_object_unref(priv->camera);
-    priv->camera = cam;
+    priv->camera = camera;
     if (priv->camera)
         g_object_ref(priv->camera);
     do_setup_camera(panel);
 }
 
 
+/**
+ * entangle_control_panel_get_camera:
+ * @panel: the control widget
+ *
+ * Get the camera whose controls are displayed
+ *
+ * Returns: (transfer none): the camera or NULL
+ */
 EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel)
 {
     g_return_val_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel), NULL);

@@ -362,6 +362,13 @@ static void entangle_image_histogram_image_pixbuf_notify(GObject *image G_GNUC_U
 }
 
 
+/**
+ * entangle_image_histogram_set_image:
+ * @histogram: (transfer none): the histogram widget
+ * @image: (transfer none)(allow-none): the image to display histogram for, or NULL
+ *
+ * Set the image to display the histogram for
+ */
 void entangle_image_histogram_set_image(EntangleImageHistogram *histogram,
                                         EntangleImage *image)
 {
@@ -390,6 +397,14 @@ void entangle_image_histogram_set_image(EntangleImageHistogram *histogram,
 }
 
 
+/**
+ * entangle_image_histogram_get_image:
+ * @histogram: (transfer none): the histogram widget
+ *
+ * Retrieve the image that the histogram is displayed for
+ *
+ * Returns: (transfer none): the image displayed
+ */
 EntangleImage *entangle_image_histogram_get_image(EntangleImageHistogram *histogram)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(histogram), NULL);

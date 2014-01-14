@@ -259,6 +259,13 @@ static void entangle_image_statusbar_image_metadata_notify(GObject *image G_GNUC
 }
 
 
+/**
+ * entangle_image_statusbar_set_image:
+ * @statusbar: (transfer none): the status bar widget
+ * @image: (transfer none)(allow-none): the image to display status for, or NULL
+ *
+ * Set the image to display status information for
+ */
 void entangle_image_statusbar_set_image(EntangleImageStatusbar *statusbar,
                                         EntangleImage *image)
 {
@@ -284,6 +291,14 @@ void entangle_image_statusbar_set_image(EntangleImageStatusbar *statusbar,
 }
 
 
+/**
+ * entangle_image_statusbar_get_image:
+ * @statusbar: (transfer none): the status bar widget
+ *
+ * Retrieve the image that status is currently displayed for
+ *
+ * Returns: (transfer none): the image displayed
+ */
 EntangleImage *entangle_image_statusbar_get_image(EntangleImageStatusbar *statusbar)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE_STATUSBAR(statusbar), NULL);
