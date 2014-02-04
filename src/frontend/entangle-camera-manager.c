@@ -214,6 +214,10 @@ void do_menu_session_open_activate(GtkMenuItem *item G_GNUC_UNUSED,
 void do_menu_session_delete_activate(GtkMenuItem *item G_GNUC_UNUSED,
                                      EntangleCameraManager *manager);
 
+static void do_camera_sync_clock_finish(GObject *src,
+                                        GAsyncResult *res,
+                                        gpointer opaque);
+
 static EntanglePreferences *entangle_camera_manager_get_preferences(EntangleCameraManager *manager)
 {
     GtkApplication *gapp = gtk_window_get_application(GTK_WINDOW(manager));
@@ -1301,7 +1305,8 @@ static void do_camera_load_controls_finish(GObject *source,
 
     EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(data);
     EntangleCameraManagerPrivate *priv = manager->priv;
-
+    gint64 epochsecs = g_get_real_time() / (1000 * 1000);
+    EntanglePreferences *prefs = entangle_camera_manager_get_preferences(manager);
     EntangleCamera *cam = ENTANGLE_CAMERA(source);
     GError *error = NULL;
 
@@ -1329,6 +1334,15 @@ static void do_camera_load_controls_finish(GObject *source,
     }
 
     g_cancellable_reset(priv->monitorCancel);
+
+    if (priv->camera &&
+        entangle_preferences_capture_get_sync_clock(prefs))
+        entangle_camera_set_clock_async(priv->camera,
+                                        epochsecs,
+                                        NULL,
+                                        do_camera_sync_clock_finish,
+                                        manager);
+
     do_camera_process_events(manager);
 }
 
@@ -3050,6 +3064,7 @@ static gboolean do_image_status_hide(gpointer data)
 
     entangle_auto_drawer_set_pinned(ENTANGLE_AUTO_DRAWER(priv->imageDrawer), FALSE);
     priv->imageDrawerTimer = 0;
+    g_object_unref(manager);
     return FALSE;
 }
 
@@ -3068,7 +3083,7 @@ static void do_image_status_show(GtkWidget *widget G_GNUC_UNUSED,
         g_source_remove(priv->imageDrawerTimer);
     priv->imageDrawerTimer = g_timeout_add_seconds(3,
                                                    do_image_status_hide,
-                                                   manager);
+                                                   g_object_ref(manager));
 }
 
 

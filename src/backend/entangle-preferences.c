@@ -57,6 +57,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_CAPTURE_LAST_SESSION       "last-session"
 #define SETTING_CAPTURE_CONTINUOUS_PREVIEW "continuous-preview"
 #define SETTING_CAPTURE_DELETE_FILE        "delete-file"
+#define SETTING_CAPTURE_SYNC_CLOCK         "sync-clock"
 
 #define SETTING_CMS_ENABLED                "enabled"
 #define SETTING_CMS_DETECT_SYSTEM_PROFILE  "detect-system-profile"
@@ -82,6 +83,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define PROP_NAME_CAPTURE_LAST_SESSION       SETTING_CAPTURE "-" SETTING_CAPTURE_LAST_SESSION
 #define PROP_NAME_CAPTURE_CONTINUOUS_PREVIEW SETTING_CAPTURE "-" SETTING_CAPTURE_CONTINUOUS_PREVIEW
 #define PROP_NAME_CAPTURE_DELETE_FILE        SETTING_CAPTURE "-" SETTING_CAPTURE_DELETE_FILE
+#define PROP_NAME_CAPTURE_SYNC_CLOCK         SETTING_CAPTURE "-" SETTING_CAPTURE_SYNC_CLOCK
 
 #define PROP_NAME_CMS_ENABLED                SETTING_CMS "-" SETTING_CMS_ENABLED
 #define PROP_NAME_CMS_DETECT_SYSTEM_PROFILE  SETTING_CMS "-" SETTING_CMS_DETECT_SYSTEM_PROFILE
@@ -109,6 +111,7 @@ enum {
     PROP_CAPTURE_LAST_SESSION,
     PROP_CAPTURE_CONTINUOUS_PREVIEW,
     PROP_CAPTURE_DELETE_FILE,
+    PROP_CAPTURE_SYNC_CLOCK,
 
     PROP_CMS_ENABLED,
     PROP_CMS_RGB_PROFILE,
@@ -207,6 +210,12 @@ static void entangle_preferences_get_property(GObject *object,
             g_value_set_boolean(value,
                                 g_settings_get_boolean(priv->captureSettings,
                                                        SETTING_CAPTURE_DELETE_FILE));
+            break;
+
+        case PROP_CAPTURE_SYNC_CLOCK:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->captureSettings,
+                                                       SETTING_CAPTURE_SYNC_CLOCK));
             break;
 
         case PROP_CMS_ENABLED:
@@ -352,7 +361,13 @@ static void entangle_preferences_set_property(GObject *object,
 
         case PROP_CAPTURE_DELETE_FILE:
             g_settings_set_boolean(priv->captureSettings,
-                                   SETTING_CAPTURE_LAST_SESSION,
+                                   SETTING_CAPTURE_DELETE_FILE,
+                                   g_value_get_boolean(value));
+            break;
+
+        case PROP_CAPTURE_SYNC_CLOCK:
+            g_settings_set_boolean(priv->captureSettings,
+                                   SETTING_CAPTURE_SYNC_CLOCK,
                                    g_value_get_boolean(value));
             break;
 
@@ -538,6 +553,17 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                          "Delete file",
                                                          "Delete file after capturing",
                                                          TRUE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_CAPTURE_SYNC_CLOCK,
+                                    g_param_spec_boolean(PROP_NAME_CAPTURE_SYNC_CLOCK,
+                                                         "Sync clock",
+                                                         "Synchronize clock automatically",
+                                                         FALSE,
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_STATIC_NAME |
                                                          G_PARAM_STATIC_NICK |
@@ -972,6 +998,29 @@ void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gb
     g_settings_set_boolean(priv->captureSettings,
                            SETTING_CAPTURE_DELETE_FILE, enabled);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_DELETE_FILE);
+}
+
+
+gboolean entangle_preferences_capture_get_sync_clock(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->captureSettings,
+                                  SETTING_CAPTURE_SYNC_CLOCK);
+}
+
+
+void entangle_preferences_capture_set_sync_clock(EntanglePreferences *prefs, gboolean enabled)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->captureSettings,
+                           SETTING_CAPTURE_SYNC_CLOCK, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_SYNC_CLOCK);
 }
 
 

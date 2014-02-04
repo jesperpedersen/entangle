@@ -75,6 +75,8 @@ gboolean entangle_preferences_capture_get_continuous_preview(EntanglePreferences
 void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *prefs, gboolean enabled);
 gboolean entangle_preferences_capture_get_delete_file(EntanglePreferences *prefs);
 void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gboolean enabled);
+gboolean entangle_preferences_capture_get_sync_clock(EntanglePreferences *prefs);
+void entangle_preferences_capture_set_sync_clock(EntanglePreferences *prefs, gboolean enabled);
 
 gboolean entangle_preferences_cms_get_enabled(EntanglePreferences *prefs);
 void entangle_preferences_cms_set_enabled(EntanglePreferences *prefs, gboolean enabled);

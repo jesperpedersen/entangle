@@ -74,6 +74,12 @@
       <summary>Delete files</summary>
       <description>Delete files from camera after capture</description>
     </key>
+
+    <key type="b" name="sync-clock">
+      <default>false</default>
+      <summary>Sync clock</summary>
+      <description>Automatically sync camera clock with computer</description>
+    </key>
   </schema>
 
   <schema path="/org/entangle-photo/manager/cms/" id="org.entangle-photo.manager.cms" gettext-domain="entangle-photo">

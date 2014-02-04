@@ -76,6 +76,7 @@ void do_interface_histogram_linear_toggled(GtkToggleButton *src, EntanglePrefere
 void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_capture_sync_clock_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
 void do_img_mask_enabled_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_aspect_ratio_changed(GtkComboBox *src, EntanglePreferencesDisplay *display);
@@ -216,6 +217,15 @@ static void entangle_preferences_display_notify(GObject *object,
         if (newvalue != oldvalue)
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
     } else if (strcmp(spec->name, "capture-delete-file") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "capture-sync-clock") == 0) {
         gboolean newvalue;
         gboolean oldvalue;
 
@@ -402,6 +412,9 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-delete-file"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_capture_get_delete_file(prefs));
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-sync-clock"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_capture_get_sync_clock(prefs));
 
     ratio = entangle_preferences_img_get_aspect_ratio(prefs);
     hasRatio = entangle_preferences_img_get_mask_enabled(prefs);
@@ -687,6 +700,17 @@ void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDis
     gboolean enabled = gtk_toggle_button_get_active(src);
 
     entangle_preferences_capture_set_delete_file(prefs, enabled);
+}
+
+
+void do_capture_sync_clock_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferences *prefs = entangle_preferences_display_get_preferences(preferences);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+
+    entangle_preferences_capture_set_sync_clock(prefs, enabled);
 }
 
 
