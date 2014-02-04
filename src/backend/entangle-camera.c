@@ -2675,6 +2675,150 @@ gboolean entangle_camera_manualfocus_finish(EntangleCamera *cam,
 }
 
 
+
+gboolean entangle_camera_set_clock(EntangleCamera *cam,
+                                   gint64 epochsecs,
+                                   GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    EntangleCameraPrivate *priv = cam->priv;
+    gboolean ret = FALSE;
+    CameraWidget *widget;
+    CameraWidgetType type;
+    time_t value;
+    int err;
+
+    g_mutex_lock(priv->lock);
+    entangle_camera_begin_job(cam);
+
+    if (priv->cam == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available when camera is disconnected"));
+        goto cleanup;
+    }
+
+    if (priv->widgets == NULL) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Controls not available for this camera"));
+        goto cleanup;
+    }
+
+    widget = entangle_camera_find_widget(cam,
+                                         "/main/settings/datetime");
+    if (!widget) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Time setting not available with this camera"));
+        goto cleanup;
+    }
+
+    if ((err = gp_widget_get_type(widget,
+                                  &type)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to fetch widget type"));
+        goto cleanup;
+    }
+
+    if (type != GP_WIDGET_DATE) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Time setting was not a date widget"));
+        goto cleanup;
+    }
+
+    value = epochsecs;
+    if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set time state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set time state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+
+    if ((err = gp_camera_set_config(priv->cam,
+                                    priv->widgets,
+                                    priv->ctx)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Unable to save camera control configuration: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+
+    ret = TRUE;
+
+ cleanup:
+    entangle_camera_end_job(cam);
+    g_mutex_unlock(priv->lock);
+    return ret;
+}
+
+
+static void entangle_camera_set_clock_helper(GSimpleAsyncResult *result,
+                                             GObject *object,
+                                             GCancellable *cancellable G_GNUC_UNUSED)
+{
+    GError *error = NULL;
+    guint64 *epochsecsptr;
+
+    epochsecsptr = g_object_get_data(G_OBJECT(result),
+                                     "epochsecs");
+
+    if (!entangle_camera_set_clock(ENTANGLE_CAMERA(object),
+                                   *epochsecsptr,
+                                   &error)) {
+        g_simple_async_result_set_from_error(result, error);
+        g_error_free(error);
+    }
+    g_free(epochsecsptr);
+}
+
+
+
+void entangle_camera_set_clock_async(EntangleCamera *cam,
+                                     gint64 epochsecs,
+                                     GCancellable *cancellable,
+                                     GAsyncReadyCallback callback,
+                                     gpointer user_data)
+{
+    guint64 *epochsecsptr;
+    g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
+
+    GSimpleAsyncResult *result = g_simple_async_result_new(G_OBJECT(cam),
+                                                           callback,
+                                                           user_data,
+                                                           entangle_camera_set_clock_async);
+
+    epochsecsptr = g_new0(guint64, 1);
+    *epochsecsptr = epochsecs;
+
+    g_object_set_data(G_OBJECT(result),
+                      "epochsecs",
+                      epochsecsptr);
+
+    g_simple_async_result_run_in_thread(result,
+                                        entangle_camera_set_clock_helper,
+                                        G_PRIORITY_DEFAULT,
+                                        cancellable);
+    g_object_unref(result);
+}
+
+
+
+gboolean entangle_camera_set_clock_finish(EntangleCamera *cam,
+                                          GAsyncResult *result,
+                                          GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+
+    return !g_simple_async_result_propagate_error(G_SIMPLE_ASYNC_RESULT(result),
+                                                  error);
+}
+
+
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);

@@ -196,6 +196,18 @@ gboolean entangle_camera_manualfocus_finish(EntangleCamera *cam,
                                             GAsyncResult *result,
                                             GError **error);
 
+gboolean entangle_camera_set_clock(EntangleCamera *cam,
+                                   gint64 epochsecs,
+                                   GError **error);
+void entangle_camera_set_clock_async(EntangleCamera *cam,
+                                     gint64 epochsecs,
+                                     GCancellable *cancellable,
+                                     GAsyncReadyCallback callback,
+                                     gpointer user_data);
+gboolean entangle_camera_set_clock_finish(EntangleCamera *cam,
+                                          GAsyncResult *result,
+                                          GError **error);
+
 
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);

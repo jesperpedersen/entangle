@@ -204,6 +204,8 @@ void do_menu_preview(GtkMenuItem *src,
                      EntangleCameraManager *manager);
 void do_menu_cancel(GtkMenuItem *src,
                     EntangleCameraManager *manager);
+void do_menu_sync_clock(GtkMenuItem *src,
+                        EntangleCameraManager *manager);
 gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
                                 GdkEventKey *ev,
                                 gpointer data);
@@ -2125,6 +2127,45 @@ void do_menu_cancel(GtkMenuItem *src G_GNUC_UNUSED,
 
     if (priv->taskCancel)
         g_cancellable_cancel(priv->taskCancel);
+}
+
+
+static void do_camera_sync_clock_finish(GObject *src,
+                                        GAsyncResult *res,
+                                        gpointer opaque)
+{
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
+    EntangleCamera *camera = ENTANGLE_CAMERA(src);
+    GError *error = NULL;
+
+    if (!entangle_camera_set_clock_finish(camera,
+                                          res,
+                                          &error)) {
+        do_camera_task_error(manager, _("Set clock"), error);
+        g_error_free(error);
+        return;
+    }
+}
+
+
+void do_menu_sync_clock(GtkMenuItem *src G_GNUC_UNUSED,
+                        EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+    gint64 epochsecs = g_get_real_time() / (1000 * 1000);
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    ENTANGLE_DEBUG("starting capture operation");
+
+    if (!priv->camera)
+        return;
+
+    entangle_camera_set_clock_async(priv->camera,
+                                    epochsecs,
+                                    NULL,
+                                    do_camera_sync_clock_finish,
+                                    manager);
 }
 
 
