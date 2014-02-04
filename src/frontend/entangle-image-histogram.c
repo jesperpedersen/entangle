@@ -31,9 +31,9 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_IMAGE_HISTOGRAM, EntangleImageHistogramPrivate))
 
 struct _EntangleImageHistogramPrivate {
-    double freq_red[255];
-    double freq_green[255];
-    double freq_blue[255];
+    double freq_red[256];
+    double freq_green[256];
+    double freq_blue[256];
     gboolean hasFreq;
     gboolean linear;
     gulong imageNotifyID;
