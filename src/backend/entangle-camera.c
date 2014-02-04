@@ -924,8 +924,6 @@ gboolean entangle_camera_disconnect(EntangleCamera *cam,
     priv->cam = NULL;
     priv->hasViewfinder = FALSE;
 
-    priv->hasCapture = priv->hasPreview = priv->hasSettings = FALSE;
-
     ret = TRUE;
  cleanup:
     g_mutex_unlock(priv->lock);
