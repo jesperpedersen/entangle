@@ -22,7 +22,8 @@ desktop_DATA_IN = entangle.desktop.in
 desktop_DATA = entangle.desktop
 
 appdatadir = $(datadir)/appdata
-appdata_DATA = entangle.appdata.xml
+appdata_DATA_IN = entangle.appdata.xml.in
+appdata_DATA = $(appdata_DATA_IN:.xml.in=.xml)
 
 icondir = $(pkgdatadir)
 icon_DATA = $(PACKAGE).svg $(wildcard *.png)
@@ -34,14 +35,29 @@ gsettings_SCHEMAS = org.entangle-photo.manager.gschema.xml
 iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
 
-BUILT_SOURCES = \
+BUILT_ENUMS = \
 	backend/entangle-colour-profile-enums.h \
 	backend/entangle-colour-profile-enums.c \
 	frontend/entangle-image-display-enums.h \
 	frontend/entangle-image-display-enums.c \
 	$(NULL)
 
-EXTRA_DIST = $(builder_DATA) $(desktop_DATA_IN) $(appdata_DATA) $(icon_DATA) $(icc_DATA) $(gsettings_SCHEMAS)
+BUILT_SOURCES = \
+	$(desktop_DATA) \
+	$(appdata_DATA) \
+	$(BUILT_ENUMS) \
+	$(NULL)
+
+EXTRA_DIST = \
+	$(builder_DATA) \
+	$(desktop_DATA) \
+	$(desktop_DATA_IN) \
+	$(appdata_DATA) \
+	$(appdata_DATA_IN) \
+	$(icon_DATA) \
+	$(icc_DATA) \
+	$(gsettings_SCHEMAS) \
+	$(NULL)
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-camera.h backend/entangle-camera.c \
@@ -181,8 +197,14 @@ entangle_CFLAGS = \
 	$(NULL)
 
 
-%.desktop: $(srcdir)/%.desktop.in
+%.desktop.tmp: $(srcdir)/%.desktop.in
 	$(AM_V_GEN)sed -e "s,::DATADIR::,$(datadir),g" < $< > $@
+
+%.desktop: %.desktop.tmp
+	$(AM_V_GEN)intltool-merge -d $(top_srcdir)/po $< $@
+
+%.appdata.xml: %.appdata.xml.in
+	$(AM_V_GEN)intltool-merge -x $(top_srcdir)/po $< $@
 
 backend/entangle-colour-profile-enums.c: backend/entangle-colour-profile.h backend/entangle-colour-profile-enums.h Makefile.am
 	$(AM_V_GEN)glib-mkenums \
@@ -268,7 +290,9 @@ frontend/entangle-image-display-enums.h: frontend/entangle-image-display.h Makef
                         --eprod "GType @enum_name@_get_type (void);\n" \
                 $< >  $@
 
-CLEANFILES = *~ $(desktop_DATA) $(BUILT_SOURCES)
+CLEANFILES = *~ $(BUILT_ENUMS)
+
+MAINTAINERCLEANFILES = $(desktop_DATA) $(appdata_DATA)
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/entangle/plugins

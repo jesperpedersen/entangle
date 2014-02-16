@@ -3,25 +3,25 @@
   <id type="desktop">entangle.desktop</id>
   <licence>CC0</licence>
   <name>Entangle</name>
-  <summary>Tethered Camera Control &amp; Capture</summary>
+  <_summary>Tethered Camera Control &amp; Capture</_summary>
   <description>
-    <p>
+    <_p>
       Entangle is a program used to control digital cameras
       that are connected to the computer via USB.
-    </p>
-    <p>
+    </_p>
+    <_p>
       Entangle can trigger the camera shutter to capture new images.
       When supported by the camera, a continuously updating preview
       of the scene can be displayed prior to capture. Images will be
       downloaded and displayed as they are captured by the camera.
       Entangle also allows the settings of the camera to be changed
       from the computer.
-    </p>
-    <p>
+    </_p>
+    <_p>
       Entangle is compatible with most DSLR cameras from Nikon and
       Canon, some of their compact camera models, and a variety of
       cameras from other manufacturers.
-    </p>
+    </_p>
   </description>
   <screenshots>
     <screenshot type="default">http://entangle-photo.org/appdata/en_US/screenshots/camera-manager.png</screenshot>

@@ -1062,7 +1062,8 @@ generated_files ?= $(srcdir)/lib/*.[ch]
 sc_po_check:
 	@if test -f $(po_file); then					\
 	  grep -E -v '^(#|$$)' $(po_file)				\
-	    | grep -v '^src/false\.c$$'					\
+            | grep -v 'appdata\.xml\.in$$'				\
+            | grep -v 'desktop\.in$$'					\
             | sed 's|\[type: gettext/glade\] ||'			\
             | sort > $@-1;						\
 	  files=;							\

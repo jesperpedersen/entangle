@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
-Name=Entangle
-Comment=Tethered Camera Control & Capture
+_Name=Entangle
+_Comment=Tethered Camera Control & Capture
 Icon=::DATADIR::/entangle/entangle.svg
 Exec=entangle
 Type=Application
