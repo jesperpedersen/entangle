@@ -10,7 +10,7 @@ and 'hands off' shooting directly from the controlling computer.
 Installation
 ------------
 
-The libvirt-sandbox package uses GNU autotools, so the build install
+The Entangle package uses GNU autotools, so the build install
 process follows the standard process documented in the INSTALL file.
 As a quick start you can do
 
@@ -21,14 +21,14 @@ As a quick start you can do
 
 Or to install into a private user specific location
 
-  ./configure --prefix=$HOME/libvirt-sandbox
+  ./configure --prefix=$HOME/usr/entangle
   make
   make install
 
 NB, if not installing in /usr, you need to set the XDG_DATA_DIRS env
 variable to point to the data directory, eg in the above example use:
 
-  XDG_DATA_DIRS=/usr/share:/usr/local/share:$HOME/libvirt-sandbox/share
+  XDG_DATA_DIRS=/usr/share:/usr/local/share:$HOME/entangle/share
   export XDG_DATA_DIRS
 
 OS distro packagers should use the --disable-schemas-compile arg
@@ -65,7 +65,7 @@ they can be reported to
 
    https://gna.org/bugs/?group=entangle
 
-The latest libvirt-sandbox code can be found in GIT at:
+The latest entangle code can be found in GIT at:
 
    https://gitorious.org/entangle/entangle
 
