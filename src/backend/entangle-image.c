@@ -176,6 +176,15 @@ static void entangle_image_class_init(EntangleImageClass *klass)
 }
 
 
+/**
+ * entangle_image_new_file:
+ * @filename: (transfer none): the filename of the image
+ *
+ * Create a new image instance for the image stored in
+ * @filename.
+ *
+ * Returns: (transfer full): the new image
+ */
 EntangleImage *entangle_image_new_file(const char *filename)
 {
     return ENTANGLE_IMAGE(g_object_new(ENTANGLE_TYPE_IMAGE,
@@ -184,6 +193,15 @@ EntangleImage *entangle_image_new_file(const char *filename)
 }
 
 
+/**
+ * entangle_image_new_pixbuf:
+ * @pixbuf: (transfer none): the pixbuf instance
+ *
+ * Create a new image instance for the image data stored
+ * in @pixbuf
+ *
+ * Returns: (transfer full): the new image
+ */
 EntangleImage *entangle_image_new_pixbuf(GdkPixbuf *pixbuf)
 {
     return ENTANGLE_IMAGE(g_object_new(ENTANGLE_TYPE_IMAGE,
@@ -202,6 +220,14 @@ static void entangle_image_init(EntangleImage *image)
 }
 
 
+/**
+ * entangle_image_get_filename:
+ * @image: (transfer none): the image instance
+ *
+ * Get the filename associated with the image, if it has one.
+ *
+ * Returns: (transfer none): the filename or NULL
+ */
 const char *entangle_image_get_filename(EntangleImage *image)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
@@ -227,6 +253,16 @@ static gboolean entangle_image_load(EntangleImage *image)
     return TRUE;
 }
 
+
+/**
+ * entangle_image_get_last_modified:
+ * @image: (transfer none): the image instance
+ *
+ * Get the time at which the image was last modified, if
+ * it is backed by a file on disk
+ *
+ * Returns: the last modification time in seconds since epoch, or 0
+ */
 time_t entangle_image_get_last_modified(EntangleImage *image)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), 0);
@@ -239,6 +275,16 @@ time_t entangle_image_get_last_modified(EntangleImage *image)
     return priv->st.st_mtime;
 }
 
+
+/**
+ * entangle_image_get_file_size:
+ * @image: (transfer none): the image instance
+ *
+ * Get the size of the image on disk, if it is backed by
+ * a file on disk
+ *
+ * Returns: the size in bytes, or 0
+ */
 off_t entangle_image_get_file_size(EntangleImage *image)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), 0);
@@ -252,6 +298,14 @@ off_t entangle_image_get_file_size(EntangleImage *image)
 }
 
 
+/**
+ * entange_image_delete:
+ * @image: (transfer none): the image instance
+ *
+ * Delete the file on disk.
+ *
+ * Returns: TRUE if the file was deleted
+ */
 gboolean entangle_image_delete(EntangleImage *image, GError **error)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), FALSE);
@@ -263,6 +317,14 @@ gboolean entangle_image_delete(EntangleImage *image, GError **error)
 }
 
 
+/**
+ * entangle_image_get_pixbuf:
+ * @image: (transfer none): the image instance
+ *
+ * Get the pixbuf associated with the image, if it is available
+ *
+ * Returns: (transfer none): the image pixbuf or NULL
+ */
 GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
@@ -271,6 +333,14 @@ GdkPixbuf *entangle_image_get_pixbuf(EntangleImage *image)
     return priv->pixbuf;
 }
 
+
+/**
+ * entangle_image_set_pixbuf:
+ * @image: (transfer none): the image instance
+ * @pixbuf: (transfer none): the new pixbuf
+ *
+ * Set the pixbuf associated with the image
+ */
 void entangle_image_set_pixbuf(EntangleImage *image,
                                GdkPixbuf *pixbuf)
 {
@@ -280,6 +350,14 @@ void entangle_image_set_pixbuf(EntangleImage *image,
 }
 
 
+/**
+ * entangle_image_get_metadata:
+ * @image: (transfer none): the image instance
+ *
+ * Get the metadata associated with the image, if it is available
+ *
+ * Returns: (transfer none): the image metadata or NULL
+ */
 GExiv2Metadata *entangle_image_get_metadata(EntangleImage *image)
 {
     g_return_val_if_fail(ENTANGLE_IS_IMAGE(image), NULL);
@@ -288,6 +366,14 @@ GExiv2Metadata *entangle_image_get_metadata(EntangleImage *image)
     return priv->metadata;
 }
 
+
+/**
+ * entangle_image_set_metadata:
+ * @image: (transfer none): the image instance
+ * @metadata: (transfer none): the new metadata
+ *
+ * Set the metadata associated with the image
+ */
 void entangle_image_set_metadata(EntangleImage *image,
                                  GExiv2Metadata *metadata)
 {

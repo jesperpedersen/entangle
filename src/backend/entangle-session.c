@@ -56,53 +56,51 @@ enum {
 };
 
 static void entangle_session_get_property(GObject *object,
-                                      guint prop_id,
-                                      GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleSession *picker = ENTANGLE_SESSION(object);
     EntangleSessionPrivate *priv = picker->priv;
 
-    switch (prop_id)
-        {
-        case PROP_DIRECTORY:
-            g_value_set_string(value, priv->directory);
-            break;
+    switch (prop_id) {
+    case PROP_DIRECTORY:
+        g_value_set_string(value, priv->directory);
+        break;
 
-        case PROP_FILENAME_PATTERN:
-            g_value_set_string(value, priv->filenamePattern);
-            break;
+    case PROP_FILENAME_PATTERN:
+        g_value_set_string(value, priv->filenamePattern);
+        break;
 
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-        }
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
 }
 
 static void entangle_session_set_property(GObject *object,
-                                      guint prop_id,
-                                      const GValue *value,
-                                      GParamSpec *pspec)
+                                          guint prop_id,
+                                          const GValue *value,
+                                          GParamSpec *pspec)
 {
     EntangleSession *picker = ENTANGLE_SESSION(object);
     EntangleSessionPrivate *priv = picker->priv;
 
-    switch (prop_id)
-        {
-        case PROP_DIRECTORY:
-            g_free(priv->directory);
-            priv->directory = g_value_dup_string(value);
-            g_mkdir_with_parents(priv->directory, 0777);
-            break;
+    switch (prop_id) {
+    case PROP_DIRECTORY:
+        g_free(priv->directory);
+        priv->directory = g_value_dup_string(value);
+        g_mkdir_with_parents(priv->directory, 0777);
+        break;
 
-        case PROP_FILENAME_PATTERN:
-            g_free(priv->filenamePattern);
-            priv->filenamePattern = g_value_dup_string(value);
-            priv->recalculateDigit = TRUE;
-            break;
+    case PROP_FILENAME_PATTERN:
+        g_free(priv->filenamePattern);
+        priv->filenamePattern = g_value_dup_string(value);
+        priv->recalculateDigit = TRUE;
+        break;
 
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-        }
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+    }
 }
 
 
@@ -191,8 +189,19 @@ static void entangle_session_class_init(EntangleSessionClass *klass)
 }
 
 
+/**
+ * entangle_session_new:
+ * @directory: the directory associated witht session
+ * @filenamePattern: the filename generator pattern
+ *
+ * Create a new sesssion tracking images present in
+ * @directory. The @filenamePattern is used to generate
+ * filenames for newly created images
+ *
+ * Returns: (transfer full): the new session
+ */
 EntangleSession *entangle_session_new(const char *directory,
-                              const char *filenamePattern)
+                                      const char *filenamePattern)
 {
     return ENTANGLE_SESSION(g_object_new(ENTANGLE_TYPE_SESSION,
                                      "directory", directory,
@@ -211,6 +220,14 @@ static void entangle_session_init(EntangleSession *session)
 }
 
 
+/**
+ * entangle_session_directory:
+ * @session: (transfer none): the session instance
+ *
+ * Get the directory associated with the session
+ *
+ * Returns: (transfer none): the session directory
+ */
 const char *entangle_session_directory(EntangleSession *session)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
@@ -220,6 +237,15 @@ const char *entangle_session_directory(EntangleSession *session)
     return priv->directory;
 }
 
+
+/**
+ * entangle_session_filename_pattern:
+ * @session: (transfer none): the session instance
+ *
+ * Get the filename generator pattern
+ *
+ * Returns: (transfer none): the filename pattern
+ */
 const char *entangle_session_filename_pattern(EntangleSession *session)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
@@ -370,6 +396,17 @@ static char *entangle_session_next_file_prefix(EntangleSession *session)
 }
 
 
+/**
+ * entangle_session_next_filename:
+ * @session: (transfer none): the session instance
+ * @file: (transfer none): the file to obtain a filename for
+ *
+ * Generate a new unique filename for @file, taking into
+ * account its file extension and any previously generated
+ * filename.
+ *
+ * Returns: (transfer full): the new filename
+ */
 char *entangle_session_next_filename(EntangleSession *session,
                                      EntangleCameraFile *file)
 {
@@ -424,6 +461,13 @@ char *entangle_session_next_filename(EntangleSession *session,
 }
 
 
+/**
+ * entangle_session_add:
+ * @session: (transfer none): the session instance
+ * @image: (transfer none): the image to add to the session
+ *
+ * Add @image to the @session
+ */
 void entangle_session_add(EntangleSession *session, EntangleImage *image)
 {
     g_return_if_fail(ENTANGLE_IS_SESSION(session));
@@ -438,6 +482,13 @@ void entangle_session_add(EntangleSession *session, EntangleImage *image)
 }
 
 
+/**
+ * entangle_session_remove:
+ * @session: (transfer none): the session instance
+ * @image: (transfer none): the image to remove from the session
+ *
+ * Remove @image from the @session
+ */
 void entangle_session_remove(EntangleSession *session, EntangleImage *image)
 {
     g_return_if_fail(ENTANGLE_IS_SESSION(session));
@@ -485,6 +536,15 @@ static gboolean entangle_session_image_supported(const gchar *name)
 }
 
 
+/**
+ * entangle_session_load:
+ * @session: (transfer none): the session instance
+ *
+ * Load all the files present in the directory associated
+ * with the session
+ *
+ * Returns: TRUE if the session was loaded
+ */
 gboolean entangle_session_load(EntangleSession *session)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION(session), FALSE);
@@ -523,6 +583,15 @@ gboolean entangle_session_load(EntangleSession *session)
     return TRUE;
 }
 
+
+/**
+ * entangle_session_image_count:
+ * @session: (transfer none): the session instance
+ *
+ * Get the total number of images in the session
+ *
+ * Returns: the image count
+ */
 int entangle_session_image_count(EntangleSession *session)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION(session), 0);
@@ -532,6 +601,16 @@ int entangle_session_image_count(EntangleSession *session)
     return g_list_length(priv->images);
 }
 
+
+/**
+ * entangle_session_image_get:
+ * @session: (transfer none): the session instance
+ * @idx: index of the image to fetch
+ *
+ * Get the image located at @idx in the array
+ *
+ * Returns: (transfer none): the image
+ */
 EntangleImage *entangle_session_image_get(EntangleSession *session, int idx)
 {
     g_return_val_if_fail(ENTANGLE_IS_SESSION(session), NULL);
