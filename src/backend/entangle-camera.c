@@ -1772,12 +1772,13 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
     case GP_WIDGET_RADIO:
     case GP_WIDGET_MENU:
         {
-            ENTANGLE_DEBUG("Add date %s %d %s", fullpath, id, label);
+            ENTANGLE_DEBUG("Add menu %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_choice_new(fullpath, id, label, info, ro));
 
             for (int i = 0; i < gp_widget_count_choices(widget); i++) {
                 const char *choice;
                 gp_widget_get_choice(widget, i, &choice);
+                ENTANGLE_DEBUG("Add choice '%s'", choice);
                 entangle_control_choice_add_entry(ENTANGLE_CONTROL_CHOICE(ret), choice);
             }
         } break;
@@ -1896,6 +1897,10 @@ static gboolean do_load_controls(EntangleCamera *cam,
         g_object_get(ctrl, "value", &oldValue, NULL);
         gp_widget_get_value(widget, &newValue);
         if (!entangle_str_equal_null(newValue, oldValue)) {
+            ENTANGLE_DEBUG("Updating value of menu '%s' ('%s') old='%s' new='%s'",
+                           entangle_control_get_path(ctrl),
+                           entangle_control_get_label(ctrl),
+                           oldValue, newValue);
             g_object_set(ctrl, "value", newValue, NULL);
         }
         g_free(oldValue);
@@ -1911,8 +1916,13 @@ static gboolean do_load_controls(EntangleCamera *cam,
         float oldValue = 0.0;
         g_object_get(ctrl, "value", &oldValue, NULL);
         gp_widget_get_value(widget, &newValue);
-        if (fabs(newValue - oldValue) < 0.0001)
+        if (fabs(newValue - oldValue) < 0.0001) {
+            ENTANGLE_DEBUG("Updating value of range '%s' ('%s') old='%f' new='%f'",
+                           entangle_control_get_path(ctrl),
+                           entangle_control_get_label(ctrl),
+                           oldValue, newValue);
             g_object_set(ctrl, "value", newValue, NULL);
+        }
     }   break;
 
     case GP_WIDGET_TEXT: {
@@ -1920,8 +1930,13 @@ static gboolean do_load_controls(EntangleCamera *cam,
         gchar *oldValue = NULL;
         g_object_get(ctrl, "value", &oldValue, NULL);
         gp_widget_get_value(widget, &newValue);
-        if (!entangle_str_equal_null(newValue, oldValue))
+        if (!entangle_str_equal_null(newValue, oldValue)) {
+            ENTANGLE_DEBUG("Updating value of text '%s' ('%s') old='%s' new='%s'",
+                           entangle_control_get_path(ctrl),
+                           entangle_control_get_label(ctrl),
+                           oldValue, newValue);
             g_object_set(ctrl, "value", newValue, NULL);
+        }
         g_free(oldValue);
     }   break;
 
@@ -1932,8 +1947,13 @@ static gboolean do_load_controls(EntangleCamera *cam,
         g_object_get(ctrl, "value", &oldValue, NULL);
         gp_widget_get_value(widget, &i);
         newValue = i ? TRUE : FALSE;
-        if (newValue != oldValue)
+        if (newValue != oldValue) {
+            ENTANGLE_DEBUG("Updating value of toggle '%s' ('%s') old='%d' new='%d'",
+                           entangle_control_get_path(ctrl),
+                           entangle_control_get_label(ctrl),
+                           oldValue, newValue);
             g_object_set(ctrl, "value", newValue, NULL);
+        }
     }   break;
 
     default:
@@ -2069,6 +2089,7 @@ gboolean entangle_camera_load_controls(EntangleCamera *cam,
     }
 
     entangle_camera_begin_job(cam);
+    ENTANGLE_DEBUG("Loading control values");
     err = gp_camera_get_config(priv->cam, &priv->widgets, priv->ctx);
     if (err != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2077,6 +2098,7 @@ gboolean entangle_camera_load_controls(EntangleCamera *cam,
     }
 
     if (priv->controls == NULL) {
+        ENTANGLE_DEBUG("Building controls");
         priv->controlPaths = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
         if (!(priv->controls = ENTANGLE_CONTROL_GROUP(do_build_controls(cam, "", priv->widgets, error)))) {
             g_hash_table_unref(priv->controlPaths);
@@ -2085,10 +2107,13 @@ gboolean entangle_camera_load_controls(EntangleCamera *cam,
         }
 
         if (entangle_camera_find_widget(cam, "/main/actions/viewfinder") ||
-            entangle_camera_find_widget(cam, "/main/actions/eosviewfinder"))
+            entangle_camera_find_widget(cam, "/main/actions/eosviewfinder")) {
+            ENTANGLE_DEBUG("Found a viewfinder widget");
             priv->hasViewfinder = TRUE;
-        else
+        } else {
+            ENTANGLE_DEBUG("No viewfinder widget");
             priv->hasViewfinder = FALSE;
+        }
     }
 
     ret = do_load_controls(cam, "", priv->widgets, error);
@@ -2170,6 +2195,8 @@ gboolean entangle_camera_save_controls(EntangleCamera *cam,
     }
 
     entangle_camera_begin_job(cam);
+
+    ENTANGLE_DEBUG("Saving controls for %p", cam);
 
     if (!do_save_controls(cam, "", priv->widgets, error))
         goto endjob;

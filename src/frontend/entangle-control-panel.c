@@ -128,7 +128,10 @@ static void do_update_control_entry(GtkWidget *widget,
 
     text = gtk_entry_get_text(GTK_ENTRY(widget));
 
-    ENTANGLE_DEBUG("entry [%s]", text);
+    ENTANGLE_DEBUG("Updated control entry '%s' ('%s') with '%s'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   text);
     g_object_set(control, "value", text, NULL);
 
     entangle_camera_save_controls_async(priv->camera,
@@ -176,7 +179,10 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
 
-    ENTANGLE_DEBUG("range [%lf]", value);
+    ENTANGLE_DEBUG("Updated control range '%s' ('%s') with '%lf'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   value);
     g_object_set(control, "value", (float)value, NULL);
 
     entangle_camera_save_controls_async(priv->camera,
@@ -233,7 +239,10 @@ static void do_update_control_combo(GtkComboBox *widget,
     if (gtk_combo_box_get_active_iter(widget, &iter))
         gtk_tree_model_get(model, &iter, 0, &text, -1);
 
-    ENTANGLE_DEBUG("combo [%s]", text);
+    ENTANGLE_DEBUG("Updated control combo '%s' ('%s') with '%s'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   text);
     g_object_set(control, "value", text, NULL);
 
     g_free(text);
@@ -281,7 +290,10 @@ static void do_update_control_toggle(GtkToggleButton *widget,
     gboolean active;
 
     active = gtk_toggle_button_get_active(widget);
-    ENTANGLE_DEBUG("toggle [%d]", active);
+    ENTANGLE_DEBUG("Updated control toggle '%s' ('%s') with '%d'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   active);
     g_object_set(control, "value", active, NULL);
 
     entangle_camera_save_controls_async(priv->camera,
