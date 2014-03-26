@@ -2313,6 +2313,8 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
     g_mutex_lock(priv->lock);
     entangle_camera_begin_job(cam);
 
+    ENTANGLE_DEBUG("Setting viewfinder state %d", enabled);
+
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
                     _("Controls not available when camera is disconnected"));
@@ -2454,6 +2456,8 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
     g_mutex_lock(priv->lock);
     entangle_camera_begin_job(cam);
 
+    ENTANGLE_DEBUG("Setting autofocus");
+
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
                     _("Controls not available when camera is disconnected"));
@@ -2579,6 +2583,8 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
 
     g_mutex_lock(priv->lock);
     entangle_camera_begin_job(cam);
+
+    ENTANGLE_DEBUG("Setting manualfocus %d", (int)delta);
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2716,6 +2722,8 @@ gboolean entangle_camera_set_clock(EntangleCamera *cam,
 
     g_mutex_lock(priv->lock);
     entangle_camera_begin_job(cam);
+
+    ENTANGLE_DEBUG("Setting clock to %lld", (long long)epochsecs);
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,

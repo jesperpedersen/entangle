@@ -2170,7 +2170,7 @@ void do_menu_sync_clock(GtkMenuItem *src G_GNUC_UNUSED,
 
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    ENTANGLE_DEBUG("starting capture operation");
+    ENTANGLE_DEBUG("starting sync clock operation");
 
     if (!priv->camera)
         return;
