@@ -1916,7 +1916,7 @@ static gboolean do_load_controls(EntangleCamera *cam,
         float oldValue = 0.0;
         g_object_get(ctrl, "value", &oldValue, NULL);
         gp_widget_get_value(widget, &newValue);
-        if (fabs(newValue - oldValue) < 0.0001) {
+        if (fabs(newValue - oldValue) > 0.0001) {
             ENTANGLE_DEBUG("Updating value of range '%s' ('%s') old='%f' new='%f'",
                            entangle_control_get_path(ctrl),
                            entangle_control_get_label(ctrl),
