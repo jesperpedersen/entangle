@@ -3078,7 +3078,8 @@ static void do_image_status_show(GtkWidget *widget G_GNUC_UNUSED,
     EntangleCameraManager *manager = data;
     EntangleCameraManagerPrivate *priv = manager->priv;
 
-    entangle_auto_drawer_set_pinned(ENTANGLE_AUTO_DRAWER(priv->imageDrawer), TRUE);
+    if (!entangle_auto_drawer_get_pinned(ENTANGLE_AUTO_DRAWER(priv->imageDrawer)))
+        entangle_auto_drawer_set_pinned(ENTANGLE_AUTO_DRAWER(priv->imageDrawer), TRUE);
     if (priv->imageDrawerTimer)
         g_source_remove(priv->imageDrawerTimer);
     priv->imageDrawerTimer = g_timeout_add_seconds(3,

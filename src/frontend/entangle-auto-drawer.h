@@ -75,6 +75,8 @@ entangle_auto_drawer_set_active(EntangleAutoDrawer *drawer,
 void
 entangle_auto_drawer_set_pinned(EntangleAutoDrawer *drawer,
                                 gboolean pinned);
+gboolean
+entangle_auto_drawer_get_pinned(EntangleAutoDrawer *drawer);
 
 void
 entangle_auto_drawer_set_fill(EntangleAutoDrawer *drawer,

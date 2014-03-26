@@ -787,6 +787,14 @@ entangle_auto_drawer_set_pinned(EntangleAutoDrawer *drawer,
     entangle_auto_drawer_update(drawer, FALSE);
 }
 
+gboolean
+entangle_auto_drawer_get_pinned(EntangleAutoDrawer *drawer)
+{
+    g_return_val_if_fail(ENTANGLE_IS_AUTO_DRAWER(drawer), FALSE);
+
+    return drawer->priv->pinned;
+}
+
 
 /*
  *-----------------------------------------------------------------------------
