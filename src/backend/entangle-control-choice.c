@@ -68,13 +68,22 @@ static void entangle_control_set_property(GObject *object,
 {
     EntangleControlChoice *picker = ENTANGLE_CONTROL_CHOICE(object);
     EntangleControlChoicePrivate *priv = picker->priv;
+    gchar *newvalue;
 
     switch (prop_id)
         {
         case PROP_VALUE:
-            g_free(priv->value);
-            priv->value = g_value_dup_string(value);
-            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            newvalue = g_value_dup_string(value);
+            if ((newvalue && !priv->value) ||
+                (!newvalue && priv->value) ||
+                (newvalue && priv->value &&
+                 !g_str_equal(newvalue, priv->value))) {
+                g_free(priv->value);
+                priv->value = newvalue;
+                entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            } else {
+                g_free(newvalue);
+            }
             break;
 
         default:
@@ -153,6 +162,20 @@ void entangle_control_choice_add_entry(EntangleControlChoice *choice,
     priv->entries = g_renew(char *, priv->entries, priv->nentries+1);
     priv->entries[priv->nentries++] = g_strdup(entry);
 }
+
+
+void entangle_control_choice_clear_entries(EntangleControlChoice *choice)
+{
+    g_return_if_fail(ENTANGLE_IS_CONTROL_CHOICE(choice));
+
+    EntangleControlChoicePrivate *priv = choice->priv;
+    for (int i = 0; i < priv->nentries; i++)
+        g_free(priv->entries[i]);
+    g_free(priv->entries);
+    priv->entries = NULL;
+    priv->nentries = 0;
+}
+
 
 int entangle_control_choice_entry_count(EntangleControlChoice *choice)
 {

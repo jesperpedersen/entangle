@@ -62,6 +62,7 @@ EntangleControlChoice* entangle_control_choice_new(const char *path,
 void entangle_control_choice_add_entry(EntangleControlChoice *choice,
                                    const char *entry);
 
+void entangle_control_choice_clear_entries(EntangleControlChoice *choice);
 int entangle_control_choice_entry_count(EntangleControlChoice *choice);
 const char *entangle_control_choice_entry_get(EntangleControlChoice *choice,
                                           int idx);

@@ -69,8 +69,10 @@ static void entangle_control_set_property(GObject *object,
     switch (prop_id)
         {
         case PROP_VALUE:
-            priv->value = g_value_get_boolean(value);
-            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            if (priv->value != g_value_get_boolean(value)) {
+                priv->value = g_value_get_boolean(value);
+                entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            }
             break;
 
         default:

@@ -1774,13 +1774,6 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
         {
             ENTANGLE_DEBUG("Add menu %s %d %s", fullpath, id, label);
             ret = ENTANGLE_CONTROL(entangle_control_choice_new(fullpath, id, label, info, ro));
-
-            for (int i = 0; i < gp_widget_count_choices(widget); i++) {
-                const char *choice;
-                gp_widget_get_choice(widget, i, &choice);
-                ENTANGLE_DEBUG("Add choice '%s'", choice);
-                entangle_control_choice_add_entry(ENTANGLE_CONTROL_CHOICE(ret), choice);
-            }
         } break;
 
     case GP_WIDGET_DATE:
@@ -1901,6 +1894,13 @@ static gboolean do_load_controls(EntangleCamera *cam,
                            entangle_control_get_path(ctrl),
                            entangle_control_get_label(ctrl),
                            oldValue, newValue);
+            entangle_control_choice_clear_entries(ENTANGLE_CONTROL_CHOICE(ctrl));
+            for (int i = 0; i < gp_widget_count_choices(widget); i++) {
+                const char *choice;
+                gp_widget_get_choice(widget, i, &choice);
+                ENTANGLE_DEBUG("Add choice '%s'", choice);
+                entangle_control_choice_add_entry(ENTANGLE_CONTROL_CHOICE(ctrl), choice);
+            }
             g_object_set(ctrl, "value", newValue, NULL);
         }
         g_free(oldValue);
@@ -1971,6 +1971,7 @@ static gboolean do_load_controls(EntangleCamera *cam,
 static gboolean do_save_controls(EntangleCamera *cam,
                                  const char *path,
                                  CameraWidget *widget,
+                                 gboolean *dirty,
                                  GError **error)
 {
     EntangleCameraPrivate *priv = cam->priv;
@@ -2006,7 +2007,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
         for (int i = 0; i < gp_widget_count_children(widget); i++) {
             CameraWidget *child;
             if (gp_widget_get_child(widget, i, &child) == GP_OK)
-                if (!do_save_controls(cam, fullpath, child, error))
+                if (!do_save_controls(cam, fullpath, child, dirty, error))
                     goto cleanup;
         }
         break;
@@ -2022,6 +2023,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
             g_object_get(ctrl, "value", &value, NULL);
             gp_widget_set_value(widget, value);
             g_free(value);
+            *dirty = TRUE;
         }
         break;
 
@@ -2029,6 +2031,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
         if (entangle_control_get_dirty(ctrl)) {
             int value = 0;
             g_object_get(ctrl, "value", &value, NULL);
+            *dirty = TRUE;
         }
         break;
 
@@ -2037,6 +2040,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
             float value = 0.0;
             g_object_get(ctrl, "value", &value, NULL);
             gp_widget_set_value(widget, &value);
+            *dirty = TRUE;
         }
         break;
 
@@ -2046,6 +2050,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
             g_object_get(ctrl, "value", &value, NULL);
             gp_widget_set_value(widget, value);
             g_free(value);
+            *dirty = TRUE;
         }
         break;
 
@@ -2056,6 +2061,7 @@ static gboolean do_save_controls(EntangleCamera *cam,
             g_object_get(ctrl, "value", &value, NULL);
             i = value ? 1 : 0;
             gp_widget_set_value(widget, &i);
+            *dirty = TRUE;
         }
         break;
 
@@ -2178,6 +2184,7 @@ gboolean entangle_camera_save_controls(EntangleCamera *cam,
 
     EntangleCameraPrivate *priv = cam->priv;
     gboolean ret = FALSE;
+    gboolean dirty = FALSE;
     int err;
 
     g_mutex_lock(priv->lock);
@@ -2198,8 +2205,14 @@ gboolean entangle_camera_save_controls(EntangleCamera *cam,
 
     ENTANGLE_DEBUG("Saving controls for %p", cam);
 
-    if (!do_save_controls(cam, "", priv->widgets, error))
+    if (!do_save_controls(cam, "", priv->widgets,
+                          &dirty, error))
         goto endjob;
+
+    if (!dirty) {
+        ENTANGLE_DEBUG("No widgets dirty, skipping");
+        goto done;
+    }
 
     if ((err = gp_camera_set_config(priv->cam, priv->widgets, priv->ctx)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2211,6 +2224,7 @@ gboolean entangle_camera_save_controls(EntangleCamera *cam,
     if (!do_load_controls(cam, "", priv->widgets, error))
         goto endjob;
 
+ done:
     ret = TRUE;
 
  endjob:

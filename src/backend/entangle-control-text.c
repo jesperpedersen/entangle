@@ -65,13 +65,22 @@ static void entangle_control_set_property(GObject *object,
 {
     EntangleControlText *picker = ENTANGLE_CONTROL_TEXT(object);
     EntangleControlTextPrivate *priv = picker->priv;
+    gchar *newvalue;
 
     switch (prop_id)
         {
         case PROP_VALUE:
-            g_free(priv->value);
-            priv->value = g_value_dup_string(value);
-            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            newvalue = g_value_dup_string(value);
+            if ((newvalue && !priv->value) ||
+                (!newvalue && priv->value) ||
+                (newvalue && priv->value &&
+                 !g_str_equal(newvalue, priv->value))) {
+                g_free(priv->value);
+                priv->value = newvalue;
+                entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            } else {
+                g_free(newvalue);
+            }
             break;
 
         default:

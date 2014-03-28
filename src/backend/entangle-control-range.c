@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <math.h>
 
 #include "entangle-debug.h"
 #include "entangle-control-range.h"
@@ -87,8 +88,10 @@ static void entangle_control_range_set_property(GObject *object,
     switch (prop_id)
         {
         case PROP_VALUE:
-            priv->value = g_value_get_float(value);
-            entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            if (fabs(priv->value - g_value_get_float(value)) > 0.00001) {
+                priv->value = g_value_get_float(value);
+                entangle_control_set_dirty(ENTANGLE_CONTROL(object), TRUE);
+            }
             break;
 
         case PROP_RANGE_MIN:

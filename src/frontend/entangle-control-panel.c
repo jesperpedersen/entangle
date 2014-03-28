@@ -41,6 +41,7 @@ struct _EntangleControlPanelPrivate {
     EntangleCamera *camera;
 
     gboolean hasControls;
+    gboolean inUpdate;
 };
 
 G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_BOX);
@@ -95,16 +96,23 @@ static void do_update_control_finish(GObject *src,
 static gboolean do_refresh_control_entry_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    EntangleControlPanel *panel = g_object_get_data(G_OBJECT(widget), "panel");
     GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gchar *text;
 
+    panel->priv->inUpdate = TRUE;
     g_object_get(control, "value", &text, NULL);
+    ENTANGLE_DEBUG("Notified control entry '%s' ('%s') with '%s'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   text);
+
     if (GTK_IS_LABEL(widget))
         gtk_label_set_text(GTK_LABEL(widget), text);
     else
         gtk_entry_set_text(GTK_ENTRY(widget), text);
     g_free(text);
-
+    panel->priv->inUpdate = FALSE;
     return FALSE;
 }
 
@@ -126,6 +134,9 @@ static void do_update_control_entry(GtkWidget *widget,
     EntangleControlPanelPrivate *priv = panel->priv;
     const char *text;
 
+    if (panel->priv->inUpdate)
+        return;
+
     text = gtk_entry_get_text(GTK_ENTRY(widget));
 
     ENTANGLE_DEBUG("Updated control entry '%s' ('%s') with '%s'",
@@ -144,10 +155,17 @@ static void do_update_control_entry(GtkWidget *widget,
 static gboolean do_refresh_control_range_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    EntangleControlPanel *panel = g_object_get_data(G_OBJECT(widget), "panel");
     GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gfloat val;
 
+    panel->priv->inUpdate = TRUE;
     g_object_get(control, "value", &val, NULL);
+    ENTANGLE_DEBUG("Notified control range '%s' ('%s') with '%lf'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   val);
+
     if (GTK_IS_LABEL(widget)) {
         gchar *text = g_strdup_printf("%0.02f", val);
         gtk_label_set_text(GTK_LABEL(widget), text);
@@ -155,7 +173,7 @@ static gboolean do_refresh_control_range_idle(gpointer data)
     } else {
         gtk_range_set_value(GTK_RANGE(widget), val);
     }
-
+    panel->priv->inUpdate = FALSE;
     return FALSE;
 }
 
@@ -179,6 +197,9 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
 
+    if (panel->priv->inUpdate)
+        return;
+
     ENTANGLE_DEBUG("Updated control range '%s' ('%s') with '%lf'",
                    entangle_control_get_path(ENTANGLE_CONTROL(control)),
                    entangle_control_get_label(ENTANGLE_CONTROL(control)),
@@ -195,22 +216,36 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
 static gboolean do_refresh_control_combo_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    EntangleControlPanel *panel = g_object_get_data(G_OBJECT(widget), "panel");
     GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gchar *text;
 
+    panel->priv->inUpdate = TRUE;
     g_object_get(control, "value", &text, NULL);
+    ENTANGLE_DEBUG("Notified control combo '%s' ('%s') with '%s'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   text);
 
     if (GTK_IS_LABEL(widget)) {
         gtk_label_set_text(GTK_LABEL(widget), text);
     } else {
+        GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(widget)));
         int active = 0;
+        gtk_list_store_clear(store);
         for (int n = 0; n < entangle_control_choice_entry_count(ENTANGLE_CONTROL_CHOICE(control)); n++) {
+            GtkTreeIter iter;
             if (g_strcmp0(text, entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n)) == 0)
                 active = n;
+            gtk_list_store_append(store, &iter);
+            gtk_list_store_set(store, &iter, 0,
+                               entangle_control_choice_entry_get(ENTANGLE_CONTROL_CHOICE(control), n),
+                               -1);
         }
         gtk_combo_box_set_active(GTK_COMBO_BOX(widget), active);
     }
     g_free(text);
+    panel->priv->inUpdate = FALSE;
 
     return FALSE;
 }
@@ -236,6 +271,9 @@ static void do_update_control_combo(GtkComboBox *widget,
     char *text = NULL;
     GtkTreeModel *model = gtk_combo_box_get_model(widget);
 
+    if (panel->priv->inUpdate)
+        return;
+
     if (gtk_combo_box_get_active_iter(widget, &iter))
         gtk_tree_model_get(model, &iter, 0, &text, -1);
 
@@ -257,16 +295,23 @@ static void do_update_control_combo(GtkComboBox *widget,
 static gboolean do_refresh_control_toggle_idle(gpointer data)
 {
     GtkWidget *widget = GTK_WIDGET(data);
+    EntangleControlPanel *panel = g_object_get_data(G_OBJECT(widget), "panel");
     GObject *control = g_object_get_data(G_OBJECT(widget), "control");
     gboolean state;
 
+    panel->priv->inUpdate = TRUE;
     g_object_get(control, "value", &state, NULL);
+    ENTANGLE_DEBUG("Notified control toggle '%s' ('%s') with '%d'",
+                   entangle_control_get_path(ENTANGLE_CONTROL(control)),
+                   entangle_control_get_label(ENTANGLE_CONTROL(control)),
+                   state);
+
     if (GTK_IS_LABEL(widget))
         gtk_label_set_text(GTK_LABEL(widget), state ? _("On") : _("Off"));
     else
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
                                      state);
-
+    panel->priv->inUpdate = FALSE;
     return FALSE;
 }
 
@@ -288,6 +333,9 @@ static void do_update_control_toggle(GtkToggleButton *widget,
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
     gboolean active;
+
+    if (panel->priv->inUpdate)
+        return;
 
     active = gtk_toggle_button_get_active(widget);
     ENTANGLE_DEBUG("Updated control toggle '%s' ('%s') with '%d'",
@@ -412,6 +460,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
                 gtk_widget_set_sensitive(value, FALSE);
             gtk_combo_box_set_active(GTK_COMBO_BOX(value), active);
 
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "changed",
                              G_CALLBACK(do_update_control_combo), panel);
@@ -463,6 +512,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_range_set_value(GTK_RANGE(value), offset);
             if (entangle_control_get_readonly(control) || forceReadonly)
                 gtk_widget_set_sensitive(value, FALSE);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "change-value",
                              G_CALLBACK(do_update_control_range), panel);
@@ -487,6 +537,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_entry_set_text(GTK_ENTRY(value), text);
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "focus-out-event",
                              G_CALLBACK(do_update_control_entry), panel);
@@ -504,6 +555,7 @@ static void do_setup_control_group(EntangleControlPanel *panel,
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
             if (entangle_control_get_readonly(control))
                 gtk_widget_set_sensitive(value, FALSE);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(value, "toggled",
                              G_CALLBACK(do_update_control_toggle), panel);
@@ -555,6 +607,7 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
 
             g_object_get(control, "value", &text, NULL);
             value = gtk_label_new(text);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_combo), value);
@@ -566,6 +619,7 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
             text = g_strdup_printf("%d", date);
             value = gtk_label_new(text);
             g_free(text);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
         } else if (ENTANGLE_IS_CONTROL_RANGE(control)) {
             float offset;
@@ -575,6 +629,7 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
             text = g_strdup_printf("%0.02f", offset);
             value = gtk_label_new(text);
             g_free(text);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_range), value);
@@ -583,6 +638,7 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
 
             g_object_get(control, "value", &text, NULL);
             value = gtk_label_new(text);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_entry), value);
@@ -594,6 +650,7 @@ static void do_setup_control_group_ro(EntangleControlPanel *panel,
             text = g_strdup_printf("%s", active ? "Yes" : "No");
             value = gtk_label_new(text);
             g_free(text);
+            g_object_set_data(G_OBJECT(value), "panel", panel);
             g_object_set_data(G_OBJECT(value), "control", control);
             g_signal_connect(control, "notify::value",
                              G_CALLBACK(do_refresh_control_toggle), value);
