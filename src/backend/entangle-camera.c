@@ -2358,12 +2358,6 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
-    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
-        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    _("Failed to set manual focus state: %s %d"),
-                    gp_port_result_as_string(err), err);
-        goto cleanup;
-    }
 
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
@@ -2498,12 +2492,6 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
                     gp_port_result_as_string(err), err);
         goto cleanup;
     }
-    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
-        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    _("Failed to set manual focus state: %s %d"),
-                    gp_port_result_as_string(err), err);
-        goto cleanup;
-    }
 
     if ((err = gp_camera_set_config(priv->cam,
                                     priv->widgets,
@@ -2621,12 +2609,6 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
 
     value = delta;
     if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
-        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    _("Failed to set manual focus state: %s %d"),
-                    gp_port_result_as_string(err), err);
-        goto cleanup;
-    }
-    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
                     _("Failed to set manual focus state: %s %d"),
                     gp_port_result_as_string(err), err);
@@ -2760,12 +2742,6 @@ gboolean entangle_camera_set_clock(EntangleCamera *cam,
 
     value = epochsecs;
     if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
-        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    _("Failed to set time state: %s %d"),
-                    gp_port_result_as_string(err), err);
-        goto cleanup;
-    }
-    if ((err = gp_widget_set_changed(widget, 1)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
                     _("Failed to set time state: %s %d"),
                     gp_port_result_as_string(err), err);
