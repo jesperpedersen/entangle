@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <string.h>
 
 #include "entangle-debug.h"
 #include "entangle-control-text.h"
@@ -71,6 +72,21 @@ static void entangle_control_set_property(GObject *object,
         {
         case PROP_VALUE:
             newvalue = g_value_dup_string(value);
+            /* Hack, at least one Nikon D5100 appends 25 zeros
+             * on the end of the serial number, so we strip them
+             * here.
+             */
+            if (g_str_equal(entangle_control_get_path(ENTANGLE_CONTROL(object)),
+                            "/main/status/serialnumber")) {
+                size_t len = strlen(newvalue);
+                gboolean match = TRUE;
+                for (size_t i = 0 ; i < 25 ; i++) {
+                    if (newvalue[len-(1+i)] != '0')
+                        match = FALSE;
+                }
+                if (match)
+                    newvalue[len-25] = '\0';
+            }
             if ((newvalue && !priv->value) ||
                 (!newvalue && priv->value) ||
                 (newvalue && priv->value &&
