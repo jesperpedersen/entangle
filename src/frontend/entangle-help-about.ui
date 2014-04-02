@@ -14,7 +14,7 @@
     <property name="deletable">False</property>
     <property name="has_resize_grip">False</property>
     <property name="program_name">Entangle</property>
-    <property name="copyright" translatable="yes">Copyright (C) 2009-2012 Daniel P. Berrange</property>
+    <property name="copyright" translatable="yes">Copyright (C) 2009-2014 Daniel P. Berrangé</property>
     <property name="comments" translatable="yes">Tethered Camera Control &amp; Capture</property>
     <property name="website">http://entangle-photo.org/</property>
     <property name="website_label">entangle-photo.org</property>
