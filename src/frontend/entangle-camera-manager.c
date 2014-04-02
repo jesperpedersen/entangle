@@ -2632,9 +2632,7 @@ void do_menu_preferences(GtkCheckMenuItem *src G_GNUC_UNUSED,
 
     EntangleCameraManagerPrivate *priv = manager->priv;
     if (priv->prefsDisplay == NULL) {
-        GtkApplication *app = gtk_window_get_application(GTK_WINDOW(manager));
         priv->prefsDisplay = entangle_preferences_display_new();
-        gtk_application_add_window(app, GTK_WINDOW(priv->prefsDisplay));
         gtk_window_set_transient_for(GTK_WINDOW(priv->prefsDisplay),
                                      GTK_WINDOW(manager));
     }
