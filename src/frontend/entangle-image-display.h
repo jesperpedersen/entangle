@@ -62,6 +62,10 @@ void entangle_image_display_set_image(EntangleImageDisplay *display,
                                       EntangleImage *image);
 EntangleImage *entangle_image_display_get_image(EntangleImageDisplay *display);
 
+void entangle_image_display_set_background(EntangleImageDisplay *display,
+                                           const gchar *background);
+gchar *entangle_image_display_get_background(EntangleImageDisplay *display);
+
 void entangle_image_display_set_image_list(EntangleImageDisplay *display,
                                            GList *images);
 GList *entangle_image_display_get_image_list(EntangleImageDisplay *display);

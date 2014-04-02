@@ -50,6 +50,9 @@ struct _EntangleSessionBrowserPrivate {
     EntangleSession *session;
     EntangleThumbnailLoader *loader;
 
+    GdkRGBA background;
+    GdkRGBA highlight;
+
     GtkCellArea *cell_area;
     GtkCellAreaContext *cell_area_context;
 
@@ -1958,6 +1961,49 @@ EntangleSession *entangle_session_browser_get_session(EntangleSessionBrowser *br
     return priv->session;
 }
 
+void entangle_session_browser_set_background(EntangleSessionBrowser *browser,
+                                             const gchar *background)
+{
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+
+    gdk_rgba_parse(&priv->background, background);
+
+    GtkWidget *widget = GTK_WIDGET(browser);
+    gtk_widget_queue_draw(widget);
+}
+
+gchar *entangle_session_browser_get_background(EntangleSessionBrowser *browser)
+{
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+
+    return gdk_rgba_to_string(&priv->background);
+}
+
+void entangle_session_browser_set_highlight(EntangleSessionBrowser *browser,
+                                            const gchar *highlight)
+{
+    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
+
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+
+    gdk_rgba_parse(&priv->highlight, highlight);
+
+    GtkWidget *widget = GTK_WIDGET(browser);
+    gtk_widget_queue_draw(widget);
+}
+
+gchar *entangle_session_browser_get_highlight(EntangleSessionBrowser *browser)
+{
+    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser), NULL);
+
+    EntangleSessionBrowserPrivate *priv = browser->priv;
+
+    return gdk_rgba_to_string(&priv->highlight);
+}
 
 static void
 entangle_session_browser_paint_item(EntangleSessionBrowser *browser,
@@ -1969,30 +2015,21 @@ entangle_session_browser_paint_item(EntangleSessionBrowser *browser,
     g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
 
     GdkRectangle cell_area;
-    GtkStateFlags state = 0;
     GtkCellRendererState flags = 0;
-    GtkStyleContext *style_context;
     GtkWidget *widget = GTK_WIDGET(browser);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
     entangle_session_browser_set_cell_data(browser, item);
 
-    style_context = gtk_widget_get_style_context(widget);
-
-    gtk_style_context_save(style_context);
-    gtk_style_context_add_class(style_context, GTK_STYLE_CLASS_VIEW);
-    gtk_style_context_add_class(style_context, GTK_STYLE_CLASS_CELL);
-
     if (item->selected) {
-        state |= GTK_STATE_FLAG_SELECTED;
-        flags |= GTK_CELL_RENDERER_SELECTED;
+        gint width  = item->cell_area.width  + priv->item_padding * 2;
+        gint height = item->cell_area.height + priv->item_padding * 2;
 
-        gtk_style_context_set_state(style_context, state);
-        gtk_render_background(style_context, cr,
-                              x - browser->priv->item_padding,
-                              y - browser->priv->item_padding,
-                              item->cell_area.width  + browser->priv->item_padding * 2,
-                              item->cell_area.height + browser->priv->item_padding * 2);
+        cairo_save(cr);
+        cairo_set_source_rgba(cr, priv->highlight.red, priv->highlight.green, priv->highlight.blue, 1);
+        cairo_rectangle(cr, x, y, width, height);
+        cairo_fill(cr);
+        cairo_restore(cr);
     }
 
     cell_area.x      = x;
@@ -2004,8 +2041,6 @@ entangle_session_browser_paint_item(EntangleSessionBrowser *browser,
                          priv->cell_area_context,
                          widget, cr, &cell_area, &cell_area, flags,
                          FALSE);
-
-    gtk_style_context_restore(style_context);
 }
 
 
@@ -2023,7 +2058,7 @@ entangle_session_browser_draw(GtkWidget *widget,
     ww = gdk_window_get_width(gtk_widget_get_window(widget));
     wh = gdk_window_get_height(gtk_widget_get_window(widget));
 
-    cairo_set_source_rgb(cr, 0, 0, 0);
+    cairo_set_source_rgb(cr, priv->background.red, priv->background.green, priv->background.blue);
     cairo_rectangle(cr, 0, 0, ww, wh);
     cairo_fill(cr);
 
@@ -2043,13 +2078,11 @@ entangle_session_browser_draw(GtkWidget *widget,
         paint_area.width  = ((GdkRectangle *)item)->width  + priv->item_padding * 2;
         paint_area.height = ((GdkRectangle *)item)->height + priv->item_padding * 2;
 
-#if 1
         cairo_save(cr);
-        cairo_set_source_rgba(cr, 1, 1, 1, 0.1);
+        cairo_set_source_rgba(cr, priv->background.red, priv->background.green, priv->background.blue, priv->background.alpha);
         cairo_rectangle(cr, paint_area.x, paint_area.y, paint_area.width, paint_area.height);
         cairo_fill(cr);
         cairo_restore(cr);
-#endif
 
         cairo_save(cr);
         cairo_rectangle(cr, paint_area.x, paint_area.y, paint_area.width, paint_area.height);

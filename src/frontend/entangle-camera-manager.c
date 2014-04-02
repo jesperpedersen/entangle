@@ -377,6 +377,36 @@ static void entangle_camera_manager_update_histogram_linear(EntangleCameraManage
 }
 
 
+static void entangle_camera_manager_update_background_highlight(EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_camera_manager_get_preferences(manager);
+    GHashTableIter iter;
+    void *key;
+    void *value;
+    gchar *bg = entangle_preferences_img_get_background(prefs);
+    gchar *hl = entangle_preferences_img_get_highlight(prefs);
+
+    memset(&iter, 0, sizeof(iter));
+
+    entangle_image_display_set_background(priv->imageDisplay, bg);
+    entangle_session_browser_set_background(priv->sessionBrowser, bg);
+    entangle_session_browser_set_highlight(priv->sessionBrowser, hl);
+    if (priv->imagePresentation)
+        entangle_image_popup_set_background(priv->imagePresentation, bg);
+
+    g_hash_table_iter_init(&iter, priv->popups);
+    while (g_hash_table_iter_next(&iter, &key, &value)) {
+        EntangleImagePopup *pop = value;
+        entangle_image_popup_set_background(pop, bg);
+    }
+    g_free(bg);
+    g_free(hl);
+}
+
+
 static void do_presentation_monitor_toggled(GtkCheckMenuItem *menu, gpointer data)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(data));
@@ -495,6 +525,12 @@ static void entangle_camera_manager_prefs_changed(GObject *object G_GNUC_UNUSED,
                g_str_equal(spec->name, "img-onion-layers")) {
         EntangleCameraManagerPrivate *priv = manager->priv;
         do_select_image(manager, priv->currentImage);
+    } else if (g_str_equal(spec->name, "img-background") ||
+               g_str_equal(spec->name, "img-highlight")) {
+        EntangleCameraManagerPrivate *priv = manager->priv;
+        do_select_image(manager, priv->currentImage);
+
+        entangle_camera_manager_update_background_highlight(manager);
     }
 }
 
@@ -1588,6 +1624,7 @@ static void do_entangle_camera_manager_set_app(GObject *object,
     entangle_camera_manager_update_mask_opacity(manager);
     entangle_camera_manager_update_mask_enabled(manager);
     entangle_camera_manager_update_image_loader(manager);
+    entangle_camera_manager_update_background_highlight(manager);
 
     priv->session = entangle_session_new(directory, pattern);
 
@@ -2570,8 +2607,12 @@ void do_menu_presentation(GtkCheckMenuItem *src,
 
     if (gtk_check_menu_item_get_active(src)) {
         if (!priv->imagePresentation) {
+            EntanglePreferences *prefs = entangle_camera_manager_get_preferences(manager);
+            gchar *bg = entangle_preferences_img_get_background(prefs);
             priv->imagePresentation = entangle_image_popup_new();
+            entangle_image_popup_set_background(priv->imagePresentation, bg);
             g_signal_connect(priv->imagePresentation, "popup-close", G_CALLBACK(do_presentation_end), manager);
+            g_free(bg);
         }
         entangle_image_popup_set_image(priv->imagePresentation, priv->currentImage);
         entangle_image_popup_show_on_monitor(priv->imagePresentation,
@@ -2999,13 +3040,17 @@ static void do_session_browser_drag_failed(GtkWidget *widget G_GNUC_UNUSED,
 
             const gchar *filename = entangle_image_get_filename(img);
             EntangleImagePopup *pol;
+            EntanglePreferences *prefs = entangle_camera_manager_get_preferences(manager);
             if (!(pol = g_hash_table_lookup(priv->popups, filename))) {
+                gchar *bg = entangle_preferences_img_get_background(prefs);
                 pol = entangle_image_popup_new();
                 entangle_image_popup_set_image(pol, img);
+                entangle_image_popup_set_background(pol, bg);
                 g_signal_connect(pol, "hide", G_CALLBACK(do_popup_close), manager);
                 g_hash_table_insert(priv->popups, g_strdup(filename), pol);
                 entangle_pixbuf_loader_load(ENTANGLE_PIXBUF_LOADER(priv->imageLoader),
                                             img);
+                g_free(bg);
             }
             ENTANGLE_DEBUG("Popup %p for %s", pol, filename);
             entangle_image_popup_show(pol, GTK_WINDOW(manager), x, y);

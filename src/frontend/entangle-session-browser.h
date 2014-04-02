@@ -77,6 +77,15 @@ EntangleSession *entangle_session_browser_get_session(EntangleSessionBrowser *br
 EntangleImage *entangle_session_browser_get_image_at_coords(EntangleSessionBrowser *browser,
                                                             gint x, gint y);
 
+void entangle_session_browser_set_background(EntangleSessionBrowser *browser,
+                                             const gchar *background);
+gchar *entangle_session_browser_get_background(EntangleSessionBrowser *browser);
+
+void entangle_session_browser_set_highlight(EntangleSessionBrowser *browser,
+                                            const gchar *highlight);
+gchar *entangle_session_browser_get_highlight(EntangleSessionBrowser *browser);
+
+
 G_END_DECLS
 
 #endif /* __ENTANGLE_SESSION_BROWSER_H__ */

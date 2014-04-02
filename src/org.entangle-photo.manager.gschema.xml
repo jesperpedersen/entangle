@@ -162,5 +162,18 @@
       <summary>Onion skin</summary>
       <description>Enable image overlay display</description>
     </key>
+
+    <key type="s" name="background">
+      <default>'#000000'</default>
+      <summary>Image background color</summary>
+      <description>Image background color</description>
+    </key>
+
+    <key type="s" name="highlight">
+      <default>'#FFFFFF'</default>
+      <summary>Image highlight color</summary>
+      <description>Image highlight color</description>
+    </key>
+
   </schema>
 </schemalist>

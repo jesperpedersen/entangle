@@ -358,6 +358,27 @@ EntangleImage *entangle_image_popup_get_image(EntangleImagePopup *popup)
 }
 
 
+void entangle_image_popup_set_background(EntangleImagePopup *popup,
+                                         const gchar *background)
+{
+    g_return_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup));
+
+    EntangleImagePopupPrivate *priv = popup->priv;
+
+    entangle_image_display_set_background(priv->display, background);
+}
+
+gchar *entangle_image_popup_get_background(EntangleImagePopup *popup)
+{
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_POPUP(popup), NULL);
+
+    EntangleImagePopupPrivate *priv = popup->priv;
+
+    return entangle_image_display_get_background(priv->display);
+}
+
+
+
 /*
  * Local variables:
  *  c-indent-level: 4

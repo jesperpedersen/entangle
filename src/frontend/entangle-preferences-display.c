@@ -86,6 +86,8 @@ void do_img_grid_lines_changed(GtkComboBox *src, EntanglePreferencesDisplay *dis
 void do_img_embedded_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_onion_skin_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_img_onion_layers_changed(GtkSpinButton *src, EntanglePreferencesDisplay *display);
+void do_img_background_changed(GtkColorButton *src, EntanglePreferencesDisplay *display);
+void do_img_highlight_changed(GtkColorButton *src, EntanglePreferencesDisplay *display);
 
 static EntanglePreferences *entangle_preferences_display_get_preferences(EntanglePreferencesDisplay *preferences)
 {
@@ -469,6 +471,20 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-onion-layers-label"));
     gtk_widget_set_sensitive(tmp, hasOnion);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-background"));
+    GdkRGBA gbg;
+    gchar *bg = entangle_preferences_img_get_background(prefs);
+    gdk_rgba_parse(&gbg, bg);
+    gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(tmp), &gbg);
+    g_free(bg);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-highlight"));
+    GdkRGBA ghl;
+    gchar *hl = entangle_preferences_img_get_highlight(prefs);
+    gdk_rgba_parse(&ghl, hl);
+    gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(tmp), &ghl);
+    g_free(hl);
 }
 
 
@@ -830,6 +846,32 @@ void do_img_onion_layers_changed(GtkSpinButton *src, EntanglePreferencesDisplay 
 
     entangle_preferences_img_set_onion_layers(prefs,
                                               gtk_adjustment_get_value(adjust));
+}
+
+void do_img_background_changed(GtkColorButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferences *prefs = entangle_preferences_display_get_preferences(preferences);
+
+    GdkRGBA gbg;
+    gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(src), &gbg);
+    gchar *bg = gdk_rgba_to_string(&gbg);
+    entangle_preferences_img_set_background(prefs, bg);
+    g_free(bg);
+}
+
+void do_img_highlight_changed(GtkColorButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferences *prefs = entangle_preferences_display_get_preferences(preferences);
+
+    GdkRGBA ghl;
+    gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(src), &ghl);
+    gchar *hl = gdk_rgba_to_string(&ghl);
+    entangle_preferences_img_set_highlight(prefs, hl);
+    g_free(hl);
 }
 
 

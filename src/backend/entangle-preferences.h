@@ -106,6 +106,10 @@ gboolean entangle_preferences_img_get_onion_skin(EntanglePreferences *prefs);
 void entangle_preferences_img_set_onion_skin(EntanglePreferences *prefs, gboolean enabled);
 gint entangle_preferences_img_get_onion_layers(EntanglePreferences *prefs);
 void entangle_preferences_img_set_onion_layers(EntanglePreferences *prefs, gint layers);
+gchar *entangle_preferences_img_get_background(EntanglePreferences *prefs);
+void entangle_preferences_img_set_background(EntanglePreferences *prefs, const gchar *bkg);
+gchar *entangle_preferences_img_get_highlight(EntanglePreferences *prefs);
+void entangle_preferences_img_set_highlight(EntanglePreferences *prefs, const gchar *bkg);
 
 G_END_DECLS
 

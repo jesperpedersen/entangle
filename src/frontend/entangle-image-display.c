@@ -34,6 +34,7 @@ struct _EntangleImageDisplayPrivate {
     GList *images;
 
     cairo_surface_t *pixmap;
+    GdkRGBA bkg;
 
     gboolean autoscale;
     gdouble scale;
@@ -531,9 +532,11 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
                    ww, wh, pw, ph, priv->autoscale ? 1 : 0, priv->scale);
     ENTANGLE_DEBUG("Drawing image %lf,%lf at %lf %lf sclaed %lfx%lf", iw, ih, mx, my, sx, sy);
 
-
     /* We need to fill the background first */
+    cairo_save(cr);
+    cairo_set_source_rgb(cr, priv->bkg.red, priv->bkg.green, priv->bkg.blue);
     cairo_rectangle(cr, 0, 0, ww, wh);
+
     /* Next cut out the inner area where the pixmap
        will be drawn. This avoids 'flashing' since we're
        not double-buffering. Note we're using the undocumented
@@ -546,6 +549,7 @@ static gboolean entangle_image_display_draw(GtkWidget *widget, cairo_t *cr)
                         -1 * iw,
                         ih);
     cairo_fill(cr);
+    cairo_restore(cr);
 
     /* Draw the actual image(s) */
     if (priv->pixmap) {
@@ -1085,6 +1089,28 @@ gboolean entangle_image_display_get_loaded(EntangleImageDisplay *display)
     return pixbuf != NULL;
 }
 
+void entangle_image_display_set_background(EntangleImageDisplay *display,
+                                           const gchar *background)
+{
+    g_return_if_fail(ENTANGLE_IS_IMAGE_DISPLAY(display));
+
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    gdk_rgba_parse(&priv->bkg, background);
+
+    if (gtk_widget_get_visible((GtkWidget*)display))
+        gtk_widget_queue_draw(GTK_WIDGET(display));
+}
+
+
+gchar *entangle_image_display_get_background(EntangleImageDisplay *display)
+{
+    g_return_val_if_fail(ENTANGLE_IS_IMAGE_DISPLAY(display), FALSE);
+
+    EntangleImageDisplayPrivate *priv = display->priv;
+
+    return gdk_rgba_to_string(&priv->bkg);
+}
 
 /*
  * Local variables:

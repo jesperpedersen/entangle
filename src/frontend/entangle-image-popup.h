@@ -67,6 +67,11 @@ void entangle_image_popup_show_on_monitor(EntangleImagePopup *popup, gint monito
 void entangle_image_popup_set_image(EntangleImagePopup *popup, EntangleImage *image);
 EntangleImage *entangle_image_popup_get_image(EntangleImagePopup *popup);
 
+void entangle_image_popup_set_background(EntangleImagePopup *popup,
+                                         const gchar *background);
+gchar *entangle_image_popup_get_background(EntangleImagePopup *popup);
+
+
 G_END_DECLS
 
 #endif /* __ENTANGLE_IMAGE_POPUP_H__ */

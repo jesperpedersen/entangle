@@ -73,6 +73,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_IMG_EMBEDDED_PREVIEW       "embedded-preview"
 #define SETTING_IMG_ONION_SKIN             "onion-skin"
 #define SETTING_IMG_ONION_LAYERS           "onion-layers"
+#define SETTING_IMG_BACKGROUND             "background"
+#define SETTING_IMG_HIGHLIGHT              "highlight"
 
 
 #define PROP_NAME_INTERFACE_AUTO_CONNECT     SETTING_INTERFACE "-" SETTING_INTERFACE_AUTO_CONNECT
@@ -99,6 +101,8 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define PROP_NAME_IMG_EMBEDDED_PREVIEW       SETTING_IMG "-" SETTING_IMG_EMBEDDED_PREVIEW
 #define PROP_NAME_IMG_ONION_LAYERS           SETTING_IMG "-" SETTING_IMG_ONION_LAYERS
 #define PROP_NAME_IMG_ONION_SKIN             SETTING_IMG "-" SETTING_IMG_ONION_SKIN
+#define PROP_NAME_IMG_BACKGROUND             SETTING_IMG "-" SETTING_IMG_BACKGROUND
+#define PROP_NAME_IMG_HIGHLIGHT              SETTING_IMG "-" SETTING_IMG_HIGHLIGHT
 
 enum {
     PROP_0,
@@ -127,6 +131,8 @@ enum {
     PROP_IMG_EMBEDDED_PREVIEW,
     PROP_IMG_ONION_SKIN,
     PROP_IMG_ONION_LAYERS,
+    PROP_IMG_BACKGROUND,
+    PROP_IMG_HIGHLIGHT,
 };
 
 
@@ -307,6 +313,18 @@ static void entangle_preferences_get_property(GObject *object,
                                                SETTING_IMG_ONION_LAYERS));
             break;
 
+        case PROP_IMG_BACKGROUND:
+            g_value_set_string(value,
+                               g_settings_get_string(priv->imgSettings,
+                                                     SETTING_IMG_BACKGROUND));
+            break;
+
+        case PROP_IMG_HIGHLIGHT:
+            g_value_set_string(value,
+                               g_settings_get_string(priv->imgSettings,
+                                                     SETTING_IMG_HIGHLIGHT));
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         }
@@ -459,6 +477,18 @@ static void entangle_preferences_set_property(GObject *object,
             g_settings_set_int(priv->imgSettings,
                                SETTING_IMG_ONION_LAYERS,
                                g_value_get_int(value));
+            break;
+
+        case PROP_IMG_BACKGROUND:
+            g_settings_set_string(priv->imgSettings,
+                                  SETTING_IMG_BACKGROUND,
+                                  g_value_get_string(value));
+            break;
+
+        case PROP_IMG_HIGHLIGHT:
+            g_settings_set_string(priv->imgSettings,
+                                  SETTING_IMG_HIGHLIGHT,
+                                  g_value_get_string(value));
             break;
 
         default:
@@ -727,6 +757,28 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                                          G_PARAM_STATIC_NAME |
                                                          G_PARAM_STATIC_NICK |
                                                          G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_BACKGROUND,
+                                    g_param_spec_string(PROP_NAME_IMG_BACKGROUND,
+                                                        "Image background color",
+                                                        "Image background color",
+                                                        "#000000",
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_IMG_HIGHLIGHT,
+                                    g_param_spec_string(PROP_NAME_IMG_HIGHLIGHT,
+                                                        "Image highlight color",
+                                                        "Image highlight color",
+                                                        "#FFFFFF",
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
 
     g_type_class_add_private(klass, sizeof(EntanglePreferencesPrivate));
 }
@@ -1335,6 +1387,50 @@ void entangle_preferences_img_set_onion_skin(EntanglePreferences *prefs, gboolea
     g_settings_set_boolean(priv->imgSettings,
                            SETTING_IMG_ONION_SKIN, skin);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_ONION_SKIN);
+}
+
+gchar *entangle_preferences_img_get_background(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_string(priv->imgSettings,
+                                 SETTING_IMG_BACKGROUND);
+}
+
+
+void entangle_preferences_img_set_background(EntanglePreferences *prefs, const gchar *bkg)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_string(priv->imgSettings,
+                          SETTING_IMG_BACKGROUND, bkg);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_BACKGROUND);
+}
+
+gchar *entangle_preferences_img_get_highlight(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_string(priv->imgSettings,
+                                 SETTING_IMG_HIGHLIGHT);
+}
+
+
+void entangle_preferences_img_set_highlight(EntanglePreferences *prefs, const gchar *bkg)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_string(priv->imgSettings,
+                          SETTING_IMG_HIGHLIGHT, bkg);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_HIGHLIGHT);
 }
 
 
