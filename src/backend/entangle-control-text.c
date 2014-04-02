@@ -80,7 +80,7 @@ static void entangle_control_set_property(GObject *object,
                             "/main/status/serialnumber")) {
                 size_t len = strlen(newvalue);
                 gboolean match = TRUE;
-                for (size_t i = 0 ; i < 25 ; i++) {
+                for (size_t i = 0; i < 25; i++) {
                     if (newvalue[len-(1+i)] != '0')
                         match = FALSE;
                 }
