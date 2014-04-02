@@ -300,7 +300,7 @@ void entangle_camera_info_set_camera(EntangleCameraInfo *info,
                                      EntangleCamera *camera)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_INFO(info));
-    g_return_if_fail(!camera || ENTANGLE_IS_CAMERA_INFO(camera));
+    g_return_if_fail(!camera || ENTANGLE_IS_CAMERA(camera));
 
     EntangleCameraInfoPrivate *priv = info->priv;
     char *title;
