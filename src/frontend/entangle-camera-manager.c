@@ -2648,7 +2648,30 @@ void do_menu_close(GtkMenuItem *src G_GNUC_UNUSED,
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->prefsDisplay) {
+        gtk_widget_destroy(GTK_WIDGET(priv->prefsDisplay));
+        priv->prefsDisplay = NULL;
+    }
     gtk_widget_destroy(GTK_WIDGET(manager));
+}
+
+
+static gboolean do_manager_delete(GtkWidget *src G_GNUC_UNUSED,
+                                  GdkEvent *ev G_GNUC_UNUSED,
+                                  EntangleCameraManager *manager)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager), TRUE);
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    if (priv->prefsDisplay) {
+        gtk_widget_destroy(GTK_WIDGET(priv->prefsDisplay));
+        priv->prefsDisplay = NULL;
+    }
+    gtk_widget_destroy(GTK_WIDGET(manager));
+    return TRUE;
 }
 
 
@@ -3262,6 +3285,8 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
 
     g_signal_connect(manager, "hide",
                      G_CALLBACK(do_entangle_camera_manager_hide), NULL);
+    g_signal_connect(manager, "delete-event",
+                     G_CALLBACK(do_manager_delete), manager);
 }
 
 
