@@ -4,6 +4,7 @@ src/frontend/entangle-camera-manager.c
 [type: gettext/glade] src/frontend/entangle-camera-manager.ui
 src/frontend/entangle-camera-picker.c
 [type: gettext/glade] src/frontend/entangle-camera-picker.ui
+src/frontend/entangle-camera-support.c
 [type: gettext/glade] src/frontend/entangle-camera-support.ui
 src/frontend/entangle-control-panel.c
 src/frontend/entangle-dpms.c

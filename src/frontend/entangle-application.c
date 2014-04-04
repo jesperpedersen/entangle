@@ -52,7 +52,8 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_APPLICATION, EntangleApplicationPrivate))
 
 struct _EntangleApplicationPrivate {
-    EntangleCameraList *cameras;
+    EntangleCameraList *activeCameras;
+    EntangleCameraList *supportedCameras;
 
     EntanglePreferences *preferences;
 
@@ -64,7 +65,8 @@ G_DEFINE_TYPE(EntangleApplication, entangle_application, GTK_TYPE_APPLICATION);
 
 enum {
     PROP_0,
-    PROP_CAMERAS,
+    PROP_ACTIVE_CAMERAS,
+    PROP_SUPPORTED_CAMERAS,
     PROP_PREFERENCES,
 };
 
@@ -77,8 +79,12 @@ static void entangle_application_get_property(GObject *object,
     EntangleApplicationPrivate *priv = app->priv;
 
     switch (prop_id) {
-    case PROP_CAMERAS:
-        g_value_set_object(value, priv->cameras);
+    case PROP_ACTIVE_CAMERAS:
+        g_value_set_object(value, priv->activeCameras);
+        break;
+
+    case PROP_SUPPORTED_CAMERAS:
+        g_value_set_object(value, priv->supportedCameras);
         break;
 
     case PROP_PREFERENCES:
@@ -100,11 +106,18 @@ static void entangle_application_set_property(GObject *object,
     EntangleApplicationPrivate *priv = app->priv;
 
     switch (prop_id) {
-    case PROP_CAMERAS:
-        if (priv->cameras)
-            g_object_unref(priv->cameras);
-        priv->cameras = g_value_get_object(value);
-        g_object_ref(priv->cameras);
+    case PROP_ACTIVE_CAMERAS:
+        if (priv->activeCameras)
+            g_object_unref(priv->activeCameras);
+        priv->activeCameras = g_value_get_object(value);
+        g_object_ref(priv->activeCameras);
+        break;
+
+    case PROP_SUPPORTED_CAMERAS:
+        if (priv->supportedCameras)
+            g_object_unref(priv->supportedCameras);
+        priv->supportedCameras = g_value_get_object(value);
+        g_object_ref(priv->supportedCameras);
         break;
 
     case PROP_PREFERENCES:
@@ -127,8 +140,10 @@ static void entangle_application_finalize(GObject *object)
 
     ENTANGLE_DEBUG("Finalize application %p", object);
 
-    if (priv->cameras)
-        g_object_unref(priv->cameras);
+    if (priv->activeCameras)
+        g_object_unref(priv->activeCameras);
+    if (priv->supportedCameras)
+        g_object_unref(priv->supportedCameras);
     if (priv->preferences)
         g_object_unref(priv->preferences);
     if (priv->pluginEngine)
@@ -160,7 +175,7 @@ static void entangle_application_startup(GApplication *gapp)
     GList *cameras = NULL, *tmp;
 
     if (entangle_preferences_interface_get_auto_connect(priv->preferences))
-        cameras = tmp = entangle_camera_list_get_cameras(priv->cameras);
+        cameras = tmp = entangle_camera_list_get_cameras(priv->activeCameras);
 
     if (!cameras) {
         EntangleCameraManager *manager = entangle_camera_manager_new();
@@ -200,10 +215,21 @@ static void entangle_application_class_init(EntangleApplicationClass *klass)
     app_class->startup = entangle_application_startup;
 
     g_object_class_install_property(object_class,
-                                    PROP_CAMERAS,
-                                    g_param_spec_object("cameras",
-                                                        "Camera list",
-                                                        "List of detected cameras",
+                                    PROP_ACTIVE_CAMERAS,
+                                    g_param_spec_object("active-cameras",
+                                                        "Active cameras",
+                                                        "List of active cameras",
+                                                        ENTANGLE_TYPE_CAMERA_LIST,
+                                                        G_PARAM_READABLE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_SUPPORTED_CAMERAS,
+                                    g_param_spec_object("supported-cameras",
+                                                        "Supported cameras",
+                                                        "List of supported cameras",
                                                         ENTANGLE_TYPE_CAMERA_LIST,
                                                         G_PARAM_READABLE |
                                                         G_PARAM_STATIC_NAME |
@@ -293,7 +319,8 @@ static void entangle_application_init(EntangleApplication *app)
     priv = app->priv = ENTANGLE_APPLICATION_GET_PRIVATE(app);
 
     priv->preferences = entangle_preferences_new();
-    priv->cameras = entangle_camera_list_new();
+    priv->activeCameras = entangle_camera_list_new_active();
+    priv->supportedCameras = entangle_camera_list_new_supported();
 
     g_irepository_require(g_irepository_get_default(),
                           "Peas", "1.0", 0, NULL);
@@ -343,18 +370,34 @@ static void entangle_application_init(EntangleApplication *app)
 
 
 /**
- * entangle_application_get_cameras:
+ * entangle_application_get_active_cameras:
  *
- * Retrieve the camera list
+ * Retrieve the active camera list
  *
  * Returns: (transfer none): the camera list
  */
-EntangleCameraList *entangle_application_get_cameras(EntangleApplication *app)
+EntangleCameraList *entangle_application_get_active_cameras(EntangleApplication *app)
 {
     g_return_val_if_fail(ENTANGLE_IS_APPLICATION(app), NULL);
 
     EntangleApplicationPrivate *priv = app->priv;
-    return priv->cameras;
+    return priv->activeCameras;
+}
+
+
+/**
+ * entangle_application_get_supported_cameras:
+ *
+ * Retrieve the supported camera list
+ *
+ * Returns: (transfer none): the camera list
+ */
+EntangleCameraList *entangle_application_get_supported_cameras(EntangleApplication *app)
+{
+    g_return_val_if_fail(ENTANGLE_IS_APPLICATION(app), NULL);
+
+    EntangleApplicationPrivate *priv = app->priv;
+    return priv->supportedCameras;
 }
 
 

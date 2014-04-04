@@ -199,10 +199,42 @@ static void do_support_refresh(EntangleCameraSupport *support)
     GtkWidget *text = GTK_WIDGET(gtk_builder_get_object(priv->builder, "info-text"));
 
     if (priv->cameraList) {
-        gchar **cameras = entangle_camera_list_get_supported(priv->cameraList);
-        gchar *tmp = g_strjoinv("\n", cameras);
-        gtk_label_set_text(GTK_LABEL(text), tmp);
-        g_free(tmp);
+        GList *cameras, *tmp;
+        GString *str = g_string_new("");
+        cameras = entangle_camera_list_get_cameras(priv->cameraList);
+        tmp = cameras = g_list_reverse(cameras);
+        while (tmp) {
+            EntangleCamera *cam = tmp->data;
+            gboolean cap = entangle_camera_get_has_capture(cam);
+            gboolean pre = entangle_camera_get_has_preview(cam);
+            gboolean set = entangle_camera_get_has_settings(cam);
+            if (cap || pre) {
+                gboolean done = FALSE;
+                g_string_append(str, entangle_camera_get_model(cam));
+                g_string_append(str, " (");
+                if (cap) {
+                    g_string_append(str, _("capture"));
+                    done = TRUE;
+                }
+                if (pre) {
+                    if (done)
+                        g_string_append(str, ", ");
+                    g_string_append(str, _("preview"));
+                    done = TRUE;
+                }
+                if (set) {
+                    if (done)
+                        g_string_append(str, ", ");
+                    g_string_append(str, _("settings"));
+                }
+                g_string_append(str, ")");
+                g_string_append(str, "\n");
+            }
+            tmp = tmp->next;
+        }
+        g_list_free(cameras);
+        gtk_label_set_text(GTK_LABEL(text), str->str);
+        g_string_free(str, TRUE);
     } else {
         gtk_label_set_text(GTK_LABEL(text), "");
     }

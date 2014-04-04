@@ -1599,7 +1599,7 @@ static void do_entangle_camera_manager_set_app(GObject *object,
                                             "notify",
                                             G_CALLBACK(entangle_camera_manager_prefs_changed),
                                             manager);
-    cameras = entangle_application_get_cameras(app);
+    cameras = entangle_application_get_active_cameras(app);
     g_signal_connect(cameras, "camera-removed", G_CALLBACK(do_camera_removed), manager);
     directory = entangle_preferences_capture_get_last_session(prefs);
     pattern = entangle_preferences_capture_get_filename_pattern(prefs);
@@ -1726,7 +1726,8 @@ void do_menu_help_supported(GtkMenuItem *src G_GNUC_UNUSED,
     if (!priv->supported) {
         EntangleApplication *app = ENTANGLE_APPLICATION(gtk_window_get_application(GTK_WINDOW(manager)));
         priv->supported = entangle_camera_support_new();
-        entangle_camera_support_set_camera_list(priv->supported, entangle_application_get_cameras(app));
+        entangle_camera_support_set_camera_list(priv->supported,
+                                                entangle_application_get_supported_cameras(app));
         gtk_window_set_transient_for(GTK_WINDOW(priv->supported),
                                      GTK_WINDOW(manager));
     }
@@ -2647,7 +2648,7 @@ static void do_picker_refresh(EntangleCameraPicker *picker G_GNUC_UNUSED, Entang
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
     EntangleApplication *app = ENTANGLE_APPLICATION(gtk_window_get_application(GTK_WINDOW(manager)));
-    EntangleCameraList *list = entangle_application_get_cameras(app);
+    EntangleCameraList *list = entangle_application_get_active_cameras(app);
     entangle_camera_list_refresh(list, NULL);
 }
 
@@ -2707,7 +2708,7 @@ static void do_camera_connect(EntangleCameraManager *manager)
 
     EntangleCameraManagerPrivate *priv = manager->priv;
     EntangleApplication *app = ENTANGLE_APPLICATION(gtk_window_get_application(GTK_WINDOW(manager)));
-    EntangleCameraList *cameras = entangle_application_get_cameras(app);
+    EntangleCameraList *cameras = entangle_application_get_active_cameras(app);
 
     if (!priv->picker) {
         priv->picker = entangle_camera_picker_new();

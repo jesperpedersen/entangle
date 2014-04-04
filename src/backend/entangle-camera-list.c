@@ -37,6 +37,7 @@ struct _EntangleCameraListPrivate {
     size_t ncamera;
     EntangleCamera **cameras;
 
+    gboolean active;
     EntangleDeviceManager *devManager;
 
     GPContext *ctx;
@@ -49,7 +50,20 @@ G_DEFINE_TYPE(EntangleCameraList, entangle_camera_list, G_TYPE_OBJECT);
 enum {
     PROP_0,
     PROP_DEVMANAGER,
+    PROP_ACTIVE,
 };
+
+
+static void entangle_camera_list_udev_event(EntangleDeviceManager *manager G_GNUC_UNUSED,
+                                            char *port G_GNUC_UNUSED,
+                                            gpointer opaque)
+{
+    EntangleCameraList *list = ENTANGLE_CAMERA_LIST(opaque);
+
+    if (!entangle_camera_list_refresh(list, NULL)) {
+        ENTANGLE_DEBUG("Failed to refresh cameras after device hotplug/unplug");
+    }
+}
 
 
 static void entangle_camera_list_get_property(GObject *object,
@@ -63,6 +77,10 @@ static void entangle_camera_list_get_property(GObject *object,
     switch (prop_id) {
     case PROP_DEVMANAGER:
         g_value_set_object(value, priv->devManager);
+        break;
+
+    case PROP_ACTIVE:
+        g_value_set_boolean(value, priv->active);
         break;
 
     default:
@@ -84,6 +102,11 @@ static void entangle_camera_list_set_property(GObject *object,
             g_object_unref(priv->devManager);
         priv->devManager = g_value_get_object(value);
         g_object_ref(priv->devManager);
+        break;
+
+    case PROP_ACTIVE:
+        priv->active = g_value_get_boolean(value);
+        entangle_camera_list_refresh(list, NULL);
         break;
 
     default:
@@ -114,18 +137,6 @@ static void entangle_camera_list_finalize(GObject *object)
     gp_context_unref(priv->ctx);
 
     G_OBJECT_CLASS(entangle_camera_list_parent_class)->finalize(object);
-}
-
-
-static void entangle_camera_list_udev_event(EntangleDeviceManager *manager G_GNUC_UNUSED,
-                                            char *port G_GNUC_UNUSED,
-                                            gpointer opaque)
-{
-    EntangleCameraList *list = ENTANGLE_CAMERA_LIST(opaque);
-
-    if (!entangle_camera_list_refresh(list, NULL)) {
-        ENTANGLE_DEBUG("Failed to refresh cameras after device hotplug/unplug");
-    }
 }
 
 
@@ -189,13 +200,36 @@ static void entangle_camera_list_class_init(EntangleCameraListClass *klass)
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
+    g_object_class_install_property(object_class,
+                                    PROP_ACTIVE,
+                                    g_param_spec_boolean("active",
+                                                         "Active",
+                                                         "Track kactive cameras",
+                                                         FALSE,
+                                                         G_PARAM_READABLE |
+                                                         G_PARAM_WRITABLE |
+                                                         G_PARAM_CONSTRUCT_ONLY |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
     g_type_class_add_private(klass, sizeof(EntangleCameraListPrivate));
 }
 
 
-EntangleCameraList *entangle_camera_list_new(void)
+EntangleCameraList *entangle_camera_list_new_active(void)
 {
-    return ENTANGLE_CAMERA_LIST(g_object_new(ENTANGLE_TYPE_CAMERA_LIST, NULL));
+    return ENTANGLE_CAMERA_LIST(g_object_new(ENTANGLE_TYPE_CAMERA_LIST,
+                                             "active", TRUE,
+                                             NULL));
+}
+
+
+EntangleCameraList* entangle_camera_list_new_supported(void)
+{
+    return ENTANGLE_CAMERA_LIST(g_object_new(ENTANGLE_TYPE_CAMERA_LIST,
+                                             "active", FALSE,
+                                             NULL));
 }
 
 
@@ -212,30 +246,17 @@ static void entangle_camera_list_init(EntangleCameraList *list)
 
     priv->ctx = gp_context_new();
 
-    priv->devManager = entangle_device_manager_new();
-
     if (gp_abilities_list_new(&priv->caps) != GP_OK)
         g_error(_("Cannot initialize gphoto2 abilities"));
 
     if (gp_abilities_list_load(priv->caps, priv->ctx) != GP_OK)
         g_error(_("Cannot load gphoto2 abilities"));
-
-    if (gp_port_info_list_new(&priv->ports) != GP_OK)
-        g_error(_("Cannot initialize gphoto2 ports"));
-
-    if (gp_port_info_list_load(priv->ports) != GP_OK)
-        g_error(_("Cannot load gphoto2 ports"));
-
-    g_signal_connect(priv->devManager, "device-added",
-                     G_CALLBACK(entangle_camera_list_udev_event), list);
-    g_signal_connect(priv->devManager, "device-removed",
-                     G_CALLBACK(entangle_camera_list_udev_event), list);
-
-    entangle_camera_list_refresh(list, NULL);
 }
 
-gboolean entangle_camera_list_refresh(EntangleCameraList *list,
-                                      GError **error G_GNUC_UNUSED)
+
+static gboolean
+entangle_camera_list_refresh_active(EntangleCameraList *list,
+                                    GError **error G_GNUC_UNUSED)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_LIST(list), FALSE);
 
@@ -323,6 +344,65 @@ gboolean entangle_camera_list_refresh(EntangleCameraList *list,
     g_hash_table_unref(toRemove);
 
     return TRUE;
+}
+
+
+static gboolean
+entangle_camera_list_refresh_supported(EntangleCameraList *list,
+                                       GError **error G_GNUC_UNUSED)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_LIST(list), FALSE);
+
+    EntangleCameraListPrivate *priv = list->priv;
+    int cnt;
+    gsize i;
+
+    cnt = gp_abilities_list_count(priv->caps);
+
+    for (i = 0; i < cnt; i++) {
+        CameraAbilities cap;
+        EntangleCamera *cam;
+
+        gp_abilities_list_get_abilities(priv->caps, i, &cap);
+
+        cam = entangle_camera_new(cap.model, NULL,
+                                  cap.operations & GP_OPERATION_CAPTURE_IMAGE ? TRUE : FALSE,
+                                  cap.operations & GP_OPERATION_CAPTURE_PREVIEW ? TRUE : FALSE,
+                                  cap.operations & GP_OPERATION_CONFIG ? TRUE : FALSE);
+        entangle_camera_list_add(list, cam);
+        g_object_unref(cam);
+    }
+
+    return TRUE;
+}
+
+
+gboolean entangle_camera_list_refresh(EntangleCameraList *list,
+                                      GError **error)
+{
+    g_return_val_if_fail(ENTANGLE_IS_CAMERA_LIST(list), FALSE);
+
+    EntangleCameraListPrivate *priv = list->priv;
+
+    if (!priv->devManager && priv->active) {
+        priv->devManager = entangle_device_manager_new();
+
+        if (gp_port_info_list_new(&priv->ports) != GP_OK)
+            g_error(_("Cannot initialize gphoto2 ports"));
+
+        if (gp_port_info_list_load(priv->ports) != GP_OK)
+            g_error(_("Cannot load gphoto2 ports"));
+
+        g_signal_connect(priv->devManager, "device-added",
+                         G_CALLBACK(entangle_camera_list_udev_event), list);
+        g_signal_connect(priv->devManager, "device-removed",
+                         G_CALLBACK(entangle_camera_list_udev_event), list);
+    }
+
+    if (priv->active)
+        return entangle_camera_list_refresh_active(list, error);
+    else
+        return entangle_camera_list_refresh_supported(list, error);
 }
 
 
@@ -425,46 +505,6 @@ EntangleCamera *entangle_camera_list_find(EntangleCameraList *list,
     return NULL;
 }
 
-
-static const gchar *entangle_camera_list_get_status(CameraDriverStatus status)
-{
-    switch (status) {
-    case GP_DRIVER_STATUS_PRODUCTION:
-        return "Production";
-    case GP_DRIVER_STATUS_TESTING:
-        return "Testing";
-    case GP_DRIVER_STATUS_EXPERIMENTAL:
-        return "Experimental";
-    case GP_DRIVER_STATUS_DEPRECATED:
-        return "Deprecated";
-    default:
-        return "Unknown";
-    }
-}
-
-
-gchar **entangle_camera_list_get_supported(EntangleCameraList *list)
-{
-    EntangleCameraListPrivate *priv = list->priv;
-    gchar **ret = NULL;
-    int cnt;
-    gsize i;
-
-    cnt = gp_abilities_list_count(priv->caps);
-
-    ret = g_new0(gchar *, cnt + 1);
-
-    for (i = 0; i < cnt; i++) {
-        CameraAbilities ab;
-        gp_abilities_list_get_abilities(priv->caps, i, &ab);
-
-        ret[i] = g_strdup_printf("%s (%s)",
-                                 ab.model,
-                                 entangle_camera_list_get_status(ab.status));
-    }
-    ret[cnt] = NULL;
-    return ret;
-}
 
 /*
  * Local variables:
