@@ -43,7 +43,6 @@
   <chapter>
     <title>Entangle Frontend</title>
     <xi:include href="xml/entangle-application.xml"/>
-    <xi:include href="xml/entangle-camera-info.xml"/>
     <xi:include href="xml/entangle-camera-manager.xml"/>
     <xi:include href="xml/entangle-camera-picker.xml"/>
     <xi:include href="xml/entangle-camera-support.xml"/>

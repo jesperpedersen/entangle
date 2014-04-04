@@ -65,7 +65,6 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %doc README COPYING AUTHORS NEWS ChangeLog
 %{_bindir}/entangle
 %{_mandir}/man1/entangle.1*
-%{_datadir}/%{name}/%{name}-camera-info.ui
 %{_datadir}/%{name}/%{name}-camera-manager.ui
 %{_datadir}/%{name}/%{name}-camera-picker.ui
 %{_datadir}/%{name}/%{name}-camera-support.ui

@@ -32,7 +32,6 @@
 #include "entangle-debug.h"
 #include "entangle-camera-manager.h"
 #include "entangle-camera-list.h"
-#include "entangle-camera-info.h"
 #include "entangle-camera-support.h"
 #include "entangle-camera-picker.h"
 #include "entangle-session.h"
@@ -64,9 +63,6 @@ struct _EntangleCameraManagerPrivate {
     EntangleCameraPicker *picker;
     EntangleHelpAbout *about;
 
-    EntangleCameraInfo *summary;
-    EntangleCameraInfo *manual;
-    EntangleCameraInfo *driver;
     EntangleCameraSupport *supported;
 
     EntangleImageLoader *imageLoader;
@@ -140,12 +136,6 @@ enum {
 };
 
 
-void do_menu_help_summary(GtkMenuItem *src,
-                          EntangleCameraManager *manager);
-void do_menu_help_manual(GtkMenuItem *src,
-                         EntangleCameraManager *manager);
-void do_menu_help_driver(GtkMenuItem *src,
-                         EntangleCameraManager *manager);
 void do_menu_help_supported(GtkMenuItem *src,
                             EntangleCameraManager *manager);
 void do_menu_new_window(GtkImageMenuItem *src,
@@ -551,7 +541,6 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     GtkWidget *menuSession;
     GtkWidget *menuConnect;
     GtkWidget *menuDisconnect;
-    GtkWidget *menuHelp;
 
 
     toolCapture = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-capture"));
@@ -565,7 +554,6 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
     menuSession = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-session"));
     menuConnect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-connect"));
     menuDisconnect = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-disconnect"));
-    menuHelp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-help-camera"));
 
 
     gtk_widget_set_sensitive(toolCapture,
@@ -593,8 +581,6 @@ static void do_capture_widget_sensitivity(EntangleCameraManager *manager)
                              priv->camera ? FALSE : TRUE);
     gtk_widget_set_sensitive(menuDisconnect,
                              priv->camera && priv->cameraReady ? TRUE : FALSE);
-    gtk_widget_set_sensitive(menuHelp,
-                             priv->camera ? TRUE : FALSE);
 
     gtk_widget_set_tooltip_text(toolCapture, _("Capture an image"));
     gtk_widget_set_tooltip_text(toolPreview, _("Continuous capture preview"));
@@ -1729,60 +1715,6 @@ static void entangle_camera_manager_class_init(EntangleCameraManagerClass *klass
     g_type_class_add_private(klass, sizeof(EntangleCameraManagerPrivate));
 }
 
-
-void do_menu_help_summary(GtkMenuItem *src G_GNUC_UNUSED,
-                          EntangleCameraManager *manager)
-{
-    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
-
-    EntangleCameraManagerPrivate *priv = manager->priv;
-
-    if (!priv->summary) {
-        priv->summary = entangle_camera_info_new();
-        entangle_camera_info_set_camera(priv->summary, priv->camera);
-        entangle_camera_info_set_data(priv->summary, ENTANGLE_CAMERA_INFO_DATA_SUMMARY);
-        gtk_window_set_transient_for(GTK_WINDOW(priv->summary),
-                                     GTK_WINDOW(manager));
-    }
-
-    gtk_widget_show(GTK_WIDGET(priv->summary));
-}
-
-void do_menu_help_manual(GtkMenuItem *src G_GNUC_UNUSED,
-                         EntangleCameraManager *manager)
-{
-    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
-
-    EntangleCameraManagerPrivate *priv = manager->priv;
-
-    if (!priv->manual) {
-        priv->manual = entangle_camera_info_new();
-        entangle_camera_info_set_camera(priv->manual, priv->camera);
-        entangle_camera_info_set_data(priv->manual, ENTANGLE_CAMERA_INFO_DATA_MANUAL);
-        gtk_window_set_transient_for(GTK_WINDOW(priv->manual),
-                                     GTK_WINDOW(manager));
-    }
-
-    gtk_widget_show(GTK_WIDGET(priv->manual));
-}
-
-void do_menu_help_driver(GtkMenuItem *src G_GNUC_UNUSED,
-                         EntangleCameraManager *manager)
-{
-    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
-
-    EntangleCameraManagerPrivate *priv = manager->priv;
-
-    if (!priv->driver) {
-        priv->driver = entangle_camera_info_new();
-        entangle_camera_info_set_camera(priv->driver, priv->camera);
-        entangle_camera_info_set_data(priv->driver, ENTANGLE_CAMERA_INFO_DATA_DRIVER);
-        gtk_window_set_transient_for(GTK_WINDOW(priv->driver),
-                                     GTK_WINDOW(manager));
-    }
-
-    gtk_widget_show(GTK_WIDGET(priv->driver));
-}
 
 void do_menu_help_supported(GtkMenuItem *src G_GNUC_UNUSED,
                             EntangleCameraManager *manager)

@@ -9,7 +9,6 @@ bin_PROGRAMS = entangle
 
 builderdir = $(pkgdatadir)
 builder_DATA = \
-	frontend/entangle-camera-info.ui \
 	frontend/entangle-camera-support.ui \
 	frontend/entangle-camera-manager.ui \
 	frontend/entangle-camera-picker.ui \
@@ -121,7 +120,6 @@ libentangle_backend_la_CFLAGS = \
 libentangle_frontend_la_SOURCES = \
 	frontend/entangle-window.h frontend/entangle-window.c \
 	frontend/entangle-application.h frontend/entangle-application.c \
-	frontend/entangle-camera-info.h frontend/entangle-camera-info.c \
 	frontend/entangle-camera-support.h frontend/entangle-camera-support.c \
 	frontend/entangle-camera-manager.h frontend/entangle-camera-manager.c \
 	frontend/entangle-camera-picker.h frontend/entangle-camera-picker.c \
