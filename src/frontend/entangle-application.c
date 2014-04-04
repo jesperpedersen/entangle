@@ -329,7 +329,7 @@ static void entangle_application_init(EntangleApplication *app)
     g_mkdir_with_parents(userdir, 0777);
 
     priv->pluginEngine = peas_engine_get_default();
-    peas_engine_enable_loader(priv->pluginEngine, "gjs");
+    peas_engine_enable_loader(priv->pluginEngine, "python3");
 
     peas_engine_add_search_path(priv->pluginEngine,
                                 userdir, userdir);
