@@ -728,7 +728,7 @@ static void do_camera_task_error(EntangleCameraManager *manager,
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
-    GtkWidget *msg = gtk_message_dialog_new(NULL,
+    GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                             0,
                                             GTK_MESSAGE_ERROR,
                                             GTK_BUTTONS_OK,
@@ -761,7 +761,7 @@ static void do_camera_load_controls_refresh_finish(GObject *source,
     GError *error = NULL;
 
     if (!entangle_camera_load_controls_finish(camera, result, &error)) {
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
@@ -1336,7 +1336,7 @@ static void do_camera_load_controls_finish(GObject *source,
         do_capture_widget_sensitivity(manager);
         entangle_control_panel_set_camera(priv->controlPanel, priv->camera);
     } else {
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
@@ -1387,7 +1387,7 @@ static void do_camera_connect_finish(GObject *source,
                                             manager);
     } else {
         int response;
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_NONE,
@@ -1421,13 +1421,14 @@ static void do_camera_connect_finish(GObject *source,
 }
 
 
-static gboolean need_camera_unmount(EntangleCamera *cam)
+static gboolean need_camera_unmount(EntangleCameraManager *manager,
+                                    EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
 
     if (entangle_camera_is_mounted(cam)) {
         int response;
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_NONE,
@@ -1472,7 +1473,7 @@ static void do_camera_unmount_finish(GObject *source,
                                       do_camera_connect_finish,
                                       manager);
     } else {
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
@@ -1530,7 +1531,7 @@ static void do_add_camera(EntangleCameraManager *manager)
 
     entangle_camera_set_progress(priv->camera, ENTANGLE_PROGRESS(manager));
 
-    if (need_camera_unmount(priv->camera)) {
+    if (need_camera_unmount(manager, priv->camera)) {
         entangle_camera_unmount_async(priv->camera,
                                       NULL,
                                       do_camera_unmount_finish,
@@ -2155,15 +2156,16 @@ void do_menu_sync_clock(GtkMenuItem *src G_GNUC_UNUSED,
 
 static void do_camera_autofocus_finish(GObject *source,
                                        GAsyncResult *result,
-                                       gpointer data)
+                                       gpointer opaque)
 {
-    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(data));
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(opaque));
 
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCamera *camera = ENTANGLE_CAMERA(source);
     GError *error = NULL;
 
     if (!entangle_camera_autofocus_finish(camera, result, &error)) {
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
@@ -2186,15 +2188,16 @@ static void do_camera_autofocus_finish(GObject *source,
 
 static void do_camera_manualfocus_finish(GObject *source,
                                          GAsyncResult *result,
-                                         gpointer data)
+                                         gpointer opaque)
 {
-    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(data));
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(opaque));
 
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
     EntangleCamera *camera = ENTANGLE_CAMERA(source);
     GError *error = NULL;
 
     if (!entangle_camera_manualfocus_finish(camera, result, &error)) {
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 0,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_OK,
@@ -2665,12 +2668,12 @@ static void do_picker_connect(EntangleCameraPicker *picker G_GNUC_UNUSED,
 #if 0
     GError *error = NULL;
     ENTANGLE_DEBUG("emit connect %p %s", cam, entangle_camera_get_model(cam));
-    if (need_camera_unmount(cam))
+    if (need_camera_unmount(manager, cam))
         do_camera_unmount(cam);
 
     while (!entangle_camera_connect(cam, &error)) {
         int response;
-        GtkWidget *msg = gtk_message_dialog_new(NULL,
+        GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_ERROR,
                                                 GTK_BUTTONS_NONE,
