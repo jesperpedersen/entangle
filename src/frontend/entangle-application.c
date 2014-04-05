@@ -172,30 +172,33 @@ static void entangle_application_startup(GApplication *gapp)
 
     EntangleApplication *app = ENTANGLE_APPLICATION(gapp);
     EntangleApplicationPrivate *priv = app->priv;
-    GList *cameras = NULL, *tmp;
+    GList *cameras = NULL, *tmp = NULL;
+    gboolean gotcamera = FALSE;
 
     if (entangle_preferences_interface_get_auto_connect(priv->preferences))
         cameras = tmp = entangle_camera_list_get_cameras(priv->activeCameras);
 
-    if (!cameras) {
-        EntangleCameraManager *manager = entangle_camera_manager_new();
-        gtk_application_add_window(GTK_APPLICATION(gapp), GTK_WINDOW(manager));
-        gtk_widget_show(GTK_WIDGET(manager));
-    } else {
-        while (tmp) {
-            EntangleCamera *cam = ENTANGLE_CAMERA(tmp->data);
+    while (tmp) {
+        EntangleCamera *cam = ENTANGLE_CAMERA(tmp->data);
 
-            ENTANGLE_DEBUG("Opening window for %s",
-                           entangle_camera_get_port(cam));
+        ENTANGLE_DEBUG("Opening window for %s",
+                       entangle_camera_get_port(cam));
 
+        if (entangle_camera_get_has_capture(cam)) {
             EntangleCameraManager *manager = entangle_camera_manager_new();
             gtk_application_add_window(GTK_APPLICATION(gapp), GTK_WINDOW(manager));
             gtk_widget_show(GTK_WIDGET(manager));
             entangle_camera_manager_set_camera(manager, cam);
-
-            tmp = tmp->next;
         }
-        g_list_free(cameras);
+
+        tmp = tmp->next;
+    }
+    g_list_free(cameras);
+
+    if (!gotcamera) {
+        EntangleCameraManager *manager = entangle_camera_manager_new();
+        gtk_application_add_window(GTK_APPLICATION(gapp), GTK_WINDOW(manager));
+        gtk_widget_show(GTK_WIDGET(manager));
     }
 
     (*G_APPLICATION_CLASS(entangle_application_parent_class)->startup)(gapp);
