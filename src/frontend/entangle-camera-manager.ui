@@ -9,15 +9,15 @@
     <property name="default_height">600</property>
     <signal name="key-release-event" handler="do_manager_key_release" swapped="no"/>
     <child>
-      <object class="GtkVBox" id="vbox1">
+      <object class="GtkVBox" id="win-box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkMenuBar" id="menubar">
+          <object class="GtkMenuBar" id="win-menubar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkMenuItem" id="menuitem1">
+              <object class="GtkMenuItem" id="menu-file">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_File</property>
@@ -70,7 +70,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem2">
+              <object class="GtkMenuItem" id="menu-edit">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Edit</property>
@@ -94,7 +94,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem7">
+              <object class="GtkMenuItem" id="menu-camera">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Camera</property>
@@ -178,7 +178,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem3">
+              <object class="GtkMenuItem" id="menu-view">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_View</property>
@@ -291,7 +291,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem6">
+              <object class="GtkMenuItem" id="menu-windows">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Windows</property>
@@ -329,7 +329,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuItem" id="menuitem4">
+              <object class="GtkMenuItem" id="menu-hel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Help</property>
@@ -375,7 +375,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolbar" id="toolbar1">
+          <object class="GtkToolbar" id="win-toolbar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -607,7 +607,7 @@ native pixel size</property>
           </packing>
         </child>
         <child>
-          <object class="GtkHPaned" id="hpaned1">
+          <object class="GtkHPaned" id="win-mainpane">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="border_width">6</property>
