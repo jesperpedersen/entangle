@@ -334,9 +334,14 @@ static void entangle_application_init(EntangleApplication *app)
     peas_engine_add_search_path(priv->pluginEngine,
                                 userdir, userdir);
     g_free(userdir);
-    peas_engine_add_search_path(priv->pluginEngine,
-                                LIBDIR "/entangle/plugins",
-                                DATADIR "/entangle/plugins");
+    if (access("./entangle-256x256.png", R_OK) == 0)
+        peas_engine_add_search_path(priv->pluginEngine,
+                                    "./plugins",
+                                    "./plugins");
+    else
+        peas_engine_add_search_path(priv->pluginEngine,
+                                    LIBDIR "/entangle/plugins",
+                                    DATADIR "/entangle/plugins");
     peas_engine_rescan_plugins(priv->pluginEngine);
 
     priv->pluginExt = peas_extension_set_new(priv->pluginEngine,
