@@ -60,12 +60,15 @@ static void entangle_help_about_finalize(GObject *object)
 
 static void do_entangle_help_about_set_builder(EntangleWindow *window,
                                                GtkBuilder *builder);
+static GtkBuilder *do_entangle_help_about_get_builder(EntangleWindow *window);
+
 
 static void entangle_help_about_window_interface_init(gpointer g_iface,
                                                       gpointer iface_data G_GNUC_UNUSED)
 {
     EntangleWindowInterface *iface = g_iface;
     iface->set_builder = do_entangle_help_about_set_builder;
+    iface->get_builder = do_entangle_help_about_get_builder;
 }
 
 
@@ -119,6 +122,16 @@ static void do_entangle_help_about_set_builder(EntangleWindow *win,
 
     priv->builder = g_object_ref(builder);
 }
+
+
+static GtkBuilder *do_entangle_help_about_get_builder(EntangleWindow *window)
+{
+    EntangleHelpAbout *about = ENTANGLE_HELP_ABOUT(window);
+    EntangleHelpAboutPrivate *priv = about->priv;
+
+    return priv->builder;
+}
+
 
 static void entangle_help_about_init(EntangleHelpAbout *about)
 {

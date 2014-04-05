@@ -301,12 +301,15 @@ static void entangle_camera_picker_finalize(GObject *object)
 
 static void do_entangle_camera_picker_set_builder(EntangleWindow *window,
                                                   GtkBuilder *builder);
+static GtkBuilder *do_entangle_camera_picker_get_builder(EntangleWindow *window);
+
 
 static void entangle_camera_picker_window_interface_init(gpointer g_iface,
                                                          gpointer iface_data G_GNUC_UNUSED)
 {
     EntangleWindowInterface *iface = g_iface;
     iface->set_builder = do_entangle_camera_picker_set_builder;
+    iface->get_builder = do_entangle_camera_picker_get_builder;
 }
 
 
@@ -530,6 +533,15 @@ static void do_entangle_camera_picker_set_builder(EntangleWindow *win,
     gtk_widget_set_sensitive(connect, FALSE);
 
     do_model_sensitivity_update(picker);
+}
+
+
+static GtkBuilder *do_entangle_camera_picker_get_builder(EntangleWindow *window)
+{
+    EntangleCameraPicker *picker = ENTANGLE_CAMERA_PICKER(window);
+    EntangleCameraPickerPrivate *priv = picker->priv;
+
+    return priv->builder;
 }
 
 

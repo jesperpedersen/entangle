@@ -1279,12 +1279,14 @@ static void entangle_camera_progress_interface_init(gpointer g_iface,
 
 static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
                                                    GtkBuilder *builder);
+static GtkBuilder *do_entangle_camera_manager_get_builder(EntangleWindow *window);
 
 static void entangle_camera_manager_window_interface_init(gpointer g_iface,
                                                           gpointer iface_data G_GNUC_UNUSED)
 {
     EntangleWindowInterface *iface = g_iface;
     iface->set_builder = do_entangle_camera_manager_set_builder;
+    iface->get_builder = do_entangle_camera_manager_get_builder;
 }
 
 static void do_remove_camera(EntangleCameraManager *manager)
@@ -3223,6 +3225,15 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
                      G_CALLBACK(do_entangle_camera_manager_hide), NULL);
     g_signal_connect(manager, "delete-event",
                      G_CALLBACK(do_manager_delete), manager);
+}
+
+
+static GtkBuilder *do_entangle_camera_manager_get_builder(EntangleWindow *window)
+{
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(window);
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    return priv->builder;
 }
 
 

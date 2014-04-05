@@ -111,12 +111,14 @@ static void entangle_camera_support_finalize(GObject *object)
 
 static void do_entangle_camera_support_set_builder(EntangleWindow *window,
                                                    GtkBuilder *builder);
+static GtkBuilder *do_entangle_camera_support_get_builder(EntangleWindow *window);
 
 static void entangle_camera_support_window_interface_init(gpointer g_iface,
                                                           gpointer iface_data G_GNUC_UNUSED)
 {
     EntangleWindowInterface *iface = g_iface;
     iface->set_builder = do_entangle_camera_support_set_builder;
+    iface->get_builder = do_entangle_camera_support_get_builder;
 }
 
 
@@ -182,6 +184,15 @@ static void do_entangle_camera_support_set_builder(EntangleWindow *win,
     EntangleCameraSupportPrivate *priv = support->priv;
 
     priv->builder = g_object_ref(builder);
+}
+
+
+static GtkBuilder *do_entangle_camera_support_get_builder(EntangleWindow *window)
+{
+    EntangleCameraSupport *support = ENTANGLE_CAMERA_SUPPORT(window);
+    EntangleCameraSupportPrivate *priv = support->priv;
+
+    return priv->builder;
 }
 
 

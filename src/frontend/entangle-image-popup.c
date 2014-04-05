@@ -177,12 +177,14 @@ static gboolean entangle_image_popup_key_release(GtkWidget *widget,
 
 static void do_entangle_image_popup_set_builder(EntangleWindow *window,
                                                 GtkBuilder *builder);
+static GtkBuilder *do_entangle_image_popup_get_builder(EntangleWindow *window);
 
 static void entangle_image_popup_window_interface_init(gpointer g_iface,
                                                        gpointer iface_data G_GNUC_UNUSED)
 {
     EntangleWindowInterface *iface = g_iface;
     iface->set_builder = do_entangle_image_popup_set_builder;
+    iface->get_builder = do_entangle_image_popup_get_builder;
 }
 
 static void entangle_image_popup_class_init(EntangleImagePopupClass *klass)
@@ -255,6 +257,15 @@ static void do_entangle_image_popup_set_builder(EntangleWindow *win,
     gtk_container_add(GTK_CONTAINER(popup), GTK_WIDGET(priv->display));
 
     g_signal_connect(popup, "delete-event", G_CALLBACK(do_popup_delete), NULL);
+}
+
+
+static GtkBuilder *do_entangle_image_popup_get_builder(EntangleWindow *window)
+{
+    EntangleImagePopup *popup = ENTANGLE_IMAGE_POPUP(window);
+    EntangleImagePopupPrivate *priv = popup->priv;
+
+    return priv->builder;
 }
 
 

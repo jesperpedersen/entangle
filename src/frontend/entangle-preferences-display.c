@@ -506,12 +506,14 @@ static void entangle_preferences_display_finalize(GObject *object)
 
 static void do_entangle_preferences_display_set_builder(EntangleWindow *window,
                                                         GtkBuilder *builder);
+static GtkBuilder *do_entangle_preferences_display_get_builder(EntangleWindow *window);
 
 static void entangle_preferences_display_window_interface_init(gpointer g_iface,
                                                                gpointer iface_data G_GNUC_UNUSED)
 {
     EntangleWindowInterface *iface = g_iface;
     iface->set_builder = do_entangle_preferences_display_set_builder;
+    iface->get_builder = do_entangle_preferences_display_get_builder;
 }
 
 static void entangle_preferences_display_class_init(EntanglePreferencesDisplayClass *klass)
@@ -1244,6 +1246,16 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
 
     g_signal_connect(selection, "changed", G_CALLBACK(do_page_changed), preferences);
 }
+
+
+static GtkBuilder *do_entangle_preferences_display_get_builder(EntangleWindow *window)
+{
+    EntanglePreferencesDisplay *display = ENTANGLE_PREFERENCES_DISPLAY(window);
+    EntanglePreferencesDisplayPrivate *priv = display->priv;
+
+    return priv->builder;
+}
+
 
 static void entangle_preferences_display_init(EntanglePreferencesDisplay *preferences)
 {

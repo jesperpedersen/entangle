@@ -44,6 +44,7 @@ struct _EntangleWindowInterface
 
     void (*set_builder)(EntangleWindow *win,
                         GtkBuilder *builder);
+    GtkBuilder *(*get_builder)(EntangleWindow *win);
 };
 
 
@@ -55,6 +56,9 @@ EntangleWindow *entangle_window_new(GType newwintype,
 
 void entangle_window_set_builder(EntangleWindow *win,
                                  GtkBuilder *builder);
+
+GtkBuilder *entangle_window_get_builder(EntangleWindow *win);
+
 
 G_END_DECLS
 

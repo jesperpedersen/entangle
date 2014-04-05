@@ -114,6 +114,23 @@ void entangle_window_set_builder(EntangleWindow *win,
     winiface->set_builder(win, builder);
 }
 
+
+/**
+ * entangle_window_get_builder:
+ * @win: the window instance
+ *
+ * Gets the GtkBuilder instance associated with the window
+ *
+ * Returns: (transfer none): the builder
+ */
+GtkBuilder *entangle_window_get_builder(EntangleWindow *win)
+{
+    g_return_val_if_fail(ENTANGLE_IS_WINDOW(win), NULL);
+
+    EntangleWindowInterface *winiface = ENTANGLE_WINDOW_GET_INTERFACE(win);
+    return winiface->get_builder(win);
+}
+
 /*
  * Local variables:
  *  c-indent-level: 4
