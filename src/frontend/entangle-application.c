@@ -263,9 +263,9 @@ static void
 on_extension_added(PeasExtensionSet *set G_GNUC_UNUSED,
                    PeasPluginInfo *info G_GNUC_UNUSED,
                    PeasExtension *exten,
-                   gpointer opaque)
+                   gpointer opaque G_GNUC_UNUSED)
 {
-    peas_extension_call(exten, "activate", opaque);
+    peas_activatable_activate(PEAS_ACTIVATABLE(exten));
 }
 
 
@@ -275,7 +275,7 @@ on_extension_removed(PeasExtensionSet *set G_GNUC_UNUSED,
                      PeasExtension *exten,
                      gpointer opaque G_GNUC_UNUSED)
 {
-    peas_extension_call(exten, "deactivate");
+    peas_activatable_deactivate(PEAS_ACTIVATABLE(exten));
 }
 
 
@@ -349,12 +349,14 @@ static void entangle_application_init(EntangleApplication *app)
                                              "object", app,
                                              NULL);
 
-    peas_extension_set_call(priv->pluginExt, "activate");
+    peas_extension_set_foreach(priv->pluginExt,
+                               (PeasExtensionSetForeachFunc)on_extension_added,
+                               NULL);
 
     g_signal_connect(priv->pluginExt, "extension-added",
-                     G_CALLBACK(on_extension_added), app);
+                     G_CALLBACK(on_extension_added), NULL);
     g_signal_connect(priv->pluginExt, "extension-removed",
-                     G_CALLBACK(on_extension_removed), app);
+                     G_CALLBACK(on_extension_removed), NULL);
 
     g_signal_connect(priv->pluginEngine, "load-plugin",
                      G_CALLBACK(on_plugin_load), app);
