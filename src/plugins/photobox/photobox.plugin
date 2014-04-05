@@ -1,0 +1,9 @@
+[Plugin]
+Loader=python3
+Module=photobox
+IAge=1
+Name=Photo Box
+Description=Captive interface for public photo box
+Authors=Daniel Berrange <dan@berrange.com>
+Copyright=© 2014 Daniel P. Berrange
+Website=http://entangle-photo.org/

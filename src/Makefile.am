@@ -1,5 +1,5 @@
 
-SUBDIRS = icons
+SUBDIRS = icons plugins
 
 GITIGNOREFILES = org.entangle-photo.manager.gschema.valid
 
@@ -291,16 +291,6 @@ frontend/entangle-image-display-enums.h: frontend/entangle-image-display.h Makef
 CLEANFILES = *~ $(BUILT_ENUMS)
 
 MAINTAINERCLEANFILES = $(desktop_DATA) $(appdata_DATA)
-
-install-data-local:
-	$(MKDIR_P) $(DESTDIR)$(libdir)/entangle/plugins
-	$(MKDIR_P) $(DESTDIR)$(datadir)/entangle/plugins
-
-uninstall-local::
-	rmdir $(DESTDIR)$(libdir)/entangle/plugins ||:
-	rmdir $(DESTDIR)$(libdir)/entangle ||:
-	rmdir $(DESTDIR)$(datadir)/entangle/plugins ||:
-	rmdir $(DESTDIR)$(datadir)/entangle ||:
 
 Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
 	$(AM_V_GEN)$(G_IR_SCANNER) -v --warn-all \

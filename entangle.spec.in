@@ -81,6 +81,16 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %{_datadir}/%{name}/icons
 %{_datadir}/%{name}/plugins.png
 %{_datadir}/%{name}/plugins-22.png
+%dir %{_libdir}/%{name}/plugins
+%dir %{_libdir}/%{name}/plugins/photobox
+%dir %{_datadir}/%{name}/plugins
+%dir %{_datadir}/%{name}/plugins/photobox
+%dir %{_datadir}/%{name}/plugins/photobox/schemas
+%{_libdir}/%{name}/plugins/photobox/photobox.plugin
+%{_libdir}/%{name}/plugins/photobox/photobox.plugin
+%{_libdir}/%{name}/plugins/photobox/photobox.py*
+%{_datadir}/%{name}/plugins/photobox/schemas/gschemas.compiled
+%{_datadir}/%{name}/plugins/photobox/schemas/org.entangle-photo.plugins.photobox.gschema.xml
 %{_datadir}/%{name}/capture.png
 %{_datadir}/%{name}/capture-22.png
 %{_datadir}/%{name}/color-management.png

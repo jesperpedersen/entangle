@@ -176,6 +176,8 @@ AC_CONFIG_FILES(
   src/icons/48x48/actions/Makefile
   src/icons/64x64/Makefile
   src/icons/64x64/actions/Makefile
+  src/plugins/Makefile
+  src/plugins/photobox/Makefile
   po/Makefile.in
   docs/Makefile
   docs/man/Makefile

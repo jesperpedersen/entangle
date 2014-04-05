@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+
+  <schema path="/org/entangle-photo/plugins/photobox/" id="org.entangle-photo.plugins.photobox" gettext-domain="entangle-photo">
+    <key type="s" name="unlock-password">
+      <default>''</default>
+      <summary>Unlock password</summary>
+      <description>Password for unlocking photobox mode</description>
+    </key>
+  </schema>
+
+</schemalist>
