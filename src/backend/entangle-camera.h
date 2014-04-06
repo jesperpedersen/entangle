@@ -209,6 +209,24 @@ gboolean entangle_camera_set_clock_finish(EntangleCamera *cam,
                                           GError **error);
 
 
+typedef enum {
+    ENTANGLE_CAMERA_CAPTURE_TARGET_RAM,
+    ENTANGLE_CAMERA_CAPTURE_TARGET_CARD,
+} EntangleCameraCaptureTarget;
+
+gboolean entangle_camera_set_capture_target(EntangleCamera *cam,
+                                            EntangleCameraCaptureTarget target,
+                                            GError **error);
+void entangle_camera_set_capture_target_async(EntangleCamera *cam,
+                                              EntangleCameraCaptureTarget target,
+                                              GCancellable *cancellable,
+                                              GAsyncReadyCallback callback,
+                                              gpointer user_data);
+gboolean entangle_camera_set_capture_target_finish(EntangleCamera *cam,
+                                                   GAsyncResult *result,
+                                                   GError **error);
+
+
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam);
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam);
 gboolean entangle_camera_get_has_settings(EntangleCamera *cam);

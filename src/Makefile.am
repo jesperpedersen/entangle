@@ -35,6 +35,8 @@ icc_DATA = sRGB.icc
 BUILT_ENUMS = \
 	backend/entangle-colour-profile-enums.h \
 	backend/entangle-colour-profile-enums.c \
+	backend/entangle-camera-enums.h \
+	backend/entangle-camera-enums.c \
 	frontend/entangle-image-display-enums.h \
 	frontend/entangle-image-display-enums.c \
 	$(NULL)
@@ -58,6 +60,7 @@ EXTRA_DIST = \
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-camera.h backend/entangle-camera.c \
+	backend/entangle-camera-enums.h backend/entangle-camera-enums.c \
 	backend/entangle-camera-file.h backend/entangle-camera-file.c \
 	backend/entangle-camera-list.h backend/entangle-camera-list.c \
 	backend/entangle-colour-profile.h backend/entangle-colour-profile.c \
@@ -201,6 +204,34 @@ entangle_CFLAGS = \
 
 %.appdata.xml: %.appdata.xml.in
 	$(AM_V_GEN)intltool-merge -x $(top_srcdir)/po $< $@
+
+backend/entangle-camera-enums.c: backend/entangle-camera.h backend/entangle-camera-enums.h Makefile.am
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#include \"entangle-camera-enums.h\"\n\n" \
+                        --fprod "\n/* enumerations from \"@filename@\" */" \
+                        --fprod "\n#include \"@filename@\"\n" \
+                        --vhead "static const G@Type@Value _@enum_name@_values[] = {" \
+                        --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+                        --vtail "  { 0, NULL, NULL }\n};\n\n" \
+                        --vtail "GType\n@enum_name@_get_type (void)\n{\n" \
+                        --vtail "  static GType type = 0;\n\n" \
+                        --vtail "  if (!type)\n" \
+                        --vtail "    type = g_@type@_register_static (\"@EnumName@\", _@enum_name@_values);\n\n" \
+                        --vtail "  return type;\n}\n\n" \
+                $< > $@
+
+backend/entangle-camera-enums.h: backend/entangle-camera.h Makefile.am
+	$(AM_V_GEN)glib-mkenums \
+			--fhead "#ifndef __ENTANGLE_CAMERA_ENUMS_H__\n" \
+                        --fhead "#define __ENTANGLE_CAMERA_ENUMS_H__\n\n" \
+                        --fhead "#include <glib-object.h>\n" \
+                        --fhead "G_BEGIN_DECLS\n\n" \
+                        --ftail "G_END_DECLS\n\n" \
+                        --ftail "#endif /* __ENTANGLE_CAMERA_ENUMS_H__ */\n" \
+                        --fprod "\n/* --- @filename@ --- */" \
+                        --eprod "#define ENTANGLE_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
+                        --eprod "GType @enum_name@_get_type (void);\n" \
+                $< >  $@
 
 backend/entangle-colour-profile-enums.c: backend/entangle-colour-profile.h backend/entangle-colour-profile-enums.h Makefile.am
 	$(AM_V_GEN)glib-mkenums \
