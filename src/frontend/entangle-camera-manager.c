@@ -2484,7 +2484,7 @@ void do_toolbar_fullscreen(GtkToggleToolButton *src,
 
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *menu = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-fullscreen"));
-    GtkWidget *menubar = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menubar"));
+    GtkWidget *menubar = GTK_WIDGET(gtk_builder_get_object(priv->builder, "win-menubar"));
 
     if (gtk_toggle_tool_button_get_active(src)) {
         if (0) gtk_widget_hide(menubar);
@@ -2508,7 +2508,7 @@ void do_menu_fullscreen(GtkCheckMenuItem *src,
 
     EntangleCameraManagerPrivate *priv = manager->priv;
     GtkWidget *tool = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-fullscreen"));
-    GtkWidget *menubar = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menubar"));
+    GtkWidget *menubar = GTK_WIDGET(gtk_builder_get_object(priv->builder, "win-menubar"));
 
     if (gtk_check_menu_item_get_active(src)) {
         gtk_widget_hide(menubar);
