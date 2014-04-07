@@ -175,6 +175,8 @@ static void entangle_application_startup(GApplication *gapp)
     GList *cameras = NULL, *tmp = NULL;
     gboolean gotcamera = FALSE;
 
+    (*G_APPLICATION_CLASS(entangle_application_parent_class)->startup)(gapp);
+
     if (entangle_preferences_interface_get_auto_connect(priv->preferences))
         cameras = tmp = entangle_camera_list_get_cameras(priv->activeCameras);
 
@@ -200,8 +202,6 @@ static void entangle_application_startup(GApplication *gapp)
         gtk_application_add_window(GTK_APPLICATION(gapp), GTK_WINDOW(manager));
         gtk_widget_show(GTK_WIDGET(manager));
     }
-
-    (*G_APPLICATION_CLASS(entangle_application_parent_class)->startup)(gapp);
 }
 
 
