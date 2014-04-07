@@ -109,7 +109,3 @@ EXTRA_DIST +=
 
 # Comment this out if you want your docs-status tested during 'make check'
 #TESTS = $(GTKDOC_CHECK)
-
-GITIGNOREFILES=tmpl Entangle-sections.txt Entangle-overrides.txt Entangle.types
-
--include $(top_srcdir)/git.mk

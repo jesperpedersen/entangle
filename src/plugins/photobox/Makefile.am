@@ -17,5 +17,3 @@ uninstall-local:
 	rm -f $(DESTDIR)/$(settingsdir)/$(settings_DATA) || :
 	rm -f $(DESTDIR)/$(settingsdir)/gschemas.compiled || :
 	rmdir $(DESTDIR)/$(settingsdir) || :
-
--include $(top_srcdir)/git.mk

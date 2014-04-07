@@ -10,5 +10,3 @@ uninstall-local::
 	rmdir $(DESTDIR)$(libdir)/entangle ||:
 	rmdir $(DESTDIR)$(datadir)/entangle/plugins ||:
 	rmdir $(DESTDIR)$(datadir)/entangle ||:
-
--include $(top_srcdir)/git.mk

@@ -1,8 +1,6 @@
 
 SUBDIRS = icons plugins
 
-GITIGNOREFILES = org.entangle-photo.manager.gschema.valid
-
 noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
 bin_PROGRAMS = entangle
@@ -333,5 +331,3 @@ typelibs_DATA = Entangle-0.1.typelib
 		-o $@ $<
 
 CLEANFILES += Entangle-0.1.gir $(typelibs_DATA)
-
--include $(top_srcdir)/git.mk
