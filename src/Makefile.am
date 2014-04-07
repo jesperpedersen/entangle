@@ -299,7 +299,7 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
 		--include GObject-2.0 \
 		--include Gtk-3.0 \
 		--include Peas-1.0 \
-		--include GExiv2-0.4 \
+		--include GExiv2-$(GEXIV2_GIR_VERSION) \
                 --program=$(builddir)/entangle \
                 --add-include-path=$(srcdir) \
                 --add-include-path=$(builddir) \
