@@ -316,6 +316,7 @@ entangle_auto_drawer_update(EntangleAutoDrawer *drawer,
 
     if (priv->delayConnection) {
         g_source_remove(priv->delayConnection);
+        priv->delayConnection = 0;
     }
 
     if (priv->forceClosing) {
