@@ -35,6 +35,12 @@ po/POTFILES
 po/stamp-it
 src/\.deps/
 src/\.libs/
+src/backend/\.deps/
+src/backend/\.libs/
+src/backend/.dirstamp
+src/frontend/\.deps/
+src/frontend/\.libs/
+src/frontend/.dirstamp
 src/Entangle-*\.gir
 src/Entangle-*\.typelib
 src/backend/entangle-colour-profile-enums\.c

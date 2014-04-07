@@ -4,7 +4,7 @@ AC_INIT([entangle], [0.5.4])
 AC_CONFIG_SRCDIR([src/entangle-main.c])
 AM_CONFIG_HEADER([config.h])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
-AM_INIT_AUTOMAKE([-Wno-portability])
+AM_INIT_AUTOMAKE([-Wno-portability subdir-objects])
 
 AC_CONFIG_MACRO_DIR([m4])
 
