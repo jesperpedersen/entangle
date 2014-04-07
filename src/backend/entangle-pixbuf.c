@@ -25,7 +25,19 @@
 #include "entangle-debug.h"
 #include "entangle-pixbuf.h"
 
-/* Performs rotation of the thunbnail based on embedded metadata */
+/**
+ * entangle_pixbuf_auto_rotate:
+ * @src: (transfer none): the pixbuf to be rotated
+ * @metadata: (allow-none)(transfer none): the exiv2 metadata for the pixbuf
+ *
+ * Automatically rotate the pixbuf @src so that it is in its
+ * "natural" orientation. Will first try to apply the orientation
+ * associated in the GdkPixbuf object. If this doesn't apply any
+ * rotation, then will use the exiv metadata to identify the
+ * orientation
+ *
+ * Returns: (transfer full): the rotated pixbuf
+ */
 GdkPixbuf *entangle_pixbuf_auto_rotate(GdkPixbuf *src,
                                        GExiv2Metadata *metadata)
 {
@@ -461,6 +473,27 @@ static GdkPixbuf *entangle_pixbuf_open_image_thumbnail(EntangleImage *image,
 }
 
 
+/**
+ * entangle_pixbuf_open_image:
+ * @image: the camera image to open
+ * @slot: the type of image data to open
+ * @applyOrientation: whether to rotate to natural orientation
+ * @metadata: (allow-none)(transfer full): filled with metadata object instance
+ *
+ * If @slot is ENTANGLE_PIXBUF_IMAGE_SLOT_MASTER then the primary
+ * image data is loaded.
+ *
+ * If @slot is ENTANGLE_PIXBUF_IMAGE_SLOT_PREVIEW and the image is
+ * a raw file, any embedded preview data is loaded. For non-raw
+ * files the primary image data is loaded.
+ *
+ * If @slot is ENTANGLE_PIXBUF_IMAGE_SLOT_THUMBNAIL and the image is
+ * a raw file, any embedded thumbnail data is loaded. For non-raw
+ * files any thumbnail in the exiv2 metadata is loaded. If no thumbnail
+ * is available, the primary image data is loaded.
+ *
+ * Returns: (transfer full): the pixbuf for the image slot
+ */
 GdkPixbuf *entangle_pixbuf_open_image(EntangleImage *image,
                                       EntanglePixbufImageSlot slot,
                                       gboolean applyOrientation,

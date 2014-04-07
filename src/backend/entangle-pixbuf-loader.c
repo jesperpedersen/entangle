@@ -188,6 +188,13 @@ static EntanglePixbufLoaderEntry *entangle_pixbuf_loader_entry_new(EntangleImage
 }
 
 
+/**
+ * entangle_pixbuf_loader_trigger_reload:
+ * @loader: the image loader
+ *
+ * Request a mass reload of the data associated with all
+ * images
+ */
 void entangle_pixbuf_loader_trigger_reload(EntanglePixbufLoader *loader)
 {
     EntanglePixbufLoaderPrivate *priv = loader->priv;
@@ -443,6 +450,19 @@ static void entangle_pixbuf_loader_init(EntanglePixbufLoader *loader)
 }
 
 
+/**
+ * entangle_pixbuf_loader_is_ready:
+ * @loader: the pixbuf loader
+ * @image: the camera image
+ *
+ * Determine if the image has completed loading. Normally it is
+ * better to wait for the 'pixbuf-loaded' or 'metadata-loaded'
+ * signals than to use this method. The return value of this
+ * method may be out of date if another thread concurrently
+ * requests unload of the image
+ *
+ * Returns: a true value if the image is currently loaded
+ */
 gboolean entangle_pixbuf_loader_is_ready(EntanglePixbufLoader *loader,
                                          EntangleImage *image)
 {
@@ -464,6 +484,18 @@ gboolean entangle_pixbuf_loader_is_ready(EntanglePixbufLoader *loader,
     return ready;
 }
 
+
+/**
+ * entangle_pixbuf_loader_get_pixbuf:
+ * @loader: (transfer none): the pixbuf loader
+ * @image: (transfer none): the camera image
+ *
+ * Get the loaded pixbuf for @image, if any. If this is
+ * called before the 'pixbuf-loaded' signal is emitted
+ * then it will likely return NULL.
+ *
+ * Returns: (allow-none)(transfer none): the pixbuf
+ */
 GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,
                                              EntangleImage *image)
 {
@@ -486,6 +518,17 @@ GdkPixbuf *entangle_pixbuf_loader_get_pixbuf(EntanglePixbufLoader *loader,
 }
 
 
+/**
+ * entangle_pixbuf_loader_get_metadata:
+ * @loader: (transfer none): the pixbuf loader
+ * @image: (transfer none): the camera image
+ *
+ * Get the loaded metadata for @image, if any. If this is
+ * called before the 'metadata-loaded' signal is emitted
+ * then it will likely return NULL.
+ *
+ * Returns: (allow-none)(transfer none): the metadata
+ */
 GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader,
                                                     EntangleImage *image)
 {
@@ -508,6 +551,18 @@ GExiv2Metadata *entangle_pixbuf_loader_get_metadata(EntanglePixbufLoader *loader
 }
 
 
+/**
+ * entangle_pixbuf_loader_load:
+ * @loader: (transfer none): the pixbuf loader
+ * @image: (transfer none): the camera image
+ *
+ * Request that @loader have its pixbuf and metadata loaded.
+ * The loading of the data may take place asynchronously
+ * and the 'pixbuf-loaded' and 'metadata-loaded' signals
+ * will be emitted when completed.
+ *
+ * Returns: a true value if the image was queued for loading
+ */
 gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
                                      EntangleImage *image)
 {
@@ -543,6 +598,19 @@ gboolean entangle_pixbuf_loader_load(EntanglePixbufLoader *loader,
     return TRUE;
 }
 
+
+/**
+ * entangle_pixbuf_loader_unload:
+ * @loader: (transfer none): the pixbuf loader
+ * @image: (transfer none): the camera image
+ *
+ * Indicate that @image is no longer required and can have its
+ * pixbuf / metadata unloaded. The unloading of the data may
+ * take place asynchronously and the 'pixbuf-unloaded' and
+ * 'metadata-unloaded' signals will be emitted when completed.
+ *
+ * Returns: a true value if the image was unloaded
+ */
 gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
                                        EntangleImage *image)
 {
@@ -580,6 +648,15 @@ gboolean entangle_pixbuf_loader_unload(EntanglePixbufLoader *loader,
 }
 
 
+/**
+ * entangle_pixbuf_loader_set_colour_transform:
+ * @loader: the pixbuf loader
+ * @transform: the new colour profile transform
+ *
+ * Set the colour profile transform that will be applied when
+ * loading images. This will trigger a mass-reload of all
+ * existing images to update their colour profile
+ */
 void entangle_pixbuf_loader_set_colour_transform(EntanglePixbufLoader *loader,
                                                  EntangleColourProfileTransform *transform)
 {
@@ -599,6 +676,15 @@ void entangle_pixbuf_loader_set_colour_transform(EntanglePixbufLoader *loader,
 }
 
 
+/**
+ * entangle_pixbuf_loader_get_colour_transform:
+ * @loader: the pixbuf loader
+ *
+ * Get the colour transform that will be applied when loading
+ * images
+ *
+ * Returns: (allow-none)(transfer none): the colour profile transform
+ */
 EntangleColourProfileTransform *entangle_pixbuf_loader_get_colour_transform(EntanglePixbufLoader *loader)
 {
     g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), NULL);
@@ -609,6 +695,13 @@ EntangleColourProfileTransform *entangle_pixbuf_loader_get_colour_transform(Enta
 }
 
 
+/**
+ * entangle_pixbuf_loader_set_workers:
+ * @loader: the pixbuf loader
+ * @count: the new limit on workers
+ *
+ * Set the maximum number of worker threads for the pixbuf loader
+ */
 void entangle_pixbuf_loader_set_workers(EntanglePixbufLoader *loader,
                                         int count)
 {
@@ -620,6 +713,14 @@ void entangle_pixbuf_loader_set_workers(EntanglePixbufLoader *loader,
 }
 
 
+/**
+ * entangle_pixbuf_loader_get_workers:
+ * @loader: the pixbuf loader
+ *
+ * Get the number of worker threads associated with the loader
+ *
+ * Returns: the maximum number of worker threads
+ */
 int entangle_pixbuf_loader_get_workers(EntanglePixbufLoader *loader)
 {
     g_return_val_if_fail(ENTANGLE_IS_PIXBUF_LOADER(loader), 0);
