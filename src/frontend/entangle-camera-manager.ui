@@ -415,7 +415,7 @@
                 <property name="tooltip_text" translatable="yes">View the full list of camera settings</property>
                 <property name="label" translatable="yes">Settings</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-properties</property>
+                <property name="icon_name">emblem-system-symbolic</property>
                 <property name="active">True</property>
                 <signal name="toggled" handler="do_toolbar_settings" swapped="no"/>
               </object>
@@ -442,7 +442,7 @@
                 <property name="tooltip_text" translatable="yes">Capture an image</property>
                 <property name="label" translatable="yes">Capture</property>
                 <property name="use_underline">True</property>
-                <property name="icon_name">capture</property>
+                <property name="icon_name">camera-photo-symbolic</property>
                 <signal name="clicked" handler="do_toolbar_capture" swapped="no"/>
               </object>
               <packing>
@@ -457,7 +457,7 @@
                 <property name="tooltip_text" translatable="yes">Continuous capture preview</property>
                 <property name="label" translatable="yes">Preview</property>
                 <property name="use_underline">True</property>
-                <property name="icon_name">preview</property>
+                <property name="icon_name">emblem-photos-symbolic</property>
                 <signal name="toggled" handler="do_toolbar_preview" swapped="no"/>
               </object>
               <packing>
@@ -491,7 +491,7 @@
 executing camera operation</property>
                 <property name="label" translatable="yes">Cancel</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-cancel</property>
+                <property name="icon_name">process-stop-symbolic</property>
                 <signal name="clicked" handler="do_toolbar_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -518,7 +518,7 @@ executing camera operation</property>
 by one factor</property>
                 <property name="label" translatable="yes">Zoom Out</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-out</property>
+                <property name="icon_name">zoom-out-symbolic</property>
                 <signal name="clicked" handler="do_toolbar_zoom_out" swapped="no"/>
               </object>
               <packing>
@@ -534,7 +534,7 @@ by one factor</property>
 by one factor</property>
                 <property name="label" translatable="yes">Zoom In</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-in</property>
+                <property name="icon_name">zoom-in-symbolic</property>
                 <signal name="clicked" handler="do_toolbar_zoom_in" swapped="no"/>
               </object>
               <packing>
@@ -550,7 +550,7 @@ by one factor</property>
 fit the available window real estate</property>
                 <property name="label" translatable="yes">Best Fit</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-fit</property>
+                <property name="icon_name">zoom-fit-best-symbolic</property>
                 <signal name="clicked" handler="do_toolbar_zoom_best" swapped="no"/>
               </object>
               <packing>
@@ -566,7 +566,7 @@ fit the available window real estate</property>
 native pixel size</property>
                 <property name="label" translatable="yes">Normal</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-100</property>
+                <property name="icon_name">zoom-original-symbolic</property>
                 <signal name="clicked" handler="do_toolbar_zoom_normal" swapped="no"/>
               </object>
               <packing>
@@ -591,7 +591,7 @@ native pixel size</property>
                 <property name="tooltip_text" translatable="yes">Switch to fullscreen display mode</property>
                 <property name="label" translatable="yes">Full Screen</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-fullscreen</property>
+                <property name="icon_name">view-fullscreen-symbolic</property>
                 <signal name="toggled" handler="do_toolbar_fullscreen" swapped="no"/>
               </object>
               <packing>
