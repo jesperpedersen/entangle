@@ -22,8 +22,31 @@ appdatadir = $(datadir)/appdata
 appdata_DATA_IN = entangle.appdata.xml.in
 appdata_DATA = $(appdata_DATA_IN:.xml.in=.xml)
 
-icondir = $(pkgdatadir)
-icon_DATA = $(PACKAGE).svg $(wildcard *.png)
+icon128x128dir = $(datadir)/icons/hicolor/128x128/apps
+icon128x128_DATA = $(wildcard icons/128x128/*.png)
+
+icon16x16dir = $(datadir)/icons/hicolor/16x16/apps
+icon16x16_DATA = $(wildcard icons/16x16/*.png)
+
+icon22x22dir = $(datadir)/icons/hicolor/22x22/apps
+icon22x22_DATA = $(wildcard icons/22x22/*.png)
+
+icon256x256dir = $(datadir)/icons/hicolor/256x256/apps
+icon256x256_DATA = $(wildcard icons/256x256/*.png)
+
+icon32x32dir = $(datadir)/icons/hicolor/32x32/apps
+icon32x32_DATA = $(wildcard icons/32x32/*.png)
+
+icon48x48dir = $(datadir)/icons/hicolor/48x48/apps
+icon48x48_DATA = $(wildcard icons/48x48/*.png)
+
+icon64x64dir = $(datadir)/icons/hicolor/64x64/apps
+icon64x64_DATA = $(wildcard icons/64x64/*.png)
+
+iconscalabledir = $(datadir)/icons/hicolor/scalable/apps
+iconscalable_DATA = $(wildcard icons/scalable/*.png)
+
+
 
 gsettings_SCHEMAS = org.entangle-photo.manager.gschema.xml
 
@@ -53,7 +76,14 @@ EXTRA_DIST = \
 	$(desktop_DATA_IN) \
 	$(appdata_DATA) \
 	$(appdata_DATA_IN) \
-	$(icon_DATA) \
+	$(icon128x128_DATA) \
+	$(icon16x16_DATA) \
+	$(icon22x22_DATA) \
+	$(icon256x256_DATA) \
+	$(icon32x32_DATA) \
+	$(icon48x48_DATA) \
+	$(icon64x64_DATA) \
+	$(iconscalable_DATA) \
 	$(icc_DATA) \
 	$(gsettings_SCHEMAS) \
 	$(NULL)
@@ -192,6 +222,7 @@ entangle_CFLAGS = \
 	$(LIBPEAS_CFLAGS) \
 	$(WARN_CFLAGS) \
 	-DPKGDATADIR="\"$(pkgdatadir)\"" \
+	-DDATADIR="\"$(datadir)\"" \
 	-DG_LOG_DOMAIN="\"$(PACKAGE)\"" \
 	$(NULL)
 

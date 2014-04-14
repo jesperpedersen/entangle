@@ -135,17 +135,9 @@ static GtkBuilder *do_entangle_help_about_get_builder(EntangleWindow *window)
 
 static void entangle_help_about_init(EntangleHelpAbout *about)
 {
-    GdkPixbuf *buf;
-
     about->priv = ENTANGLE_HELP_ABOUT_GET_PRIVATE(about);
 
     g_signal_connect(about, "response", G_CALLBACK(do_about_response), about);
-
-    if (access("./entangle-256x256.png", R_OK) < 0)
-        buf = gdk_pixbuf_new_from_file(PKGDATADIR "/entangle-256x256.png", NULL);
-    else
-        buf = gdk_pixbuf_new_from_file("./entangle-256x256.png", NULL);
-    gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about), buf);
 
     gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about), VERSION);
 }

@@ -48,6 +48,7 @@ int main(int argc, char **argv)
         { NULL, 0, 0, 0, NULL, NULL, NULL },
     };
     static const char *help_msg = "Run 'entangle --help' to see full list of options";
+    GtkIconTheme *theme;
 
     setlocale(LC_ALL, "");
     bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
@@ -83,6 +84,9 @@ int main(int argc, char **argv)
         return 1;
 
     entangle_debug_setup(debug_app, debug_gphoto);
+
+    theme = gtk_icon_theme_get_default();
+    gtk_icon_theme_prepend_search_path(theme, DATADIR "/icons");
 
     app = entangle_application_new();
 

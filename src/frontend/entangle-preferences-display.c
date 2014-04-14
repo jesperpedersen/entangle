@@ -885,7 +885,6 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
     GtkWidget *notebook;
     GtkWidget *box;
     GtkWidget *image;
-    gboolean local = FALSE;
     GtkListStore *list;
     GtkWidget *tree;
     GtkTreeIter iter;
@@ -899,6 +898,7 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
     GtkFileFilter *iccFilter;
     GtkComboBox *aspectRatio;
     GtkComboBox *gridLines;
+    GtkIconTheme *theme = gtk_icon_theme_get_default();
 
     priv->builder = g_object_ref(builder);
 
@@ -913,115 +913,64 @@ static void do_entangle_preferences_display_set_builder(EntangleWindow *win,
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-box"));
     gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "interface-image"));
-    if (local)
-        gtk_image_set_from_file(GTK_IMAGE(image), "./interface.png");
-    else
-        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/interface.png");
+    gtk_image_set_from_icon_name(GTK_IMAGE(image), "entangle-interface", GTK_ICON_SIZE_DIALOG);
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-box"));
     gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "cms-image"));
-    if (local)
-        gtk_image_set_from_file(GTK_IMAGE(image), "./color-management.png");
-    else
-        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/color-management.png");
+    gtk_image_set_from_icon_name(GTK_IMAGE(image), "entangle-color-management", GTK_ICON_SIZE_DIALOG);
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-box"));
     gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-image"));
-    if (local)
-        gtk_image_set_from_file(GTK_IMAGE(image), "./capture.png");
-    else
-        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/capture.png");
+    gtk_image_set_from_icon_name(GTK_IMAGE(image), "entangle-capture", GTK_ICON_SIZE_DIALOG);
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-box"));
     gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "plugins-image"));
-    if (local)
-        gtk_image_set_from_file(GTK_IMAGE(image), "./plugins.png");
-    else
-        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/plugins.png");
-
+    gtk_image_set_from_icon_name(GTK_IMAGE(image), "entangle-plugins", GTK_ICON_SIZE_DIALOG);
 
     box = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-box"));
     gtk_widget_set_state_flags(box, GTK_STATE_FLAG_SELECTED, TRUE);
     image = GTK_WIDGET(gtk_builder_get_object(priv->builder, "img-image"));
-    if (local)
-        gtk_image_set_from_file(GTK_IMAGE(image), "./imageviewer.png");
-    else
-        gtk_image_set_from_file(GTK_IMAGE(image), PKGDATADIR "/imageviewer.png");
+    gtk_image_set_from_icon_name(GTK_IMAGE(image), "entangle-imageviewer", GTK_ICON_SIZE_DIALOG);
 
     list = gtk_list_store_new(3, G_TYPE_INT, G_TYPE_STRING, GDK_TYPE_PIXBUF, -1);
 
     gtk_list_store_append(list, &iter);
-    if (local)
-        gtk_list_store_set(list, &iter,
-                           0, 3,
-                           1, _("Interface"),
-                           2, gdk_pixbuf_new_from_file("./interface-22.png", NULL),
-                           -1);
-    else
-        gtk_list_store_set(list, &iter,
-                           0, 3,
-                           1, _("Interface"),
-                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/interface-22.png", NULL),
-                           -1);
+    gtk_list_store_set(list, &iter,
+                       0, 3,
+                       1, _("Interface"),
+                       2, gtk_icon_theme_load_icon(theme, "entangle-interface", 22, 0, NULL),
+                       -1);
 
     gtk_list_store_append(list, &iter);
-    if (local)
-        gtk_list_store_set(list, &iter,
-                           0, 4,
-                           1, _("Image Viewer"),
-                           2, gdk_pixbuf_new_from_file("./imageviewer-22.png", NULL),
-                           -1);
-    else
-        gtk_list_store_set(list, &iter,
-                           0, 4,
-                           1, _("Image Viewer"),
-                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/imageviewer-22.png", NULL),
-                           -1);
+    gtk_list_store_set(list, &iter,
+                       0, 4,
+                       1, _("Image Viewer"),
+                       2, gtk_icon_theme_load_icon(theme, "entangle-imageviewer", 22, 0, NULL),
+                       -1);
 
     gtk_list_store_append(list, &iter);
-    if (local)
-        gtk_list_store_set(list, &iter,
-                           0, 0,
-                           1, _("Capture"),
-                           2, gdk_pixbuf_new_from_file("./capture-22.png", NULL),
-                           -1);
-    else
-        gtk_list_store_set(list, &iter,
-                           0, 0,
-                           1, _("Capture"),
-                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/capture-22.png", NULL),
-                           -1);
+    gtk_list_store_set(list, &iter,
+                       0, 0,
+                       1, _("Capture"),
+                       2, gtk_icon_theme_load_icon(theme, "entangle-capture", 22, 0, NULL),
+                       -1);
 
     gtk_list_store_append(list, &iter);
-    if (local)
-        gtk_list_store_set(list, &iter,
-                           0, 1,
-                           1, _("Color Management"),
-                           2, gdk_pixbuf_new_from_file("./color-management-22.png", NULL),
-                           -1);
-    else
-        gtk_list_store_set(list, &iter,
-                           0, 1,
-                           1, _("Color Management"),
-                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/color-management-22.png", NULL),
-                           -1);
+    gtk_list_store_set(list, &iter,
+                       0, 1,
+                       1, _("Color Management"),
+                       2, gtk_icon_theme_load_icon(theme, "entangle-color-management", 22, 0, NULL),
+                       -1);
 
     gtk_list_store_append(list, &iter);
-    if (local)
-        gtk_list_store_set(list, &iter,
-                           0, 2,
-                           1, _("Plugins"),
-                           2, gdk_pixbuf_new_from_file("./plugins-22.png", NULL),
-                           -1);
-    else
-        gtk_list_store_set(list, &iter,
-                           0, 2,
-                           1, _("Plugins"),
-                           2, gdk_pixbuf_new_from_file(PKGDATADIR "/plugins-22.png", NULL),
-                           -1);
+    gtk_list_store_set(list, &iter,
+                       0, 2,
+                       1, _("Plugins"),
+                       2, gtk_icon_theme_load_icon(theme, "entangle-plugins", 22, 0, NULL),
+                       -1);
 
     cellText = gtk_cell_renderer_text_new();
     cellImage = gtk_cell_renderer_pixbuf_new();

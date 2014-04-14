@@ -57,10 +57,18 @@ rm -fr %{buildroot}
 %post
 update-desktop-database %{_datadir}/applications
 glib-compile-schemas /usr/share/glib-2.0/schemas ||:
+touch -c %{_datadir}/icons/hicolor
+if [ -x /usr/bin/gtk-update-icon-cache ]; then
+	/usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor || :
+fi
 
 %postun
 update-desktop-database %{_datadir}/applications
 glib-compile-schemas /usr/share/glib-2.0/schemas ||:
+touch -c %{_datadir}/icons/hicolor
+if [ -x /usr/bin/gtk-update-icon-cache ]; then
+	/usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor || :
+fi
 
 %files -f %{name}.lang
 %defattr(-, root, root)
@@ -73,15 +81,7 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %{_datadir}/%{name}/%{name}-help-about.ui
 %{_datadir}/%{name}/%{name}-image-popup.ui
 %{_datadir}/%{name}/%{name}-preferences-display.ui
-%{_datadir}/%{name}/%{name}-16x16.png
-%{_datadir}/%{name}/%{name}-32x32.png
-%{_datadir}/%{name}/%{name}-48x48.png
-%{_datadir}/%{name}/%{name}-64x64.png
-%{_datadir}/%{name}/%{name}-128x128.png
-%{_datadir}/%{name}/%{name}-256x256.png
-%{_datadir}/%{name}/%{name}.svg
-%{_datadir}/%{name}/plugins.png
-%{_datadir}/%{name}/plugins-22.png
+%{_datadir}/icons/hicolor/*/apps/entangle*png
 %dir %{_libdir}/%{name}/plugins
 %dir %{_libdir}/%{name}/plugins/photobox
 %dir %{_datadir}/%{name}/plugins
@@ -92,14 +92,6 @@ glib-compile-schemas /usr/share/glib-2.0/schemas ||:
 %{_libdir}/%{name}/plugins/photobox/photobox.py*
 %{_datadir}/%{name}/plugins/photobox/schemas/gschemas.compiled
 %{_datadir}/%{name}/plugins/photobox/schemas/org.entangle-photo.plugins.photobox.gschema.xml
-%{_datadir}/%{name}/capture.png
-%{_datadir}/%{name}/capture-22.png
-%{_datadir}/%{name}/color-management.png
-%{_datadir}/%{name}/color-management-22.png
-%{_datadir}/%{name}/interface.png
-%{_datadir}/%{name}/interface-22.png
-%{_datadir}/%{name}/imageviewer.png
-%{_datadir}/%{name}/imageviewer-22.png
 %{_datadir}/%{name}/sRGB.icc
 %{_datadir}/gtk-doc/html/Entangle
 %{_datadir}/applications/%{name}.desktop
