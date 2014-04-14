@@ -320,8 +320,8 @@ static void entangle_application_init(EntangleApplication *app)
     gchar **plugins;
     GtkSettings *gtk_settings;
 
-    gtk_settings = gtk_settings_get_default ();
-    g_object_set (G_OBJECT (gtk_settings), "gtk-application-prefer-dark-theme", TRUE, NULL);
+    gtk_settings = gtk_settings_get_default();
+    g_object_set(G_OBJECT(gtk_settings), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     priv = app->priv = ENTANGLE_APPLICATION_GET_PRIVATE(app);
 
