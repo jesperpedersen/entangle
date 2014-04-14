@@ -1,5 +1,5 @@
 
-SUBDIRS = icons plugins
+SUBDIRS = plugins
 
 noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
