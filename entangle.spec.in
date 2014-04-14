@@ -82,12 +82,13 @@ fi
 %{_datadir}/%{name}/%{name}-image-popup.ui
 %{_datadir}/%{name}/%{name}-preferences-display.ui
 %{_datadir}/icons/hicolor/*/apps/entangle*png
+%dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/plugins
 %dir %{_libdir}/%{name}/plugins/photobox
+%dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/plugins
 %dir %{_datadir}/%{name}/plugins/photobox
 %dir %{_datadir}/%{name}/plugins/photobox/schemas
-%{_libdir}/%{name}/plugins/photobox/photobox.plugin
 %{_libdir}/%{name}/plugins/photobox/photobox.plugin
 %{_libdir}/%{name}/plugins/photobox/photobox.py*
 %{_datadir}/%{name}/plugins/photobox/schemas/gschemas.compiled
@@ -99,8 +100,5 @@ fi
 %{_datadir}/glib-2.0/schemas/org.entangle-photo.manager.gschema.xml
 %{_datadir}/gir-1.0/Entangle-0.1.gir
 %{_libdir}/girepository-1.0/Entangle-0.1.typelib
-%dir %{_libdir}/%{name}
-%dir %{_libdir}/%{name}/plugins
-%dir %{_datadir}/%{name}/plugins
 
 %changelog
