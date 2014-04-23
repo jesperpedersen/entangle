@@ -93,9 +93,7 @@ EntangleColourProfile *entangle_colour_profile_new_data(GByteArray *data);
 
 const char *entangle_colour_profile_filename(EntangleColourProfile *profile);
 
-char *entangle_colour_profile_product_name(EntangleColourProfile *profile);
-char *entangle_colour_profile_product_desc(EntangleColourProfile *profile);
-char *entangle_colour_profile_product_info(EntangleColourProfile *profile);
+char *entangle_colour_profile_description(EntangleColourProfile *profile);
 char *entangle_colour_profile_manufacturer(EntangleColourProfile *profile);
 char *entangle_colour_profile_model(EntangleColourProfile *profile);
 char *entangle_colour_profile_copyright(EntangleColourProfile *profile);

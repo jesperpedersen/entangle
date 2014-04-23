@@ -20,7 +20,8 @@
 
 #include <config.h>
 
-#include <lcms.h>
+#include <lcms2.h>
+#include <string.h>
 
 #include "entangle-debug.h"
 #include "entangle-colour-profile.h"
@@ -243,9 +244,6 @@ static void entangle_colour_profile_class_init(EntangleColourProfileClass *klass
 
 
     g_type_class_add_private(klass, sizeof(EntangleColourProfilePrivate));
-
-    /* Stop lcms calling exit() */
-    cmsErrorAction(LCMS_ERROR_IGNORE);
 }
 
 static void entangle_colour_profile_transform_class_init(EntangleColourProfileTransformClass *klass)
@@ -370,93 +368,63 @@ const char *entangle_colour_profile_filename(EntangleColourProfile *profile)
 }
 
 
-char *entangle_colour_profile_product_name(EntangleColourProfile *profile)
+static char *entangle_colour_profile_get_string(EntangleColourProfile *profile,
+                                                cmsInfoType info)
 {
     g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
 
     EntangleColourProfilePrivate *priv = profile->priv;
-    const char *data;
+    gchar *res;
+    cmsUInt32Number len;
 
     if (!entangle_colour_profile_load(profile))
         return NULL;
 
-    data = cmsTakeProductName(priv->profile);
-    return g_strdup(data);
+    if ((len = cmsGetProfileInfoASCII(priv->profile,
+                                      info,
+                                      "en", "US",
+                                      NULL, 0)) == 0)
+        return NULL;
+
+    res = g_new0(gchar, len + 1);
+
+    if (cmsGetProfileInfoASCII(priv->profile,
+                               info,
+                               "en", "US",
+                               res, len) == 0) {
+        g_free(res);
+        return NULL;
+    }
+
+    return res;
 }
 
 
-char *entangle_colour_profile_product_desc(EntangleColourProfile *profile)
+char *entangle_colour_profile_description(EntangleColourProfile *profile)
 {
-    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
-
-    EntangleColourProfilePrivate *priv = profile->priv;
-    const char *data;
-
-    if (!entangle_colour_profile_load(profile))
-        return NULL;
-
-    data = cmsTakeProductDesc(priv->profile);
-    return g_strdup(data);
-}
-
-
-char *entangle_colour_profile_product_info(EntangleColourProfile *profile)
-{
-    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
-
-    EntangleColourProfilePrivate *priv = profile->priv;
-    const char *data;
-
-    if (!entangle_colour_profile_load(profile))
-        return NULL;
-
-    data = cmsTakeProductInfo(priv->profile);
-    return g_strdup(data);
+    return entangle_colour_profile_get_string(profile,
+                                              cmsInfoDescription);
 }
 
 
 char *entangle_colour_profile_manufacturer(EntangleColourProfile *profile)
 {
-    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
-
-    EntangleColourProfilePrivate *priv = profile->priv;
-    const char *data;
-
-    if (!entangle_colour_profile_load(profile))
-        return NULL;
-
-    data = cmsTakeManufacturer(priv->profile);
-    return g_strdup(data);
+    return entangle_colour_profile_get_string(profile,
+                                              cmsInfoManufacturer);
 }
 
 
 char *entangle_colour_profile_model(EntangleColourProfile *profile)
 {
-    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
-
-    EntangleColourProfilePrivate *priv = profile->priv;
-    const char *data;
-
-    if (!entangle_colour_profile_load(profile))
-        return NULL;
-
-    data = cmsTakeModel(priv->profile);
-    return g_strdup(data);
+    return entangle_colour_profile_get_string(profile,
+                                              cmsInfoModel);
 }
 
 
 char *entangle_colour_profile_copyright(EntangleColourProfile *profile)
 {
-    g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
-
-    EntangleColourProfilePrivate *priv = profile->priv;
-    const char *data;
-
-    if (!entangle_colour_profile_load(profile))
-        return NULL;
-
-    data = cmsTakeCopyright(priv->profile);
-    return g_strdup(data);
+    return entangle_colour_profile_get_string(profile,
+                                              cmsInfoCopyright);
 }
 
 

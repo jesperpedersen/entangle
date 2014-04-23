@@ -45,7 +45,7 @@ be present
  gudev                 >= 145
  dbus-glib             >= 0.60
  gobject-introspection >= 0.9.3
- lcms                  >= 1.18
+ lcms2                 >= 2.0
  libpeas               >= 0.5.5
  gexiv2                >= 0.2.2
  LibRaw                >= 0.9.0
