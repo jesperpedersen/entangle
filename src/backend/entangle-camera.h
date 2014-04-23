@@ -184,11 +184,20 @@ gboolean entangle_camera_autofocus_finish(EntangleCamera *cam,
                                           GAsyncResult *result,
                                           GError **error);
 
+typedef enum {
+    ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_COARSE,
+    ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_MEDIUM,
+    ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_FINE,
+    ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_COARSE,
+    ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_MEDIUM,
+    ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_FINE,
+} EntangleCameraManualFocusStep;
+
 gboolean entangle_camera_manualfocus(EntangleCamera *cam,
-                                     gshort delta,
+                                     EntangleCameraManualFocusStep step,
                                      GError **error);
 void entangle_camera_manualfocus_async(EntangleCamera *cam,
-                                       gshort delta,
+                                       EntangleCameraManualFocusStep step,
                                        GCancellable *cancellable,
                                        GAsyncReadyCallback callback,
                                        gpointer user_data);

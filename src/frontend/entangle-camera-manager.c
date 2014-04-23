@@ -2254,7 +2254,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
     case GDK_KEY_comma: {
         if (priv->taskPreview) {
             entangle_camera_manualfocus_async(priv->camera,
-                                              -64,
+                                              ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_MEDIUM,
                                               NULL,
                                               do_camera_manualfocus_finish,
                                               manager);
@@ -2264,7 +2264,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
     case GDK_KEY_period: {
         if (priv->taskPreview) {
             entangle_camera_manualfocus_async(priv->camera,
-                                              64,
+                                              ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_MEDIUM,
                                               NULL,
                                               do_camera_manualfocus_finish,
                                               manager);
@@ -2274,7 +2274,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
     case GDK_KEY_less: {
         if (priv->taskPreview) {
             entangle_camera_manualfocus_async(priv->camera,
-                                              -512,
+                                              ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_COARSE,
                                               NULL,
                                               do_camera_manualfocus_finish,
                                               manager);
@@ -2284,7 +2284,7 @@ gboolean do_manager_key_release(GtkWidget *widget G_GNUC_UNUSED,
     case GDK_KEY_greater: {
         if (priv->taskPreview) {
             entangle_camera_manualfocus_async(priv->camera,
-                                              512,
+                                              ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_COARSE,
                                               NULL,
                                               do_camera_manualfocus_finish,
                                               manager);

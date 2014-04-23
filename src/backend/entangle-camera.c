@@ -2500,6 +2500,14 @@ gboolean entangle_camera_autofocus(EntangleCamera *cam,
         goto cleanup;
     }
 
+    value = 0;
+    if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set autofocus state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
+
     value = 1;
     if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2572,7 +2580,7 @@ gboolean entangle_camera_autofocus_finish(EntangleCamera *cam,
 
 
 gboolean entangle_camera_manualfocus(EntangleCamera *cam,
-                                     gshort delta,
+                                     EntangleCameraManualFocusStep step,
                                      GError **error)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
@@ -2581,13 +2589,12 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
     gboolean ret = FALSE;
     CameraWidget *widget;
     CameraWidgetType type;
-    float value;
     int err;
 
     g_mutex_lock(priv->lock);
     entangle_camera_begin_job(cam);
 
-    ENTANGLE_DEBUG("Setting manualfocus %d", (int)delta);
+    ENTANGLE_DEBUG("Setting manualfocus %d", (int)step);
 
     if (priv->cam == NULL) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
@@ -2616,18 +2623,56 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
         goto cleanup;
     }
 
-    if (type != GP_WIDGET_RANGE) {
+    if (type != GP_WIDGET_RANGE &&
+        type != GP_WIDGET_RADIO) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    _("Manual focus control was not a range widget"));
+                    _("Manual focus control was not a range or radio widget"));
         goto cleanup;
     }
 
-    value = delta;
-    if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
-        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
-                    _("Failed to set manual focus state: %s %d"),
-                    gp_port_result_as_string(err), err);
-        goto cleanup;
+    if (type == GP_WIDGET_RANGE) {
+        /* Nikon */
+        float values[] = {
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_COARSE] = 512,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_MEDIUM] = 64,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_FINE] = 16,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_COARSE] = -512,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_MEDIUM] = -64,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_FINE] = -16,
+        };
+
+        float value = values[step];
+        ENTANGLE_DEBUG("Setting manualfocus range %d", (int)value);
+        if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+            g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                        _("Failed to set manual focus state: %s %d"),
+                        gp_port_result_as_string(err), err);
+            goto cleanup;
+        }
+    } else {
+        /* Canon */
+        int idx[] = {
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_COARSE] = 2,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_MEDIUM] = 1,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_IN_FINE] = 0,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_COARSE] = 6,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_MEDIUM] = 5,
+            [ENTANGLE_CAMERA_MANUAL_FOCUS_STEP_OUT_FINE] = 4,
+        };
+        const gchar *value;
+        if ((err = gp_widget_get_choice(widget, idx[step], &value)) != GP_OK) {
+            g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                        _("Failed to read manual focus choice %d: %s %d"),
+                        step, gp_port_result_as_string(err), err);
+            goto cleanup;
+        }
+        ENTANGLE_DEBUG("Setting manualfocus radio %s", value);
+        if ((err = gp_widget_set_value(widget, value)) != GP_OK) {
+            g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                        _("Failed to set manual focus state: %s %d"),
+                        gp_port_result_as_string(err), err);
+            goto cleanup;
+        }
     }
 
     if ((err = gp_camera_set_config(priv->cam,
@@ -2637,6 +2682,32 @@ gboolean entangle_camera_manualfocus(EntangleCamera *cam,
                     _("Unable to save camera control configuration: %s %d"),
                     gp_port_result_as_string(err), err);
         goto cleanup;
+    }
+
+    if (type == GP_WIDGET_RANGE) {
+        float value = 0;
+        if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+            g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                        _("Failed to set manual focus state: %s %d"),
+                        gp_port_result_as_string(err), err);
+            goto cleanup;
+        }
+    } else {
+        const gchar *value;
+        /* Reset drive to "None" == 3 */
+        if ((err = gp_widget_get_choice(widget, 3, &value)) != GP_OK) {
+            g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                        _("Failed to read manual focus choice %d: %s %d"),
+                        step, gp_port_result_as_string(err), err);
+            goto cleanup;
+        }
+        ENTANGLE_DEBUG("Setting manualfocus radio %s", value);
+        if ((err = gp_widget_set_value(widget, value)) != GP_OK) {
+            g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                        _("Failed to set manual focus state: %s %d"),
+                        gp_port_result_as_string(err), err);
+            goto cleanup;
+        }
     }
 
     ret = TRUE;
@@ -2656,7 +2727,7 @@ static void entangle_camera_manualfocus_helper(GSimpleAsyncResult *result,
     gpointer data;
 
     data = g_object_get_data(G_OBJECT(result),
-                             "delta");
+                             "step");
 
     if (!entangle_camera_manualfocus(ENTANGLE_CAMERA(object),
                                      GPOINTER_TO_INT(data),
@@ -2668,7 +2739,7 @@ static void entangle_camera_manualfocus_helper(GSimpleAsyncResult *result,
 
 
 void entangle_camera_manualfocus_async(EntangleCamera *cam,
-                                       gshort delta,
+                                       EntangleCameraManualFocusStep step,
                                        GCancellable *cancellable,
                                        GAsyncReadyCallback callback,
                                        gpointer user_data)
@@ -2681,8 +2752,8 @@ void entangle_camera_manualfocus_async(EntangleCamera *cam,
                                                            entangle_camera_manualfocus_async);
 
     g_object_set_data(G_OBJECT(result),
-                      "delta",
-                      GINT_TO_POINTER(delta));
+                      "step",
+                      GINT_TO_POINTER(step));
 
     g_simple_async_result_run_in_thread(result,
                                         entangle_camera_manualfocus_helper,
