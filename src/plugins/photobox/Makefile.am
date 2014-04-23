@@ -8,7 +8,7 @@ settings_DATA = org.entangle-photo.plugins.photobox.gschema.xml
 
 EXTRA_DIST = $(pluginlib_DATA) $(settings_DATA)
 
-install-data-local:
+install-data-hook:
 	$(MKDIR_P) $(DESTDIR)$(settingsdir)
 	$(GLIB_COMPILE_SCHEMAS) $(DESTDIR)$(settingsdir)/
 
