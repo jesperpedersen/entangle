@@ -428,7 +428,8 @@ void entangle_camera_list_add(EntangleCameraList *list,
     g_object_ref(cam);
 
     g_signal_emit_by_name(list, "camera-added", cam);
-    ENTANGLE_DEBUG("Added camera %p", cam);
+    ENTANGLE_DEBUG("Added camera %p %s %s", cam, entangle_camera_get_model(cam),
+                   entangle_camera_get_port(cam));
 }
 
 void entangle_camera_list_remove(EntangleCameraList *list,
