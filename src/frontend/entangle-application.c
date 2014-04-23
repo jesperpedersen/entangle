@@ -191,6 +191,7 @@ static void entangle_application_startup(GApplication *gapp)
             gtk_application_add_window(GTK_APPLICATION(gapp), GTK_WINDOW(manager));
             gtk_widget_show(GTK_WIDGET(manager));
             entangle_camera_manager_set_camera(manager, cam);
+            gotcamera = TRUE;
         }
 
         tmp = tmp->next;
