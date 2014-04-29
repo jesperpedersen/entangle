@@ -1,3 +1,6 @@
+*~
+*\.tar\.gz
+*\.log
 *\.lo
 *\.la
 Makefile
@@ -43,6 +46,8 @@ src/frontend/\.libs/
 src/frontend/.dirstamp
 src/Entangle-*\.gir
 src/Entangle-*\.typelib
+src/backend/entangle-camera-enums\.c
+src/backend/entangle-camera-enums\.h
 src/backend/entangle-colour-profile-enums\.c
 src/backend/entangle-colour-profile-enums\.h
 src/entangle
