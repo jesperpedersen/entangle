@@ -134,8 +134,8 @@
                         <property name="label" translatable="yes">Capture</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="do_menu_capture" swapped="no"/>
-                        <accelerator key="space" signal="activate"/>
                         <accelerator key="s" signal="activate"/>
+                        <accelerator key="space" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -160,13 +160,11 @@
                     </child>
                     <child>
                       <object class="GtkSeparatorMenuItem" id="menuitem9">
-                        <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="menu-sync-clock">
-                        <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Synchronize clock</property>
                         <property name="use_underline">True</property>

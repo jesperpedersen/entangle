@@ -1359,7 +1359,7 @@ static void do_camera_load_controls_finish(GObject *source,
 
     g_cancellable_reset(priv->monitorCancel);
 
-    if (priv->camera &&
+    if (priv->camera && 0 &&
         entangle_preferences_capture_get_sync_clock(prefs))
         entangle_camera_set_clock_async(priv->camera,
                                         epochsecs,

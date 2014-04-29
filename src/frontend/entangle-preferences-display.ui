@@ -230,7 +230,6 @@
                             <child>
                               <object class="GtkCheckButton" id="capture-sync-clock">
                                 <property name="label" translatable="yes">Automatically synchronize camera clock</property>
-                                <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="xalign">0</property>
@@ -943,7 +942,8 @@
                               <object class="GtkColorButton" id="img-background">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <signal name="color-set" handler="do_img_background_changed"/>
+                                <property name="receives_default">False</property>
+                                <signal name="color-set" handler="do_img_background_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -968,7 +968,8 @@
                               <object class="GtkColorButton" id="img-highlight">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <signal name="color-set" handler="do_img_highlight_changed"/>
+                                <property name="receives_default">False</property>
+                                <signal name="color-set" handler="do_img_highlight_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
