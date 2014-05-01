@@ -211,6 +211,14 @@ static void entangle_camera_file_init(EntangleCameraFile *file)
 }
 
 
+/**
+ * entangle_camera_file_get_folder:
+ * @file: (transfer none): the camera file instance
+ *
+ * Get the path of the folder on the camera which stores the file
+ *
+ * Returns: (transfer none): the folder path
+ */
 const char *entangle_camera_file_get_folder(EntangleCameraFile *file)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
@@ -220,6 +228,14 @@ const char *entangle_camera_file_get_folder(EntangleCameraFile *file)
 }
 
 
+/**
+ * entangle_camera_file_get_name:
+ * @file: (transfer none): the camera file instance
+ *
+ * Gets the name of the camera file, without any folder component
+ *
+ * Returns: (transfer none): the file name
+ */
 const char *entangle_camera_file_get_name(EntangleCameraFile *file)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
@@ -229,6 +245,16 @@ const char *entangle_camera_file_get_name(EntangleCameraFile *file)
 }
 
 
+/**
+ * entangle_camera_file_save_path:
+ * @file: (transfer none): the camera file
+ * @localpath: (transfer none): path on the local filesystem
+ *
+ * Saves the content of the camera file to the local
+ * filesystem path identified by @localpath
+ *
+ * Returns: TRUE if the file was saved, FALSE on error
+ */
 gboolean entangle_camera_file_save_path(EntangleCameraFile *file,
                                         const char *localpath,
                                         GError **err)
@@ -285,6 +311,18 @@ gboolean entangle_camera_file_save_path(EntangleCameraFile *file,
     return ret;
 }
 
+
+/**
+ * entangle_camera_file_save_uri:
+ * @file: (transfer none): the camera file
+ * @uri: (transfer none): virtual filesystem URI
+ *
+ * Saves the content of the camera file to the virtual
+ * filesystem location identified by @uri. @uri can be
+ * any scheme for which a GVFS handler is present.
+ *
+ * Returns: TRUE if the file was saved, FALSE on error
+ */
 gboolean entangle_camera_file_save_uri(EntangleCameraFile *file,
                                        const char *uri,
                                        GError **err)
@@ -341,6 +379,14 @@ gboolean entangle_camera_file_save_uri(EntangleCameraFile *file,
 }
 
 
+/**
+ * entangle_camera_file_get_data:
+ * @file: (transfer none): the camera file instance
+ *
+ * Get the raw data associated with the camera file
+ *
+ * Returns: (transfer none): the camera data
+ */
 GByteArray *entangle_camera_file_get_data(EntangleCameraFile *file)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
@@ -350,6 +396,17 @@ GByteArray *entangle_camera_file_get_data(EntangleCameraFile *file)
 }
 
 
+/**
+ * entangle_camera_file_set_data:
+ * @file: (transfer none): the camera file instance
+ * @data: (transfer none)(allow-none): the new data
+ *
+ * Set the raw data for the camera file. If there was pre-existing data
+ * set this will be released. Passing NULL for @data will clear the
+ * data completely. The contents of @data will not be copied, instead a
+ * reference will be acquired. Thus any further changes to @data by the
+ * caller will affect this object
+ */
 void entangle_camera_file_set_data(EntangleCameraFile *file, GByteArray *data)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_FILE(file));
@@ -363,6 +420,14 @@ void entangle_camera_file_set_data(EntangleCameraFile *file, GByteArray *data)
 }
 
 
+/**
+ * entangle_camera_file_get_mimetype:
+ * @file: (transfer none): the camera file instance
+ *
+ * Get the mimetype of the camera file, as a string
+ *
+ * Returns: (transfer none): the mime type or NULL
+ */
 const gchar *entangle_camera_file_get_mimetype(EntangleCameraFile *file)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), NULL);
@@ -373,6 +438,15 @@ const gchar *entangle_camera_file_get_mimetype(EntangleCameraFile *file)
 }
 
 
+/**
+ * entangle_camera_file_set_mimetype:
+ * @file: (transfer none): the camera file instance
+ * @mimetype: (transfer none)(allow-none): the new mime type
+ *
+ * Set the mimetype of the data associated with the file.
+ * This replaces any previously set mime type. Passing in
+ * NULL for @mimetype will clear the mime type information.
+ */
 void entangle_camera_file_set_mimetype(EntangleCameraFile *file, const gchar *mimetype)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_FILE(file));

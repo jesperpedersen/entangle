@@ -83,6 +83,14 @@ static void entangle_control_group_init(EntangleControlGroup *picker)
     picker->priv = ENTANGLE_CONTROL_GROUP_GET_PRIVATE(picker);
 }
 
+
+/**
+ * entangle_control_group_add:
+ * @group: (transfer none): the group to add to
+ * @control: (transfer none): the child control to add
+ *
+ * Adds the @control to @group
+ */
 void entangle_control_group_add(EntangleControlGroup *group,
                                 EntangleControl *control)
 {
@@ -97,6 +105,15 @@ void entangle_control_group_add(EntangleControlGroup *group,
 }
 
 
+/**
+ * entangle_control_group_count:
+ * @group: (transfer none): the control group
+ *
+ * Get the number of controls which are immediate
+ * children of this group
+ *
+ * Returns: the number of child controls
+ */
 guint entangle_control_group_count(EntangleControlGroup *group)
 {
     g_return_val_if_fail(ENTANGLE_IS_CONTROL_GROUP(group), 0);
@@ -107,6 +124,13 @@ guint entangle_control_group_count(EntangleControlGroup *group)
 }
 
 
+/**
+ * entangle_control_group_get:
+ * @group: (transfer none): the control group
+ * @idx: the index of the control to fetch
+ *
+ * Returns: (transfer none): the control at index @idx, or NULL
+ */
 EntangleControl *entangle_control_group_get(EntangleControlGroup *group, gint idx)
 {
     g_return_val_if_fail(ENTANGLE_IS_CONTROL_GROUP(group), NULL);
@@ -120,6 +144,15 @@ EntangleControl *entangle_control_group_get(EntangleControlGroup *group, gint id
 }
 
 
+/**
+ * entangle_control_group_get_by_path:
+ * @group: the control group
+ * @path: unique path of the control
+ *
+ * Get the control which has the the path @path
+ *
+ * Returns: (transfer none): the control with path @path, or NULL
+ */
 EntangleControl *entangle_control_group_get_by_path(EntangleControlGroup *group,
                                                     const gchar *path)
 {

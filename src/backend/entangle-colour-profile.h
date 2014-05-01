@@ -99,11 +99,11 @@ char *entangle_colour_profile_model(EntangleColourProfile *profile);
 char *entangle_colour_profile_copyright(EntangleColourProfile *profile);
 
 EntangleColourProfileTransform *entangle_colour_profile_transform_new(EntangleColourProfile *src,
-                                                              EntangleColourProfile *dst,
-                                                              EntangleColourProfileIntent intent);
+                                                                      EntangleColourProfile *dst,
+                                                                      EntangleColourProfileIntent intent);
 
 GdkPixbuf *entangle_colour_profile_transform_apply(EntangleColourProfileTransform *trans,
-                                               GdkPixbuf *pixbuf);
+                                                   GdkPixbuf *srcpixbuf);
 
 G_END_DECLS
 

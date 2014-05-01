@@ -217,6 +217,14 @@ static void entangle_camera_list_class_init(EntangleCameraListClass *klass)
 }
 
 
+/**
+ * entangle_camera_list_new_active:
+ *
+ * Create a new camera list for enumerating camera
+ * cameras that are connected to the host computer
+ *
+ * Returns: (transfer full): the new camera list
+ */
 EntangleCameraList *entangle_camera_list_new_active(void)
 {
     return ENTANGLE_CAMERA_LIST(g_object_new(ENTANGLE_TYPE_CAMERA_LIST,
@@ -225,6 +233,14 @@ EntangleCameraList *entangle_camera_list_new_active(void)
 }
 
 
+/**
+ * entangle_camera_list_new_supported:
+ *
+ * Create a new camera list for enumerating camera
+ * models that are supported by the library.
+ *
+ * Returns: (transfer full): the new camera list
+ */
 EntangleCameraList* entangle_camera_list_new_supported(void)
 {
     return ENTANGLE_CAMERA_LIST(g_object_new(ENTANGLE_TYPE_CAMERA_LIST,
@@ -377,6 +393,14 @@ entangle_camera_list_refresh_supported(EntangleCameraList *list,
 }
 
 
+/**
+ * entangle_camera_list_refresh:
+ * @list: (transfer none): the camera list
+ *
+ * De-intialization the list of cameras
+ *
+ * Returns: TRUE if the refresh was successful, FALSE on error
+ */
 gboolean entangle_camera_list_refresh(EntangleCameraList *list,
                                       GError **error)
 {
@@ -406,6 +430,14 @@ gboolean entangle_camera_list_refresh(EntangleCameraList *list,
 }
 
 
+/**
+ * entangle_camera_list_count:
+ * @list: (transfer none): the camera list
+ *
+ * Get the total number of cameras currently detected
+ *
+ * Returns: the number of cameras
+ */
 int entangle_camera_list_count(EntangleCameraList *list)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_LIST(list), 0);
@@ -415,6 +447,14 @@ int entangle_camera_list_count(EntangleCameraList *list)
     return priv->ncamera;
 }
 
+
+/**
+ * entangle_camera_list_add:
+ * @list: (transfer none): the camera list
+ * @cam: (transfer none): the camera to add
+ *
+ * Adds the camera @cam to the list @list
+ */
 void entangle_camera_list_add(EntangleCameraList *list,
                               EntangleCamera *cam)
 {
@@ -432,6 +472,14 @@ void entangle_camera_list_add(EntangleCameraList *list,
                    entangle_camera_get_port(cam));
 }
 
+
+/**
+ * entangle_camera_list_remove:
+ * @list: (transfer none): the camera list
+ * @cam: (transfer none): the camera to remove
+ *
+ * Removes the camera @cam from the list @list
+ */
 void entangle_camera_list_remove(EntangleCameraList *list,
                                  EntangleCamera *cam)
 {
@@ -456,6 +504,16 @@ void entangle_camera_list_remove(EntangleCameraList *list,
     g_object_unref(cam);
 }
 
+
+/**
+ * entangle_camera_list_get:
+ * @list: (transfer none): the camera list
+ * @entry: (transfer none): the index of the camera to get
+ *
+ * Get the camera at position @entry in the list
+ *
+ * Returns: (transfer none): the camera at position @entry
+ */
 EntangleCamera *entangle_camera_list_get(EntangleCameraList *list,
                                          int entry)
 {
@@ -472,9 +530,11 @@ EntangleCamera *entangle_camera_list_get(EntangleCameraList *list,
 
 /**
  * entangle_camera_list_get_cameras:
- * @list: the camera list
+ * @list: (transfer none): the camera list
  *
- * Returns: (transfer container): a list of #EntangleCamera objects
+ * Get the full list of cameras
+ *
+ * Returns: (transfer container)(element-type EntangleCamera): a list of #EntangleCamera objects
  */
 GList *entangle_camera_list_get_cameras(EntangleCameraList *list)
 {
@@ -488,6 +548,15 @@ GList *entangle_camera_list_get_cameras(EntangleCameraList *list)
 }
 
 
+/**
+ * entangle_camera_list_find:
+ * @list: (transfer none): the camera list
+ * @port: (transfer none): the hardware port address
+ *
+ * Get the camera connected to hardware address @port
+ *
+ * Returns: (transfer none): the camera connected to @port, or NULL
+ */
 EntangleCamera *entangle_camera_list_find(EntangleCameraList *list,
                                           const char *port)
 {

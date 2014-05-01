@@ -294,6 +294,15 @@ static void entangle_colour_profile_transform_class_init(EntangleColourProfileTr
 }
 
 
+/**
+ * entangle_colour_profile_new_file:
+ * @filename: (transfer none): the file holding the profile
+ *
+ * Create a new colour profile initializing from the contents
+ * of @filename.
+ *
+ * Returns: (transfer full): the colour profile
+ */
 EntangleColourProfile *entangle_colour_profile_new_file(const char *filename)
 {
     return ENTANGLE_COLOUR_PROFILE(g_object_new(ENTANGLE_TYPE_COLOUR_PROFILE,
@@ -302,6 +311,16 @@ EntangleColourProfile *entangle_colour_profile_new_file(const char *filename)
 }
 
 
+/**
+ * entangle_colour_profile_new_data:
+ * @data: (transfer none): the data representing the colour profile
+ *
+ * Create a new colour profile initializing from @data. The @data
+ * will not be copied, rather a reference taken, so the contents
+ * should not be changed by the caller
+ *
+ * Returns: (transfer full): the colour profile
+ */
 EntangleColourProfile *entangle_colour_profile_new_data(GByteArray *data)
 {
     return ENTANGLE_COLOUR_PROFILE(g_object_new(ENTANGLE_TYPE_COLOUR_PROFILE,
@@ -359,6 +378,14 @@ static void entangle_colour_profile_transform_init(EntangleColourProfileTransfor
 }
 
 
+/**
+ * entangle_colour_profile_filename:
+ * @profile: (transfer none): the colour profile
+ *
+ * Get the filename holding the profile on disk, if any.
+ *
+ * Returns: (transfer none): the filename, or NULL
+ */
 const char *entangle_colour_profile_filename(EntangleColourProfile *profile)
 {
     g_return_val_if_fail(ENTANGLE_IS_COLOUR_PROFILE(profile), NULL);
@@ -400,6 +427,14 @@ static char *entangle_colour_profile_get_string(EntangleColourProfile *profile,
 }
 
 
+/**
+ * entangle_colour_profile_description:
+ * @profile: (transfer none): the colour profile
+ *
+ * Get the description of the profile
+ *
+ * Returns: (transfer full): the profile description
+ */
 char *entangle_colour_profile_description(EntangleColourProfile *profile)
 {
     return entangle_colour_profile_get_string(profile,
@@ -407,6 +442,14 @@ char *entangle_colour_profile_description(EntangleColourProfile *profile)
 }
 
 
+/**
+ * entangle_colour_profile_manufacturer:
+ * @profile: (transfer none): the colour profile
+ *
+ * Get the manufacturer of the profile
+ *
+ * Returns: (transfer full): the profile manufacturer
+ */
 char *entangle_colour_profile_manufacturer(EntangleColourProfile *profile)
 {
     return entangle_colour_profile_get_string(profile,
@@ -414,6 +457,14 @@ char *entangle_colour_profile_manufacturer(EntangleColourProfile *profile)
 }
 
 
+/**
+ * entangle_colour_profile_model:
+ * @profile: (transfer none): the colour profile
+ *
+ * Get the model of the profile
+ *
+ * Returns: (transfer full): the profile model
+ */
 char *entangle_colour_profile_model(EntangleColourProfile *profile)
 {
     return entangle_colour_profile_get_string(profile,
@@ -421,6 +472,14 @@ char *entangle_colour_profile_model(EntangleColourProfile *profile)
 }
 
 
+/**
+ * entangle_colour_profile_copyright:
+ * @profile: (transfer none): the colour profile
+ *
+ * Get the copyright of the profile
+ *
+ * Returns: (transfer full): the profile copyright
+ */
 char *entangle_colour_profile_copyright(EntangleColourProfile *profile)
 {
     return entangle_colour_profile_get_string(profile,
@@ -445,6 +504,17 @@ entangle_colour_profile_pixel_type(GdkPixbuf *pixbuf)
 }
 
 
+/**
+ * entangle_colour_profile_transform_new:
+ * @src: (transfer none): original colour profile
+ * @dst: (transfer none): target colour profile
+ * @intent: rendering intent
+ *
+ * Create a colour profile transformation that is able to convert
+ * images in the profile @src to be in the profile @dst.
+ *
+ * Returns: (transfer full): the colour profile transformation
+ */
 EntangleColourProfileTransform *entangle_colour_profile_transform_new(EntangleColourProfile *src,
                                                                       EntangleColourProfile *dst,
                                                                       EntangleColourProfileIntent intent)
@@ -459,6 +529,19 @@ EntangleColourProfileTransform *entangle_colour_profile_transform_new(EntangleCo
                                                           NULL));
 }
 
+
+/**
+ * entangle_colour_profile_transform_apply:
+ * @trans: (transfer none): the profile transformation
+ * @srcpixbuf: (transfer none): the input pixbuf
+ *
+ * Apply the colour profile transformation @trans to the pixbuf
+ * data in @srcpixbuf and return a new pixbuf whose data is
+ * in the target colour profile. The contents of @srcpixbuf will
+ * not be altered in any way.
+ *
+ * Returns: (transfer full): the transformed pixbuf
+ */
 GdkPixbuf *entangle_colour_profile_transform_apply(EntangleColourProfileTransform *trans,
                                                    GdkPixbuf *srcpixbuf)
 {

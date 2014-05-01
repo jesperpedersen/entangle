@@ -554,6 +554,14 @@ static void entangle_camera_init(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_get_model:
+ * @cam: (transfer none): the camera
+ *
+ * Get the camera model name
+ *
+ * Returns: (transfer none): the model name
+ */
 const char *entangle_camera_get_model(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
@@ -562,6 +570,15 @@ const char *entangle_camera_get_model(EntangleCamera *cam)
     return priv->model;
 }
 
+
+/**
+ * entangle_camera_get_port:
+ * @cam: (transfer none): the camera
+ *
+ * Get the camera port name
+ *
+ * Returns: (transfer none): the port name
+ */
 const char *entangle_camera_get_port(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
@@ -718,6 +735,19 @@ static void do_entangle_camera_error(GPContext *ctx G_GNUC_UNUSED,
 }
 #endif
 
+
+/**
+ * entangle_camera_connect:
+ * @cam: (transfer none): the camera
+ *
+ * Attempt to connect to and initialize the camera. This
+ * may fail if the camera is in use by another application,
+ * has gone to sleep or has been disconnected from the port.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the camera is connected, FALSE on error
+ */
 gboolean entangle_camera_connect(EntangleCamera *cam,
                                  GError **error)
 {
@@ -840,6 +870,18 @@ static void entangle_camera_connect_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_connect_async:
+ * @cam: (transfer none): the camera
+ *
+ * Attempt to connect to and initialize the camera. This
+ * may fail if the camera is in use by another application,
+ * has gone to sleep or has been disconnected from the port.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_connect_finish
+ * can be used to check the status
+ */
 void entangle_camera_connect_async(EntangleCamera *cam,
                                    GCancellable *cancellable,
                                    GAsyncReadyCallback callback,
@@ -860,6 +902,15 @@ void entangle_camera_connect_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_connect_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_connect_async
+ *
+ * Returns: TRUE if the camera is connected, FALSE on error
+ */
 gboolean entangle_camera_connect_finish(EntangleCamera *cam,
                                         GAsyncResult *result,
                                         GError **error)
@@ -871,6 +922,17 @@ gboolean entangle_camera_connect_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_disconnect:
+ * @cam: (transfer none): the camera
+ *
+ * Disconnect from the camera, enabling it to be used by
+ * other applications.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the camera is disconnected, FALSE on error
+ */
 gboolean entangle_camera_disconnect(EntangleCamera *cam,
                                     GError **error G_GNUC_UNUSED)
 {
@@ -947,6 +1009,19 @@ static void entangle_camera_disconnect_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_disconnect_async:
+ * @cam: (transfer none): the camera
+ *
+ * Disconnect from the camera, enabling it to be used by
+ * other applications.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_connect_async
+ * can be used to check the status
+ *
+ * Returns: TRUE if the camera is disconnected, FALSE on error
+ */
 void entangle_camera_disconnect_async(EntangleCamera *cam,
                                       GCancellable *cancellable,
                                       GAsyncReadyCallback callback,
@@ -967,6 +1042,15 @@ void entangle_camera_disconnect_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_disconnect_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_disconnect_async
+ *
+ * Returns: TRUE if the camera is disconnected, FALSE on error
+ */
 gboolean entangle_camera_disconnect_finish(EntangleCamera *cam,
                                            GAsyncResult *result,
                                            GError **error)
@@ -978,6 +1062,14 @@ gboolean entangle_camera_disconnect_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_get_connected:
+ * @cam: (transfer none): the camera
+ *
+ * Determine if the camera is currently connected
+ *
+ * Returns: TRUE if the camera is connected, FALSE otherwise
+ */
 gboolean entangle_camera_get_connected(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
@@ -992,6 +1084,15 @@ gboolean entangle_camera_get_connected(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_get_summary:
+ * @cam: (transfer none): the camera
+ *
+ * Get the camera summary text. This is only available
+ * while the camera is connected
+ *
+ * Returns: (transfer full): the camera summary
+ */
 char *entangle_camera_get_summary(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
@@ -1007,6 +1108,16 @@ char *entangle_camera_get_summary(EntangleCamera *cam)
 }
 
 
+
+/**
+ * entangle_camera_get_manual:
+ * @cam: (transfer none): the camera
+ *
+ * Get the camera manual text. This is only available
+ * while the camera is connected
+ *
+ * Returns: (transfer full): the camera manual
+ */
 char *entangle_camera_get_manual(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
@@ -1022,6 +1133,15 @@ char *entangle_camera_get_manual(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_get_driver:
+ * @cam: (transfer none): the camera
+ *
+ * Get the camera driver information text. This is only available
+ * while the camera is connected
+ *
+ * Returns: (transfer full): the camera driver information
+ */
 char *entangle_camera_get_driver(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
@@ -1037,6 +1157,22 @@ char *entangle_camera_get_driver(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_capture_image:
+ * @cam: (transfer none): the camera
+ *
+ * Trigger the camera shutter and download the first resulting
+ * image. If the camera is shooting in multiple formats (eg JPEG
+ * and RAW) this method will only return the first format captured
+ * The caller should watch for signal notifications to detect any
+ * additional images
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: (transfer full): the captured image or NULL
+ */
 EntangleCameraFile *entangle_camera_capture_image(EntangleCamera *cam,
                                                   GError **error)
 {
@@ -1094,6 +1230,22 @@ static void entangle_camera_capture_image_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_capture_image_async:
+ * @cam: (transfer none): the camera
+ *
+ * Trigger the camera shutter and download the first resulting
+ * image. If the camera is shooting in multiple formats (eg JPEG
+ * and RAW) this method will only return the first format captured
+ * The caller should watch for signal notifications to detect any
+ * additional images
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_capture_image_finish
+ * can be used to check the status
+ */
 void entangle_camera_capture_image_async(EntangleCamera *cam,
                                          GCancellable *cancellable,
                                          GAsyncReadyCallback callback,
@@ -1114,6 +1266,15 @@ void entangle_camera_capture_image_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_capture_image_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_capture_image_async.
+ *
+ * Returns: (transfer full): the captured image or NULL
+ */
 EntangleCameraFile *entangle_camera_capture_image_finish(EntangleCamera *cam,
                                                          GAsyncResult *result,
                                                          GError **error)
@@ -1131,6 +1292,20 @@ EntangleCameraFile *entangle_camera_capture_image_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_preview_image:
+ * @cam: (transfer none): the camera
+ *
+ * Enable "live view", if not already enabled, and capture a
+ * low resolution preview image. The "live view" mode will
+ * remain enabled after execution.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: (transfer full): the captured image or NULL
+ */
 EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
                                                   GError **error)
 {
@@ -1216,6 +1391,20 @@ static void entangle_camera_preview_image_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_preview_image_async:
+ * @cam: (transfer none): the camera
+ *
+ * Enable "live view", if not already enabled, and capture a
+ * low resolution preview image. The "live view" mode will
+ * remain enabled after execution.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_preview_image_finish
+ * can be used to check the status
+ */
 void entangle_camera_preview_image_async(EntangleCamera *cam,
                                          GCancellable *cancellable,
                                          GAsyncReadyCallback callback,
@@ -1236,6 +1425,15 @@ void entangle_camera_preview_image_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_preview_image_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_preview_image_async.
+ *
+ * Returns: (transfer full): the captured image or NULL
+ */
 EntangleCameraFile *entangle_camera_preview_image_finish(EntangleCamera *cam,
                                                          GAsyncResult *result,
                                                          GError **error)
@@ -1253,6 +1451,20 @@ EntangleCameraFile *entangle_camera_preview_image_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_download_file:
+ * @cam: (transfer none): the camera
+ * @file: (transfer none): the file whose contents to download
+ *
+ * Download the data associated with @file and set the data
+ * on @file.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the file was downloaded, FALSE on error
+ */
 gboolean entangle_camera_download_file(EntangleCamera *cam,
                                        EntangleCameraFile *file,
                                        GError **error)
@@ -1338,6 +1550,20 @@ static void entangle_camera_download_file_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_download_file_async:
+ * @cam: (transfer none): the camera
+ * @file: (transfer none): the file whose contents to download
+ *
+ * Download the data associated with @file and set the data
+ * on @file.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_download_file_finish
+ * can be used to check the status
+ */
 void entangle_camera_download_file_async(EntangleCamera *cam,
                                          EntangleCameraFile *file,
                                          GCancellable *cancellable,
@@ -1363,6 +1589,15 @@ void entangle_camera_download_file_async(EntangleCamera *cam,
 
 }
 
+/**
+ * entangle_camera_download_file_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_download_file_async.
+ *
+ * Returns: TRUE if the file was downloaded, FALSE on error
+ */
 gboolean entangle_camera_download_file_finish(EntangleCamera *cam,
                                               GAsyncResult *result,
                                               GError **err)
@@ -1374,6 +1609,19 @@ gboolean entangle_camera_download_file_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_delete_file:
+ * @cam: (transfer none): the camera
+ * @file: (transfer none): the file to delete
+ *
+ * Delete @file from the camera capture target.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the file was deleted, FALSE on error
+ */
 gboolean entangle_camera_delete_file(EntangleCamera *cam,
                                      EntangleCameraFile *file,
                                      GError **error)
@@ -1435,6 +1683,19 @@ static void entangle_camera_delete_file_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_delete_file_async:
+ * @cam: (transfer none): the camera
+ * @file: (transfer none): the file to delete
+ *
+ * Delete @file from the camera capture target.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_delete_file_finish
+ * can be used to check the status
+ */
 void entangle_camera_delete_file_async(EntangleCamera *cam,
                                        EntangleCameraFile *file,
                                        GCancellable *cancellable,
@@ -1459,6 +1720,16 @@ void entangle_camera_delete_file_async(EntangleCamera *cam,
     g_object_unref(result);
 }
 
+
+/**
+ * entangle_camera_delete_file_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_delete_file_async.
+ *
+ * Returns: TRUE if the file was deleted, FALSE on error
+ */
 gboolean entangle_camera_delete_file_finish(EntangleCamera *cam,
                                             GAsyncResult *result,
                                             GError **err)
@@ -1470,6 +1741,22 @@ gboolean entangle_camera_delete_file_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_process_events:
+ * @cam: (transfer none): the camera
+ * @waitms: the number of milliseconds to wait
+ *
+ * Wait upto @waitms milliseconds for events to arrive from
+ * the camera. Signals will be emitted for any interesting
+ * events that arrive. Multiple events will be processed
+ * until @waitms is exceeded.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the file was deleted, FALSE on error
+ */
 gboolean entangle_camera_process_events(EntangleCamera *cam,
                                         guint64 waitms,
                                         GError **error)
@@ -1600,6 +1887,22 @@ static void entangle_camera_process_events_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_process_events_async:
+ * @cam: (transfer none): the camera
+ * @waitms: the number of milliseconds to wait
+ *
+ * Wait upto @waitms milliseconds for events to arrive from
+ * the camera. Signals will be emitted for any interesting
+ * events that arrive. Multiple events will be processed
+ * until @waitms is exceeded.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_process_events_finish
+ * can be used to check the status
+ */
 void entangle_camera_process_events_async(EntangleCamera *cam,
                                           guint64 waitms,
                                           GCancellable *cancellable,
@@ -1625,6 +1928,15 @@ void entangle_camera_process_events_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_process_events_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_process_events_async.
+ *
+ * Returns: TRUE if events were processed, FALSE on error
+ */
 gboolean entangle_camera_process_events_finish(EntangleCamera *cam,
                                                GAsyncResult *result,
                                                GError **error)
@@ -2078,6 +2390,18 @@ static gboolean do_save_controls(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_load_controls:
+ * @cam: (transfer none): the camera
+ *
+ * Loads the configuration controls from the camera.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the controls were loaded, FALSE on error
+ */
 gboolean entangle_camera_load_controls(EntangleCamera *cam,
                                        GError **error)
 {
@@ -2147,6 +2471,18 @@ static void entangle_camera_load_controls_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_load_controls_async:
+ * @cam: (transfer none): the camera
+ *
+ * Loads the configuration controls from the camera.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_load_controls_finish
+ * can be used to check the status
+ */
 void entangle_camera_load_controls_async(EntangleCamera *cam,
                                          GCancellable *cancellable,
                                          GAsyncReadyCallback callback,
@@ -2167,6 +2503,15 @@ void entangle_camera_load_controls_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_load_controls_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_load_controls_async.
+ *
+ * Returns: TRUE if the controls were loaded, FALSE on error
+ */
 gboolean entangle_camera_load_controls_finish(EntangleCamera *cam,
                                               GAsyncResult *result,
                                               GError **error)
@@ -2178,6 +2523,18 @@ gboolean entangle_camera_load_controls_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_save_controls:
+ * @cam: (transfer none): the camera
+ *
+ * Saves the configuration controls to the camera.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the controls were saved, FALSE on error
+ */
 gboolean entangle_camera_save_controls(EntangleCamera *cam,
                                        GError **error)
 {
@@ -2251,6 +2608,18 @@ static void entangle_camera_save_controls_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_save_controls_async:
+ * @cam: (transfer none): the camera
+ *
+ * Saves the configuration controls to the camera.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_save_controls_finish
+ * can be used to check the status
+ */
 void entangle_camera_save_controls_async(EntangleCamera *cam,
                                          GCancellable *cancellable,
                                          GAsyncReadyCallback callback,
@@ -2271,6 +2640,15 @@ void entangle_camera_save_controls_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_save_controls_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_save_controls_async.
+ *
+ * Returns: TRUE if the controls were saved, FALSE on error
+ */
 gboolean entangle_camera_save_controls_finish(EntangleCamera *cam,
                                               GAsyncResult *result,
                                               GError **error)
@@ -2282,6 +2660,16 @@ gboolean entangle_camera_save_controls_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_get_controls:
+ * @cam: (transfer none): the camera
+ *
+ * Get the configuration controls associated with the camera.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * Returns: (transfer full): the controls, or NULL
+ */
 EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError **error)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
@@ -2312,6 +2700,21 @@ EntangleControlGroup *entangle_camera_get_controls(EntangleCamera *cam, GError *
 }
 
 
+/**
+ * entangle_camera_set_viewfinder:
+ * @cam: (transfer none): the camera
+ * @enabled: TRUE to turn on the view finder
+ *
+ * If @enabled is TRUE, the view finder will be activated
+ * allowing preview images to be captured. If @enabled is
+ * FALSE, the view finder will be deactivated.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the viewer finder state was changed, FALSE on error
+ */
 gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
                                         gboolean enabled,
                                         GError **error)
@@ -2414,6 +2817,21 @@ static void entangle_camera_set_viewfinder_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_set_viewfinder_async:
+ * @cam: (transfer none): the camera
+ * @enabled: TRUE to turn on the view finder
+ *
+ * If @enabled is TRUE, the view finder will be activated
+ * allowing preview images to be captured. If @enabled is
+ * FALSE, the view finder will be deactivated.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_set_viewfinder_finish
+ * can be used to check the status
+ */
 void entangle_camera_set_viewfinder_async(EntangleCamera *cam,
                                           gboolean enabled,
                                           GCancellable *cancellable,
@@ -2439,6 +2857,15 @@ void entangle_camera_set_viewfinder_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_set_viewfinder_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_set_viewfinder_async.
+ *
+ * Returns: TRUE if the viewfinder state was changed, FALSE on error
+ */
 gboolean entangle_camera_set_viewfinder_finish(EntangleCamera *cam,
                                                GAsyncResult *result,
                                                GError **error)
@@ -2450,6 +2877,19 @@ gboolean entangle_camera_set_viewfinder_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_autofocus:
+ * @cam: (transfer none): the camera
+ *
+ * Trigger the autofocus mechanism on the camera, waiting
+ * until focus is achieved or fails.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if autofocus was achieved, FALSE on error
+ */
 gboolean entangle_camera_autofocus(EntangleCamera *cam,
                                    GError **error)
 {
@@ -2548,6 +2988,19 @@ static void entangle_camera_autofocus_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_autofocus_async:
+ * @cam: (transfer none): the camera
+ *
+ * Trigger the autofocus mechanism on the camera, waiting
+ * until focus is achieved or fails.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_autofocus_finish
+ * can be used to check the status
+ */
 void entangle_camera_autofocus_async(EntangleCamera *cam,
                                      GCancellable *cancellable,
                                      GAsyncReadyCallback callback,
@@ -2568,6 +3021,15 @@ void entangle_camera_autofocus_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_autofocus_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_autofocus_async.
+ *
+ * Returns: TRUE if autofocus was performed, FALSE on error
+ */
 gboolean entangle_camera_autofocus_finish(EntangleCamera *cam,
                                           GAsyncResult *result,
                                           GError **error)
@@ -2579,6 +3041,20 @@ gboolean entangle_camera_autofocus_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_manualfocus:
+ * @cam: (transfer none): the camera
+ * @step: how much to change focus by
+ *
+ * Trigger the focus mechanism on the camera, to move
+ * by @step.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if autofocus was achieved, FALSE on error
+ */
 gboolean entangle_camera_manualfocus(EntangleCamera *cam,
                                      EntangleCameraManualFocusStep step,
                                      GError **error)
@@ -2738,6 +3214,20 @@ static void entangle_camera_manualfocus_helper(GSimpleAsyncResult *result,
 }
 
 
+/**
+ * entangle_camera_manualfocus_async:
+ * @cam: (transfer none): the camera
+ * @step: how much to change focus by
+ *
+ * Trigger the focus mechanism on the camera, to move
+ * by @step.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_manualfocus_finish
+ * can be used to check the status
+ */
 void entangle_camera_manualfocus_async(EntangleCamera *cam,
                                        EntangleCameraManualFocusStep step,
                                        GCancellable *cancellable,
@@ -2763,6 +3253,15 @@ void entangle_camera_manualfocus_async(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_manualfocus_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_manualfocus_async.
+ *
+ * Returns: TRUE if manual focus was performed, FALSE on error
+ */
 gboolean entangle_camera_manualfocus_finish(EntangleCamera *cam,
                                             GAsyncResult *result,
                                             GError **error)
@@ -2775,6 +3274,20 @@ gboolean entangle_camera_manualfocus_finish(EntangleCamera *cam,
 
 
 
+/**
+ * entangle_camera_set_clock:
+ * @cam: (transfer none): the camera
+ * @epochsecs: new time in seconds since the epoch
+ *
+ * Update the camera clock to be @epochsecs seconds since
+ * the epoch.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the clock was changed, FALSE on error
+ */
 gboolean entangle_camera_set_clock(EntangleCamera *cam,
                                    gint64 epochsecs,
                                    GError **error)
@@ -2872,7 +3385,20 @@ static void entangle_camera_set_clock_helper(GSimpleAsyncResult *result,
 }
 
 
-
+/**
+ * entangle_camera_set_clock_async:
+ * @cam: (transfer none): the camera
+ * @epochsecs: new time in seconds since the epoch
+ *
+ * Update the camera clock to be @epochsecs seconds since
+ * the epoch.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_set_clock_finish
+ * can be used to check the status
+ */
 void entangle_camera_set_clock_async(EntangleCamera *cam,
                                      gint64 epochsecs,
                                      GCancellable *cancellable,
@@ -2902,7 +3428,15 @@ void entangle_camera_set_clock_async(EntangleCamera *cam,
 }
 
 
-
+/**
+ * entangle_camera_set_clock_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_set_clock_async.
+ *
+ * Returns: TRUE if the clock was changed, FALSE on error
+ */
 gboolean entangle_camera_set_clock_finish(EntangleCamera *cam,
                                           GAsyncResult *result,
                                           GError **error)
@@ -2914,6 +3448,20 @@ gboolean entangle_camera_set_clock_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_set_capture_target:
+ * @cam: (transfer none): the camera
+ * @target: the capture target
+ *
+ * Set the destination for storing captured images
+ * to @target.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This block execution of the caller until completion.
+ *
+ * Returns: TRUE if the capture target was changed, FALSE on error
+ */
 gboolean entangle_camera_set_capture_target(EntangleCamera *cam,
                                             EntangleCameraCaptureTarget target,
                                             GError **error)
@@ -3017,7 +3565,20 @@ static void entangle_camera_set_capture_target_helper(GSimpleAsyncResult *result
 }
 
 
-
+/**
+ * entangle_camera_set_capture_target_async:
+ * @cam: (transfer none): the camera
+ * @target: the capture target
+ *
+ * Set the destination for storing captured images
+ * to @target.
+ *
+ * This can only be invoked when the camera is connected.
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_set_clock_finish
+ * can be used to check the status
+ */
 void entangle_camera_set_capture_target_async(EntangleCamera *cam,
                                               EntangleCameraCaptureTarget target,
                                               GCancellable *cancellable,
@@ -3048,6 +3609,15 @@ void entangle_camera_set_capture_target_async(EntangleCamera *cam,
 
 
 
+/**
+ * entangle_camera_capture_target_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_capture_target_async.
+ *
+ * Returns: TRUE if the capture target was changed, FALSE on error
+ */
 gboolean entangle_camera_set_capture_target_finish(EntangleCamera *cam,
                                                    GAsyncResult *result,
                                                    GError **error)
@@ -3059,6 +3629,14 @@ gboolean entangle_camera_set_capture_target_finish(EntangleCamera *cam,
 }
 
 
+/**
+ * entangle_camera_get_has_capture:
+ * @cam: (transfer none): the camera
+ *
+ * Check if the camera supports images capture
+ *
+ * Returns: TRUE if the camera supports image capture, FALSE otherwise
+ */
 gboolean entangle_camera_get_has_capture(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
@@ -3074,6 +3652,14 @@ gboolean entangle_camera_get_has_capture(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_get_has_preview:
+ * @cam: (transfer none): the camera
+ *
+ * Check if the camera supports images preview
+ *
+ * Returns: TRUE if the camera supports image preview, FALSE otherwise
+ */
 gboolean entangle_camera_get_has_preview(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
@@ -3089,6 +3675,14 @@ gboolean entangle_camera_get_has_preview(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_get_has_settings:
+ * @cam: (transfer none): the camera
+ *
+ * Check if the camera supports configuration settings
+ *
+ * Returns: TRUE if the camera supports configuration settings, FALSE otherwise
+ */
 gboolean entangle_camera_get_has_settings(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
@@ -3104,6 +3698,14 @@ gboolean entangle_camera_get_has_settings(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_get_has_viewfinder:
+ * @cam: (transfer none): the camera
+ *
+ * Check if the camera supports view finder control
+ *
+ * Returns: TRUE if the camera supports view finder control, FALSE otherwise
+ */
 gboolean entangle_camera_get_has_viewfinder(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
@@ -3119,6 +3721,14 @@ gboolean entangle_camera_get_has_viewfinder(EntangleCamera *cam)
 }
 
 
+/**
+ * entangle_camera_set_progress:
+ * @cam: (transfer none): the camera
+ * @prog: (transfer none)(allow-none): the progress instance
+ *
+ * Set the object instance to receive operation progress
+ * notifications
+ */
 void entangle_camera_set_progress(EntangleCamera *cam, EntangleProgress *prog)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA(cam));
@@ -3135,6 +3745,15 @@ void entangle_camera_set_progress(EntangleCamera *cam, EntangleProgress *prog)
 }
 
 
+/**
+ * entangle_camera_get_progress:
+ * @cam: (transfer none): the camera
+ *
+ * Get the object instance that is receiving operation
+ * progress notifications
+ *
+ * Returns: (transfer full): the progress object
+ */
 EntangleProgress *entangle_camera_get_progress(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), NULL);
@@ -3186,15 +3805,24 @@ static GMount *entangle_device_manager_find_mount(EntangleCamera *cam,
 }
 
 
-/*
- * For some reason if we ever unref monitor, we get a 100%
- * CPU burn loop in a bg thread from DBus messages. So we
- * have made this static for now
- */
 
+/**
+ * entangle_camera_is_mounted:
+ * @cam: (transfer none): the camera
+ *
+ * Check whether the camera is mounted as a virtual filesystem,
+ * which would prevent connecting it to.
+ *
+ * Returns: TRUE if the camera is mounted, FALSE otherwise
+ */
 gboolean entangle_camera_is_mounted(EntangleCamera *cam)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA(cam), FALSE);
+    /*
+     * For some reason if we ever unref monitor, we get a 100%
+     * CPU burn loop in a bg thread from DBus messages. So we
+     * have made this static for now
+     */
     static GVolumeMonitor *monitor;
 
     GMount *mount;
@@ -3212,15 +3840,6 @@ gboolean entangle_camera_is_mounted(EntangleCamera *cam)
 
     return ret;
 }
-#if 0
-void entangle_camera_mount_async(EntangleCamera *cam,
-                                 GCancellable *cancellable,
-                                 GAsyncReadyCallback callback,
-                                 gpointer user_data);
-gboolean entangle_camera_mount_finish(EntangleCamera *cam,
-                                      GAsyncResult *result,
-                                      GError **err);
-#endif
 
 struct UnmountData {
     GVolumeMonitor *monitor;
@@ -3262,6 +3881,18 @@ static void entangle_camera_unmount_complete(GObject *object,
     g_object_unref(camresult);
 }
 
+
+/**
+ * entangle_camera_unmount_async:
+ * @cam: (transfer none): the camera
+ *
+ * Unmount the camera virtual filesystem, allowing it to be
+ * connected to
+ *
+ * This will execute in the background, and invoke @callback
+ * when complete, whereupon entangle_camera_unmount_finish
+ * can be used to check the status
+ */
 void entangle_camera_unmount_async(EntangleCamera *cam,
                                    GCancellable *cancellable,
                                    GAsyncReadyCallback callback,
@@ -3293,6 +3924,16 @@ void entangle_camera_unmount_async(EntangleCamera *cam,
     }
 }
 
+
+/**
+ * entangle_camera_unmount_finish:
+ * @cam: (transfer none): the camera
+ *
+ * Check the completion status of a previous call to
+ * entangle_camera_unmount_async.
+ *
+ * Returns: TRUE if the camera was unmounted, FALSE on error
+ */
 gboolean entangle_camera_unmount_finish(EntangleCamera *cam,
                                         GAsyncResult *result,
                                         GError **err)

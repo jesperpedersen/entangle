@@ -834,6 +834,15 @@ static void entangle_preferences_init(EntanglePreferences *picker)
 }
 
 
+/**
+ * entangle_preferences_interface_get_auto_connect:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine whether the application will attempt to automatically
+ * connect to cameras at startup
+ *
+ * Returns: TRUE if cameras will be automatically connected, FALSE otherwise
+ */
 gboolean entangle_preferences_interface_get_auto_connect(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -844,6 +853,14 @@ gboolean entangle_preferences_interface_get_auto_connect(EntanglePreferences *pr
 }
 
 
+/**
+ * entangle_preferences_set_auto_connect:
+ * @prefs: (transfer none): the preferences store
+ * @autoconn: TRUE to turn on automatic connect of cameras
+ *
+ * If @autoconn is set to TRUE, the application will
+ * attempt to automatically connect to cameras at startup
+ */
 void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs, gboolean autoconn)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -855,6 +872,15 @@ void entangle_preferences_interface_set_auto_connect(EntanglePreferences *prefs,
 }
 
 
+/**
+ * entangle_preferences_interface_get_screen_blank:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if the screen wil be blanked prior to capturing
+ * the image
+ *
+ * Returns: TRUE if the screen will blank at time of capture
+ */
 gboolean entangle_preferences_interface_get_screen_blank(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -865,6 +891,15 @@ gboolean entangle_preferences_interface_get_screen_blank(EntanglePreferences *pr
 }
 
 
+/**
+ * entangle_preferences_interface_set_screen_blank:
+ * @prefs: (transfer none): the preferences store
+ * @blank: TRUE to make the screen blank during capture
+ *
+ * If @blank is set to TRUE, the screen will be blanked
+ * during capture to avoid light from the screen influencing
+ * the scene being shot.
+ */
 void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs, gboolean blank)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -876,6 +911,15 @@ void entangle_preferences_interface_set_screen_blank(EntanglePreferences *prefs,
 }
 
 
+/**
+ * entangle_preferences_interface_get_histogram_linear:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if the histogram will be displayed in
+ * linear or logarithmic mode
+ *
+ * Returns: TRUE if the histogram is linear, FALSE for logarithmic
+ */
 gboolean entangle_preferences_interface_get_histogram_linear(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -887,6 +931,14 @@ gboolean entangle_preferences_interface_get_histogram_linear(EntanglePreferences
 }
 
 
+/**
+ * entangle_preferences_interface_set_histogram_linear:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to set the histogram to linear mode
+ *
+ * If @enabled is TRUE then the histogram will be displayed in
+ * linear mode, otherwise logarithmic mode will be used
+ */
 void entangle_preferences_interface_set_histogram_linear(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -899,6 +951,15 @@ void entangle_preferences_interface_set_histogram_linear(EntanglePreferences *pr
 }
 
 
+/**
+ * entangle_preferences_interface_get_plugins:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the names of the plugins that are enabled for the
+ * application
+ *
+ * Returns: (transfer full)(array zero-terminated=1): the list of plugin names, NULL terminated
+ */
 gchar **entangle_preferences_interface_get_plugins(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -909,6 +970,13 @@ gchar **entangle_preferences_interface_get_plugins(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_interface_add_plugin:
+ * @prefs: (transfer none): the preferences store
+ * @name: (transfer none): the plugin to add
+ *
+ * Add the plugin called @name to the active list
+ */
 void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const char *name)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -928,6 +996,13 @@ void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const
 }
 
 
+/**
+ * entangle_preferences_interface_remove_plugin:
+ * @prefs: (transfer none): the preferences store
+ * @name: (transfer none): the plugin to remove
+ *
+ * Remove the plugin called @name from the active list
+ */
 void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, const char *name)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -955,6 +1030,15 @@ void entangle_preferences_interface_remove_plugin(EntanglePreferences *prefs, co
 }
 
 
+/**
+ * entangle_preferences_capture_get_last_session:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the most recently used directory for the
+ * image session
+ *
+ * Returns: (transfer full): the session directory
+ */
 char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -972,6 +1056,14 @@ char *entangle_preferences_capture_get_last_session(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_capture_set_last_session:
+ * @prefs: (transfer none): the preferences store
+ * @dir: (transfer none): the new session
+ *
+ * Record @dir as being the most recently used session
+ * directory
+ */
 void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, const gchar *dir)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -984,6 +1076,17 @@ void entangle_preferences_capture_set_last_session(EntanglePreferences *prefs, c
 }
 
 
+/**
+ * entangle_preferences_capture_get_filename_pattern:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the filename pattern to use for naming images that
+ * are saved after download. In the pattern any repeated
+ * sequence of 'X' characters will be replaced with the
+ * image sequence number
+ *
+ * Returns: (transfer full): the filename pattern.
+ */
 char *entangle_preferences_capture_get_filename_pattern(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -995,18 +1098,35 @@ char *entangle_preferences_capture_get_filename_pattern(EntanglePreferences *pre
 }
 
 
-void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *prefs, const gchar *dir)
+/**
+ * entangle_preferences_capture_set_filename_pattern:
+ * @prefs: (transfer none): the preferences store
+ * @pattern: (transfer none): the filename pattern
+ *
+ * Set the pattern to use for naming images that are
+ * saved after download.
+ */
+void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *prefs, const gchar *pattern)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
 
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_string(priv->captureSettings,
-                          SETTING_CAPTURE_FILENAME_PATTERN, dir);
+                          SETTING_CAPTURE_FILENAME_PATTERN, pattern);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_FILENAME_PATTERN);
 }
 
 
+/**
+ * entangle_preferences_capture_get_continuous_preview:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if the preview mode will continue to operate after each
+ * image is captured.
+ *
+ * Returns: TRUE if preview mode will continue after capture, FALSE otherwise
+ */
 gboolean entangle_preferences_capture_get_continuous_preview(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1018,6 +1138,14 @@ gboolean entangle_preferences_capture_get_continuous_preview(EntanglePreferences
 }
 
 
+/**
+ * entangle_preferences_capture_set_continuous_preview:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to make preview mode continue after capture
+ *
+ * If @enabled is set to TRUE, then the preview mode will
+ * continue to run after each image is captured
+ */
 void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1030,6 +1158,15 @@ void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *pr
 }
 
 
+/**
+ * entangle_preferences_capture_get_delete_file:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if the file will be deleted from the camera after it
+ * has been downloaded.
+ *
+ * Returns: TRUE if the files will be deleted after download
+ */
 gboolean entangle_preferences_capture_get_delete_file(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1041,6 +1178,14 @@ gboolean entangle_preferences_capture_get_delete_file(EntanglePreferences *prefs
 }
 
 
+/**
+ * entangle_preferences_capture_set_delete_file:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE if files should be deleted from camera after capture
+ *
+ * If @enabled is set to TRUE, then files will be deleted from the
+ * camera after they are downloaded.
+ */
 void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1053,6 +1198,15 @@ void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gb
 }
 
 
+/**
+ * entangle_preferences_capture_get_sync_clock:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determines if the camera clock will be automatically synchronized
+ * to the host computer clock when first connecting
+ *
+ * Returns: TRUE if the clock will synchronized, FALSE otherwise
+ */
 gboolean entangle_preferences_capture_get_sync_clock(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1064,6 +1218,14 @@ gboolean entangle_preferences_capture_get_sync_clock(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_capture_set_sync_clock:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE if the clock should be synchronized
+ *
+ * If @enabled is TRUE, then the camera clock will be synchronized to
+ * the host computer clock when first connecting
+ */
 void entangle_preferences_capture_set_sync_clock(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1076,6 +1238,14 @@ void entangle_preferences_capture_set_sync_clock(EntanglePreferences *prefs, gbo
 }
 
 
+/**
+ * entangle_preferences_cms_get_rgb_profile:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the colour profile that represents the RGB working space
+ *
+ * Returns: (transfer full): the colour space
+ */
 EntangleColourProfile *entangle_preferences_cms_get_rgb_profile(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -1090,6 +1260,13 @@ EntangleColourProfile *entangle_preferences_cms_get_rgb_profile(EntanglePreferen
 }
 
 
+/**
+ * entangle_preferences_cms_set_rgb_profile:
+ * @prefs: (transfer none): the preferences store
+ * @prof: (transfer none)(allow-none): the new rgb profile
+ *
+ * Set the colour profile that represents the RGB working space
+ */
 void entangle_preferences_cms_set_rgb_profile(EntanglePreferences *prefs,
                                               EntangleColourProfile *prof)
 {
@@ -1104,6 +1281,14 @@ void entangle_preferences_cms_set_rgb_profile(EntanglePreferences *prefs,
 }
 
 
+/**
+ * entangle_preferences_cms_get_monitor_profile:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the profile associated with the display, if any.
+ *
+ * Returns: (transfer full): the colour profile
+ */
 EntangleColourProfile *entangle_preferences_cms_get_monitor_profile(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -1118,6 +1303,15 @@ EntangleColourProfile *entangle_preferences_cms_get_monitor_profile(EntanglePref
 }
 
 
+/**
+ * entangle_preferences_cms_set_monitor_profile:
+ * @prefs: (transfer none): the preferences store
+ * @prof: (transfer none)(allow-none): the new monitor profile
+ *
+ * If @prof is not NULL, it will be used as the current monitor
+ * profile. This is only honoured if automatic detection of
+ * the monitor profile is disabled.
+ */
 void entangle_preferences_cms_set_monitor_profile(EntanglePreferences *prefs,
                                                   EntangleColourProfile *prof)
 {
@@ -1132,6 +1326,15 @@ void entangle_preferences_cms_set_monitor_profile(EntanglePreferences *prefs,
 }
 
 
+/**
+ * entangle_preferences_cms_get_enabled:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if images should be displayed with colour management
+ * applied
+ *
+ * Returns: TRUE if colour management is active
+ */
 gboolean entangle_preferences_cms_get_enabled(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1143,6 +1346,14 @@ gboolean entangle_preferences_cms_get_enabled(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_cms_set_enabled:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to enable colour management
+ *
+ * If @enabled is TRUE, colour management will be applied when
+ * displaying images
+ */
 void entangle_preferences_cms_set_enabled(EntanglePreferences *prefs,
                                           gboolean enabled)
 {
@@ -1156,6 +1367,14 @@ void entangle_preferences_cms_set_enabled(EntanglePreferences *prefs,
 }
 
 
+/**
+ * entangle_preferences_cms_get_detect_system_profile:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if the monitor profile will be automatically
+ * detected, which is usually preferrable since
+ * it copes with multiple monitor scenarios
+ */
 gboolean entangle_preferences_cms_get_detect_system_profile(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1167,6 +1386,14 @@ gboolean entangle_preferences_cms_get_detect_system_profile(EntanglePreferences 
 }
 
 
+/**
+ * entangle_preferences_cms_set_detect_system_profile:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to automatically detect the monitor profile
+ *
+ * If @enabled is TRUE then then monitor profile will be
+ * automatically detected
+ */
 void entangle_preferences_cms_set_detect_system_profile(EntanglePreferences *prefs,
                                                         gboolean enabled)
 {
@@ -1180,6 +1407,14 @@ void entangle_preferences_cms_set_detect_system_profile(EntanglePreferences *pre
 }
 
 
+/**
+ * entangle_preferences_cms_get_rendering_intent:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine the rendering intent for displaying images
+ *
+ * Returns: the image rendering intent
+ */
 EntangleColourProfileIntent entangle_preferences_cms_get_rendering_intent(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
@@ -1191,6 +1426,13 @@ EntangleColourProfileIntent entangle_preferences_cms_get_rendering_intent(Entang
 }
 
 
+/**
+ * entangle_preferences_cms_set_rendering_intent:
+ * @prefs: (transfer none): the preferences store
+ * @intent: the new rendering intent
+ *
+ * Set the rendering intent for displaying images
+ */
 void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs,
                                                    EntangleColourProfileIntent intent)
 {
@@ -1204,6 +1446,14 @@ void entangle_preferences_cms_set_rendering_intent(EntanglePreferences *prefs,
 }
 
 
+/**
+ * entangle_preferences_img_get_aspect_ratio:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the aspect ratio for any mask to apply to the image
+ *
+ * Returns: (transfer full): the aspect ratio for the mask
+ */
 gchar *entangle_preferences_img_get_aspect_ratio(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -1215,6 +1465,13 @@ gchar *entangle_preferences_img_get_aspect_ratio(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_aspect_ratio:
+ * @prefs: (transfer none): the preferences store
+ * @aspect: the new aspect ratio
+ *
+ * Set the aspect ratio for any mask to apply to the image
+ */
 void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs,
                                                const gchar *aspect)
 {
@@ -1227,6 +1484,15 @@ void entangle_preferences_img_set_aspect_ratio(EntanglePreferences *prefs,
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_ASPECT_RATIO);
 }
 
+
+/**
+ * entangle_preferences_img_get_mask_opacity:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the opacity of any mask to apply to the image
+ *
+ * Returns: the opacity between 0 and 100
+ */
 gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
@@ -1238,19 +1504,35 @@ gint entangle_preferences_img_get_mask_opacity(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_mask_opacity:
+ * @prefs: (transfer none): the preferences store
+ * @opacity: the opacity of the mask between 0 and 100
+ *
+ * Set the opacity to use when rendering the image mask
+ */
 void entangle_preferences_img_set_mask_opacity(EntanglePreferences *prefs,
-                                               gint mask)
+                                               gint opacity)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
 
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_int(priv->imgSettings,
-                       SETTING_IMG_MASK_OPACITY, mask);
+                       SETTING_IMG_MASK_OPACITY, opacity);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_MASK_OPACITY);
 }
 
 
+/**
+ * entangle_preferences_img_get_mask_enabled:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if an aspect ratio mask to be applied to the
+ * image display
+ *
+ * Returns: TRUE if an aspect ratio mask should be applied
+ */
 gboolean entangle_preferences_img_get_mask_enabled(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1262,6 +1544,14 @@ gboolean entangle_preferences_img_get_mask_enabled(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_mask_enabled:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to apply an aspect ratio mask
+ *
+ * If @enabled is TRUE an aspect ratio mask will be applied
+ * to the image display
+ */
 void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1274,6 +1564,15 @@ void entangle_preferences_img_set_mask_enabled(EntanglePreferences *prefs, gbool
 }
 
 
+/**
+ * entangle_preferences_img_get_focus_point:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if the center focus point should be displayed in
+ * preview mode
+ *
+ * Returns: TRUE if a focus point is to be rendered
+ */
 gboolean entangle_preferences_img_get_focus_point(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1285,6 +1584,14 @@ gboolean entangle_preferences_img_get_focus_point(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_focus_point:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to render a focus point
+ *
+ * If @enabled is TRUE then a focus point will be display in
+ * preview mode.
+ */
 void entangle_preferences_img_set_focus_point(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1297,6 +1604,14 @@ void entangle_preferences_img_set_focus_point(EntanglePreferences *prefs, gboole
 }
 
 
+/**
+ * entangle_preferences_img_get_grid_lines:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine what grid lines to display in preview mode
+ *
+ * Returns: the grid lines to display
+ */
 gint entangle_preferences_img_get_grid_lines(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
@@ -1308,6 +1623,13 @@ gint entangle_preferences_img_get_grid_lines(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_grid_lines:
+ * @prefs: (transfer none): the preferences store
+ * @gridLines: the grid lines to display
+ *
+ * Set the grid lines to display when in image preview mode
+ */
 void entangle_preferences_img_set_grid_lines(EntanglePreferences *prefs, gint gridLines)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1320,6 +1642,15 @@ void entangle_preferences_img_set_grid_lines(EntanglePreferences *prefs, gint gr
 }
 
 
+/**
+ * entangle_preferences_img_get_embedded_preview:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine whether to use the embedded preview from files
+ * for thumbnails.
+ *
+ * Returns: TRUE if embedded preview should be used
+ */
 gboolean entangle_preferences_img_get_embedded_preview(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1331,6 +1662,15 @@ gboolean entangle_preferences_img_get_embedded_preview(EntanglePreferences *pref
 }
 
 
+/**
+ * entangle_preferences_img_set_embedded_preview:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to use the embedded preview
+ *
+ * If @enabled is TRUE, any embedded preview will be used
+ * when generating thumbnails rather than loading the full
+ * resolution image
+ */
 void entangle_preferences_img_set_embedded_preview(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1343,6 +1683,14 @@ void entangle_preferences_img_set_embedded_preview(EntanglePreferences *prefs, g
 }
 
 
+/**
+ * entangle_preferences_img_get_onion_layers:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine how many images to overlay in onion skinning mode
+ *
+ * Returns: the number of image overlays
+ */
 gint entangle_preferences_img_get_onion_layers(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), 0);
@@ -1354,19 +1702,36 @@ gint entangle_preferences_img_get_onion_layers(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_onion_layers:
+ * @prefs: (transfer none): the preferences store
+ * @layers: the number of image overlays
+ *
+ * Set the number of images to overlay when in onion skinning
+ * mode
+ */
 void entangle_preferences_img_set_onion_layers(EntanglePreferences *prefs,
-                                               gint onion)
+                                               gint layers)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
 
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_int(priv->imgSettings,
-                       SETTING_IMG_ONION_LAYERS, onion);
+                       SETTING_IMG_ONION_LAYERS, layers);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_ONION_LAYERS);
 }
 
 
+/**
+ * entangle_preferences_img_get_onion_skin:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determine if onion skinning should be used when displaying
+ * images
+ *
+ * Returns: TRUE if onion skinning is enabled
+ */
 gboolean entangle_preferences_img_get_onion_skin(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
@@ -1378,17 +1743,34 @@ gboolean entangle_preferences_img_get_onion_skin(EntanglePreferences *prefs)
 }
 
 
-void entangle_preferences_img_set_onion_skin(EntanglePreferences *prefs, gboolean skin)
+/**
+ * entangle_preferences_img_set_onion_skin:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE to enable onion skinning
+ *
+ * If @enabled is TRUE then onion skinning will be enabled
+ * when displaying images
+ */
+void entangle_preferences_img_set_onion_skin(EntanglePreferences *prefs, gboolean enabled)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
 
     EntanglePreferencesPrivate *priv = prefs->priv;
 
     g_settings_set_boolean(priv->imgSettings,
-                           SETTING_IMG_ONION_SKIN, skin);
+                           SETTING_IMG_ONION_SKIN, enabled);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_ONION_SKIN);
 }
 
+
+/**
+ * entangle_preferences_img_get_background:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the colour used as the background when displaying images
+ *
+ * Returns: (transfer full): the background colour
+ */
 gchar *entangle_preferences_img_get_background(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -1400,6 +1782,13 @@ gchar *entangle_preferences_img_get_background(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_background:
+ * @prefs: (transfer none): the preferences store
+ * @bkg: (transfer none): the background colour
+ *
+ * Set the colour used as the background when displaying images
+ */
 void entangle_preferences_img_set_background(EntanglePreferences *prefs, const gchar *bkg)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
@@ -1411,6 +1800,15 @@ void entangle_preferences_img_set_background(EntanglePreferences *prefs, const g
     g_object_notify(G_OBJECT(prefs), PROP_NAME_IMG_BACKGROUND);
 }
 
+
+/**
+ * entangle_preferences_img_get_highlight:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Get the colour to use when highlighting images
+ *
+ * Returns: (transfer full): the highlight colour
+ */
 gchar *entangle_preferences_img_get_highlight(EntanglePreferences *prefs)
 {
     g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), NULL);
@@ -1422,6 +1820,13 @@ gchar *entangle_preferences_img_get_highlight(EntanglePreferences *prefs)
 }
 
 
+/**
+ * entangle_preferences_img_set_highlight:
+ * @prefs: (transfer none): the preferences store
+ * @bkg: (transfer none): the highlight colour
+ *
+ * Set the colour to use when highlighting images
+ */
 void entangle_preferences_img_set_highlight(EntanglePreferences *prefs, const gchar *bkg)
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
