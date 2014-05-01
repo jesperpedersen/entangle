@@ -58,7 +58,6 @@ rm -fr %{buildroot}
 %post
 update-desktop-database %{_datadir}/applications
 glib-compile-schemas /usr/share/glib-2.0/schemas ||:
-glib-compile-schemas %{_datadir}/%{name}/plugins/photobox/schemas ||:
 touch -c %{_datadir}/icons/hicolor
 if [ -x /usr/bin/gtk-update-icon-cache ]; then
 	/usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor || :
@@ -67,7 +66,6 @@ fi
 %postun
 update-desktop-database %{_datadir}/applications
 glib-compile-schemas /usr/share/glib-2.0/schemas ||:
-glib-compile-schemas %{_datadir}/%{name}/plugins/photobox/schemas ||:
 touch -c %{_datadir}/icons/hicolor
 if [ -x /usr/bin/gtk-update-icon-cache ]; then
 	/usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor || :
@@ -94,6 +92,7 @@ fi
 %dir %{_datadir}/%{name}/plugins/photobox/schemas
 %{_libdir}/%{name}/plugins/photobox/photobox.plugin
 %{_libdir}/%{name}/plugins/photobox/photobox.py*
+%{_datadir}/%{name}/plugins/photobox/schemas/gschemas.compiled
 %{_datadir}/%{name}/plugins/photobox/schemas/org.entangle-photo.plugins.photobox.gschema.xml
 %{_datadir}/%{name}/sRGB.icc
 %{_datadir}/gtk-doc/html/Entangle
