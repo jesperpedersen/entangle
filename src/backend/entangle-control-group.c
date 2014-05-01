@@ -149,7 +149,7 @@ EntangleControl *entangle_control_group_get(EntangleControlGroup *group, gint id
  * @group: the control group
  * @path: unique path of the control
  *
- * Get the control which has the the path @path
+ * Get the control which has the path @path
  *
  * Returns: (transfer none): the control with path @path, or NULL
  */

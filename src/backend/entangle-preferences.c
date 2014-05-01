@@ -1391,7 +1391,7 @@ gboolean entangle_preferences_cms_get_detect_system_profile(EntanglePreferences 
  * @prefs: (transfer none): the preferences store
  * @enabled: TRUE to automatically detect the monitor profile
  *
- * If @enabled is TRUE then then monitor profile will be
+ * If @enabled is TRUE then the monitor profile will be
  * automatically detected
  */
 void entangle_preferences_cms_set_detect_system_profile(EntanglePreferences *prefs,
