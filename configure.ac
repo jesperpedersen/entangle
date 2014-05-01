@@ -150,7 +150,16 @@ AC_SUBST(LIBPEAS_LIBS)
 AC_SUBST(LIBPEAS_UI_CFLAGS)
 AC_SUBST(LIBPEAS_UI_LIBS)
 
-PKG_CHECK_MODULES([GNOME_ICON_THEME_SYMBOLIC], [gnome-icon-theme-symbolic >= $GNOME_ICON_THEME_SYMBOLIC_REQUIRED])
+AC_MSG_CHECKING([gnome-icon-theme-symbolic])
+PKG_CHECK_EXISTS([gnome-icon-theme-symbolic >= $GNOME_ICON_THEME_SYMBOLIC_REQUIRED],
+                 [  AC_MSG_RESULT([yes]) ],
+                 [if test -f /usr/share/icons/gnome/scalable/devices/camera-photo-symbolic.svg
+                  then
+                    AC_MSG_RESULT([yes])
+                  else
+                    AC_MSG_ERROR([GNOME symbolic icon theme is required for Entangle])
+                  fi
+                 ])
 
 ENTANGLE_COMPILE_WARNINGS
 
