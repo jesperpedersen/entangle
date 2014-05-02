@@ -2,6 +2,48 @@
       =============
 
 
+Release 0.6.0 - "Down" - 2014-05-02
+-----------------------------------
+
+ * Add a demonstration plugin for setting up a captive
+   photo box display mode
+ * Switch to use Python3 for plugin engine instead of JavaScript
+ * Use GTK dark theme
+ * Require GNOME symbolic icon theme to be installed
+ * Switch to require lcms2 instead of lcms
+ * Move application icon into a standard directory mandated
+   to work with the appdata tools
+ * Make manual focus work with Canon EOS cameras
+ * Disable flickering progress bar in preview mode with Canon
+   EOS cameras
+ * Remove use of deprecated GTK methods/classes/constants
+ * Remove use of gexiv2 method which is not long exported
+ * Remove use of deprecated libpeas methods
+ * Add GTK-DOC transfer annotations / docs to all methods
+ * Avoid loosing camera capabilities on disconnect
+ * Fix off by one in histogram tables causing memory corruption
+ * Mark appdata / desktop files for translation
+ * Fix typos in README file
+ * Fix inverted tests when checking if range widget changed
+ * Avoid storm of expose events due to auto-drawer widget
+ * Avoid never ending circular update of controls causing
+   errors in some camera modes
+ * Add workaround for crazy D5100 camera serial number
+ * Add customizable highlight/background for images
+ * Avoid reference leak of windows preventing proper cleanup
+ * Remove camera manual/about/driver help windows since it
+   did not contain any info useful to users
+ * Filter list of cameras in connect dialog to only those
+   which support capture/preview
+ * Don't auto connect to cameras which don't support capture
+   or preview
+ * Ensure parent window is set on dialogs to prevent them
+   falling behind main window
+ * Fix crash with latest GTK due to incorrect overriding of
+   GtkApplication startup method
+ * Update to cope with changed GExiv API version
+ * Refreshed translations from transifex
+
 Release 0.5.4 - "Up" - 2013-12-15
 ---------------------------------
 
