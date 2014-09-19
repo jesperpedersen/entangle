@@ -23,28 +23,51 @@ appdata_DATA_IN = entangle.appdata.xml.in
 appdata_DATA = $(appdata_DATA_IN:.xml.in=.xml)
 
 icon128x128dir = $(datadir)/icons/hicolor/128x128/apps
-icon128x128_DATA = $(wildcard icons/128x128/*.png)
+icon128x128_DATA = \
+	icons/128x128/entangle.png \
+	$(NULL)
 
 icon16x16dir = $(datadir)/icons/hicolor/16x16/apps
-icon16x16_DATA = $(wildcard icons/16x16/*.png)
+icon16x16_DATA = \
+	icons/16x16/entangle.png \
+	$(NULL)
 
 icon22x22dir = $(datadir)/icons/hicolor/22x22/apps
-icon22x22_DATA = $(wildcard icons/22x22/*.png)
+icon22x22_DATA = \
+	icons/22x22/entangle-color-management.png \
+	icons/22x22/entangle-imageviewer.png \
+	icons/22x22/entangle-interface.png \
+	icons/22x22/entangle-plugins.png \
+	$(NULL)
 
 icon256x256dir = $(datadir)/icons/hicolor/256x256/apps
-icon256x256_DATA = $(wildcard icons/256x256/*.png)
+icon256x256_DATA = \
+	icons/256x256/entangle.png \
+	$(NULL)
 
 icon32x32dir = $(datadir)/icons/hicolor/32x32/apps
-icon32x32_DATA = $(wildcard icons/32x32/*.png)
+icon32x32_DATA = \
+	icons/32x32/entangle.png \
+	$(NULL)
 
 icon48x48dir = $(datadir)/icons/hicolor/48x48/apps
-icon48x48_DATA = $(wildcard icons/48x48/*.png)
+icon48x48_DATA = \
+	icons/48x48/entangle.png \
+	icons/48x48/entangle-color-management.png \
+	icons/48x48/entangle-imageviewer.png \
+	icons/48x48/entangle-interface.png \
+	icons/48x48/entangle-plugins.png \
+	$(NULL)
 
 icon64x64dir = $(datadir)/icons/hicolor/64x64/apps
-icon64x64_DATA = $(wildcard icons/64x64/*.png)
+icon64x64_DATA = \
+	icons/64x64/entangle.png \
+	$(NULL)
 
 iconscalabledir = $(datadir)/icons/hicolor/scalable/apps
-iconscalable_DATA = $(wildcard icons/scalable/*.png)
+iconscalable_DATA = \
+	icons/scalable/entangle.svg \
+	$(NULL)
 
 
 
@@ -55,19 +78,9 @@ gsettings_SCHEMAS = org.entangle-photo.manager.gschema.xml
 iccdir = $(pkgdatadir)
 icc_DATA = sRGB.icc
 
-BUILT_ENUMS = \
-	backend/entangle-colour-profile-enums.h \
-	backend/entangle-colour-profile-enums.c \
-	backend/entangle-camera-enums.h \
-	backend/entangle-camera-enums.c \
-	frontend/entangle-image-display-enums.h \
-	frontend/entangle-image-display-enums.c \
-	$(NULL)
-
 BUILT_SOURCES = \
 	$(desktop_DATA) \
 	$(appdata_DATA) \
-	$(BUILT_ENUMS) \
 	$(NULL)
 
 EXTRA_DIST = \
@@ -90,11 +103,9 @@ EXTRA_DIST = \
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-camera.h backend/entangle-camera.c \
-	backend/entangle-camera-enums.h backend/entangle-camera-enums.c \
 	backend/entangle-camera-file.h backend/entangle-camera-file.c \
 	backend/entangle-camera-list.h backend/entangle-camera-list.c \
 	backend/entangle-colour-profile.h backend/entangle-colour-profile.c \
-	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
 	backend/entangle-control.h backend/entangle-control.c \
 	backend/entangle-control-button.h backend/entangle-control-button.c \
 	backend/entangle-control-choice.h backend/entangle-control-choice.c \
@@ -114,6 +125,13 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-session.h backend/entangle-session.c \
 	backend/entangle-thumbnail-loader.h backend/entangle-thumbnail-loader.c
 
+nodist_libentangle_backend_la_SOURCES = \
+	backend/entangle-camera-enums.h backend/entangle-camera-enums.c \
+	backend/entangle-colour-profile-enums.h backend/entangle-colour-profile-enums.c \
+	$(NULL)
+
+BUILT_SOURCES += $(nodist_libentangle_backend_la_SOURCES)
+
 libentangle_backend_la_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(GIO_LIBS) \
@@ -129,6 +147,7 @@ libentangle_backend_la_LDFLAGS = \
 	$(WARN_LDFLAGS)
 
 libentangle_backend_la_CFLAGS = \
+	-I$(builddir)/backend \
 	$(GLIB_CFLAGS) \
 	$(GIO_CFLAGS) \
 	$(GMODULE_CFLAGS) \
@@ -158,8 +177,6 @@ libentangle_frontend_la_SOURCES = \
         frontend/entangle-dpms.h frontend/entangle-dpms.c \
 	frontend/entangle-help-about.h frontend/entangle-help-about.c \
 	frontend/entangle-image-display.h frontend/entangle-image-display.c \
-	frontend/entangle-image-display-enums.h \
-	frontend/entangle-image-display-enums.c \
 	frontend/entangle-image-histogram.h frontend/entangle-image-histogram.c \
 	frontend/entangle-image-popup.h frontend/entangle-image-popup.c \
 	frontend/entangle-image-statusbar.h frontend/entangle-image-statusbar.c \
@@ -168,6 +185,12 @@ libentangle_frontend_la_SOURCES = \
 	frontend/entangle-overlay-box.h frontend/entangle-overlay-box.c \
 	frontend/entangle-auto-drawer.h frontend/entangle-auto-drawer.c \
 	frontend/entangle-drawer.h frontend/entangle-drawer.c
+
+nodist_libentangle_frontend_la_SOURCES = \
+	frontend/entangle-image-display-enums.h frontend/entangle-image-display-enums.c \
+	$(NULL)
+
+BUILT_SOURCES += $(nodist_libentangle_frontend_la_SOURCES)
 
 libentangle_frontend_la_LIBADD = libentangle_backend.la
 
@@ -183,6 +206,8 @@ libentangle_frontend_la_LDFLAGS = \
 
 libentangle_frontend_la_CFLAGS = \
 	-I$(srcdir)/backend \
+	-I$(builddir)/backend \
+	-I$(builddir)/frontend \
 	$(GTHREAD_CFLAGS) \
 	$(GMODULE_CFLAGS) \
 	$(GTK_CFLAGS) \
@@ -214,6 +239,7 @@ entangle_LDFLAGS = \
 entangle_CFLAGS = \
         -DLOCALE_DIR=\""$(datadir)/locale"\"            \
 	-I$(srcdir)/backend \
+	-I$(builddir)/backend \
 	-I$(srcdir)/frontend \
 	$(GTHREAD_FLAGS) \
 	$(GMODULE_FLAGS) \
@@ -348,7 +374,10 @@ frontend/entangle-image-display-enums.h: frontend/entangle-image-display.h Makef
                         --eprod "GType @enum_name@_get_type (void);\n" \
                 $< >  $@
 
-CLEANFILES = *~ $(BUILT_ENUMS)
+CLEANFILES = *~ \
+	$(nodist_libentangle_frontend_la_SOURCES) \
+	$(nodist_libentangle_backend_la_SOURCES) \
+	$(NULL)
 
 MAINTAINERCLEANFILES = $(desktop_DATA) $(appdata_DATA)
 
@@ -366,6 +395,8 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
                 --output $@ \
                 -I$(srcdir)/backend \
                 -I$(srcdir)/frontend \
+                -I$(builddir)/backend \
+                -I$(builddir)/frontend \
 		--verbose \
                 --pkg=glib-2.0 \
                 --pkg=gthread-2.0 \
@@ -377,7 +408,9 @@ Entangle-0.1.gir: entangle $(G_IR_SCANNER) Makefile.am
                 --pkg=dbus-glib-1 \
                 --pkg=gexiv2 \
                 $(libentangle_backend_la_SOURCES:%=$(srcdir)/%) \
+                $(nodist_libentangle_backend_la_SOURCES:%=$(builddir)/%) \
                 $(libentangle_frontend_la_SOURCES:%=$(srcdir)/%) \
+                $(nodist_libentangle_frontend_la_SOURCES:%=$(builddir)/%) \
                 $(entangle_SOURCES:%=$(srcdir)/%)
 
 girdir = $(datadir)/gir-1.0

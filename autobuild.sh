@@ -9,7 +9,11 @@ test -n "$1" && RESULTS=$1 || RESULTS=results.log
 
 test -f Makefile && make -k distclean || :
 
-./autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
+rm -rf build
+mkdir build
+cd build
+
+../autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
   --enable-werror \
   --enable-gtk-doc
 

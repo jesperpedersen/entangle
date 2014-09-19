@@ -1,6 +1,6 @@
 
 pluginlibdir = $(libdir)/entangle/plugins/photobox
-pluginlib_DATA = $(wildcard *.py) $(wildcard *.plugin)
+pluginlib_DATA = photobox.plugin photobox.py
 
 settingsdir = $(datadir)/entangle/plugins/photobox/schemas
 settings_DATA = org.entangle-photo.plugins.photobox.gschema.xml

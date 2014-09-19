@@ -82,7 +82,9 @@ fi
 %{_datadir}/%{name}/%{name}-help-about.ui
 %{_datadir}/%{name}/%{name}-image-popup.ui
 %{_datadir}/%{name}/%{name}-preferences-display.ui
-%{_datadir}/icons/hicolor/*/apps/entangle*png
+%{_datadir}/icons/hicolor/*/apps/entangle.png
+%{_datadir}/icons/hicolor/*/apps/entangle-*.png
+%{_datadir}/icons/hicolor/scalable/apps/entangle.svg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/plugins
 %dir %{_libdir}/%{name}/plugins/photobox
