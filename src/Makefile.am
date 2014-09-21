@@ -34,6 +34,7 @@ icon16x16_DATA = \
 
 icon22x22dir = $(datadir)/icons/hicolor/22x22/apps
 icon22x22_DATA = \
+	icons/22x22/entangle-capture.png \
 	icons/22x22/entangle-color-management.png \
 	icons/22x22/entangle-imageviewer.png \
 	icons/22x22/entangle-interface.png \
@@ -53,6 +54,7 @@ icon32x32_DATA = \
 icon48x48dir = $(datadir)/icons/hicolor/48x48/apps
 icon48x48_DATA = \
 	icons/48x48/entangle.png \
+	icons/48x48/entangle-capture.png \
 	icons/48x48/entangle-color-management.png \
 	icons/48x48/entangle-imageviewer.png \
 	icons/48x48/entangle-interface.png \
