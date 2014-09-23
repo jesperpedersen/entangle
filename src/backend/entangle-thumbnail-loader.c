@@ -120,8 +120,8 @@ static char *entangle_thumbnail_loader_uri_to_thumb(const char *uri)
     char *md5 = entangle_thumbnail_loader_uri_to_md5(uri);
     char *thumb;
 
-    thumb = g_strdup_printf("%s/.thumbnails/normal/%s.png",
-                            g_get_home_dir(), md5);
+    thumb = g_strdup_printf("%s/thumbnails/normal/%s.png",
+                            g_get_user_cache_dir(), md5);
     g_free(md5);
 
     return thumb;
@@ -132,8 +132,8 @@ static void entangle_thumbnail_ensure_thumbnail_dir(void)
 {
     char *dir;
 
-    dir = g_strdup_printf("%s/.thumbnails/normal/",
-                          g_get_home_dir());
+    dir = g_strdup_printf("%s/thumbnails/normal/",
+                          g_get_user_cache_dir());
 
     g_mkdir_with_parents(dir, 0700);
 
