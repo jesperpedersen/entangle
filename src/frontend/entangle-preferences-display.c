@@ -75,6 +75,7 @@ void do_interface_histogram_linear_toggled(GtkToggleButton *src, EntanglePrefere
 
 void do_capture_filename_pattern_changed(GtkEntry *src, EntanglePreferencesDisplay *display);
 void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
+void do_capture_electronic_shutter(GtkToggleButton *src, EntanglePreferencesDisplay *preferences);
 void do_capture_delete_file_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 void do_capture_sync_clock_toggled(GtkToggleButton *src, EntanglePreferencesDisplay *display);
 
@@ -210,6 +211,15 @@ static void entangle_preferences_display_notify(GObject *object,
 
         g_free(newvalue);
     } else if (strcmp(spec->name, "capture-continuous-preview") == 0) {
+        gboolean newvalue;
+        gboolean oldvalue;
+
+        g_object_get(object, spec->name, &newvalue, NULL);
+        oldvalue = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tmp));
+
+        if (newvalue != oldvalue)
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), newvalue);
+    } else if (strcmp(spec->name, "capture-electronic-shutter") == 0) {
         gboolean newvalue;
         gboolean oldvalue;
 
@@ -372,6 +382,7 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     EntanglePreferences *prefs = entangle_preferences_display_get_preferences(preferences);
     const gchar *ratio;
     GtkAdjustment *adjust;
+    gboolean hasContinuousPreview;
     gboolean hasRatio;
     gboolean hasOnion;
 
@@ -409,8 +420,13 @@ static void entangle_preferences_display_refresh(EntanglePreferencesDisplay *pre
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-filename-pattern"));
     gtk_entry_set_text(GTK_ENTRY(tmp), entangle_preferences_capture_get_filename_pattern(prefs));
 
+    hasContinuousPreview = entangle_preferences_capture_get_continuous_preview(prefs);
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-continuous-preview"));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_capture_get_continuous_preview(prefs));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), hasContinuousPreview);
+
+    tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-electronic-shutter"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_capture_get_electronic_shutter(prefs));
+    gtk_widget_set_sensitive(tmp, hasContinuousPreview);
 
     tmp = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-delete-file"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tmp), entangle_preferences_capture_get_delete_file(prefs));
@@ -670,10 +686,26 @@ void do_capture_continuous_preview_toggled(GtkToggleButton *src, EntanglePrefere
 {
     g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
 
+    EntanglePreferencesDisplayPrivate *priv = preferences->priv;
     EntanglePreferences *prefs = entangle_preferences_display_get_preferences(preferences);
     gboolean enabled = gtk_toggle_button_get_active(src);
 
+    GtkWidget *widget = GTK_WIDGET(gtk_builder_get_object(priv->builder, "capture-electronic-shutter"));
+
+    gtk_widget_set_sensitive(widget, enabled);
+
     entangle_preferences_capture_set_continuous_preview(prefs, enabled);
+}
+
+
+void do_capture_electronic_shutter(GtkToggleButton *src, EntanglePreferencesDisplay *preferences)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES_DISPLAY(preferences));
+
+    EntanglePreferences *prefs = entangle_preferences_display_get_preferences(preferences);
+    gboolean enabled = gtk_toggle_button_get_active(src);
+
+    entangle_preferences_capture_set_electronic_shutter(prefs, enabled);
 }
 
 

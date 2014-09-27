@@ -260,6 +260,7 @@ gboolean entangle_camera_file_save_path(EntangleCameraFile *file,
                                         GError **err)
 {
     g_return_val_if_fail(ENTANGLE_IS_CAMERA_FILE(file), FALSE);
+    g_return_val_if_fail(localpath != NULL, FALSE);
 
     EntangleCameraFilePrivate *priv = file->priv;
     GFile *gf;

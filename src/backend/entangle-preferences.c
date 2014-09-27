@@ -56,6 +56,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define SETTING_CAPTURE_FILENAME_PATTERN   "filename-pattern"
 #define SETTING_CAPTURE_LAST_SESSION       "last-session"
 #define SETTING_CAPTURE_CONTINUOUS_PREVIEW "continuous-preview"
+#define SETTING_CAPTURE_ELECTRONIC_SHUTTER "electronic-shutter"
 #define SETTING_CAPTURE_DELETE_FILE        "delete-file"
 #define SETTING_CAPTURE_SYNC_CLOCK         "sync-clock"
 
@@ -84,6 +85,7 @@ G_DEFINE_TYPE(EntanglePreferences, entangle_preferences, G_TYPE_OBJECT);
 #define PROP_NAME_CAPTURE_FILENAME_PATTERN   SETTING_CAPTURE "-" SETTING_CAPTURE_FILENAME_PATTERN
 #define PROP_NAME_CAPTURE_LAST_SESSION       SETTING_CAPTURE "-" SETTING_CAPTURE_LAST_SESSION
 #define PROP_NAME_CAPTURE_CONTINUOUS_PREVIEW SETTING_CAPTURE "-" SETTING_CAPTURE_CONTINUOUS_PREVIEW
+#define PROP_NAME_CAPTURE_ELECTRONIC_SHUTTER SETTING_CAPTURE "-" SETTING_CAPTURE_ELECTRONIC_SHUTTER
 #define PROP_NAME_CAPTURE_DELETE_FILE        SETTING_CAPTURE "-" SETTING_CAPTURE_DELETE_FILE
 #define PROP_NAME_CAPTURE_SYNC_CLOCK         SETTING_CAPTURE "-" SETTING_CAPTURE_SYNC_CLOCK
 
@@ -114,6 +116,7 @@ enum {
     PROP_CAPTURE_FILENAME_PATTERN,
     PROP_CAPTURE_LAST_SESSION,
     PROP_CAPTURE_CONTINUOUS_PREVIEW,
+    PROP_CAPTURE_ELECTRONIC_SHUTTER,
     PROP_CAPTURE_DELETE_FILE,
     PROP_CAPTURE_SYNC_CLOCK,
 
@@ -210,6 +213,12 @@ static void entangle_preferences_get_property(GObject *object,
             g_value_set_boolean(value,
                                 g_settings_get_boolean(priv->captureSettings,
                                                        SETTING_CAPTURE_CONTINUOUS_PREVIEW));
+            break;
+
+        case PROP_CAPTURE_ELECTRONIC_SHUTTER:
+            g_value_set_boolean(value,
+                                g_settings_get_boolean(priv->captureSettings,
+                                                       SETTING_CAPTURE_ELECTRONIC_SHUTTER));
             break;
 
         case PROP_CAPTURE_DELETE_FILE:
@@ -374,6 +383,12 @@ static void entangle_preferences_set_property(GObject *object,
         case PROP_CAPTURE_CONTINUOUS_PREVIEW:
             g_settings_set_boolean(priv->captureSettings,
                                    SETTING_CAPTURE_CONTINUOUS_PREVIEW,
+                                   g_value_get_boolean(value));
+            break;
+
+        case PROP_CAPTURE_ELECTRONIC_SHUTTER:
+            g_settings_set_boolean(priv->captureSettings,
+                                   SETTING_CAPTURE_ELECTRONIC_SHUTTER,
                                    g_value_get_boolean(value));
             break;
 
@@ -604,6 +619,17 @@ static void entangle_preferences_class_init(EntanglePreferencesClass *klass)
                                     g_param_spec_boolean(PROP_NAME_CAPTURE_CONTINUOUS_PREVIEW,
                                                          "Continuous preview",
                                                          "Continue preview after capturing",
+                                                         FALSE,
+                                                         G_PARAM_READWRITE |
+                                                         G_PARAM_STATIC_NAME |
+                                                         G_PARAM_STATIC_NICK |
+                                                         G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_CAPTURE_ELECTRONIC_SHUTTER,
+                                    g_param_spec_boolean(PROP_NAME_CAPTURE_ELECTRONIC_SHUTTER,
+                                                         "Electronic shutter",
+                                                         "Use preview output as capture image",
                                                          FALSE,
                                                          G_PARAM_READWRITE |
                                                          G_PARAM_STATIC_NAME |
@@ -1155,6 +1181,47 @@ void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *pr
     g_settings_set_boolean(priv->captureSettings,
                            SETTING_CAPTURE_CONTINUOUS_PREVIEW, enabled);
     g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_CONTINUOUS_PREVIEW);
+}
+
+
+/**
+ * entangle_preferences_capture_get_electronic_shutter:
+ * @prefs: (transfer none): the preferences store
+ *
+ * Determines if the capture event will use the next preview output as
+ * capture image, instead of triggering a normal capture, with shutter
+ * mechanically moving.
+ *
+ * Returns: TRUE if no mechanical shutter action occurs on a capture, FALSE otherwise
+ */
+gboolean entangle_preferences_capture_get_electronic_shutter(EntanglePreferences *prefs)
+{
+    g_return_val_if_fail(ENTANGLE_IS_PREFERENCES(prefs), FALSE);
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    return g_settings_get_boolean(priv->captureSettings,
+                                  SETTING_CAPTURE_ELECTRONIC_SHUTTER);
+}
+
+
+/**
+ * entangle_preferences_capture_set_electronic_shutter:
+ * @prefs: (transfer none): the preferences store
+ * @enabled: TRUE if no mechanical shutter action should occur on capture
+ *
+ * If @enabled is TRUE, then the camera shutter will not be activated
+ * when capturing an image.
+ */
+void entangle_preferences_capture_set_electronic_shutter(EntanglePreferences *prefs, gboolean enabled)
+{
+    g_return_if_fail(ENTANGLE_IS_PREFERENCES(prefs));
+
+    EntanglePreferencesPrivate *priv = prefs->priv;
+
+    g_settings_set_boolean(priv->captureSettings,
+                           SETTING_CAPTURE_ELECTRONIC_SHUTTER, enabled);
+    g_object_notify(G_OBJECT(prefs), PROP_NAME_CAPTURE_ELECTRONIC_SHUTTER);
 }
 
 

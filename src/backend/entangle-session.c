@@ -415,24 +415,26 @@ char *entangle_session_next_filename(EntangleSession *session,
     EntangleSessionPrivate *priv = session->priv;
     const char *srcname = entangle_camera_file_get_name(file);
     char *dstname = NULL;
-    const char *offset = strrchr(srcname, '.');
-    char *ext;
-    char *srcprefix;
+    char *ext = NULL;
+    char *srcprefix = NULL;
 
     ENTANGLE_DEBUG("Next filename %s against (%s, %s)",
                    srcname,
                    priv->lastFilePrefixSrc ? priv->lastFilePrefixSrc : "",
                    priv->lastFilePrefixDst ? priv->lastFilePrefixDst : "");
 
-    if (!offset) {
-        srcprefix = g_strdup(srcname);
-        ext = g_strdup("jpeg");
-    } else {
-        srcprefix = g_strndup(srcname, (offset - srcname));
-        ext = g_ascii_strdown(offset + 1, -1);
+    if (srcname) {
+        const char *offset = strrchr(srcname, '.');
+        if (!offset) {
+            srcprefix = g_strdup(srcname);
+        } else {
+            srcprefix = g_strndup(srcname, (offset - srcname));
+            ext = g_ascii_strdown(offset + 1, -1);
+        }
     }
 
-    if (priv->lastFilePrefixSrc &&
+    if (srcprefix &&
+        priv->lastFilePrefixSrc &&
         priv->lastFilePrefixDst &&
         g_str_equal(priv->lastFilePrefixSrc, srcprefix)) {
     } else {
@@ -446,7 +448,7 @@ char *entangle_session_next_filename(EntangleSession *session,
         dstname = g_strdup_printf("%s/%s.%s",
                                   priv->directory,
                                   priv->lastFilePrefixDst,
-                                  ext);
+                                  ext ? ext : "jpeg");
     g_free(ext);
 
     ENTANGLE_DEBUG("Built '%s'", dstname);

@@ -24,6 +24,8 @@
 #include <math.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
+#include <gio/gunixoutputstream.h>
 #include <unistd.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
@@ -1197,7 +1199,7 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
     GdkPixbuf *pixbuf;
     GByteArray *bytes;
     GInputStream *is;
-    EntangleImage *image;
+    EntangleImage *image = NULL;
 
     if (priv->taskPreview &&
         priv->taskCancel  &&
@@ -1209,7 +1211,22 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
 
         pixbuf = gdk_pixbuf_new_from_stream(is, NULL, NULL);
 
-        image = entangle_image_new_pixbuf(pixbuf);
+        if (priv->taskCapture) {
+            char *localpath = entangle_session_next_filename(priv->session, file);
+
+            if (!entangle_camera_file_save_path(file, localpath, NULL)) {
+                ENTANGLE_DEBUG("Failed save path");
+            } else {
+                ENTANGLE_DEBUG("Saved to %s", localpath);
+                image = entangle_image_new_file(localpath);
+
+                entangle_session_add(priv->session, image);
+            }
+            g_free(localpath);
+            priv->taskCapture = FALSE;
+        }
+        if (!image)
+            image = entangle_image_new_pixbuf(pixbuf);
 
         do_select_image(manager, image);
 
@@ -1979,15 +1996,19 @@ void entangle_camera_manager_capture(EntangleCameraManager *manager)
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
     EntangleCameraManagerPrivate *priv = manager->priv;
+    EntanglePreferences *prefs = entangle_camera_manager_get_preferences(manager);
     ENTANGLE_DEBUG("starting capture operation");
 
     if (!priv->camera)
         return;
 
     if (priv->taskPreview) {
-        g_cancellable_cancel(priv->taskConfirm);
+        if (entangle_preferences_capture_get_continuous_preview(prefs) &&
+            entangle_preferences_capture_get_electronic_shutter(prefs))
+            priv->taskCapture = TRUE;
+        else
+            g_cancellable_cancel(priv->taskConfirm);
     } else {
-        EntanglePreferences *prefs = entangle_camera_manager_get_preferences(manager);
         EntangleCameraFileTaskData *data;
         if (!(data = do_camera_task_begin(manager)))
             return;

@@ -1354,7 +1354,7 @@ EntangleCameraFile *entangle_camera_preview_image(EntangleCamera *cam,
         goto cleanup;
     }
 
-    file = entangle_camera_file_new("/", name);
+    file = entangle_camera_file_new(NULL, NULL);
 
     if (gp_file_get_mime_type(datafile, &mimetype) == GP_OK)
         entangle_camera_file_set_mimetype(file, mimetype);

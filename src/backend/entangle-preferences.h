@@ -73,6 +73,8 @@ char *entangle_preferences_capture_get_filename_pattern(EntanglePreferences *pre
 void entangle_preferences_capture_set_filename_pattern(EntanglePreferences *prefs, const gchar *pattern);
 gboolean entangle_preferences_capture_get_continuous_preview(EntanglePreferences *prefs);
 void entangle_preferences_capture_set_continuous_preview(EntanglePreferences *prefs, gboolean enabled);
+gboolean entangle_preferences_capture_get_electronic_shutter(EntanglePreferences *prefs);
+void entangle_preferences_capture_set_electronic_shutter(EntanglePreferences *prefs, gboolean enabled);
 gboolean entangle_preferences_capture_get_delete_file(EntanglePreferences *prefs);
 void entangle_preferences_capture_set_delete_file(EntanglePreferences *prefs, gboolean enabled);
 gboolean entangle_preferences_capture_get_sync_clock(EntanglePreferences *prefs);
