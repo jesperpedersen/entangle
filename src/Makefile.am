@@ -105,6 +105,7 @@ EXTRA_DIST = \
 
 libentangle_backend_la_SOURCES = \
 	backend/entangle-camera.h backend/entangle-camera.c \
+	backend/entangle-camera-automata.h backend/entangle-camera-automata.c \
 	backend/entangle-camera-file.h backend/entangle-camera-file.c \
 	backend/entangle-camera-list.h backend/entangle-camera-list.c \
 	backend/entangle-colour-profile.h backend/entangle-colour-profile.c \
