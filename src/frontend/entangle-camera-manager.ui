@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.16.1 -->
+<!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkWindow" id="camera-manager">
@@ -134,8 +134,8 @@
                         <property name="label" translatable="yes">Capture</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="do_menu_capture" swapped="no"/>
-                        <accelerator key="s" signal="activate"/>
                         <accelerator key="space" signal="activate"/>
+                        <accelerator key="s" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -610,34 +610,20 @@ native pixel size</property>
             <property name="can_focus">True</property>
             <property name="border_width">6</property>
             <child>
-              <object class="GtkVBox" id="settings-box">
+              <object class="GtkScrolledWindow" id="settings-scroll">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">never</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="settings-scroll">
+                  <object class="GtkViewport" id="settings-viewport">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">never</property>
+                    <property name="can_focus">False</property>
+                    <property name="resize_mode">queue</property>
+                    <property name="shadow_type">etched-in</property>
                     <child>
-                      <object class="GtkViewport" id="settings-viewport">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="resize_mode">queue</property>
-                        <property name="shadow_type">etched-in</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
+                      <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>

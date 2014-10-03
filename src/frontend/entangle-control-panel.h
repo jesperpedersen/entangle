@@ -41,14 +41,14 @@ typedef struct _EntangleControlPanelClass EntangleControlPanelClass;
 
 struct _EntangleControlPanel
 {
-    GtkBox parent;
+    GtkExpander parent;
 
     EntangleControlPanelPrivate *priv;
 };
 
 struct _EntangleControlPanelClass
 {
-    GtkBoxClass parent_class;
+    GtkExpanderClass parent_class;
 
 };
 

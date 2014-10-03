@@ -1606,7 +1606,7 @@ void do_menu_settings_toggled(GtkCheckMenuItem *src,
     GtkWidget *toolbar;
     gboolean active;
 
-    settings = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-box"));
+    settings = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-scroll"));
     toolbar = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-settings"));
 
     active = gtk_check_menu_item_get_active(src);
@@ -1629,7 +1629,7 @@ void do_toolbar_settings(GtkToggleToolButton *src,
     GtkWidget *menu;
     gboolean active;
 
-    settings = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-box"));
+    settings = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-scroll"));
     menu = GTK_WIDGET(gtk_builder_get_object(priv->builder, "menu-settings"));
 
     active = gtk_toggle_tool_button_get_active(src);
@@ -2944,6 +2944,7 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     GtkWidget *menu;
     GtkWidget *monitorMenu;
     GtkWidget *imageViewport;
+    GtkWidget *imageHistogramExpander;
 
     priv->builder = g_object_ref(builder);
 
@@ -2987,8 +2988,10 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     g_signal_connect(priv->sessionBrowser, "drag-failed",
                      G_CALLBACK(do_session_browser_drag_failed), manager);
 
-    settingsBox = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-box"));
     settingsViewport = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-viewport"));
+    settingsBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+    imageHistogramExpander = gtk_expander_new("Image histogram");
+    gtk_expander_set_expanded(GTK_EXPANDER(imageHistogramExpander), TRUE);
     display = GTK_WIDGET(gtk_builder_get_object(priv->builder, "display-panel"));
 
     iconScroll = gtk_scrolled_window_new(NULL, NULL);
@@ -2996,7 +2999,6 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
                                    GTK_POLICY_AUTOMATIC,
                                    GTK_POLICY_NEVER);
 
-    /* XXX match icon size + padding + scrollbar needs */
     gtk_widget_set_size_request(settingsBox, 300, 100);
     gtk_widget_set_size_request(iconScroll, 140, 170);
 
@@ -3031,8 +3033,11 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     gtk_widget_show_all(display);
 
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
-    gtk_container_add(GTK_CONTAINER(settingsViewport), GTK_WIDGET(priv->controlPanel));
-    gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(priv->imageHistogram), FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(settingsViewport), settingsBox);
+    gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(priv->controlPanel), FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(imageHistogramExpander), FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(imageHistogramExpander), GTK_WIDGET(priv->imageHistogram));
+    gtk_widget_show_all(settingsViewport);
 
     priv->monitorCancel = g_cancellable_new();
     priv->taskCancel = g_cancellable_new();
