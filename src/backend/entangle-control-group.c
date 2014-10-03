@@ -163,8 +163,15 @@ EntangleControl *entangle_control_group_get_by_path(EntangleControlGroup *group,
     size_t i;
 
     for (i = 0; i < priv->ncontrol; i++) {
-        if (g_str_equal(path, entangle_control_get_path(priv->controls[i])))
+        if (g_str_equal(path, entangle_control_get_path(priv->controls[i]))) {
             return priv->controls[i];
+        } else if (ENTANGLE_IS_CONTROL_GROUP(priv->controls[i])) {
+            EntangleControl *control =
+                entangle_control_group_get_by_path(ENTANGLE_CONTROL_GROUP(priv->controls[i]),
+                                                   path);
+            if (control)
+                return control;
+        }
     }
 
     return NULL;
