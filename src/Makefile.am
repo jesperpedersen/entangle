@@ -123,7 +123,6 @@ libentangle_backend_la_SOURCES = \
 	backend/entangle-pixbuf.h backend/entangle-pixbuf.c \
 	backend/entangle-image-loader.h backend/entangle-image-loader.c \
 	backend/entangle-pixbuf-loader.h backend/entangle-pixbuf-loader.c \
-	backend/entangle-preferences.h backend/entangle-preferences.c \
 	backend/entangle-progress.h backend/entangle-progress.c \
 	backend/entangle-session.h backend/entangle-session.c \
 	backend/entangle-thumbnail-loader.h backend/entangle-thumbnail-loader.c
@@ -183,6 +182,7 @@ libentangle_frontend_la_SOURCES = \
 	frontend/entangle-image-histogram.h frontend/entangle-image-histogram.c \
 	frontend/entangle-image-popup.h frontend/entangle-image-popup.c \
 	frontend/entangle-image-statusbar.h frontend/entangle-image-statusbar.c \
+	frontend/entangle-preferences.h frontend/entangle-preferences.c \
 	frontend/entangle-preferences-display.h frontend/entangle-preferences-display.c \
 	frontend/entangle-session-browser.h frontend/entangle-session-browser.c \
 	frontend/entangle-overlay-box.h frontend/entangle-overlay-box.c \
