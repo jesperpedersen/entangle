@@ -299,7 +299,7 @@ static void entangle_image_histogram_get_preferred_height(GtkWidget *widget,
 {
     g_return_if_fail(ENTANGLE_IS_IMAGE_HISTOGRAM(widget));
 
-    *minheight = 50;
+    *minheight = 170;
     *natheight = 170;
 }
 
