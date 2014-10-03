@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <string.h>
 
 #include "entangle-debug.h"
 #include "entangle-control.h"
@@ -95,6 +96,7 @@ static void entangle_control_set_property(GObject *object,
 {
     EntangleControl *picker = ENTANGLE_CONTROL(object);
     EntangleControlPrivate *priv = picker->priv;
+    gsize len;
 
     switch (prop_id)
         {
@@ -110,6 +112,14 @@ static void entangle_control_set_property(GObject *object,
         case PROP_LABEL:
             g_free(priv->label);
             priv->label = g_value_dup_string(value);
+            len = strlen(priv->label);
+            /* gphoto sticks a '2' onto the end of some labels
+             * when it has more than one control for the same
+             * setting. Lets just kill those since they are
+             * very ugly
+             */
+            if (priv->label[len - 1] == '2')
+                priv->label[len - 1] = '\0';
             break;
 
         case PROP_INFO:
