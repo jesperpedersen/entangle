@@ -1,7 +1,7 @@
 /*
  *  Entangle: Tethered Camera Control & Capture
  *
- *  Copyright (C) 2009-2012 Daniel P. Berrange
+ *  Copyright (C) 2009-2014 Daniel P. Berrange
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include <gtk/gtk.h>
 
-#include "entangle-camera.h"
+#include "entangle-camera-preferences.h"
 
 G_BEGIN_DECLS
 
@@ -54,12 +54,9 @@ struct _EntangleControlPanelClass
 
 GType entangle_control_panel_get_type(void) G_GNUC_CONST;
 
-EntangleControlPanel* entangle_control_panel_new(void);
+EntangleControlPanel* entangle_control_panel_new(EntangleCameraPreferences *prefs);
 
-
-void entangle_control_panel_set_camera(EntangleControlPanel *panel,
-                                       EntangleCamera *camera);
-EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel);
+EntangleCameraPreferences *entangle_control_panel_get_camera_preferences(EntangleControlPanel *panel);
 
 gboolean entangle_control_panel_get_has_controls(EntangleControlPanel *panel);
 

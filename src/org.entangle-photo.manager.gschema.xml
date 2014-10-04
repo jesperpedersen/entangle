@@ -182,4 +182,12 @@
     </key>
 
   </schema>
+
+  <schema id="org.entangle-photo.manager.camera" gettext-domain="entangle-photo">
+    <key type="as" name="controls">
+      <default>[]</default>
+      <summary>Control list</summary>
+      <description>List of camera control setting name</description>
+    </key>
+  </schema>
 </schemalist>

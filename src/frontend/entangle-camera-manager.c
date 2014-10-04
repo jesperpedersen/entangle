@@ -60,6 +60,7 @@
 struct _EntangleCameraManagerPrivate {
     EntangleCameraAutomata *automata;
     EntangleCamera *camera;
+    EntangleCameraPreferences *cameraPrefs;
     gboolean cameraReady;
     gboolean cameraChanged;
     EntangleSession *session;
@@ -1035,7 +1036,7 @@ static void do_remove_camera(EntangleCameraManager *manager)
 
     gtk_window_set_title(GTK_WINDOW(manager), _("Camera Manager - Entangle"));
 
-    entangle_control_panel_set_camera(priv->controlPanel, NULL);
+    entangle_camera_preferences_set_camera(priv->cameraPrefs, NULL);
     entangle_camera_set_progress(priv->camera, NULL);
 
     g_signal_handler_disconnect(priv->camera, priv->sigFilePreview);
@@ -1070,7 +1071,7 @@ static void do_camera_load_controls_finish(GObject *source,
 
     if (entangle_camera_load_controls_finish(cam, result, &error)) {
         do_capture_widget_sensitivity(manager);
-        entangle_control_panel_set_camera(priv->controlPanel, priv->camera);
+        entangle_camera_preferences_set_camera(priv->cameraPrefs, priv->camera);
     } else {
         GtkWidget *msg = gtk_message_dialog_new(GTK_WINDOW(manager),
                                                 0,
@@ -1451,6 +1452,7 @@ static void entangle_camera_manager_finalize(GObject *object)
 
     g_hash_table_destroy(priv->popups);
 
+    g_object_unref(priv->cameraPrefs);
     g_object_unref(priv->automata);
 
     G_OBJECT_CLASS(entangle_camera_manager_parent_class)->finalize(object);
@@ -2972,7 +2974,7 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     priv->imageDrawer = entangle_auto_drawer_new();
     priv->sessionBrowser = entangle_session_browser_new();
     priv->sessionBrowserMenu = GTK_MENU(gtk_builder_get_object(priv->builder, "menu-session-browser"));
-    priv->controlPanel = entangle_control_panel_new();
+    priv->controlPanel = entangle_control_panel_new(priv->cameraPrefs);
     priv->imageHistogram = entangle_image_histogram_new();
     gtk_widget_show(GTK_WIDGET(priv->imageHistogram));
 
@@ -3102,6 +3104,7 @@ static void entangle_camera_manager_init(EntangleCameraManager *manager)
     priv->imageScrollVOffset = 0;
 
     priv->automata = entangle_camera_automata_new();
+    priv->cameraPrefs = entangle_camera_preferences_new();
 
     g_signal_connect(priv->automata, "camera-capture-begin",
                      G_CALLBACK(do_camera_capture_begin), manager);

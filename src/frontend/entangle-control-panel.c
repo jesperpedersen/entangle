@@ -1,7 +1,7 @@
 /*
  *  Entangle: Tethered Camera Control & Capture
  *
- *  Copyright (C) 2009-2012 Daniel P. Berrange
+ *  Copyright (C) 2009-2014 Daniel P. Berrange
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,8 +38,10 @@
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_CONTROL_PANEL, EntangleControlPanelPrivate))
 
 struct _EntangleControlPanelPrivate {
+    EntangleCameraPreferences *cameraPrefs;
     EntangleCamera *camera;
 
+    gulong sigCamera;
     gboolean hasControls;
     gboolean inUpdate;
 
@@ -51,6 +53,7 @@ G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_EXPANDER);
 enum {
     PROP_O,
     PROP_CAMERA,
+    PROP_CAMERA_PREFS,
     PROP_HAS_CONTROLS,
 };
 
@@ -531,6 +534,58 @@ static void do_setup_control(EntangleControlPanel *panel,
 }
 
 
+static gchar **entangle_control_panel_get_default_controls(EntangleControlGroup *root)
+{
+    gchar **controls = NULL;
+    gsize ncontrols = 0;
+
+    if (entangle_control_group_get_by_path(root,
+                                           "/main/capturesettings/f-number")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/capturesettings/f-number");
+    }
+
+    if (entangle_control_group_get_by_path(root,
+                                           "/main/capturesettings/shutterspeed2")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/capturesettings/shutterspeed2");
+    } else if (entangle_control_group_get_by_path(root,
+                                                  "/main/capturesettings/shutterspeed")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/capturesettings/shutterspeed");
+    }
+
+    if (entangle_control_group_get_by_path(root,
+                                           "/main/imgsettings/iso")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/imgsettings/iso");
+    }
+
+    if (entangle_control_group_get_by_path(root,
+                                           "/main/imgsettings/whitebalance")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/imgsettings/whitebalance");
+    }
+
+    if (entangle_control_group_get_by_path(root,
+                                           "/main/capturesettings/imagequality")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/capturesettings/imagequality");
+    }
+
+    if (entangle_control_group_get_by_path(root,
+                                           "/main/imgsettings/imagesize")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/imgsettings/imagesize");
+    }
+
+    controls = g_renew(gchar *, controls, ncontrols + 1);
+    controls[ncontrols++] = NULL;
+
+    return controls;
+}
+
+
 static void do_setup_camera(EntangleControlPanel *panel)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
@@ -539,6 +594,8 @@ static void do_setup_camera(EntangleControlPanel *panel)
     EntangleControlGroup *root;
     EntangleControl *control;
     gint row = 0;
+    gchar **controls;
+    gsize i;
 
     gtk_container_foreach(GTK_CONTAINER(priv->grid), do_control_remove, panel);
 
@@ -563,37 +620,45 @@ static void do_setup_camera(EntangleControlPanel *panel)
         return;
     }
 
+    controls = entangle_camera_preferences_get_controls(priv->cameraPrefs);
+    if (!controls || !controls[0]) {
+        controls = entangle_control_panel_get_default_controls(root);
+        entangle_camera_preferences_set_controls(priv->cameraPrefs,
+                                                 (const char *const *)controls);
+    }
 
-    if ((control = entangle_control_group_get_by_path(root,
-                                                      "/main/capturesettings/f-number")))
-        do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
-
-    if ((control = entangle_control_group_get_by_path(root,
-                                                      "/main/capturesettings/shutterspeed2")))
-        do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
-    else if ((control = entangle_control_group_get_by_path(root,
-                                                           "/main/capturesettings/shutterspeed")))
-        do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
-
-    if ((control = entangle_control_group_get_by_path(root,
-                                                      "/main/imgsettings/iso")))
-        do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
-
-    if ((control = entangle_control_group_get_by_path(root,
-                                                      "/main/imgsettings/whitebalance")))
-        do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
-
-    if ((control = entangle_control_group_get_by_path(root,
-                                                      "/main/capturesettings/imagequality")))
-        do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
-
-    if ((control = entangle_control_group_get_by_path(root,
-                                                      "/main/imgsettings/imagesize")))
-        do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
+    for (i = 0; controls[i] != NULL; i++) {
+        if ((control = entangle_control_group_get_by_path(root,
+                                                          controls[i])))
+            do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
+    }
 
     gtk_widget_show_all(GTK_WIDGET(panel));
     g_object_unref(root);
+    g_strfreev(controls);
 }
+
+
+static void do_update_camera(GObject *object G_GNUC_UNUSED,
+                             GParamSpec *pspec G_GNUC_UNUSED,
+                             gpointer data)
+{
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
+
+    EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
+    EntangleControlPanelPrivate *priv = panel->priv;
+
+    if (priv->camera) {
+        g_object_unref(priv->camera);
+        priv->camera = NULL;
+    }
+    priv->camera = entangle_camera_preferences_get_camera(priv->cameraPrefs);
+    if (priv->camera) {
+        g_object_ref(priv->camera);
+        do_setup_camera(panel);
+    }
+}
+
 
 static void entangle_control_panel_get_property(GObject *object,
                                                 guint prop_id,
@@ -605,6 +670,10 @@ static void entangle_control_panel_get_property(GObject *object,
 
     switch (prop_id)
         {
+        case PROP_CAMERA_PREFS:
+            g_value_set_object(value, priv->cameraPrefs);
+            break;
+
         case PROP_CAMERA:
             g_value_set_object(value, priv->camera);
             break;
@@ -625,13 +694,16 @@ static void entangle_control_panel_set_property(GObject *object,
                                                 GParamSpec *pspec)
 {
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(object);
+    EntangleControlPanelPrivate *priv = panel->priv;
 
     ENTANGLE_DEBUG("Set prop on control panel %d", prop_id);
 
     switch (prop_id)
         {
-        case PROP_CAMERA:
-            entangle_control_panel_set_camera(panel, g_value_get_object(value));
+        case PROP_CAMERA_PREFS:
+            priv->cameraPrefs = g_value_get_object(value);
+            priv->sigCamera = g_signal_connect(priv->cameraPrefs, "notify::camera",
+                                               G_CALLBACK(do_update_camera), panel);
             break;
 
         default:
@@ -648,6 +720,11 @@ static void entangle_control_panel_finalize(GObject *object)
     if (priv->camera)
         g_object_unref(priv->camera);
 
+    if (priv->cameraPrefs) {
+        g_signal_handler_disconnect(priv->cameraPrefs, priv->sigCamera);
+        g_object_unref(priv->cameraPrefs);
+    }
+
     G_OBJECT_CLASS(entangle_control_panel_parent_class)->finalize(object);
 }
 
@@ -661,18 +738,30 @@ static void entangle_control_panel_class_init(EntangleControlPanelClass *klass)
     object_class->set_property = entangle_control_panel_set_property;
 
     g_object_class_install_property(object_class,
-                                    PROP_CAMERA,
-                                    g_param_spec_object("camera",
-                                                        "Camera",
-                                                        "Camera to managed",
-                                                        ENTANGLE_TYPE_CAMERA,
+                                    PROP_CAMERA_PREFS,
+                                    g_param_spec_object("camera-prefs",
+                                                        "Camera prefs",
+                                                        "Camera preferences to manage",
+                                                        ENTANGLE_TYPE_CAMERA_PREFERENCES,
                                                         G_PARAM_READWRITE |
+                                                        G_PARAM_CONSTRUCT_ONLY |
                                                         G_PARAM_STATIC_NAME |
                                                         G_PARAM_STATIC_NICK |
                                                         G_PARAM_STATIC_BLURB));
 
     g_object_class_install_property(object_class,
                                     PROP_CAMERA,
+                                    g_param_spec_object("camera",
+                                                        "Camera",
+                                                        "Camera to manage",
+                                                        ENTANGLE_TYPE_CAMERA,
+                                                        G_PARAM_READABLE |
+                                                        G_PARAM_STATIC_NAME |
+                                                        G_PARAM_STATIC_NICK |
+                                                        G_PARAM_STATIC_BLURB));
+
+    g_object_class_install_property(object_class,
+                                    PROP_HAS_CONTROLS,
                                     g_param_spec_boolean("has-controls",
                                                          "Has Controls",
                                                          "Has Controls",
@@ -686,9 +775,10 @@ static void entangle_control_panel_class_init(EntangleControlPanelClass *klass)
 }
 
 
-EntangleControlPanel *entangle_control_panel_new(void)
+EntangleControlPanel *entangle_control_panel_new(EntangleCameraPreferences *prefs)
 {
     return ENTANGLE_CONTROL_PANEL(g_object_new(ENTANGLE_TYPE_CONTROL_PANEL,
+                                               "camera-prefs", prefs,
                                                "label", "Camera settings",
                                                "expanded", TRUE,
                                                NULL));
@@ -714,46 +804,21 @@ static void entangle_control_panel_init(EntangleControlPanel *panel)
 }
 
 
-
 /**
- * entangle_control_panel_set_camera:
- * @panel: the control widget
- * @camera: (transfer none)(allow-none): the camera to display controls for, or NULL
- *
- * Set the camera to display controls for
- */
-void entangle_control_panel_set_camera(EntangleControlPanel *panel,
-                                       EntangleCamera *camera)
-{
-    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
-    g_return_if_fail(!camera || ENTANGLE_IS_CAMERA(camera));
-
-    EntangleControlPanelPrivate *priv = panel->priv;
-
-    if (priv->camera)
-        g_object_unref(priv->camera);
-    priv->camera = camera;
-    if (priv->camera)
-        g_object_ref(priv->camera);
-    do_setup_camera(panel);
-}
-
-
-/**
- * entangle_control_panel_get_camera:
+ * entangle_control_panel_get_camera_preferences:
  * @panel: the control widget
  *
- * Get the camera whose controls are displayed
+ * Get the camera preferences whose controls are displayed
  *
- * Returns: (transfer none): the camera or NULL
+ * Returns: (transfer none): the camera preferences or NULL
  */
-EntangleCamera *entangle_control_panel_get_camera(EntangleControlPanel *panel)
+EntangleCameraPreferences *entangle_control_panel_get_camera_preferences(EntangleControlPanel *panel)
 {
     g_return_val_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel), NULL);
 
     EntangleControlPanelPrivate *priv = panel->priv;
 
-    return priv->camera;
+    return priv->cameraPrefs;
 }
 
 
