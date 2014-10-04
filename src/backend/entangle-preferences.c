@@ -1011,6 +1011,12 @@ void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const
     gchar **plugins = g_settings_get_strv(priv->interfaceSettings,
                                           SETTING_INTERFACE_PLUGINS);
     gsize len = g_strv_length(plugins);
+    gsize i;
+
+    for (i = 0 ; i < len ; i++)
+        if (g_str_equal(name, plugins[i]))
+            goto cleanup;
+
     plugins = g_renew(gchar *, plugins, len + 2);
     len++;
     plugins[len-1] = g_strdup(name);
@@ -1018,6 +1024,8 @@ void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const
     g_settings_set_strv(priv->interfaceSettings,
                         SETTING_INTERFACE_PLUGINS,
                         (const gchar *const*)plugins);
+
+ cleanup:
     g_strfreev(plugins);
 }
 
