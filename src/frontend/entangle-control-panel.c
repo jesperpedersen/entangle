@@ -519,7 +519,6 @@ static void do_setup_control(EntangleControlPanel *panel,
     if (needLabel) {
         label = gtk_label_new(entangle_control_get_label(control));
         gtk_widget_set_tooltip_text(label, entangle_control_get_info(control));
-        gtk_misc_set_alignment(GTK_MISC(label), 1, 0.5);
         gtk_widget_set_halign(label, GTK_ALIGN_FILL);
         gtk_grid_attach(GTK_GRID(box), label, 0, row, 1, 1);
 
