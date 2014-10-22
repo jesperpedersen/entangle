@@ -344,8 +344,6 @@ static void entangle_image_histogram_init(EntangleImageHistogram *histogram)
 
     priv = histogram->priv = ENTANGLE_IMAGE_HISTOGRAM_GET_PRIVATE(histogram);
     memset(priv, 0, sizeof *priv);
-
-    gtk_widget_set_double_buffered(GTK_WIDGET(histogram), FALSE);
 }
 
 
