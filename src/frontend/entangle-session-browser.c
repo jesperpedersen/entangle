@@ -1159,7 +1159,7 @@ entangle_session_browser_scroll_to_path(EntangleSessionBrowser *browser,
     if (use_align) {
         GtkAllocation allocation;
         gint x, y;
-        gfloat offset;
+        gdouble offset;
         GdkRectangle item_area = {
             item->cell_area.x - priv->item_padding,
             item->cell_area.y - priv->item_padding,

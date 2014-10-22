@@ -203,9 +203,9 @@ EntangleControlRange *entangle_control_range_new(const char *path,
                                                "label", label,
                                                "info", info,
                                                "readonly", readonly,
-                                               "range-min", min,
-                                               "range-max", max,
-                                               "range-step", step,
+                                               "range-min", (double)min,
+                                               "range-max", (double)max,
+                                               "range-step", (double)step,
                                                NULL));
 }
 

@@ -169,10 +169,10 @@ static gboolean do_refresh_control_range_idle(gpointer data)
     ENTANGLE_DEBUG("Notified control range '%s' ('%s') with '%lf'",
                    entangle_control_get_path(ENTANGLE_CONTROL(control)),
                    entangle_control_get_label(ENTANGLE_CONTROL(control)),
-                   val);
+                   (double)val);
 
     if (GTK_IS_LABEL(widget)) {
-        gchar *text = g_strdup_printf("%0.02f", val);
+        gchar *text = g_strdup_printf("%0.02f", (double)val);
         gtk_label_set_text(GTK_LABEL(widget), text);
         g_free(text);
     } else {
@@ -198,7 +198,7 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(data));
 
-    EntangleControlText *control = g_object_get_data(G_OBJECT(widget), "control");
+    EntangleControlRange *control = g_object_get_data(G_OBJECT(widget), "control");
     EntangleControlPanel *panel = ENTANGLE_CONTROL_PANEL(data);
     EntangleControlPanelPrivate *priv = panel->priv;
 
@@ -209,7 +209,7 @@ static void do_update_control_range(GtkRange *widget G_GNUC_UNUSED,
                    entangle_control_get_path(ENTANGLE_CONTROL(control)),
                    entangle_control_get_label(ENTANGLE_CONTROL(control)),
                    value);
-    g_object_set(control, "value", (float)value, NULL);
+    g_object_set(control, "value", (double)value, NULL);
 
     entangle_camera_save_controls_async(priv->camera,
                                         NULL,

@@ -2099,7 +2099,8 @@ static EntangleControl *do_build_controls(EntangleCamera *cam,
         {
             float min, max, step;
             gp_widget_get_range(widget, &min, &max, &step);
-            ENTANGLE_DEBUG("Add range %s %d %s %f %f %f", fullpath, id, label, min, max, step);
+            ENTANGLE_DEBUG("Add range %s %d %s %f %f %f", fullpath, id, label,
+                           (double)min, (double)max, (double)step);
             ret = ENTANGLE_CONTROL(entangle_control_range_new(fullpath, id, label, info, ro,
                                                               min, max, step));
         } break;
@@ -2233,8 +2234,8 @@ static gboolean do_load_controls(EntangleCamera *cam,
             ENTANGLE_DEBUG("Updating value of range '%s' ('%s') old='%f' new='%f'",
                            entangle_control_get_path(ctrl),
                            entangle_control_get_label(ctrl),
-                           oldValue, newValue);
-            g_object_set(ctrl, "value", newValue, NULL);
+                           (double)oldValue, (double)newValue);
+            g_object_set(ctrl, "value", (double)newValue, NULL);
         }
     }   break;
 
