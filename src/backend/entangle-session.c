@@ -264,9 +264,9 @@ static gint entangle_session_next_digit(EntangleSession *session)
     const gchar *template = strchr(priv->filenamePattern, 'X');
     gchar *prefix = g_strndup(priv->filenamePattern, (template - priv->filenamePattern));
     gint prefixlen = strlen(prefix);
-    gint templatelen = 0;
+    gsize templatelen = 0;
     const gchar *postfix;
-    gint postfixlen;
+    gsize postfixlen;
 
     while (*template == 'X') {
         templatelen++;
@@ -276,13 +276,13 @@ static gint entangle_session_next_digit(EntangleSession *session)
     postfix = template;
     postfixlen = strlen(postfix);
 
-    ENTANGLE_DEBUG("Template '%s' with prefixlen %d, %d digits and postfix %d",
+    ENTANGLE_DEBUG("Template '%s' with prefixlen %d, %zu digits and postfix %zu",
                    priv->filenamePattern, prefixlen, templatelen, postfixlen);
 
     while (images) {
         EntangleImage *image = images->data;
         const gchar *name = entangle_image_get_filename(image);
-        gsize remain = templatelen;
+        gsize used = 0;
         gint digit = 0;
 
         if (!g_str_has_prefix(name, priv->directory)) {
@@ -304,15 +304,15 @@ static gint entangle_session_next_digit(EntangleSession *session)
         name += prefixlen;
 
         /* Skip over filename matching digits */
-        while (remain && g_ascii_isdigit(*name)) {
+        while (used < templatelen && g_ascii_isdigit(*name)) {
             digit *= 10;
             digit += *name - '0';
             name++;
-            remain--;
+            used++;
         }
 
         /* See if unexpectedly got a non-digit before end of template */
-        if (remain) {
+        if (used < templatelen) {
             ENTANGLE_DEBUG("File %s has too few digits",
                            entangle_image_get_filename(image));
             goto next;
