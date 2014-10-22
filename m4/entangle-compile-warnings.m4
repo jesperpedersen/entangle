@@ -44,6 +44,8 @@ AC_DEFUN([ENTANGLE_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wcast-qual"
     # entangle_session_next_filename
     dontwarn="$dontwarn -Wformat-nonliteral"
+    # Don't care about explicit casts of functions
+    dontwarn="$dontwarn -Wbad-function-cast"
 
     # Get all possible GCC warnings
     gl_MANYWARN_ALL_GCC([maybewarn])
