@@ -679,6 +679,16 @@ static void do_add_control(EntangleControlPanel *panel,
                            EntangleControl *control)
 {
     EntangleControlPanelPrivate *priv = panel->priv;
+    gsize i;
+
+    for (i = 0; i < priv->rows; i++) {
+        GtkWidget *widget = gtk_grid_get_child_at(GTK_GRID(priv->grid),
+                                                  0, i);
+        EntangleControl *that = g_object_get_data(G_OBJECT(widget), "control");
+
+        if (that == control)
+            return;
+    }
 
     gtk_grid_insert_row(GTK_GRID(priv->grid), priv->rows);
     do_setup_control(panel, control, GTK_CONTAINER(priv->grid), priv->rows++);
@@ -734,7 +744,7 @@ static GtkWidget *do_create_control_menu(EntangleControlPanel *panel,
 
     tmp = controls = g_list_sort(controls, compare_control);
 
-    while (tmp && tmp->next) {
+    while (tmp) {
         EntangleControl *control = tmp->data;
         item = gtk_check_menu_item_new_with_label(entangle_control_get_label(control));
 
@@ -775,6 +785,7 @@ static void do_setup_controls(EntangleControlPanel *panel)
     GtkWidget *settingsButton;
     gchar **controls;
     GtkWidget *menu;
+    gsize i;
 
     root = entangle_camera_get_controls(priv->camera, NULL);
 
@@ -785,8 +796,14 @@ static void do_setup_controls(EntangleControlPanel *panel)
                                                  (const char *const *)controls);
     }
 
-    /* As side effect of populating menu and selecting
-       check menu items, we build the UI :-) */
+
+    for (i = 0; controls[i] != NULL; i++) {
+        EntangleControl *control = entangle_control_group_get_by_path(root,
+                                                                      controls[i]);
+        if (control)
+            do_setup_control(panel, control, GTK_CONTAINER(priv->grid), priv->rows++);
+    }
+
     menu = do_create_control_menu(panel,
                                   root,
                                   controls);
