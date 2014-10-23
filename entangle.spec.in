@@ -11,7 +11,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://entangle-photo.org/
 
 BuildRequires: glib2-devel >= 2.26.0
-BuildRequires: gtk3-devel >= 3.0
+BuildRequires: gtk3-devel >= 3.6
 BuildRequires: libgphoto2-devel >= 2.4.11
 BuildRequires: libgudev1-devel >= 145
 BuildRequires: dbus-glib-devel >= 0.60

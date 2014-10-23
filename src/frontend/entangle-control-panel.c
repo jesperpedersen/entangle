@@ -46,6 +46,7 @@ struct _EntangleControlPanelPrivate {
     gboolean inUpdate;
 
     GtkWidget *grid;
+    gsize rows;
 };
 
 G_DEFINE_TYPE(EntangleControlPanel, entangle_control_panel, GTK_TYPE_EXPANDER);
@@ -440,8 +441,6 @@ static void do_setup_control(EntangleControlPanel *panel,
             gtk_widget_set_sensitive(value, FALSE);
         gtk_combo_box_set_active(GTK_COMBO_BOX(value), active);
 
-        g_object_set_data(G_OBJECT(value), "panel", panel);
-        g_object_set_data(G_OBJECT(value), "control", control);
         g_signal_connect(value, "changed",
                          G_CALLBACK(do_update_control_combo), panel);
         g_signal_connect(control, "notify::value",
@@ -474,8 +473,6 @@ static void do_setup_control(EntangleControlPanel *panel,
         gtk_range_set_value(GTK_RANGE(value), offset);
         if (entangle_control_get_readonly(control) || forceReadonly)
             gtk_widget_set_sensitive(value, FALSE);
-        g_object_set_data(G_OBJECT(value), "panel", panel);
-        g_object_set_data(G_OBJECT(value), "control", control);
         g_signal_connect(value, "change-value",
                          G_CALLBACK(do_update_control_range), panel);
         g_signal_connect(control, "notify::value",
@@ -490,8 +487,6 @@ static void do_setup_control(EntangleControlPanel *panel,
         gtk_entry_set_text(GTK_ENTRY(value), text);
         if (entangle_control_get_readonly(control))
             gtk_widget_set_sensitive(value, FALSE);
-        g_object_set_data(G_OBJECT(value), "panel", panel);
-        g_object_set_data(G_OBJECT(value), "control", control);
         g_signal_connect(value, "focus-out-event",
                          G_CALLBACK(do_update_control_entry), panel);
         g_signal_connect(control, "notify::value",
@@ -506,8 +501,6 @@ static void do_setup_control(EntangleControlPanel *panel,
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(value), active);
         if (entangle_control_get_readonly(control))
             gtk_widget_set_sensitive(value, FALSE);
-        g_object_set_data(G_OBJECT(value), "panel", panel);
-        g_object_set_data(G_OBJECT(value), "control", control);
         g_signal_connect(value, "toggled",
                          G_CALLBACK(do_update_control_toggle), panel);
         g_signal_connect(control, "notify::value",
@@ -522,13 +515,25 @@ static void do_setup_control(EntangleControlPanel *panel,
         gtk_widget_set_halign(label, GTK_ALIGN_FILL);
         gtk_grid_attach(GTK_GRID(box), label, 0, row, 1, 1);
 
+        g_object_set_data(G_OBJECT(label), "panel", panel);
+        g_object_set_data(G_OBJECT(label), "control", control);
+        gtk_widget_show(label);
+
         gtk_widget_set_hexpand(value, TRUE);
         gtk_widget_set_halign(value, GTK_ALIGN_FILL);
         gtk_grid_attach(GTK_GRID(box), value, 1, row, 1, 1);
+
+        g_object_set_data(G_OBJECT(value), "panel", panel);
+        g_object_set_data(G_OBJECT(value), "control", control);
+        gtk_widget_show(value);
     } else {
         gtk_widget_set_hexpand(value, TRUE);
         gtk_widget_set_halign(value, GTK_ALIGN_FILL);
         gtk_grid_attach(GTK_GRID(box), value, 0, row, 2, 1);
+
+        g_object_set_data(G_OBJECT(value), "panel", panel);
+        g_object_set_data(G_OBJECT(value), "control", control);
+        gtk_widget_show(value);
     }
 }
 
@@ -542,6 +547,10 @@ static gchar **entangle_control_panel_get_default_controls(EntangleControlGroup 
                                            "/main/capturesettings/f-number")) {
         controls = g_renew(gchar *, controls, ncontrols + 1);
         controls[ncontrols++] = g_strdup("/main/capturesettings/f-number");
+    } else if (entangle_control_group_get_by_path(root,
+                                           "/main/capturesettings/aperture")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/capturesettings/aperture");
     }
 
     if (entangle_control_group_get_by_path(root,
@@ -570,6 +579,10 @@ static gchar **entangle_control_panel_get_default_controls(EntangleControlGroup 
                                            "/main/capturesettings/imagequality")) {
         controls = g_renew(gchar *, controls, ncontrols + 1);
         controls[ncontrols++] = g_strdup("/main/capturesettings/imagequality");
+    } else if (entangle_control_group_get_by_path(root,
+                                                  "/main/imgsettings/imageformat")) {
+        controls = g_renew(gchar *, controls, ncontrols + 1);
+        controls[ncontrols++] = g_strdup("/main/imgsettings/imageformat");
     }
 
     if (entangle_control_group_get_by_path(root,
@@ -584,40 +597,186 @@ static gchar **entangle_control_panel_get_default_controls(EntangleControlGroup 
     return controls;
 }
 
+static GList *do_get_control_list(EntangleControlGroup *group)
+{
+    gsize i;
+    GList *controls = NULL;
 
-static void do_setup_camera(EntangleControlPanel *panel)
+    for (i = 0; i < entangle_control_group_count(group); i++) {
+        EntangleControl *control = entangle_control_group_get(group, i);
+
+        if (ENTANGLE_IS_CONTROL_GROUP(control)) {
+            GList *children = do_get_control_list(ENTANGLE_CONTROL_GROUP(control));
+
+            controls = g_list_concat(controls, children);
+        } else {
+            controls = g_list_append(controls, control);
+        }
+    }
+
+    return controls;
+}
+
+static int compare_control(gconstpointer a, gconstpointer b)
+{
+    EntangleControl *ac = (EntangleControl *)a;
+    EntangleControl *bc = (EntangleControl *)b;
+
+    return strcmp(entangle_control_get_label(ac),
+                  entangle_control_get_label(bc));
+}
+
+
+static gboolean is_control_enabled(gchar **controls,
+                                   const gchar *check)
+{
+    gsize i;
+
+    if (!controls)
+        return FALSE;
+
+    for (i = 0; controls[i] != NULL; i++)
+        if (g_str_equal(controls[i], check))
+            return TRUE;
+    return FALSE;
+}
+
+static void do_setup_controls(EntangleControlPanel *panel);
+
+static void do_reset_controls(GtkWidget *src G_GNUC_UNUSED,
+                              EntangleControlPanel *panel)
 {
     g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
 
     EntangleControlPanelPrivate *priv = panel->priv;
-    EntangleControlGroup *root;
-    EntangleControl *control;
-    gint row = 0;
-    gchar **controls;
-    gsize i;
 
     gtk_container_foreach(GTK_CONTAINER(priv->grid), do_control_remove, panel);
+    priv->rows = 0;
+    entangle_camera_preferences_set_controls(priv->cameraPrefs,
+                                             NULL);
+    do_setup_controls(panel);
+}
 
-    if (!priv->camera) {
-        GtkWidget *label = gtk_label_new(_("No camera connected"));
 
-        gtk_widget_set_hexpand(label, TRUE);
-        gtk_widget_set_halign(label, GTK_ALIGN_FILL);
-        gtk_grid_attach(GTK_GRID(priv->grid), label, 0, row, 2, 1);
-        gtk_widget_show_all(GTK_WIDGET(panel));
-        return;
+static void do_update_control_prefs(EntangleControlPanel *panel)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+    const gchar **controlnames = g_new0(const gchar *, priv->rows + 1);
+    gsize i;
+
+    for (i = 0; i < priv->rows; i++) {
+        GtkWidget *widget = gtk_grid_get_child_at(GTK_GRID(priv->grid), 0, i);
+        EntangleControl *control = g_object_get_data(G_OBJECT(widget), "control");
+        controlnames[i] = entangle_control_get_path(control);
     }
+    controlnames[priv->rows] = NULL;
+    entangle_camera_preferences_set_controls(priv->cameraPrefs,
+                                             (const gchar *const *)controlnames);
+    g_free(controlnames);
+}
+
+static void do_add_control(EntangleControlPanel *panel,
+                           EntangleControl *control)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+
+    gtk_grid_insert_row(GTK_GRID(priv->grid), priv->rows);
+    do_setup_control(panel, control, GTK_CONTAINER(priv->grid), priv->rows++);
+    do_update_control_prefs(panel);
+}
+
+static void do_remove_control(EntangleControlPanel *panel,
+                              EntangleControl *control)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+    gsize i;
+
+    for (i = 0; i < priv->rows; i++) {
+        GtkWidget *widget = gtk_grid_get_child_at(GTK_GRID(priv->grid),
+                                                  0, i);
+        EntangleControl *that = g_object_get_data(G_OBJECT(widget), "control");
+
+        if (that == control) {
+            gtk_grid_remove_row(GTK_GRID(priv->grid), i);
+            priv->rows--;
+            break;
+        }
+    }
+    do_update_control_prefs(panel);
+}
+
+
+static void do_addremove_control(GtkWidget *src,
+                                 EntangleControlPanel *panel)
+{
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
+
+    EntangleControl *control;
+
+    control = g_object_get_data(G_OBJECT(src), "control");
+    g_return_if_fail(ENTANGLE_IS_CONTROL(control));
+
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(src)))
+        do_add_control(panel, control);
+    else
+        do_remove_control(panel, control);
+}
+
+
+static GtkWidget *do_create_control_menu(EntangleControlPanel *panel,
+                                         EntangleControlGroup *group,
+                                         gchar **controlnames)
+{
+    GList *controls = do_get_control_list(group);
+    GList *tmp;
+    GtkWidget *menu = gtk_menu_new();
+    GtkWidget *item;
+
+    tmp = controls = g_list_sort(controls, compare_control);
+
+    while (tmp && tmp->next) {
+        EntangleControl *control = tmp->data;
+        item = gtk_check_menu_item_new_with_label(entangle_control_get_label(control));
+
+        g_object_set_data(G_OBJECT(item), "control", control);
+        g_signal_connect(item, "toggled",
+                         G_CALLBACK(do_addremove_control), panel);
+
+        gtk_container_add(GTK_CONTAINER(menu),
+                          item);
+
+        if (is_control_enabled(controlnames,
+                               entangle_control_get_path(control)))
+            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item),
+                                           TRUE);
+
+        tmp = tmp->next;
+    }
+
+    g_list_free(controls);
+
+    item = gtk_separator_menu_item_new();
+    gtk_container_add(GTK_CONTAINER(menu), item);
+
+    item = gtk_menu_item_new_with_label(_("Reset controls"));
+    gtk_container_add(GTK_CONTAINER(menu), item);
+    g_signal_connect(item, "activate", G_CALLBACK(do_reset_controls), panel);
+
+    gtk_widget_show_all(menu);
+
+    return menu;
+}
+
+
+static void do_setup_controls(EntangleControlPanel *panel)
+{
+    EntangleControlPanelPrivate *priv = panel->priv;
+    EntangleControlGroup *root;
+    GtkWidget *settingsButton;
+    gchar **controls;
+    GtkWidget *menu;
 
     root = entangle_camera_get_controls(priv->camera, NULL);
-
-    if (!root) {
-        GtkWidget *label = gtk_label_new(_("No controls available"));
-        gtk_widget_set_hexpand(label, TRUE);
-        gtk_widget_set_halign(label, GTK_ALIGN_FILL);
-        gtk_grid_attach(GTK_GRID(priv->grid), label, 0, row, 2, 1);
-        gtk_widget_show_all(GTK_WIDGET(panel));
-        return;
-    }
 
     controls = entangle_camera_preferences_get_controls(priv->cameraPrefs);
     if (!controls || !controls[0]) {
@@ -626,15 +785,59 @@ static void do_setup_camera(EntangleControlPanel *panel)
                                                  (const char *const *)controls);
     }
 
-    for (i = 0; controls[i] != NULL; i++) {
-        if ((control = entangle_control_group_get_by_path(root,
-                                                          controls[i])))
-            do_setup_control(panel, control, GTK_CONTAINER(priv->grid), row++);
-    }
+    /* As side effect of populating menu and selecting
+       check menu items, we build the UI :-) */
+    menu = do_create_control_menu(panel,
+                                  root,
+                                  controls);
+
+    settingsButton = gtk_menu_button_new();
+    gtk_container_add(GTK_CONTAINER(settingsButton),
+                      gtk_image_new_from_icon_name("emblem-system-symbolic",
+                                                   GTK_ICON_SIZE_SMALL_TOOLBAR));
+    gtk_menu_button_set_popup(GTK_MENU_BUTTON(settingsButton),
+                              menu);
+    gtk_widget_set_hexpand(settingsButton, TRUE);
+    gtk_widget_set_halign(settingsButton, GTK_ALIGN_END);
+#if GTK_CHECK_VERSION(3, 12, 0)
+    gtk_widget_set_margin_end(settingsButton, 6);
+#else
+    gtk_widget_set_margin_right(settingsButton, 6);
+#endif
+
+
+    gtk_grid_attach(GTK_GRID(priv->grid), settingsButton, 1, priv->rows, 2, 1);
 
     gtk_widget_show_all(GTK_WIDGET(panel));
     g_object_unref(root);
     g_strfreev(controls);
+}
+
+static void do_setup_camera(EntangleControlPanel *panel)
+{
+    g_return_if_fail(ENTANGLE_IS_CONTROL_PANEL(panel));
+
+    EntangleControlPanelPrivate *priv = panel->priv;
+
+    gtk_container_foreach(GTK_CONTAINER(priv->grid), do_control_remove, panel);
+    priv->rows = 0;
+
+    if (!priv->camera) {
+        GtkWidget *label = gtk_label_new(_("No camera connected"));
+
+        gtk_widget_set_hexpand(label, TRUE);
+        gtk_widget_set_halign(label, GTK_ALIGN_FILL);
+        gtk_grid_attach(GTK_GRID(priv->grid), label, 0, 0, 2, 1);
+        gtk_widget_show_all(GTK_WIDGET(panel));
+    } else if (entangle_camera_get_controls(priv->camera, NULL) == NULL) {
+        GtkWidget *label = gtk_label_new(_("No controls available"));
+        gtk_widget_set_hexpand(label, TRUE);
+        gtk_widget_set_halign(label, GTK_ALIGN_FILL);
+        gtk_grid_attach(GTK_GRID(priv->grid), label, 0, 0, 2, 1);
+        gtk_widget_show_all(GTK_WIDGET(panel));
+    } else {
+        do_setup_controls(panel);
+    }
 }
 
 
@@ -652,10 +855,10 @@ static void do_update_camera(GObject *object G_GNUC_UNUSED,
         priv->camera = NULL;
     }
     priv->camera = entangle_camera_preferences_get_camera(priv->cameraPrefs);
-    if (priv->camera) {
+    if (priv->camera)
         g_object_ref(priv->camera);
-        do_setup_camera(panel);
-    }
+
+    do_setup_camera(panel);
 }
 
 
@@ -796,6 +999,8 @@ static void entangle_control_panel_init(EntangleControlPanel *panel)
     gtk_grid_set_row_spacing(GTK_GRID(priv->grid), 6);
     gtk_grid_set_column_spacing(GTK_GRID(priv->grid), 6);
     gtk_container_set_border_width(GTK_CONTAINER(priv->grid), 6);
+    gtk_widget_set_hexpand(priv->grid, TRUE);
+    gtk_widget_set_halign(priv->grid, GTK_ALIGN_FILL);
 
     gtk_container_add(GTK_CONTAINER(panel), priv->grid);
 
