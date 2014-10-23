@@ -25,8 +25,6 @@
 #include "entangle-debug.h"
 #include "entangle-session-browser.h"
 
-#define ENTANGLE_SESSION_BROWSER_PRIORITY_LAYOUT (GDK_PRIORITY_REDRAW + 5)
-
 #define ENTANGLE_SESSION_BROWSER_GET_PRIVATE(obj)                       \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), ENTANGLE_TYPE_SESSION_BROWSER, EntangleSessionBrowserPrivate))
 
@@ -85,8 +83,6 @@ struct _EntangleSessionBrowserPrivate {
     guint width;
     guint height;
 
-    guint layout_idle_id;
-
     GdkWindow *bin_window;
 
     gint margin;
@@ -117,9 +113,6 @@ entangle_session_browser_set_vadjustment_values(EntangleSessionBrowser *browser)
 static gboolean
 entangle_session_browser_draw(GtkWidget *widget,
                               cairo_t *cr);
-
-static void
-entangle_session_browser_queue_layout(EntangleSessionBrowser *browser);
 
 static void
 entangle_session_browser_cell_layout_init(GtkCellLayoutIface *iface);
@@ -559,8 +552,7 @@ entangle_session_browser_invalidate_sizes(EntangleSessionBrowser *browser)
                                  browser->priv->context_changed_id);
     }
 
-    /* Re-layout the items */
-    entangle_session_browser_queue_layout(browser);
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
 }
 
 
@@ -681,7 +673,7 @@ entangle_session_browser_row_inserted(GtkTreeModel *model G_GNUC_UNUSED,
 
     verify_items(browser);
 
-    entangle_session_browser_queue_layout(browser);
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
 }
 
 
@@ -724,7 +716,7 @@ entangle_session_browser_row_deleted(GtkTreeModel *model G_GNUC_UNUSED,
 
     verify_items(browser);
 
-    entangle_session_browser_queue_layout(browser);
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
 
     if (emit)
         g_signal_emit(browser, browser_signals[SIGNAL_SELECTION_CHANGED], 0);
@@ -773,7 +765,7 @@ entangle_session_browser_rows_reordered(GtkTreeModel *model,
     g_list_free(browser->priv->items);
     browser->priv->items = items;
 
-    entangle_session_browser_queue_layout(browser);
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
 
     verify_items(browser);
 }
@@ -1545,11 +1537,6 @@ static void entangle_session_browser_destroy(GtkWidget *widget)
     EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(widget);
     EntangleSessionBrowserPrivate *priv = browser->priv;
 
-    if (priv->layout_idle_id != 0) {
-        g_source_remove(priv->layout_idle_id);
-        priv->layout_idle_id = 0;
-    }
-
     if (priv->scroll_to_path != NULL) {
         gtk_tree_row_reference_free(priv->scroll_to_path);
         priv->scroll_to_path = NULL;
@@ -1732,7 +1719,7 @@ static void entangle_session_browser_init(EntangleSessionBrowser *browser)
                      priv->model);
 
     entangle_session_browser_build_items(browser);
-    entangle_session_browser_queue_layout(browser);
+    gtk_widget_queue_resize(GTK_WIDGET(browser));
 
     priv->margin = 6;
     priv->item_padding = 0;
@@ -2188,11 +2175,6 @@ entangle_session_browser_layout(EntangleSessionBrowser *browser)
     gint item_width;
     gboolean size_changed = FALSE;
 
-    if (priv->layout_idle_id != 0) {
-        g_source_remove(priv->layout_idle_id);
-        priv->layout_idle_id = 0;
-    }
-
     /* Update the context widths for any invalidated items */
     entangle_session_browser_cache_widths(browser);
 
@@ -2233,56 +2215,6 @@ entangle_session_browser_layout(EntangleSessionBrowser *browser)
                           MAX(priv->height, allocation.height));
 
     gtk_widget_queue_draw(widget);
-}
-
-
-static void
-entangle_session_browser_process_updates(EntangleSessionBrowser *browser)
-{
-    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
-
-    EntangleSessionBrowserPrivate *priv = browser->priv;
-
-    /* Prior to drawing, we check if a layout has been scheduled.  If so,
-     * do it now that all cell view items have valid sizes before we proceeed
-     * (and resize the bin_window if required).
-     */
-    if (priv->layout_idle_id != 0)
-        entangle_session_browser_layout(browser);
-
-    gdk_window_process_updates(priv->bin_window, TRUE);
-}
-
-
-static gboolean
-layout_callback(gpointer data)
-{
-    g_return_val_if_fail(ENTANGLE_IS_SESSION_BROWSER(data), FALSE);
-
-    EntangleSessionBrowser *browser = ENTANGLE_SESSION_BROWSER(data);
-    EntangleSessionBrowserPrivate *priv = browser->priv;
-
-    priv->layout_idle_id = 0;
-
-    entangle_session_browser_layout(browser);
-
-    return FALSE;
-}
-
-
-static void
-entangle_session_browser_queue_layout(EntangleSessionBrowser *browser)
-{
-    g_return_if_fail(ENTANGLE_IS_SESSION_BROWSER(browser));
-
-    EntangleSessionBrowserPrivate *priv = browser->priv;
-
-    if (priv->layout_idle_id != 0)
-        return;
-
-    priv->layout_idle_id =
-        gdk_threads_add_idle_full(ENTANGLE_SESSION_BROWSER_PRIORITY_LAYOUT,
-                                  layout_callback, browser, NULL);
 }
 
 
@@ -2402,8 +2334,6 @@ entangle_session_browser_adjustment_changed(GtkAdjustment *adjustment G_GNUC_UNU
         gdk_window_move(priv->bin_window,
                         - gtk_adjustment_get_value(priv->hadjustment),
                         - gtk_adjustment_get_value(priv->vadjustment));
-
-        entangle_session_browser_process_updates(browser);
     }
 }
 
