@@ -57,13 +57,13 @@ GType entangle_camera_preferences_get_type(void) G_GNUC_CONST;
 EntangleCameraPreferences *entangle_camera_preferences_new(void);
 
 void entangle_camera_preferences_set_camera(EntangleCameraPreferences *preferences,
-					    EntangleCamera *camera);
+                                            EntangleCamera *camera);
 EntangleCamera *entangle_camera_preferences_get_camera(EntangleCameraPreferences *preferences);
 
 
 gchar **entangle_camera_preferences_get_controls(EntangleCameraPreferences *prefs);
 void entangle_camera_preferences_set_controls(EntangleCameraPreferences *prefs,
-					      const gchar *const *controls);
+                                              const gchar *const *controls);
 
 G_END_DECLS
 

@@ -1013,7 +1013,7 @@ void entangle_preferences_interface_add_plugin(EntanglePreferences *prefs, const
     gsize len = g_strv_length(plugins);
     gsize i;
 
-    for (i = 0 ; i < len ; i++)
+    for (i = 0; i < len; i++)
         if (g_str_equal(name, plugins[i]))
             goto cleanup;
 

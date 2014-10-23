@@ -162,7 +162,7 @@ void entangle_camera_preferences_set_camera(EntangleCameraPreferences *prefs,
 
         gchar *suffix = g_strdup(entangle_camera_get_model(priv->camera));
         gsize i;
-        for (i = 0 ; suffix[i] != '\0' ; i++) {
+        for (i = 0; suffix[i] != '\0'; i++) {
             if (g_ascii_isalnum(suffix[i]) ||
                 suffix[i] == '/' ||
                 suffix[i] == '-')
@@ -224,7 +224,7 @@ gchar **entangle_camera_preferences_get_controls(EntangleCameraPreferences *pref
  * @controls: (transfer none): the list of controls
  */
 void entangle_camera_preferences_set_controls(EntangleCameraPreferences *prefs,
-					      const gchar * const*controls)
+                                              const gchar *const *controls)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_PREFERENCES(prefs));
 
