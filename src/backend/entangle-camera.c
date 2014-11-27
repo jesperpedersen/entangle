@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <gphoto2.h>
 #include <string.h>
@@ -1765,7 +1766,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
 
     EntangleCameraPrivate *priv = cam->priv;
     CameraEventType eventType = 0;
-    void *eventData;
+    void *eventData = NULL;
     GTimeVal tv;
     guint64 startms, endms, donems;
     gboolean ret = FALSE;
@@ -1854,6 +1855,8 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
             break;
         }
 
+        free(eventData);
+        eventData = NULL;
         g_get_current_time(&tv);
         endms = (tv.tv_sec * 1000ll) + (tv.tv_usec / 1000ll);
         donems = endms - startms;
@@ -1866,6 +1869,7 @@ gboolean entangle_camera_process_events(EntangleCamera *cam,
     ret = TRUE;
 
  cleanup:
+    free(eventData);
     g_mutex_unlock(priv->lock);
     return ret;
 }
