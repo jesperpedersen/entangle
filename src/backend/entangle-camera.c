@@ -2774,6 +2774,20 @@ gboolean entangle_camera_set_viewfinder(EntangleCamera *cam,
         goto cleanup;
     }
 
+    /*
+     * Sigh. gphoto attempts to detect when the value has
+     * changed and thus often doesn't apply the change in
+     * value we request. We set the value twice, first to
+     * the wrong value, then the right value. This ensures
+     * gphoto always sees the value as changed.
+     */
+    value = enabled ? 0 : 1;
+    if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
+        g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
+                    _("Failed to set viewfinder state: %s %d"),
+                    gp_port_result_as_string(err), err);
+        goto cleanup;
+    }
     value = enabled ? 1 : 0;
     if ((err = gp_widget_set_value(widget, &value)) != GP_OK) {
         g_set_error(error, ENTANGLE_CAMERA_ERROR, 0,
