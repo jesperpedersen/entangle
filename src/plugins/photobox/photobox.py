@@ -110,7 +110,7 @@ class PhotoBoxPluginWindow(object):
         widgets = [
             builder.get_object("win-menubar"),
             builder.get_object("win-toolbar"),
-            builder.get_object("settings-box"),
+            builder.get_object("settings-viewport"),
         ]
         for w in widgets:
             w.set_visible(visible)
