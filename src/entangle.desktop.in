@@ -8,3 +8,4 @@ Type=Application
 Terminal=false
 Categories=Graphics;GTK;
 StartupNotify=true
+Keywords=Capture;Camera;Tethered;Photo;

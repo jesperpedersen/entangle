@@ -25,6 +25,12 @@
       cameras from other manufacturers.
     </_p>
   </description>
+  <keywords>
+    <keyword>Capture</keyword>
+    <keyword>Camera</keyword>
+    <keyword>Tethered</keyword>
+    <keyword>Photo</keyword>
+  </keywords>
   <screenshots>
     <screenshot type="default">http://entangle-photo.org/appdata/en_US/screenshots/camera-manager.png</screenshot>
   </screenshots>
