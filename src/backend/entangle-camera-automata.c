@@ -494,7 +494,6 @@ static void do_entangle_camera_viewfinder_finish(GObject *src,
                                                  gpointer opaque)
 {
     EntangleCameraAutomataData *data = opaque;
-    EntangleCameraAutomataPrivate *priv = data->automata->priv;
     EntangleCamera *camera = ENTANGLE_CAMERA(src);
     GError *error = NULL;
 
@@ -504,16 +503,8 @@ static void do_entangle_camera_viewfinder_finish(GObject *src,
         g_error_free(error);
     }
 
-    if (g_cancellable_is_cancelled(data->cancel)) {
-        g_simple_async_result_complete(data->result);
-        entangle_camera_automata_data_free(data);
-    } else {
-        g_cancellable_reset(data->confirm);
-        entangle_camera_capture_image_async(priv->camera,
-                                            data->cancel,
-                                            do_entangle_camera_capture_finish,
-                                            data);
-    }
+    g_simple_async_result_complete(data->result);
+    entangle_camera_automata_data_free(data);
 }
 
 
@@ -566,19 +557,11 @@ static void do_entangle_camera_preview_finish(GObject *src,
                                                 data);
     } else if (g_cancellable_is_cancelled(data->confirm)) {
         g_signal_emit_by_name(data->automata, "camera-capture-begin");
-        if (entangle_camera_get_has_viewfinder(priv->camera)) {
-            entangle_camera_set_viewfinder_async(priv->camera,
-                                                 FALSE,
-                                                 NULL,
-                                                 do_entangle_camera_viewfinder_finish,
-                                                 data);
-        } else {
-            g_cancellable_reset(data->confirm);
-            entangle_camera_capture_image_async(priv->camera,
-                                                data->cancel,
-                                                do_entangle_camera_capture_finish,
-                                                data);
-        }
+        g_cancellable_reset(data->confirm);
+        entangle_camera_capture_image_async(priv->camera,
+                                            data->cancel,
+                                            do_entangle_camera_capture_finish,
+                                            data);
     } else {
         entangle_camera_preview_image_async(priv->camera,
                                             data->cancel,
