@@ -1,6 +1,34 @@
       Entangle News
       =============
 
+Release 0.6.1 - "Strange" - 2015-02-05
+--------------------------------------
+
+ * Require GTK >= 3.4
+ * Fix check for GIO package in configure
+ * Add missing icons to Makefile
+ * Follow freedesktop thumbnail standard storage location
+ * Refactor capture code to facilitate plugin script
+   automation
+ * Fix bug causing plugin to be displayed more than once
+ * Make histogram height larger
+ * Strip trailing '2' from widget labels to be more friendly
+ * Completely rewrite control panel display to show a small,
+   user configurable subset from all the camera controls.
+ * Remember custom list of camera controls per camera model
+ * Hide compiler warnings from new glib atomic opertaions
+ * Update to newer gnulib compiler warnings code
+ * Remove broken double buffering code that's no required
+   when using GTK3
+ * Remove use of deprecated GtkMisc APis
+ * Allow camera picker list to show multiple lines
+ * Remove crufty broken code from session browser that was
+   breaking with new GTK versions
+ * Disable libraw auto brightness since it totally overexposes
+   many images, generally making things look worse
+ * Fix memory leak handling camera events
+ * Add keywords to desktop & appdata files
+
 
 Release 0.6.0 - "Down" - 2014-05-02
 -----------------------------------
