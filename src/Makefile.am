@@ -27,6 +27,11 @@ icon128x128_DATA = \
 	icons/128x128/entangle.png \
 	$(NULL)
 
+icon192x192dir = $(datadir)/icons/hicolor/192x192/apps
+icon192x192_DATA = \
+	icons/192x192/entangle.png \
+	$(NULL)
+
 icon16x16dir = $(datadir)/icons/hicolor/16x16/apps
 icon16x16_DATA = \
 	icons/16x16/entangle.png \
@@ -66,6 +71,11 @@ icon64x64_DATA = \
 	icons/64x64/entangle.png \
 	$(NULL)
 
+icon96x96dir = $(datadir)/icons/hicolor/96x96/apps
+icon96x96_DATA = \
+	icons/96x96/entangle.png \
+	$(NULL)
+
 iconscalabledir = $(datadir)/icons/hicolor/scalable/apps
 iconscalable_DATA = \
 	icons/scalable/entangle.svg \
@@ -92,12 +102,14 @@ EXTRA_DIST = \
 	$(appdata_DATA) \
 	$(appdata_DATA_IN) \
 	$(icon128x128_DATA) \
+	$(icon192x192_DATA) \
 	$(icon16x16_DATA) \
 	$(icon22x22_DATA) \
 	$(icon256x256_DATA) \
 	$(icon32x32_DATA) \
 	$(icon48x48_DATA) \
 	$(icon64x64_DATA) \
+	$(icon96x96_DATA) \
 	$(iconscalable_DATA) \
 	$(icc_DATA) \
 	$(gsettings_SCHEMAS) \
