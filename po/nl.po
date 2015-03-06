@@ -6,10 +6,10 @@
 # Geert Warrink <geert.warrink@onsnet.nu>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/entangle/language/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -195,18 +196,18 @@ msgstr "Handmatige scherpstellingsbediening miet beschikbaar voor deze camera"
 #: ../src/backend/entangle-camera.c:3124
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
-msgstr "Handmatige scherpstellingsbediening is geen bereikswidget of radiowidget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
 #: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
-msgstr "Handmatig instellen van scherpstellingstoestand mislukte: %s %d"
+msgstr "Hangmatig instellen van scherpstellingstoestand mislukte: %s %d"
 
 #: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
-msgstr "Lezen van handmatige scherpstellingskeuze %d mislukte: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3344
 #, c-format
@@ -226,17 +227,17 @@ msgstr "Instellen van de tijd mislukte: %s %d"
 #: ../src/backend/entangle-camera.c:3520
 #, c-format
 msgid "Capture target setting not available with this camera"
-msgstr "Doelvangstinstellingen zijn bij deze camera niet beschikbaar "
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3533
 #, c-format
 msgid "Time setting was not a choice widget"
-msgstr "Tijdinstellingen was geen keuzewidget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3542
 #, c-format
 msgid "Failed to set capture target: %s %d"
-msgstr "Instellen van doelvangst mislukte: %s %d"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:597
 #: ../src/frontend/entangle-camera-manager.ui.h:23
@@ -297,7 +298,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Controleer of de camera niet\n\n - geopend is door een ander foto <b>toepassing</b>\n - aangekoppeld is als een <b>bestandssysteem</b> op het bureaublad\n - in <b>slaapmodus</b> staat om batterijvermogen te besparen\n"
+msgstr ""
+"Controleer of de camera niet\n"
+"\n"
+" - geopend is door een ander foto <b>toepassing</b>\n"
+" - aangekoppeld is als een <b>bestandssysteem</b> op het bureaublad\n"
+" - in <b>slaapmodus</b> staat om batterijvermogen te besparen\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -318,7 +324,9 @@ msgstr "Camera is in gebruik"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "De camera kan niet geopend worden omdat het op dit moment aangekoppeld is als een bestandssysteem. Wil je het nu afkoppelen?"
+msgstr ""
+"De camera kan niet geopend worden omdat het op dit moment aangekoppeld is "
+"als een bestandssysteem. Wil je het nu afkoppelen?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -480,13 +488,17 @@ msgstr "Bekijk de volledige lijst met camera instellingen"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "De op dit moment uitgevoerde camera\nbewerking wordt geprobeerd te anuleren"
+msgstr ""
+"De op dit moment uitgevoerde camera\n"
+"bewerking wordt geprobeerd te anuleren"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Verklein de display van de afbeelding\nmet een factor"
+msgstr ""
+"Verklein de display van de afbeelding\n"
+"met een factor"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -496,7 +508,9 @@ msgstr "Zoom uit"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Vergroot het display van de afbeelding\nmet een factor"
+msgstr ""
+"Vergroot het display van de afbeelding\n"
+"met een factor"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -506,7 +520,9 @@ msgstr "Zoom in"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Verander de grootte van de afbeelding om\nautomatisch in het beschikbare venster te passen"
+msgstr ""
+"Verander de grootte van de afbeelding om\n"
+"automatisch in het beschikbare venster te passen"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -516,7 +532,9 @@ msgstr "Best passend"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Toon de afbeelding met zijn\nnative pixel grootte"
+msgstr ""
+"Toon de afbeelding met zijn\n"
+"native pixel grootte"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -567,7 +585,16 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Er werden geen camera's gedetecteerd, contoleer of\n\n  - de <b>kabels</b> verbonden zijn\n  - de camera <b>aangezet</b> is\n  - de camera zich in de <b>correcte modus</b> bevindt\n  - de camera een <b>ondersteund</b> model is\n\nUSB camera's worden automatisch gedetecteerd\nbij het aansluiten, probeer verversen voor andere"
+msgstr ""
+"Er werden geen camera's gedetecteerd, contoleer of\n"
+"\n"
+"  - de <b>kabels</b> verbonden zijn\n"
+"  - de camera <b>aangezet</b> is\n"
+"  - de camera zich in de <b>correcte modus</b> bevindt\n"
+"  - de camera een <b>ondersteund</b> model is\n"
+"\n"
+"USB camera's worden automatisch gedetecteerd\n"
+"bij het aansluiten, probeer verversen voor andere"
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
@@ -958,7 +985,9 @@ msgstr "Gebonden camera controle &amp; vastleggen"
 msgid ""
 "Entangle is a program used to control digital cameras that are connected to "
 "the computer via USB."
-msgstr "Entangle is een programma voor het beheren van digitale camera's die via USB met de computer verbonden zijn."
+msgstr ""
+"Entangle is een programma voor het beheren van digitale camera's die via USB"
+" met de computer verbonden zijn."
 
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
@@ -967,11 +996,20 @@ msgid ""
 " displayed prior to capture. Images will be downloaded and displayed as they"
 " are captured by the camera. Entangle also allows the settings of the camera"
 " to be changed from the computer."
-msgstr "Entangle kan de camerasluiter bedienen om nieuwe afbeeldingen vast te leggen. Als dit door de camera ondersteund wordt, kan een continu vernieuwde preview van de scene getoond worden voor het vastleggen. Afbeeldingen zullen gedownload en getoond worden als ze door de camera vastgelegd zijn. Entangle staat ook toe dat de instellingen van de camera vanuit de computer veranderd worden."
+msgstr ""
+"Entangle kan de camerasluiter bedienen om nieuwe afbeeldingen vast te "
+"leggen. Als dit door de camera ondersteund wordt, kan een continu vernieuwde"
+" preview van de scene getoond worden voor het vastleggen. Afbeeldingen "
+"zullen gedownload en getoond worden als ze door de camera vastgelegd zijn. "
+"Entangle staat ook toe dat de instellingen van de camera vanuit de computer "
+"veranderd worden."
 
 #: ../src/entangle.appdata.xml.in.h:4
 msgid ""
 "Entangle is compatible with most DSLR cameras from Nikon and Canon, some of "
 "their compact camera models, and a variety of cameras from other "
 "manufacturers."
-msgstr "Entangle is compatibel met de meeste DSLR camera's van Nikon en Canon, enkele van hun compact camera modellen, en een groot aantal camera's van andere fabrikanten."
+msgstr ""
+"Entangle is compatibel met de meeste DSLR camera's van Nikon en Canon, "
+"enkele van hun compact camera modellen, en een groot aantal camera's van "
+"andere fabrikanten."

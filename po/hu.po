@@ -6,10 +6,10 @@
 # Zoltan Hoppár <zoltanh721@fedoraproject.org>, 2012-2013
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/entangle/language/hu/)\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -297,7 +298,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Ellenőrizze, hogy a kamera:\n\n- nincs megnyitva más fotós <b>alkalmazással</b> ami lefoglalja\n- nincs csatlakoztatva <b>a fájlrendszere</b> az asztalon\n- nincs <b>alvó módban</b> hogy az elemeket kímélje\n"
+msgstr ""
+"Ellenőrizze, hogy a kamera:\n"
+"\n"
+"- nincs megnyitva más fotós <b>alkalmazással</b> ami lefoglalja\n"
+"- nincs csatlakoztatva <b>a fájlrendszere</b> az asztalon\n"
+"- nincs <b>alvó módban</b> hogy az elemeket kímélje\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -318,7 +324,9 @@ msgstr "Kamera használatban"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "A kamera nem megnyitható, mivel a fájlrendszerben csatlakoztatva van. Kívánja, hogy leválasszuk most?"
+msgstr ""
+"A kamera nem megnyitható, mivel a fájlrendszerben csatlakoztatva van. "
+"Kívánja, hogy leválasszuk most?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -480,13 +488,17 @@ msgstr "Kamera beállítások teljes listájának megtekintése"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Kísérlet a jelenleg végrehajtott\nkamera művelet megszakítására."
+msgstr ""
+"Kísérlet a jelenleg végrehajtott\n"
+"kamera művelet megszakítására."
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Csökkentse a kép megjelenített területét\negy nagyságrenddel"
+msgstr ""
+"Csökkentse a kép megjelenített területét\n"
+"egy nagyságrenddel"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -496,7 +508,9 @@ msgstr "Távolítás"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Nagyítsa meg a kép megjelenítő területét\negy nagyságrenddel"
+msgstr ""
+"Nagyítsa meg a kép megjelenítő területét\n"
+"egy nagyságrenddel"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -506,7 +520,9 @@ msgstr "Közelítés"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Méretezze át a képet automatikusan\nhogy beférjen az ablak valódi keretei közé"
+msgstr ""
+"Méretezze át a képet automatikusan\n"
+"hogy beférjen az ablak valódi keretei közé"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -516,7 +532,9 @@ msgstr "Legjobb illesztés"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Jelenítse meg a képet\nnatív pixel méreteivel"
+msgstr ""
+"Jelenítse meg a képet\n"
+"natív pixel méreteivel"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -567,7 +585,16 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Nem látszik semmilyen kamera jelenléte, ellenőrizze hogy\n\n- a <b>kábelek</b> csatlakoztatva vannak\n- a gép <b>be van kapcsolva</b>\n- a gép <b>helyes módban fut</b>\n- a kamera amit használni kíván <b>a program által támogatott</b> modell\n\nUSB kamerák automatikusan detektálásra kerülnek\namikor csatlakoztatja őket, a többi esetben próbáljon frissíteni."
+msgstr ""
+"Nem látszik semmilyen kamera jelenléte, ellenőrizze hogy\n"
+"\n"
+"- a <b>kábelek</b> csatlakoztatva vannak\n"
+"- a gép <b>be van kapcsolva</b>\n"
+"- a gép <b>helyes módban fut</b>\n"
+"- a kamera amit használni kíván <b>a program által támogatott</b> modell\n"
+"\n"
+"USB kamerák automatikusan detektálásra kerülnek\n"
+"amikor csatlakoztatja őket, a többi esetben próbáljon frissíteni."
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"

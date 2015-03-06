@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-# Translators:
-# Rockers <sumorock@hotmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
-"Language-Team: Thai (http://www.transifex.com/projects/p/entangle/language/th/)\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: Thai\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: th\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -45,62 +45,62 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:827
 #, c-format
 msgid "Unable to initialize camera"
-msgstr "ไม่สามารถเริ่มโปรแกรมถ่ายภาพได้"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1190
 msgid "Cannot capture image while not connected"
-msgstr "จับภาพขณะขาดการเชื่อมต่อไม่ได้"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1203
 #, c-format
 msgid "Unable to capture image: %s"
-msgstr "จับภาพไม่ได้: %s"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1328
 msgid "Cannot preview image while not connected"
-msgstr "แสดงตัวอย่างรูปภาพขณะขาดการเชื่อมต่อไม่ได้"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1343
 #, c-format
 msgid "Unable to capture preview: %s"
-msgstr "จับพรีวิวไม่ได้: %s"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1515
 #, c-format
 msgid "Unable to get file data: %s"
-msgstr "ไม่สามารถรับข้อมูลแฟ้มได้: %s"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1354
 #, c-format
 msgid "Unable to get filename: %s"
-msgstr "ไม่สามารถรับชื่อแฟ้มได้: %s"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1487
 msgid "Cannot download file while not connected"
-msgstr "ดาวน์โหลดแฟ้มขณะขาดการเชื่อมต่อไม่ได้"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1509
 #, c-format
 msgid "Unable to get camera file: %s"
-msgstr "ไม่สามารถรับแฟ้มกล้องถ่ายรูปได้: %s"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1640
 msgid "Cannot delete file while not connected"
-msgstr "ลบแฟ้มขณะขาดการเชื่อมต่อไม่ได้"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1657
 #, c-format
 msgid "Unable to delete file: %s"
-msgstr "ลบแฟ้มไม่ได้: %s"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1778
 msgid "Cannot wait for events while not connected"
-msgstr "ตั้งให้รอเหตุการณ์ขณะขาดการเชื่อมต่อไม่ได้"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:1804
 #, c-format
 msgid "Unable to wait for events: %s"
-msgstr "ตั้งให้รอเหตุการณ์ไม่ได้: %s"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:2005 ../src/backend/entangle-camera.c:2168
 #: ../src/backend/entangle-camera.c:2304 ../src/backend/entangle-camera.c:2767
@@ -281,13 +281,13 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1037
 msgid "Camera Manager - Entangle"
-msgstr "โปรแกรมจัดการกล้องถ่ายรูป - Entangle"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1131
 #: ../src/frontend/entangle-camera-manager.c:2509
 #, c-format
 msgid "Unable to connect to camera: %s"
-msgstr "เชื่อมต่อกับกล้องถ่ายรูปไม่ได้: %s"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1136
 #: ../src/frontend/entangle-camera-manager.c:2515
@@ -303,58 +303,58 @@ msgstr ""
 #: ../src/frontend/entangle-camera-manager.c:2520
 #: ../src/frontend/entangle-camera-manager.ui.h:9
 msgid "Cancel"
-msgstr "ยกเลิก"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1142
 #: ../src/frontend/entangle-camera-manager.c:2521
 msgid "Retry"
-msgstr "ลองใหม่"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1173
 msgid "Camera is in use"
-msgstr "กล้องถ่ายรูปถูกใช้งานอยู่"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1177
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "เปิดใช้งานกล้องถ่ายรูปไม่ได้เนื่องจากถูกเมานท์เป็นระบบแฟ้ม ต้องการเลิกเมานท์ตอนนี้เลยไหม"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "No"
-msgstr "ไม่"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1182
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "Yes"
-msgstr "ใช่"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1217
 msgid "Camera connect failed"
-msgstr "การเชื่อมต่อกล้องถ่ายรูปล้มเหลว"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1219
 msgid "Entangle: Camera connect failed"
-msgstr "Entangle: การเชื่อมต่อกล้องถ่ายรูปล้มเหลว"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1254
 #, c-format
 msgid "%s Camera Manager - Entangle"
-msgstr "โปรแกรมจัดการกล้องถ่ายรูป %s - Entangle"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1562
 #: ../src/frontend/entangle-camera-manager.ui.h:21
 msgid "Select a folder"
-msgstr "เลือกโฟลเดอร์"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1565
 msgid "_Cancel"
-msgstr "ยกเลิก"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1567
 msgid "_Open"
-msgstr "เปิด"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1746
 #: ../src/frontend/entangle-camera-manager.ui.h:7
@@ -371,23 +371,23 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1958
 msgid "Set clock"
-msgstr "ตั้งนาฬิกา"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2001
 msgid "Autofocus failed"
-msgstr "ออโต้โฟกัสล้มเหลว"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2003
 msgid "Entangle: Camera autofocus failed"
-msgstr "Entangle: Camera autofocus ล้มเหลว"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2033
 msgid "Manual focus failed"
-msgstr "โฟกัสเองไม่ได้"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2035
 msgid "Entangle: Camera manual focus failed"
-msgstr "Entangle: โฟกัสกล้องถ่ายรูปเองไม่ได้"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2640
 msgid "Delete"
@@ -395,7 +395,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2769
 msgid "Select application..."
-msgstr "เลือกโปรแกรม..."
+msgstr ""
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -406,27 +406,27 @@ msgstr "เลือกโปรแกรม..."
 #: ../src/frontend/entangle-camera-manager.ui.h:1
 #: ../src/entangle.desktop.in.h:1
 msgid "Entangle"
-msgstr "Entangle"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:2
 msgid "_File"
-msgstr "แฟ้ม"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:3
 msgid "Select session"
-msgstr "เลือกวาระ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:4
 msgid "_Edit"
-msgstr "แ_ก้ไข"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:5
 msgid "Camera"
-msgstr "กล้องถ่ายรูป"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:6
 msgid "Connect"
-msgstr "เชื่อมต่อ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:10
 msgid "Synchronize clock"
@@ -434,31 +434,31 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:11
 msgid "_View"
-msgstr "มุมมอง"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:12
 msgid "Settings"
-msgstr "ค่าตั้ง"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:13
 msgid "Fullscreen"
-msgstr "เต็มหน้าจอ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:14
 msgid "Presentation"
-msgstr "งานนำเสนอ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:15
 msgid "Present on"
-msgstr "นำเสนอบน"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:16
 msgid "Windows"
-msgstr "หน้าต่าง"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:17
 msgid "New window"
-msgstr "หน้าต่างใหม่"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:18
 msgid "Synchronize capture"
@@ -466,21 +466,21 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:19
 msgid "_Help"
-msgstr "_วิธีใช้"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:20
 msgid "Supported Cameras"
-msgstr "กล้องถ่ายรูปที่รองรับ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:22
 msgid "View the full list of camera settings"
-msgstr "ดูรายการเต็มของค่าตั้งกล้องถ่ายรูป"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:25
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "พยายามยกเลิก\nการดำเนินการกับกล้องถ่ายรูปที่กำลังทำงานอยู่ตอนนี้"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
@@ -490,7 +490,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
-msgstr "ซูมออก"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:30
 msgid ""
@@ -500,7 +500,7 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
-msgstr "ซูมเข้า"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:33
 msgid ""
@@ -520,27 +520,27 @@ msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
-msgstr "ปกติ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:39
 msgid "Switch to fullscreen display mode"
-msgstr "สลับไปโหมดการแสดงผลแบบเต็มหน้าจอ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:40
 msgid "Full Screen"
-msgstr "เต็มหน้าจอ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:41
 msgid "Open with"
-msgstr "เปิดด้วย"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-picker.c:510
 msgid "Model"
-msgstr "โมเดล"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-picker.c:511
 msgid "Port"
-msgstr "พอร์ต"
+msgstr ""
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -550,11 +550,11 @@ msgstr "พอร์ต"
 #. * End:
 #: ../src/frontend/entangle-camera-picker.ui.h:1
 msgid "Select camera - Entangle"
-msgstr "เลือกกล้องถ่ายรูป - Entangle"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-picker.ui.h:2
 msgid "Select a camera to connect to:"
-msgstr "เลือกกล้องถ่ายรูปที่จะเชื่อมต่อ:"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-picker.ui.h:3
 msgid ""
@@ -567,19 +567,19 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "ไม่พบกล้องถ่ายรูป โปรดตรวจสอบว่า\n\n  - ต่อ<b>สาย</b>แล้ว\n  - กล้องถ่ายรูป<b>เปิดอยู่</b>\n  - กล้องถ่ายรูปอยู่ใน<b>โหมดที่ถูกต้อง</b>\n  - กล้องถ่ายรูปเป็นรุ่นที่<b>รองรับ</b>\n\nUSB cameras จะถูกตรวจจับอัตโนมัติ\nเมื่อต่อสาย สำหรับปัญหาอื่น ให้ลองรีเฟรชใหม่"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
-msgstr "จับ"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-support.c:233
 msgid "preview"
-msgstr "แสดงตัวอย่าง"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-support.c:239
 msgid "settings"
-msgstr "ค่าตั้ง"
+msgstr ""
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -589,23 +589,23 @@ msgstr "ค่าตั้ง"
 #. * End:
 #: ../src/frontend/entangle-camera-support.ui.h:1
 msgid "label"
-msgstr "ป้าย"
+msgstr ""
 
 #: ../src/frontend/entangle-control-panel.c:86
 msgid "Camera control update failed"
-msgstr "อัปเดตการควบคุมกล้องถ่ายรูปล้มเหลว"
+msgstr ""
 
 #: ../src/frontend/entangle-control-panel.c:88
 msgid "Entangle: Camera control update failed"
-msgstr "Entangle: อัปเดตการควบคุมกล้องถ่ายรูปล้มเหลว"
+msgstr ""
 
 #: ../src/frontend/entangle-control-panel.c:316
 msgid "On"
-msgstr "เปิด"
+msgstr ""
 
 #: ../src/frontend/entangle-control-panel.c:316
 msgid "Off"
-msgstr "ปิด"
+msgstr ""
 
 #: ../src/frontend/entangle-control-panel.c:771
 msgid "Reset controls"
@@ -613,11 +613,11 @@ msgstr ""
 
 #: ../src/frontend/entangle-control-panel.c:843
 msgid "No camera connected"
-msgstr "ไม่ได้ต่อกล้องถ่ายรูป"
+msgstr ""
 
 #: ../src/frontend/entangle-control-panel.c:850
 msgid "No controls available"
-msgstr "ไม่มีคอนโทรลที่ใช้งานได้"
+msgstr ""
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"
@@ -635,11 +635,11 @@ msgstr ""
 #. * End:
 #: ../src/frontend/entangle-help-about.ui.h:1
 msgid "About - Entangle"
-msgstr "เกี่ยวกับ - Entangle"
+msgstr ""
 
 #: ../src/frontend/entangle-help-about.ui.h:2
 msgid "Copyright (C) 2009-2014 Daniel P. Berrangé"
-msgstr "สงวนลิขสิทธิ์ (C) 2009-2014 Daniel P. Berrangé"
+msgstr ""
 
 #: ../src/frontend/entangle-help-about.ui.h:3 ../src/entangle.desktop.in.h:2
 msgid "Tethered Camera Control & Capture"
@@ -648,138 +648,138 @@ msgstr ""
 #: ../src/frontend/entangle-preferences-display.c:975
 #: ../src/frontend/entangle-preferences-display.ui.h:27
 msgid "Interface"
-msgstr "ส่วนติดต่อ"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:982
 #: ../src/frontend/entangle-preferences-display.ui.h:39
 msgid "Image Viewer"
-msgstr "โปรแกรมแสดงรูปภาพ"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:996
 #: ../src/frontend/entangle-preferences-display.ui.h:20
 msgid "Color Management"
-msgstr "การจัดการสี"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1003
 #: ../src/frontend/entangle-preferences-display.ui.h:22
 msgid "Plugins"
-msgstr "ปลั๊กอิน"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1024
 msgid "ICC profiles (*.icc, *.icm)"
-msgstr "โปรไฟล์ ICC (*.icc, *.icm)"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1029
 msgid "All files (*.*)"
-msgstr "แฟ้มทั้งหมด (*.*)"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1055
 msgid "1:1 - Square / MF 6x6"
-msgstr "1:1 - Square / MF 6x6"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1060
 msgid "1.15:1 - Movietone"
-msgstr "1.15:1 - Movietone"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1065
 msgid "1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"
-msgstr "1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1070
 msgid "1.37:1 - 35mm movie"
-msgstr "1.37:1 - 35mm movie"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1075
 msgid "1.44:1 - IMAX"
-msgstr "1.44:1 - IMAX"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1080
 msgid "1.50:1 (3:2, 15:10)- 35mm SLR"
-msgstr "1.50:1 (3:2, 15:10)- 35mm SLR"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1085
 msgid "1.6:1 (8:5, 16:10) - Widescreen"
-msgstr "1.6:1 (8:5, 16:10) - จอกว้าง"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1090
 msgid "1.66:1 (5:3, 15:9) - Super 16mm"
-msgstr "1.66:1 (5:3, 15:9) - Super 16mm"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1095
 msgid "1.75:1 (7:4) - Widescreen"
-msgstr "1.75:1 (7:4) - จอกว้าง"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1100
 msgid "1.77:1 (16:9) - APS-H / HDTV / Widescreen"
-msgstr "1.77:1 (16:9) - APS-H / HDTV / จอกว้าง"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1105
 msgid "1.85:1 - 35mm Widescreen"
-msgstr "1.85:1 - จอกว้าง 35 มม."
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1110
 msgid "2.00:1 - SuperScope"
-msgstr "2.00:1 - SuperScope"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1115
 msgid "2.10:1 (21:10) - Planned HDTV"
-msgstr "2.10:1 (21:10) - Planned HDTV"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1120
 msgid "2.20:1 (11:5, 22:10) - 70mm movie"
-msgstr "2.20:1 (11:5, 22:10) - 70mm movie"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1125
 msgid "2.35:1 - CinemaScope"
-msgstr "2.35:1 - CinemaScope"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1130
 msgid "2.37:1 (64:27)- HDTV cinema"
-msgstr "2.37:1 (64:27)- HDTV แบบโรงภาพยนตร์"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1135
 msgid "2.39:1 (12:5)- Panavision"
-msgstr "2.39:1 (12:5)- Panavision"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1140
 msgid "2.55:1 (23:9)- CinemaScope 55"
-msgstr "2.55:1 (23:9)- CinemaScope 55"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1145
 msgid "2.59:1 (13:5)- Cinerama"
-msgstr "2.59:1 (13:5)- Cinerama"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1150
 msgid "2.66:1 (8:3, 24:9)- Super 16mm"
-msgstr "2.66:1 (8:3, 24:9)- Super 16mm"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1155
 msgid "2.76:1 (11:4) - Ultra Panavision"
-msgstr "2.76:1 (11:4) - Ultra Panavision"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1160
 msgid "2.93:1 - MGM Camera 65"
-msgstr "2.93:1 - MGM Camera 65"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1165
 msgid "3:1 APS Panorama"
-msgstr "3:1 APS พาโนรามา"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1170
 msgid "4.00:1 - Polyvision"
-msgstr "4.00:1 - Polyvision"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1175
 msgid "12.00:1 - Circle-Vision 360"
-msgstr "12.00:1 - Circle-Vision 360"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1193
 msgid "None"
-msgstr "ไม่มี"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1198
 msgid "Center lines"
-msgstr "เส้นตรงกลา"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.c:1203
 msgid "Rule of 3rds"
@@ -877,15 +877,15 @@ msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:21
 msgid "<b>Plugins</b>"
-msgstr "<b>ปลั๊กอิน</b>"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:23
 msgid "<b>Interface</b>"
-msgstr "<b>ส่วนติดต่อ</b>"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:24
 msgid "Automatically connect to cameras at startup"
-msgstr "เมื่อเริ่มต้น ให้ต่อกล้องถ่ายรูปอัตโนมัติ"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:25
 msgid "Blank screen when capturing images"

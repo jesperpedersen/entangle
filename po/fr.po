@@ -4,14 +4,13 @@
 # 
 # Translators:
 # Damien Gourbiere <dgourbiere@gmail.com>, 2012
-# Gé Baylard <inactive+Dralyab@transifex.com>, 2014
 # Jérôme Fenal <jfenal@gmail.com>, 2012-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/entangle/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -136,21 +136,25 @@ msgstr "Impossible d'enregistrer les contrôles, l'appareil n'est pas connecté"
 #: ../src/backend/entangle-camera.c:2563
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
-msgstr "Impossible d'enregistrer les contrôles, l'appareil n'est pas configurable"
+msgstr ""
+"Impossible d'enregistrer les contrôles, l'appareil n'est pas configurable"
 
 #: ../src/backend/entangle-camera.c:2582 ../src/backend/entangle-camera.c:2803
 #: ../src/backend/entangle-camera.c:2982 ../src/backend/entangle-camera.c:3177
 #: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
-msgstr "Impossible d'enregistrer la configuration des contrôles de l'appareil : %s %d"
+msgstr ""
+"Impossible d'enregistrer la configuration des contrôles de l'appareil : %s "
+"%d"
 
 #: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
 #: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
 #: ../src/backend/entangle-camera.c:3330 ../src/backend/entangle-camera.c:3506
 #, c-format
 msgid "Controls not available when camera is disconnected"
-msgstr "Les contrôles ne sont pas disponibles lorsque l'appareil est déconnecté"
+msgstr ""
+"Les contrôles ne sont pas disponibles lorsque l'appareil est déconnecté"
 
 #: ../src/backend/entangle-camera.c:2695 ../src/backend/entangle-camera.c:2749
 #: ../src/backend/entangle-camera.c:2937 ../src/backend/entangle-camera.c:3102
@@ -197,7 +201,7 @@ msgstr "Le contrôle de la focale n'est pas disponible pour cet appareil"
 #: ../src/backend/entangle-camera.c:3124
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
-msgstr "Le contrôle de la mise au point manuelle n'était pas un widget « plage » ou « bouton radio »"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
 #: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
@@ -208,7 +212,7 @@ msgstr "Impossible de définir l'état manuel de la focale : %s %d"
 #: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
-msgstr "Échec de lecture de la mise au point manuelle %d : %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3344
 #, c-format
@@ -218,7 +222,7 @@ msgstr "Le réglage de l'heure n'est pas disponible sur cet appareil"
 #: ../src/backend/entangle-camera.c:3357
 #, c-format
 msgid "Time setting was not a date widget"
-msgstr "Le réglage de l'horodatage n'était pas un widget date."
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3364
 #, c-format
@@ -228,17 +232,17 @@ msgstr "Impossible de définir l'état de l'horloge : %s %d"
 #: ../src/backend/entangle-camera.c:3520
 #, c-format
 msgid "Capture target setting not available with this camera"
-msgstr "Réglage de la cible de capture non disponible avec cet appareil"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3533
 #, c-format
 msgid "Time setting was not a choice widget"
-msgstr "Le réglage de l'horodatage n'était pas un widget à choix multiples"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3542
 #, c-format
 msgid "Failed to set capture target: %s %d"
-msgstr "Échec à la définition de la cible de capture : %s %d"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:597
 #: ../src/frontend/entangle-camera-manager.ui.h:23
@@ -299,7 +303,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Vérifier que l'appareil photo n'est pas :\n\n - utilisé par une autre <b>application</b> photo,\n - monté en tant que <b>système de fichier</b> sur le bureau,\n - en <b>mode veille</b> afin d'économiser la batterie.\n"
+msgstr ""
+"Vérifier que l'appareil photo n'est pas :\n"
+"\n"
+" - utilisé par une autre <b>application</b> photo,\n"
+" - monté en tant que <b>système de fichier</b> sur le bureau,\n"
+" - en <b>mode veille</b> afin d'économiser la batterie.\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -320,7 +329,9 @@ msgstr "L'appareil est déjà utilisé"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "L'appareil photo ne peut être utilisé car il est actuellement monté en tant que système de fichier. Souhaitez-vous le démonter maintenant ?"
+msgstr ""
+"L'appareil photo ne peut être utilisé car il est actuellement monté en tant "
+"que système de fichier. Souhaitez-vous le démonter maintenant ?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -482,13 +493,17 @@ msgstr "Afficher la liste des paramètres de l'appareil"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Tentative d'annulation de l'opération\nen cours sur l'appareil"
+msgstr ""
+"Tentative d'annulation de l'opération\n"
+"en cours sur l'appareil"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Réduire l'affichage de l'image\nd'un facteur un"
+msgstr ""
+"Réduire l'affichage de l'image\n"
+"d'un facteur un"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -498,7 +513,9 @@ msgstr "Dézoomer"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Agrandir l'affichage de l'image\nd'un facteur un"
+msgstr ""
+"Agrandir l'affichage de l'image\n"
+"d'un facteur un"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -508,7 +525,9 @@ msgstr "Zoomer"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Redimensionner automatique l'image\npour s'ajuster à l'espace fenêtre disponible"
+msgstr ""
+"Redimensionner automatique l'image\n"
+"pour s'ajuster à l'espace fenêtre disponible"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -518,7 +537,9 @@ msgstr "Ajuster"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Afficher l'image avec la\ntaille native des pixels"
+msgstr ""
+"Afficher l'image avec la\n"
+"taille native des pixels"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -569,7 +590,17 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Aucun appareil détecté, vérifier que\n\n  - les <b>câbles</b> sont branchés,\n  - l'appareil est <b>allumé</b>\n  - l'appareil est dans le <b>bon mode</b>\n  - l'appareil est un modèle <b>pris en charge</b>\n\nLes appareils photos USB sont automatiquement\ndétectés à la connexion, pour les autres, tenter\nun rafraîchissement."
+msgstr ""
+"Aucun appareil détecté, vérifier que\n"
+"\n"
+"  - les <b>câbles</b> sont branchés,\n"
+"  - l'appareil est <b>allumé</b>\n"
+"  - l'appareil est dans le <b>bon mode</b>\n"
+"  - l'appareil est un modèle <b>pris en charge</b>\n"
+"\n"
+"Les appareils photos USB sont automatiquement\n"
+"détectés à la connexion, pour les autres, tenter\n"
+"un rafraîchissement."
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
@@ -627,7 +658,8 @@ msgstr "L'extinction de l'affichage n'est pas disponible sur cet écran"
 
 #: ../src/frontend/entangle-dpms.c:69
 msgid "Screen blanking is not implemented on this platform"
-msgstr "L'extinction de l'affichage n'est pas disponible sur cette plate-forme"
+msgstr ""
+"L'extinction de l'affichage n'est pas disponible sur cette plate-forme"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -939,12 +971,13 @@ msgstr "Fond :"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:38
 msgid "Highlight:"
-msgstr "Surbrillance :"
+msgstr ""
 
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
 msgid "Could not load user interface definition file: %s"
-msgstr "Impossible de charger le fichier de définition d'interface graphique : %s"
+msgstr ""
+"Impossible de charger le fichier de définition d'interface graphique : %s"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -960,7 +993,9 @@ msgstr "Pilotage de contrôle et de capture par appareil photo"
 msgid ""
 "Entangle is a program used to control digital cameras that are connected to "
 "the computer via USB."
-msgstr "Entangle permet de contrôler les appareils photo numériques connecté à l'ordinateur via USB."
+msgstr ""
+"Entangle permet de contrôler les appareils photo numériques connecté à "
+"l'ordinateur via USB."
 
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
@@ -969,11 +1004,20 @@ msgid ""
 " displayed prior to capture. Images will be downloaded and displayed as they"
 " are captured by the camera. Entangle also allows the settings of the camera"
 " to be changed from the computer."
-msgstr "Entangle peut déclencher l'obturateur de l'appareil afin de capturer de nouvelles images. Lorsque l'appareil le permet, une prévisualisation continue de la scène peut être affichée avant la capture. Les images sont téléchargées et affichées lorsqu'elles sont capturées par l'appareil. Entangle permet aussi de définir les réglages de l'appareil depuis l'ordinateur."
+msgstr ""
+"Entangle peut déclencher l'obturateur de l'appareil afin de capturer de "
+"nouvelles images. Lorsque l'appareil le permet, une prévisualisation "
+"continue de la scène peut être affichée avant la capture. Les images sont "
+"téléchargées et affichées lorsqu'elles sont capturées par l'appareil. "
+"Entangle permet aussi de définir les réglages de l'appareil depuis "
+"l'ordinateur."
 
 #: ../src/entangle.appdata.xml.in.h:4
 msgid ""
 "Entangle is compatible with most DSLR cameras from Nikon and Canon, some of "
 "their compact camera models, and a variety of cameras from other "
 "manufacturers."
-msgstr "Entangle est compatible avec la plupart des appareils photographiques reflex numériques, certains appareils compacts, ainsi qu'un certain nombre d'appareils d'autres fabricants."
+msgstr ""
+"Entangle est compatible avec la plupart des appareils photographiques reflex"
+" numériques, certains appareils compacts, ainsi qu'un certain nombre "
+"d'appareils d'autres fabricants."

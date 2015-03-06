@@ -6,10 +6,10 @@
 # Asier Iturralde Sarasola <asier.iturralde@gmail.com>, 2012
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Basque (http://www.transifex.com/projects/p/entangle/language/eu/)\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: eu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778

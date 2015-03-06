@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Göran Uddeborg <goeran@uddeborg.se>, 2012-2014
-# Klap Hest <jojje3000@hotmail.com>, 2014
-# Ulrika <aurorauddeborg@gmail.com>, 2014
+# Göran Uddeborg <goeran@uddeborg.se>, 2012-2013
+# Klap <jojje3000@hotmail.com>, 2014
+# Ulrika Uddeborg <aurorauddeborg@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/entangle/language/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -197,7 +198,7 @@ msgstr "Manuell fokusinställning är inte tillgängligt för denna kamera"
 #: ../src/backend/entangle-camera.c:3124
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
-msgstr "Den manuella fokusinställningen var inte en intervall- eller alternativ-widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
 #: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
@@ -208,37 +209,37 @@ msgstr "Misslyckades att ställa in manuellt fokustillstånd: %s %d"
 #: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
-msgstr "Misslyckades att läsa av manuellt fokusval %d: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3344
 #, c-format
 msgid "Time setting not available with this camera"
-msgstr "Tidsinställning är inte tillgängligt för denna kamera"
+msgstr "Tidsinställning ej kompatibel med denna kamera"
 
 #: ../src/backend/entangle-camera.c:3357
 #, c-format
 msgid "Time setting was not a date widget"
-msgstr "Tidsinställning var inte en datums-widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3364
 #, c-format
 msgid "Failed to set time state: %s %d"
-msgstr "Misslyckades att ställa in tidstillstånd: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3520
 #, c-format
 msgid "Capture target setting not available with this camera"
-msgstr "Fångstmålsinställning är inte tillgängligt för denna kamera"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3533
 #, c-format
 msgid "Time setting was not a choice widget"
-msgstr "Tidsinställning var inte en val-widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3542
 #, c-format
 msgid "Failed to set capture target: %s %d"
-msgstr "Misslyckades att ställa in fångstmål: %s %d"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:597
 #: ../src/frontend/entangle-camera-manager.ui.h:23
@@ -299,7 +300,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Kontrollera att kameran inte är\n\n - öppnad av ett annat foto<b>program</b>\n - monterad som ett <b>filsystem</b> på skrivbordet\n - i <b>sovläge</b> för att spara ström\n"
+msgstr ""
+"Kontrollera att kameran inte är\n"
+"\n"
+" - öppnad av ett annat foto<b>program</b>\n"
+" - monterad som ett <b>filsystem</b> på skrivbordet\n"
+" - i <b>sovläge</b> för att spara ström\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -320,7 +326,9 @@ msgstr "Kameran används"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "Kameran kan inte öppnas för att den just nu är monterad som ett filsystem.  Vill du avmontera den nu?"
+msgstr ""
+"Kameran kan inte öppnas för att den just nu är monterad som ett filsystem.  "
+"Vill du avmontera den nu?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -352,11 +360,11 @@ msgstr "Välj en mapp"
 
 #: ../src/frontend/entangle-camera-manager.c:1565
 msgid "_Cancel"
-msgstr "_Avbryt"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1567
 msgid "_Open"
-msgstr "_Öppna"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1746
 #: ../src/frontend/entangle-camera-manager.ui.h:7
@@ -373,7 +381,7 @@ msgstr "Förhandsvisning"
 
 #: ../src/frontend/entangle-camera-manager.c:1958
 msgid "Set clock"
-msgstr "Sätt klockan"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2001
 msgid "Autofocus failed"
@@ -432,7 +440,7 @@ msgstr "Anslut"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:10
 msgid "Synchronize clock"
-msgstr "Synkronisera klockan"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:11
 msgid "_View"
@@ -482,13 +490,17 @@ msgstr "Visa den fullständiga listan över kamerainställningar"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Försök avbryta den nu\npågående kameraåtgärden"
+msgstr ""
+"Försök avbryta den nu\n"
+"pågående kameraåtgärden"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Krymp visningen av bilden\nmed en faktor"
+msgstr ""
+"Krymp visningen av bilden\n"
+"med en faktor"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -498,7 +510,9 @@ msgstr "Zooma ut"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Förstora visningen av bilden\nmed en faktor"
+msgstr ""
+"Förstora visningen av bilden\n"
+"med en faktor"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -508,7 +522,9 @@ msgstr "Zooma in"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Ändra storlek på bilden för att automatiskt\npassa det tillgängliga utrymmet i fönstret"
+msgstr ""
+"Ändra storlek på bilden för att automatiskt\n"
+"passa det tillgängliga utrymmet i fönstret"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -518,7 +534,9 @@ msgstr "Bästa anpassning"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Visa bilden med dess naturliga\nbildpunktsstorlek"
+msgstr ""
+"Visa bilden med dess naturliga\n"
+"bildpunktsstorlek"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -569,19 +587,28 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Inga kameror hittades, kontrollera att\n\n  - <b>sladdarna</b> är inkopplade\n  - kameran är <b>påslagen</b>\n  - kameran är i <b>rätt läge</b>\n  - kameran är av en modell som <b>stödjs</b>\n\nUSB-kameror upptäcks automatiskt när de kopplas\nin, försök med en omläsning för övriga"
+msgstr ""
+"Inga kameror hittades, kontrollera att\n"
+"\n"
+"  - <b>sladdarna</b> är inkopplade\n"
+"  - kameran är <b>påslagen</b>\n"
+"  - kameran är i <b>rätt läge</b>\n"
+"  - kameran är av en modell som <b>stödjs</b>\n"
+"\n"
+"USB-kameror upptäcks automatiskt när de kopplas\n"
+"in, försök med en omläsning för övriga"
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
-msgstr "fånga"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-support.c:233
 msgid "preview"
-msgstr "förhandsvisning"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-support.c:239
 msgid "settings"
-msgstr "inställningar"
+msgstr ""
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -641,7 +668,7 @@ msgstr "Om - Entangle"
 
 #: ../src/frontend/entangle-help-about.ui.h:2
 msgid "Copyright (C) 2009-2014 Daniel P. Berrangé"
-msgstr "Copyright © 2009-2014 Daniel P. Berrangé"
+msgstr ""
 
 #: ../src/frontend/entangle-help-about.ui.h:3 ../src/entangle.desktop.in.h:2
 msgid "Tethered Camera Control & Capture"
@@ -847,7 +874,7 @@ msgstr "Radera filer från kameran efter att de hämtats"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:11
 msgid "Automatically synchronize camera clock"
-msgstr "Synkronisera kameraklockan automatiskt"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:13
 msgid "<b>Colour management</b>"
@@ -935,11 +962,11 @@ msgstr "Övertäckningslager:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:37
 msgid "Background:"
-msgstr "Bakgrund:"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:38
 msgid "Highlight:"
-msgstr "Framhävt:"
+msgstr ""
 
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
@@ -954,13 +981,13 @@ msgstr "Kunde inte ladda definitionsfilen för användargränssnittet: %s"
 #. * End:
 #: ../src/entangle.appdata.xml.in.h:1
 msgid "Tethered Camera Control &amp; Capture"
-msgstr "Tjudrad kamerastyrning &amp; -fångst"
+msgstr ""
 
 #: ../src/entangle.appdata.xml.in.h:2
 msgid ""
 "Entangle is a program used to control digital cameras that are connected to "
 "the computer via USB."
-msgstr "Entangle är ett program som används för att styra digitalkameror som är anslutan till datorn via USB."
+msgstr ""
 
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
@@ -969,11 +996,11 @@ msgid ""
 " displayed prior to capture. Images will be downloaded and displayed as they"
 " are captured by the camera. Entangle also allows the settings of the camera"
 " to be changed from the computer."
-msgstr "Entangle kan aktivera kameraslutaren för att ta nya bilder.  När kameran stödjer det kan en kontinuerligt uppdaterad förhandsvisning av scenen visas före tagning.  Bilder kommer hämtas och visas allteftersom de tas av kameran.  Entangle gör också att det går att ändra inställningarna i kameran från datorn."
+msgstr ""
 
 #: ../src/entangle.appdata.xml.in.h:4
 msgid ""
 "Entangle is compatible with most DSLR cameras from Nikon and Canon, some of "
 "their compact camera models, and a variety of cameras from other "
 "manufacturers."
-msgstr "Entangle är kompatibelt med de flesta DSLR-kameror från Nikon och Canon, några av deras kompaktkameramodeller och ett urval av kameror från andra tillverkare."
+msgstr ""

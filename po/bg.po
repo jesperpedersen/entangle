@@ -6,10 +6,10 @@
 # Valentin Laskov <laskov@festa.bg>, 2012-2013
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Bulgarian (http://www.transifex.com/projects/p/entangle/language/bg/)\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -141,7 +142,8 @@ msgstr "Невъзможно да запиша управлението, кам�
 #: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
-msgstr "Невъзможно да запиша конфигурацията за управлението на камерата: %s %d"
+msgstr ""
+"Невъзможно да запиша конфигурацията за управлението на камерата: %s %d"
 
 #: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
 #: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
@@ -297,7 +299,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Проверете дали камерата не е\n\n - отворена от друго фото <b>приложение</b>\n - монтирана като <b>файлова система</b> на десктопа\n - в <b>спящ режим</b> за пестене на енергия\n"
+msgstr ""
+"Проверете дали камерата не е\n"
+"\n"
+" - отворена от друго фото <b>приложение</b>\n"
+" - монтирана като <b>файлова система</b> на десктопа\n"
+" - в <b>спящ режим</b> за пестене на енергия\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -318,7 +325,9 @@ msgstr "Камерата се ползва"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "Не мога да отворя камерата, понеже в момента е монтирана като файлова система. Искате ли да я демонтирам сега?"
+msgstr ""
+"Не мога да отворя камерата, понеже в момента е монтирана като файлова "
+"система. Искате ли да я демонтирам сега?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -480,13 +489,17 @@ msgstr "Преглед на всички настройки на камерат�
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Опит за спиране на текущо\nизпълняваната от камерата операция"
+msgstr ""
+"Опит за спиране на текущо\n"
+"изпълняваната от камерата операция"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Смалява показването на образа\nс една стъпка"
+msgstr ""
+"Смалява показването на образа\n"
+"с една стъпка"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -496,7 +509,9 @@ msgstr "Уголемяване"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Уголемява показването на образа\nс една стъпка"
+msgstr ""
+"Уголемява показването на образа\n"
+"с една стъпка"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -506,7 +521,9 @@ msgstr "Смаляване"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Автоматично преоразмеряване на образа\nспоред достъпното пространство в прозореца"
+msgstr ""
+"Автоматично преоразмеряване на образа\n"
+"според достъпното пространство в прозореца"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -516,7 +533,9 @@ msgstr "Най-добро вместване"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Показва образа в неговия\nоригинален размер в пиксели"
+msgstr ""
+"Показва образа в неговия\n"
+"оригинален размер в пиксели"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -567,7 +586,16 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Няма открити камери, проверете дали\n\n  - <b>кабелите</b> са свързани\n  - камерата е <b>включена</b>\n  - камерата е в <b>необходимия режим</b>\n  - моделът на камерата се <b>поддържа</b>\n\nUSB камерите се откриват автоматично в момента\nна включване. За останалите, пробвайте обновяване."
+msgstr ""
+"Няма открити камери, проверете дали\n"
+"\n"
+"  - <b>кабелите</b> са свързани\n"
+"  - камерата е <b>включена</b>\n"
+"  - камерата е в <b>необходимия режим</b>\n"
+"  - моделът на камерата се <b>поддържа</b>\n"
+"\n"
+"USB камерите се откриват автоматично в момента\n"
+"на включване. За останалите, пробвайте обновяване."
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"

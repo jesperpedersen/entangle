@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Cristian Marchi <cri.penta@gmail.com>, 2013
+# cri <cri.penta@gmail.com>, 2013
 # Gianluca Sforna <giallu@gmail.com>, 2013
 # Guido Grazioli <guido.grazioli@gmail.com>, 2013
-# tavanofabio <tavano.fabio@gmail.com>, 2013
+# Fabio Tavano <tavano.fabio@gmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/entangle/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -20,6 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -61,7 +62,9 @@ msgstr "Impossibile catturare l'immagine: %s"
 
 #: ../src/backend/entangle-camera.c:1328
 msgid "Cannot preview image while not connected"
-msgstr "Impossibile creare l'anteprima dell'immagine quando la fotocamera non è connessa"
+msgstr ""
+"Impossibile creare l'anteprima dell'immagine quando la fotocamera non è "
+"connessa"
 
 #: ../src/backend/entangle-camera.c:1343
 #, c-format
@@ -144,7 +147,8 @@ msgstr "Impossibile salvare i controlli, la fotocamera non è configurabile"
 #: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
-msgstr "Impossibile salvare la configurazione dei controlli della fotocamera: %s %d"
+msgstr ""
+"Impossibile salvare la configurazione dei controlli della fotocamera: %s %d"
 
 #: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
 #: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
@@ -300,7 +304,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Controllare che la fotocamera non sia:\n\n - in uso da un'altra <b>applicazione</b>;\n - montata come <b>file system</b>;\n - in <b>modalità sleep</b> per il risparmio della batteria.\n"
+msgstr ""
+"Controllare che la fotocamera non sia:\n"
+"\n"
+" - in uso da un'altra <b>applicazione</b>;\n"
+" - montata come <b>file system</b>;\n"
+" - in <b>modalità sleep</b> per il risparmio della batteria.\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -321,7 +330,9 @@ msgstr "La fotocamera è in uso"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "La fotocamera non può essere aperta perché è montata come un file system. Smontarla ora?"
+msgstr ""
+"La fotocamera non può essere aperta perché è montata come un file system. "
+"Smontarla ora?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -483,13 +494,17 @@ msgstr "Mostra l'elenco completo delle impostazioni della fotocamera"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Tentativo di annullamento\ndell'operazione in corso"
+msgstr ""
+"Tentativo di annullamento\n"
+"dell'operazione in corso"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Riduce la visualizzazione dell'immagine\ndi un fattore"
+msgstr ""
+"Riduce la visualizzazione dell'immagine\n"
+"di un fattore"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -499,7 +514,9 @@ msgstr "Zoom indietro"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Aumenta la visualizzazione \ndell'immagine di un fattore"
+msgstr ""
+"Aumenta la visualizzazione \n"
+"dell'immagine di un fattore"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -509,7 +526,9 @@ msgstr "Zoom avanti"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Ridimensiona l'immagine per occupare automaticamente\nlo spazio disponibile nella finestra"
+msgstr ""
+"Ridimensiona l'immagine per occupare automaticamente\n"
+"lo spazio disponibile nella finestra"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -519,7 +538,9 @@ msgstr "Adattamento migliore"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Visualizza l'immagine con la\ndimensione in pixel nativa"
+msgstr ""
+"Visualizza l'immagine con la\n"
+"dimensione in pixel nativa"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -570,7 +591,16 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Non è stata individuata alcuna fotocamera; controllare che:\n\n - il <b>cavo</b> sia connesso;\n - la fotocamera sia <b>accesa</b>;\n - la fotocamera sia nella <b>modalità corretta</b>;\n - la fotocamera sia <b>supportata</b>.\n\nLe fotocamere USB sono identificate automaticamente\nquando vengono connesse; per le altre provare il comando aggiorna."
+msgstr ""
+"Non è stata individuata alcuna fotocamera; controllare che:\n"
+"\n"
+" - il <b>cavo</b> sia connesso;\n"
+" - la fotocamera sia <b>accesa</b>;\n"
+" - la fotocamera sia nella <b>modalità corretta</b>;\n"
+" - la fotocamera sia <b>supportata</b>.\n"
+"\n"
+"Le fotocamere USB sono identificate automaticamente\n"
+"quando vengono connesse; per le altre provare il comando aggiorna."
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
@@ -628,7 +658,8 @@ msgstr "Lo svuotamento della schermata non è disponibile su questo schermo"
 
 #: ../src/frontend/entangle-dpms.c:69
 msgid "Screen blanking is not implemented on this platform"
-msgstr "Lo svuotamento della schermata non è implementato su questa piattaforma"
+msgstr ""
+"Lo svuotamento della schermata non è implementato su questa piattaforma"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -945,7 +976,8 @@ msgstr ""
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
 msgid "Could not load user interface definition file: %s"
-msgstr "Impossibile caricare il file di definizione dell'interfaccia utente: %s"
+msgstr ""
+"Impossibile caricare il file di definizione dell'interfaccia utente: %s"
 
 #. * Local variables:
 #. *  c-indent-level: 4

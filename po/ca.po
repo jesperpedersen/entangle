@@ -3,103 +3,105 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Robert Antoni Buj Gelonch <robert.buj@gmail.com>, 2015. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
-"Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2015-02-27 09:11-0500\n"
+"Last-Translator: Robert Antoni Buj Gelonch <robert.buj@gmail.com>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/entangle/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
 #, c-format
 msgid "Cannot initialize gphoto2 abilities"
-msgstr ""
+msgstr "No es poden inicialitzar les habilitats del gphoto2"
 
 #: ../src/backend/entangle-camera-list.c:269
 #: ../src/backend/entangle-camera.c:784
 #, c-format
 msgid "Cannot load gphoto2 abilities"
-msgstr ""
+msgstr "No es poden carragar les habilitats del gphoto2"
 
 #: ../src/backend/entangle-camera-list.c:415
 #: ../src/backend/entangle-camera.c:790
 #, c-format
 msgid "Cannot initialize gphoto2 ports"
-msgstr ""
+msgstr "No es posen inicialitzar els ports del gphoto2"
 
 #: ../src/backend/entangle-camera-list.c:418
 #: ../src/backend/entangle-camera.c:796
 #, c-format
 msgid "Cannot load gphoto2 ports"
-msgstr ""
+msgstr "No es poden carregar els ports del gphoto2"
 
 #: ../src/backend/entangle-camera.c:827
 #, c-format
 msgid "Unable to initialize camera"
-msgstr ""
+msgstr "No es pot inicialitzar la càmera"
 
 #: ../src/backend/entangle-camera.c:1190
 msgid "Cannot capture image while not connected"
-msgstr ""
+msgstr "No es pot capturar una imatge quan no està connectat"
 
 #: ../src/backend/entangle-camera.c:1203
 #, c-format
 msgid "Unable to capture image: %s"
-msgstr ""
+msgstr "No es pot capturar la imatge: %s"
 
 #: ../src/backend/entangle-camera.c:1328
 msgid "Cannot preview image while not connected"
-msgstr ""
+msgstr "No es pot realitzar la imatge de vista prèvia quan no està connectat"
 
 #: ../src/backend/entangle-camera.c:1343
 #, c-format
 msgid "Unable to capture preview: %s"
-msgstr ""
+msgstr "No es pot capturar la vista prèvia: %s"
 
 #: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1515
 #, c-format
 msgid "Unable to get file data: %s"
-msgstr ""
+msgstr "No es pot obtenir el fitxers de dades: %s"
 
 #: ../src/backend/entangle-camera.c:1354
 #, c-format
 msgid "Unable to get filename: %s"
-msgstr ""
+msgstr "No es pot obtenir el nom del fitxer: %s"
 
 #: ../src/backend/entangle-camera.c:1487
 msgid "Cannot download file while not connected"
-msgstr ""
+msgstr "No es pot baixar un fitxer quan no està connectat"
 
 #: ../src/backend/entangle-camera.c:1509
 #, c-format
 msgid "Unable to get camera file: %s"
-msgstr ""
+msgstr "No es pot obtenir el fitxer de la càmera: %s"
 
 #: ../src/backend/entangle-camera.c:1640
 msgid "Cannot delete file while not connected"
-msgstr ""
+msgstr "No es pot eliminar un fitxer quan no està connectat"
 
 #: ../src/backend/entangle-camera.c:1657
 #, c-format
 msgid "Unable to delete file: %s"
-msgstr ""
+msgstr "No es pot eliminar el fitxer: %s"
 
 #: ../src/backend/entangle-camera.c:1778
 msgid "Cannot wait for events while not connected"
-msgstr ""
+msgstr "No es pot esperar per esdeveniments quan no està connectat"
 
 #: ../src/backend/entangle-camera.c:1804
 #, c-format
 msgid "Unable to wait for events: %s"
-msgstr ""
+msgstr "No es pot esperar per esdeveniments: %s"
 
 #: ../src/backend/entangle-camera.c:2005 ../src/backend/entangle-camera.c:2168
 #: ../src/backend/entangle-camera.c:2304 ../src/backend/entangle-camera.c:2767
@@ -107,172 +109,177 @@ msgstr ""
 #: ../src/backend/entangle-camera.c:3351 ../src/backend/entangle-camera.c:3527
 #, c-format
 msgid "Unable to fetch widget type"
-msgstr ""
+msgstr "No es pot obtenir el tipus de giny"
 
 #: ../src/backend/entangle-camera.c:2011 ../src/backend/entangle-camera.c:2174
 #: ../src/backend/entangle-camera.c:2310
 #, c-format
 msgid "Unable to fetch widget name"
-msgstr ""
+msgstr "No es pot obtenir el nom del giny"
 
 #: ../src/backend/entangle-camera.c:2423
 #, c-format
 msgid "Unable to load controls, camera is not connected"
-msgstr ""
+msgstr "No es poden carregar els controls, la càmera no està connectada"
 
 #: ../src/backend/entangle-camera.c:2432
 #, c-format
 msgid "Unable to fetch camera control configuration"
-msgstr ""
+msgstr "No es pot obtenir la configuració del control de la càmera"
 
 #: ../src/backend/entangle-camera.c:2557
 #, c-format
 msgid "Unable to save controls, camera is not connected"
-msgstr ""
+msgstr "No es poden desar els controls, la càmera no està connectada"
 
 #: ../src/backend/entangle-camera.c:2563
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
-msgstr ""
+msgstr "No es poden desar els controls, la càmera no es pot configurar"
 
 #: ../src/backend/entangle-camera.c:2582 ../src/backend/entangle-camera.c:2803
 #: ../src/backend/entangle-camera.c:2982 ../src/backend/entangle-camera.c:3177
 #: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
-msgstr ""
+msgstr "No s'ha pogut desar la configuració del control de la càmera: %s %d"
 
 #: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
 #: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
 #: ../src/backend/entangle-camera.c:3330 ../src/backend/entangle-camera.c:3506
 #, c-format
 msgid "Controls not available when camera is disconnected"
-msgstr ""
+msgstr "Els controls no estan disponibles quan la càmera està desconnectada"
 
 #: ../src/backend/entangle-camera.c:2695 ../src/backend/entangle-camera.c:2749
 #: ../src/backend/entangle-camera.c:2937 ../src/backend/entangle-camera.c:3102
 #: ../src/backend/entangle-camera.c:3336 ../src/backend/entangle-camera.c:3512
 #, c-format
 msgid "Controls not available for this camera"
-msgstr ""
+msgstr "Els controls no estan disponible per aquesta càmera"
 
 #: ../src/backend/entangle-camera.c:2760
 #, c-format
 msgid "Viewfinder control not available with this camera"
-msgstr ""
+msgstr "El control del visor no està disponible en aquesta càmera"
 
 #: ../src/backend/entangle-camera.c:2773
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
-msgstr ""
+msgstr "El control del visor no és un giny manipulable"
 
 #: ../src/backend/entangle-camera.c:2787 ../src/backend/entangle-camera.c:2794
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
-msgstr ""
+msgstr "Error en establir l'estat del visor: %s %d"
 
 #: ../src/backend/entangle-camera.c:2945
 #, c-format
 msgid "Autofocus control not available with this camera"
 msgstr ""
+"El control automàtic de l'enfocament no està disponible per aquesta càmera"
 
 #: ../src/backend/entangle-camera.c:2958
 #, c-format
 msgid "Autofocus control was not a toggle widget"
-msgstr ""
+msgstr "El control de l'enfocament automàtic no és un giny manipulable"
 
 #: ../src/backend/entangle-camera.c:2965 ../src/backend/entangle-camera.c:2973
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
-msgstr ""
+msgstr "Error en establir l'estat de l'enfocament automàtic: %s %d"
 
 #: ../src/backend/entangle-camera.c:3110
 #, c-format
 msgid "Manual focus control not available with this camera"
 msgstr ""
+"El control de l'enfocament manual no està disponible per aquesta càmera"
 
 #: ../src/backend/entangle-camera.c:3124
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
 msgstr ""
+"El control de l'enfocament manual no està dins del giny del rang o ràtio"
 
 #: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
 #: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
-msgstr ""
+msgstr "Error en establir l'estat de l'enfocament manual: %s %d"
 
 #: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
-msgstr ""
+msgstr "Error en la lectura de la selecció de l'enfocament manual %d: %s %d"
 
 #: ../src/backend/entangle-camera.c:3344
 #, c-format
 msgid "Time setting not available with this camera"
-msgstr ""
+msgstr "L'establiment de l'hora no està disponible en aquesta càmera"
 
 #: ../src/backend/entangle-camera.c:3357
 #, c-format
 msgid "Time setting was not a date widget"
-msgstr ""
+msgstr "L'establiment de l'hora no és una opció del giny"
 
 #: ../src/backend/entangle-camera.c:3364
 #, c-format
 msgid "Failed to set time state: %s %d"
-msgstr ""
+msgstr "Error en establir l'estat de l'hora: %s %d"
 
 #: ../src/backend/entangle-camera.c:3520
 #, c-format
 msgid "Capture target setting not available with this camera"
 msgstr ""
+"Les preferències del destí de la captura no estan disponible per aquesta "
+"càmera"
 
 #: ../src/backend/entangle-camera.c:3533
 #, c-format
 msgid "Time setting was not a choice widget"
-msgstr ""
+msgstr "L'establiment de l'hora no és una opció del giny"
 
 #: ../src/backend/entangle-camera.c:3542
 #, c-format
 msgid "Failed to set capture target: %s %d"
-msgstr ""
+msgstr "Error en establir el destí de la captura: %s %d"
 
 #: ../src/frontend/entangle-camera-manager.c:597
 #: ../src/frontend/entangle-camera-manager.ui.h:23
 msgid "Capture an image"
-msgstr ""
+msgstr "Captura una imatge"
 
 #: ../src/frontend/entangle-camera-manager.c:598
 #: ../src/frontend/entangle-camera-manager.ui.h:24
 msgid "Continuous capture preview"
-msgstr ""
+msgstr "Captura continua de la vista previa"
 
 #: ../src/frontend/entangle-camera-manager.c:602
 msgid "This camera does not support image capture"
-msgstr ""
+msgstr "Aquesta càmera no és compatible amb la captura d'imatges"
 
 #: ../src/frontend/entangle-camera-manager.c:605
 msgid "This camera does not support image preview"
-msgstr ""
+msgstr "Aquesta càmera no és compatible amb la vista prèvia de la imatge"
 
 #: ../src/frontend/entangle-camera-manager.c:747
 #, c-format
 msgid "Operation: %s"
-msgstr ""
+msgstr "Operació: %s"
 
 #: ../src/frontend/entangle-camera-manager.c:749
 msgid "Entangle: Operation failed"
-msgstr ""
+msgstr "Entangle: Operació fallida"
 
 #: ../src/frontend/entangle-camera-manager.c:781
 #: ../src/frontend/entangle-camera-manager.c:1080
 msgid "Camera load controls failed"
-msgstr ""
+msgstr "Error en la càrrega dels controls de la càmera"
 
 #: ../src/frontend/entangle-camera-manager.c:783
 #: ../src/frontend/entangle-camera-manager.c:1082
 msgid "Entangle: Camera load controls failed"
-msgstr ""
+msgstr "Entangle: Error en la càrrega del control de la càmera"
 
 #: ../src/frontend/entangle-camera-manager.c:821
 msgid "Monitor"
@@ -280,13 +287,13 @@ msgstr "Monitor"
 
 #: ../src/frontend/entangle-camera-manager.c:1037
 msgid "Camera Manager - Entangle"
-msgstr ""
+msgstr "Entangle - Gestió de la càmera"
 
 #: ../src/frontend/entangle-camera-manager.c:1131
 #: ../src/frontend/entangle-camera-manager.c:2509
 #, c-format
 msgid "Unable to connect to camera: %s"
-msgstr ""
+msgstr "No es pot connectar amb la càmera: %s"
 
 #: ../src/frontend/entangle-camera-manager.c:1136
 #: ../src/frontend/entangle-camera-manager.c:2515
@@ -297,6 +304,11 @@ msgid ""
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
 msgstr ""
+"Comproveu que la càmera no estigui\n"
+"\n"
+" - oberta per una altra <b>aplicació</b> de fotografies\n"
+" - muntada com un <b>sistema de fitxers</b> en l'escriptori\n"
+" - en <b>mode de repòs</b>per estalviar bateria\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -311,13 +323,15 @@ msgstr "Reintent"
 
 #: ../src/frontend/entangle-camera-manager.c:1173
 msgid "Camera is in use"
-msgstr ""
+msgstr "La càmera està en ús"
 
 #: ../src/frontend/entangle-camera-manager.c:1177
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
 msgstr ""
+"La càmera no pot obrir-se a causa de que actualment està muntada com a "
+"sistema de fitxers. Voleu desmuntar-la ara?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -331,29 +345,29 @@ msgstr "Sí"
 
 #: ../src/frontend/entangle-camera-manager.c:1217
 msgid "Camera connect failed"
-msgstr ""
+msgstr "Error en connectar amb la càmera"
 
 #: ../src/frontend/entangle-camera-manager.c:1219
 msgid "Entangle: Camera connect failed"
-msgstr ""
+msgstr "Entangle: Error en connectar amb la càmera"
 
 #: ../src/frontend/entangle-camera-manager.c:1254
 #, c-format
 msgid "%s Camera Manager - Entangle"
-msgstr ""
+msgstr "Entangle - Gestió de càmera %s"
 
 #: ../src/frontend/entangle-camera-manager.c:1562
 #: ../src/frontend/entangle-camera-manager.ui.h:21
 msgid "Select a folder"
-msgstr ""
+msgstr "Selecciona una carpeta"
 
 #: ../src/frontend/entangle-camera-manager.c:1565
 msgid "_Cancel"
-msgstr ""
+msgstr "_Cancel·la"
 
 #: ../src/frontend/entangle-camera-manager.c:1567
 msgid "_Open"
-msgstr ""
+msgstr "_Obre"
 
 #: ../src/frontend/entangle-camera-manager.c:1746
 #: ../src/frontend/entangle-camera-manager.ui.h:7
@@ -366,27 +380,27 @@ msgstr "Captura"
 #: ../src/frontend/entangle-camera-manager.c:1803
 #: ../src/frontend/entangle-camera-manager.ui.h:8
 msgid "Preview"
-msgstr "Previsualització"
+msgstr "Vista prèvia"
 
 #: ../src/frontend/entangle-camera-manager.c:1958
 msgid "Set clock"
-msgstr ""
+msgstr "Estableix el rellotge"
 
 #: ../src/frontend/entangle-camera-manager.c:2001
 msgid "Autofocus failed"
-msgstr ""
+msgstr "Error en l'enfocament automàtic"
 
 #: ../src/frontend/entangle-camera-manager.c:2003
 msgid "Entangle: Camera autofocus failed"
-msgstr ""
+msgstr "Entangle: error en l'enfocament automàtic de la càmera"
 
 #: ../src/frontend/entangle-camera-manager.c:2033
 msgid "Manual focus failed"
-msgstr ""
+msgstr "Error en l'enfocament manual"
 
 #: ../src/frontend/entangle-camera-manager.c:2035
 msgid "Entangle: Camera manual focus failed"
-msgstr ""
+msgstr "Entangle: Error en l'enfocament manual de la càmera"
 
 #: ../src/frontend/entangle-camera-manager.c:2640
 msgid "Delete"
@@ -394,7 +408,7 @@ msgstr "Suprimeix"
 
 #: ../src/frontend/entangle-camera-manager.c:2769
 msgid "Select application..."
-msgstr ""
+msgstr "Selecciona una aplicació..."
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -405,7 +419,7 @@ msgstr ""
 #: ../src/frontend/entangle-camera-manager.ui.h:1
 #: ../src/entangle.desktop.in.h:1
 msgid "Entangle"
-msgstr ""
+msgstr "Entangle"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:2
 msgid "_File"
@@ -413,7 +427,7 @@ msgstr "_Fitxer"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:3
 msgid "Select session"
-msgstr ""
+msgstr "Selecciona la sessió"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:4
 msgid "_Edit"
@@ -425,11 +439,11 @@ msgstr "Càmera"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:6
 msgid "Connect"
-msgstr ""
+msgstr "Connecta"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:10
 msgid "Synchronize clock"
-msgstr ""
+msgstr "Sincronitza el rellotge"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:11
 msgid "_View"
@@ -449,7 +463,7 @@ msgstr "Presentació"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:15
 msgid "Present on"
-msgstr ""
+msgstr "Present a"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:16
 msgid "Windows"
@@ -461,7 +475,7 @@ msgstr "Finestra nova"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:18
 msgid "Synchronize capture"
-msgstr ""
+msgstr "Sincronitza la captura"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:19
 msgid "_Help"
@@ -469,23 +483,27 @@ msgstr "A_juda"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:20
 msgid "Supported Cameras"
-msgstr ""
+msgstr "Càmeres compatibles"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:22
 msgid "View the full list of camera settings"
-msgstr ""
+msgstr "Visualitza el llistat complet de preferències de la càmera"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:25
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
 msgstr ""
+"Prova de cancel·lar l'operació\n"
+"en execució de la càmera"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
 msgstr ""
+"Encongeix la visualització de la\n"
+"imatge en un factor"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -496,6 +514,8 @@ msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
 msgstr ""
+"Amplia la visualització de la\n"
+"imatge en un factor"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -506,6 +526,8 @@ msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
 msgstr ""
+"Redimensiona la imatge per omplir\n"
+"automàticament la finestra disponible"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -516,6 +538,8 @@ msgid ""
 "Display the image with its\n"
 "native pixel size"
 msgstr ""
+"Mostra la imatge amb la seva\n"
+"mida de píxels originals"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -523,7 +547,7 @@ msgstr "Normal"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:39
 msgid "Switch to fullscreen display mode"
-msgstr ""
+msgstr "Canvia al mode de visualització de pantalla completa"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:40
 msgid "Full Screen"
@@ -549,11 +573,11 @@ msgstr "Port"
 #. * End:
 #: ../src/frontend/entangle-camera-picker.ui.h:1
 msgid "Select camera - Entangle"
-msgstr ""
+msgstr "Entangle - Selecciona la càmera"
 
 #: ../src/frontend/entangle-camera-picker.ui.h:2
 msgid "Select a camera to connect to:"
-msgstr ""
+msgstr "Seleccioneu una càmera a la que connectar-vos:"
 
 #: ../src/frontend/entangle-camera-picker.ui.h:3
 msgid ""
@@ -567,18 +591,27 @@ msgid ""
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
 msgstr ""
+"No s'ha detectat cap càmera, comproveu que\n"
+"\n"
+"  - els <b>cables</b> estiguin connectats\n"
+"  - la càmera estigui <b>engegada</b>\n"
+"  - la càmera estigui en <b>mode de connexió</b>\n"
+"  - la càmera sigui <b>compatible</b>\n"
+"\n"
+"Les càmeres USB es detecten automàticament\n"
+"quan s'endollen, per a les altres proveu amb actualitzar"
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
-msgstr ""
+msgstr "captura"
 
 #: ../src/frontend/entangle-camera-support.c:233
 msgid "preview"
-msgstr ""
+msgstr "vista prèvia"
 
 #: ../src/frontend/entangle-camera-support.c:239
 msgid "settings"
-msgstr ""
+msgstr "preferències"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -592,11 +625,11 @@ msgstr "etiqueta"
 
 #: ../src/frontend/entangle-control-panel.c:86
 msgid "Camera control update failed"
-msgstr ""
+msgstr "El control de la càmera no pot actualitzar el camp"
 
 #: ../src/frontend/entangle-control-panel.c:88
 msgid "Entangle: Camera control update failed"
-msgstr ""
+msgstr "Entangle: Error en actualitzar el control de la càmera"
 
 #: ../src/frontend/entangle-control-panel.c:316
 msgid "On"
@@ -608,23 +641,23 @@ msgstr "Desactivada"
 
 #: ../src/frontend/entangle-control-panel.c:771
 msgid "Reset controls"
-msgstr ""
+msgstr "Restableix els controls"
 
 #: ../src/frontend/entangle-control-panel.c:843
 msgid "No camera connected"
-msgstr ""
+msgstr "Ni hi ha cap càmera connectada"
 
 #: ../src/frontend/entangle-control-panel.c:850
 msgid "No controls available"
-msgstr ""
+msgstr "No hi ha cap control disponible"
 
 #: ../src/frontend/entangle-dpms.c:57
 msgid "Screen blanking is not available on this display"
-msgstr ""
+msgstr "La pantalla en blanc no està disponible en aquest monitor"
 
 #: ../src/frontend/entangle-dpms.c:69
 msgid "Screen blanking is not implemented on this platform"
-msgstr ""
+msgstr "La pantalla en blanc no està implementada en aquesta plataforma"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -634,15 +667,15 @@ msgstr ""
 #. * End:
 #: ../src/frontend/entangle-help-about.ui.h:1
 msgid "About - Entangle"
-msgstr ""
+msgstr "Entangle - Quant a"
 
 #: ../src/frontend/entangle-help-about.ui.h:2
 msgid "Copyright (C) 2009-2014 Daniel P. Berrangé"
-msgstr ""
+msgstr "Copyright (C) 2009-2014 Daniel P. Berrangé"
 
 #: ../src/frontend/entangle-help-about.ui.h:3 ../src/entangle.desktop.in.h:2
 msgid "Tethered Camera Control & Capture"
-msgstr ""
+msgstr "Captura i control lligats a la càmera"
 
 #: ../src/frontend/entangle-preferences-display.c:975
 #: ../src/frontend/entangle-preferences-display.ui.h:27
@@ -666,7 +699,7 @@ msgstr "Connectors"
 
 #: ../src/frontend/entangle-preferences-display.c:1024
 msgid "ICC profiles (*.icc, *.icm)"
-msgstr ""
+msgstr "Perfils ICC (*.icc, *.icm)"
 
 #: ../src/frontend/entangle-preferences-display.c:1029
 msgid "All files (*.*)"
@@ -674,103 +707,103 @@ msgstr "Tots els fitxers (*.*)"
 
 #: ../src/frontend/entangle-preferences-display.c:1055
 msgid "1:1 - Square / MF 6x6"
-msgstr ""
+msgstr "1:1 - Quadrat / MF 6x6"
 
 #: ../src/frontend/entangle-preferences-display.c:1060
 msgid "1.15:1 - Movietone"
-msgstr ""
+msgstr "1.15:1 - Movietone"
 
 #: ../src/frontend/entangle-preferences-display.c:1065
 msgid "1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"
-msgstr ""
+msgstr "1.33:1 (4:3, 12:9) - Super 35mm / DSLR / MF 645"
 
 #: ../src/frontend/entangle-preferences-display.c:1070
 msgid "1.37:1 - 35mm movie"
-msgstr ""
+msgstr "1.37:1 - Pel·lícula de 35mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1075
 msgid "1.44:1 - IMAX"
-msgstr ""
+msgstr "1.44:1 - IMAX"
 
 #: ../src/frontend/entangle-preferences-display.c:1080
 msgid "1.50:1 (3:2, 15:10)- 35mm SLR"
-msgstr ""
+msgstr "1.50:1 (3:2, 15:10)- SLR de 35mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1085
 msgid "1.6:1 (8:5, 16:10) - Widescreen"
-msgstr ""
+msgstr "1.6:1 (8:5, 16:10) - Pantalla ampla"
 
 #: ../src/frontend/entangle-preferences-display.c:1090
 msgid "1.66:1 (5:3, 15:9) - Super 16mm"
-msgstr ""
+msgstr "1.66:1 (5:3, 15:9) - Super 16mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1095
 msgid "1.75:1 (7:4) - Widescreen"
-msgstr ""
+msgstr "1.75:1 (7:4) - Pantalla ampla"
 
 #: ../src/frontend/entangle-preferences-display.c:1100
 msgid "1.77:1 (16:9) - APS-H / HDTV / Widescreen"
-msgstr ""
+msgstr "1.77:1 (16:9) - APS-H / HDTV / Pantalla ampla"
 
 #: ../src/frontend/entangle-preferences-display.c:1105
 msgid "1.85:1 - 35mm Widescreen"
-msgstr ""
+msgstr "1.85:1 - Pantalla ampla de 35mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1110
 msgid "2.00:1 - SuperScope"
-msgstr ""
+msgstr "2.00:1 - SuperScope"
 
 #: ../src/frontend/entangle-preferences-display.c:1115
 msgid "2.10:1 (21:10) - Planned HDTV"
-msgstr ""
+msgstr "2.10:1 (21:10) - HDTV plana"
 
 #: ../src/frontend/entangle-preferences-display.c:1120
 msgid "2.20:1 (11:5, 22:10) - 70mm movie"
-msgstr ""
+msgstr "2.20:1 (11:5, 22:10) - Pel·lícula de 70mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1125
 msgid "2.35:1 - CinemaScope"
-msgstr ""
+msgstr "2.35:1 - CinemaScope"
 
 #: ../src/frontend/entangle-preferences-display.c:1130
 msgid "2.37:1 (64:27)- HDTV cinema"
-msgstr ""
+msgstr "2.37:1 (64:27)- Cinema HDTV"
 
 #: ../src/frontend/entangle-preferences-display.c:1135
 msgid "2.39:1 (12:5)- Panavision"
-msgstr ""
+msgstr "2.39:1 (12:5)- Panavision"
 
 #: ../src/frontend/entangle-preferences-display.c:1140
 msgid "2.55:1 (23:9)- CinemaScope 55"
-msgstr ""
+msgstr "2.55:1 (23:9)- CinemaScope 55"
 
 #: ../src/frontend/entangle-preferences-display.c:1145
 msgid "2.59:1 (13:5)- Cinerama"
-msgstr ""
+msgstr "2.59:1 (13:5)- Cinerama"
 
 #: ../src/frontend/entangle-preferences-display.c:1150
 msgid "2.66:1 (8:3, 24:9)- Super 16mm"
-msgstr ""
+msgstr "2.66:1 (8:3, 24:9)- Super 16mm"
 
 #: ../src/frontend/entangle-preferences-display.c:1155
 msgid "2.76:1 (11:4) - Ultra Panavision"
-msgstr ""
+msgstr "2.76:1 (11:4) - Ultra Panavision"
 
 #: ../src/frontend/entangle-preferences-display.c:1160
 msgid "2.93:1 - MGM Camera 65"
-msgstr ""
+msgstr "2.93:1 - Càmera 65 de la MGM"
 
 #: ../src/frontend/entangle-preferences-display.c:1165
 msgid "3:1 APS Panorama"
-msgstr ""
+msgstr "3:1 APS Panorama"
 
 #: ../src/frontend/entangle-preferences-display.c:1170
 msgid "4.00:1 - Polyvision"
-msgstr ""
+msgstr "4.00:1 - Polyvision"
 
 #: ../src/frontend/entangle-preferences-display.c:1175
 msgid "12.00:1 - Circle-Vision 360"
-msgstr ""
+msgstr "12.00:1 - Circle-Vision 360"
 
 #: ../src/frontend/entangle-preferences-display.c:1193
 msgid "None"
@@ -778,23 +811,23 @@ msgstr "Cap"
 
 #: ../src/frontend/entangle-preferences-display.c:1198
 msgid "Center lines"
-msgstr ""
+msgstr "Línies centals"
 
 #: ../src/frontend/entangle-preferences-display.c:1203
 msgid "Rule of 3rds"
-msgstr ""
+msgstr "Regla del terç"
 
 #: ../src/frontend/entangle-preferences-display.c:1208
 msgid "Quarters"
-msgstr ""
+msgstr "Quarts"
 
 #: ../src/frontend/entangle-preferences-display.c:1213
 msgid "Rule of 5ths"
-msgstr ""
+msgstr "Regla del cinquè"
 
 #: ../src/frontend/entangle-preferences-display.c:1218
 msgid "Golden sections"
-msgstr ""
+msgstr "Seccions dorades"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -808,7 +841,7 @@ msgstr "Perceptiu"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:2
 msgid "Relative colourimetric"
-msgstr ""
+msgstr "Colorimètric relatiu"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:3
 msgid "Saturation"
@@ -816,39 +849,39 @@ msgstr "Saturació"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:4
 msgid "Absolute colourimetric"
-msgstr ""
+msgstr "Colorimètric absolut"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:5
 msgid "Entangle Preferences"
-msgstr ""
+msgstr "Preferències de l'Entangle"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:6
 msgid "<b>Capture</b>"
-msgstr ""
+msgstr "<b>Captura</b>"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:7
 msgid "Filename pattern:"
-msgstr ""
+msgstr "Patró del nom del fitxer:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:8
 msgid "Continue preview mode after capture"
-msgstr ""
+msgstr "Mode continu de vista prèvia abans de la captura"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:9
 msgid "Use preview output as capture image"
-msgstr ""
+msgstr "Utilitza la sortida de vista prèvia com a imatge de captura"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:10
 msgid "Delete file from camera after downloading"
-msgstr ""
+msgstr "Elimina el fitxer de la càmera després de baixar-ho"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:11
 msgid "Automatically synchronize camera clock"
-msgstr ""
+msgstr "Sincronitza automàticament el rellotge de la càmera"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:13
 msgid "<b>Colour management</b>"
-msgstr ""
+msgstr "<b>Gestió del color</b>"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:14
 msgid "Mode of operation:"
@@ -856,7 +889,7 @@ msgstr "Mode d'operació:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:15
 msgid "RGB profile:"
-msgstr ""
+msgstr "Perfil RGB:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:16
 msgid "Monitor profile:"
@@ -864,43 +897,43 @@ msgstr "Perfil del monitor:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:17
 msgid "Rendering intent:"
-msgstr ""
+msgstr "Processament de color:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:18
 msgid "Detect the system monitor profile"
-msgstr ""
+msgstr "Detecta el perfil del monitor del sistema"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:19
 msgid "Colour managed display"
-msgstr ""
+msgstr "Monitor amb gestió del color"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:21
 msgid "<b>Plugins</b>"
-msgstr ""
+msgstr "<b>Connectors</b>"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:23
 msgid "<b>Interface</b>"
-msgstr ""
+msgstr "<b>Interfície</b>"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:24
 msgid "Automatically connect to cameras at startup"
-msgstr ""
+msgstr "Connecta la càmera automàticament al començament"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:25
 msgid "Blank screen when capturing images"
-msgstr ""
+msgstr "Pantalla en blanc quan capturi imatges"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:26
 msgid "Show linear histogram"
-msgstr ""
+msgstr "Mostra l'histograma lineal"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:28
 msgid "<b>Image Viewer</b>"
-msgstr ""
+msgstr "<b>Visualitzador d'imatges</b>"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:29
 msgid "Apply mask to alter aspect ratio"
-msgstr ""
+msgstr "Aplica la màscara per alterar la relació de l'aspecte"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:30
 msgid "Aspect ratio:"
@@ -908,40 +941,41 @@ msgstr "Relació de l'aspecte:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:31
 msgid "Mask opacity:"
-msgstr ""
+msgstr "Màscara d'opacitat:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:32
 msgid "Display focus point during preview"
-msgstr ""
+msgstr "Mostra el punt focal durant la vista prèvia"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:33
 msgid "Grid lines:"
-msgstr ""
+msgstr "Línies de quadrícula:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:34
 msgid "Use embedded preview from raw files"
-msgstr ""
+msgstr "Utilitza la vista prèvia incrustada dels fitxers raw"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:35
 msgid "Overlay earlier images"
-msgstr ""
+msgstr "Superposa amb les primeres imatges"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:36
 msgid "Overlay layers:"
-msgstr ""
+msgstr "Capes superposades:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:37
 msgid "Background:"
-msgstr ""
+msgstr "Fons:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:38
 msgid "Highlight:"
-msgstr ""
+msgstr "Ressaltat:"
 
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
 msgid "Could not load user interface definition file: %s"
 msgstr ""
+"No es pot carregar el fitxer de definició de la interfície d'usuari: %s"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -951,13 +985,15 @@ msgstr ""
 #. * End:
 #: ../src/entangle.appdata.xml.in.h:1
 msgid "Tethered Camera Control &amp; Capture"
-msgstr ""
+msgstr "Control i captura lligats a la càmera"
 
 #: ../src/entangle.appdata.xml.in.h:2
 msgid ""
 "Entangle is a program used to control digital cameras that are connected to "
 "the computer via USB."
 msgstr ""
+"Entangle és un programa que s'utilitza per controlar càmeres digitals que "
+"estiguin connectades a l'ordinador a través de l'USB."
 
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
@@ -967,6 +1003,11 @@ msgid ""
 " are captured by the camera. Entangle also allows the settings of the camera"
 " to be changed from the computer."
 msgstr ""
+"Entangle pot disparar l'obturador de la càmera per capturar noves imatges. "
+"Quan la càmera és compatible, es pot mostrar abans de la captura una vista "
+"prèvia contínua de l'escena. Les imatges es baixen i es mostren com són "
+"capturades per la càmera. Entangle també permet que la configuració de la "
+"càmera es pugui canviar des de l'ordinador."
 
 #: ../src/entangle.appdata.xml.in.h:4
 msgid ""
@@ -974,3 +1015,6 @@ msgid ""
 "their compact camera models, and a variety of cameras from other "
 "manufacturers."
 msgstr ""
+"Entangle és compatible amb la majoria de les càmeres DSLR de Nikon i Canon, "
+"alguns dels seus model de càmeres compactes, i una gran varietat de càmeres "
+"d'altres fabricants."

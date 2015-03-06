@@ -4,16 +4,15 @@
 # 
 # Translators:
 # Fabian Affolter <fab@fedoraproject.org>, 2012-2013
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2012,2014
-# noxin <transifex.com@davidmainzer.com>, 2013
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2012
 # Roman Spirgi <bigant@fedoraproject.org>, 2012
 # noxin <transifex.com@davidmainzer.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/entangle/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -21,6 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -123,12 +123,12 @@ msgstr "Widget-Name kann nicht ermittelt werden"
 #: ../src/backend/entangle-camera.c:2423
 #, c-format
 msgid "Unable to load controls, camera is not connected"
-msgstr "Steuerung kann nicht geladen werden, Kamera ist nicht verbunden"
+msgstr "steruerung kann nicht geladen werden, Kamera ist nicht verbunden"
 
 #: ../src/backend/entangle-camera.c:2432
 #, c-format
 msgid "Unable to fetch camera control configuration"
-msgstr "Konfiguration der Kamera kann nicht ermittelt werden"
+msgstr "Konfiguration der Kameraeinstellungen kann nicht ermittelt werden"
 
 #: ../src/backend/entangle-camera.c:2557
 #, c-format
@@ -138,14 +138,16 @@ msgstr "Steuerung kann nicht gespeichert werden, Kamera ist nicht verbunden"
 #: ../src/backend/entangle-camera.c:2563
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
-msgstr "Steuerung kann nicht gespeichert werden, Kamera ist nicht konfigurierbar"
+msgstr ""
+"Steuerung kann nicht gespeichert werden, Kamera ist nicht konfigurierbar"
 
 #: ../src/backend/entangle-camera.c:2582 ../src/backend/entangle-camera.c:2803
 #: ../src/backend/entangle-camera.c:2982 ../src/backend/entangle-camera.c:3177
 #: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
-msgstr "Die Konfiguration der Kamerasteuerung konnte nicht gespeichert werden: %s %d"
+msgstr ""
+"Die Konfiguration der Kamerasteuerung konnte nicht gespeichert werden: %s %d"
 
 #: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
 #: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
@@ -164,83 +166,83 @@ msgstr "Steuerung ist für diese Kamera nicht verfügbar"
 #: ../src/backend/entangle-camera.c:2760
 #, c-format
 msgid "Viewfinder control not available with this camera"
-msgstr "Suchersteuerung ist für diese Kamera nicht verfügbar"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:2773
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
-msgstr "Suchersteuerung war kein Toggle-Widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:2787 ../src/backend/entangle-camera.c:2794
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
-msgstr "Sucherstatus konnte nicht gesetzt werden: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:2945
 #, c-format
 msgid "Autofocus control not available with this camera"
-msgstr "Autofokussteuerung ist für diese Kamera nicht verfügbar"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:2958
 #, c-format
 msgid "Autofocus control was not a toggle widget"
-msgstr "Autofokussteuerung war kein Toggle-Widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:2965 ../src/backend/entangle-camera.c:2973
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
-msgstr "Status des Autofokus konnte nicht gesetzt werden: %s %d"
+msgstr "Aktivieren des automatischen Fokus schlug fehl: %s %d"
 
 #: ../src/backend/entangle-camera.c:3110
 #, c-format
 msgid "Manual focus control not available with this camera"
-msgstr "Das manuelle Fokussieren ist mit dieser Kamera nicht möglich"
+msgstr "Das manuelle fokussieren ist mit dieser Kamera nicht möglich"
 
 #: ../src/backend/entangle-camera.c:3124
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
-msgstr "Manuelle Fokussteuerung war kein Bereichs- oder Radio-Widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
 #: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
-msgstr "Status der manuellen Fokussierung konnte nicht gesetzt werden: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
-msgstr "Einstellung %d der manuellen Fokussteuerung konnte nicht gelesen werden: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3344
 #, c-format
 msgid "Time setting not available with this camera"
-msgstr "Zeiteinstellung ist für diese Kamera nicht verfügbar"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3357
 #, c-format
 msgid "Time setting was not a date widget"
-msgstr "Zeiteinstellung war kein Datums-Widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3364
 #, c-format
 msgid "Failed to set time state: %s %d"
-msgstr "Zeitstatus konnte nicht gesetzt werden: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3520
 #, c-format
 msgid "Capture target setting not available with this camera"
-msgstr "Einstellung des Aufnahmeziels ist für diese Kamera nicht verfügbar"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3533
 #, c-format
 msgid "Time setting was not a choice widget"
-msgstr "Zeiteinstellung war kein Auswahl-Widget"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3542
 #, c-format
 msgid "Failed to set capture target: %s %d"
-msgstr "Aufnahmeziel konnte nicht gesetzt werden: %s %d"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:597
 #: ../src/frontend/entangle-camera-manager.ui.h:23
@@ -301,7 +303,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Stellen Sie sicher, dass die Kamera nicht\n\n - von einer anderen <b>Fotoanwendung</b> geöffnet ist\n - als <b>Dateisystem</b> eingehängt ist\n - im <b>Ruhezustand</b> ist, um Energie zu sparen\n"
+msgstr ""
+"Stellen Sie sicher, dass die Kamera nicht\n"
+"\n"
+" - von einer anderen <b>Fotoanwendung</b> geöffnet ist\n"
+" - als <b>Dateisystem</b> eingehängt ist\n"
+" - im <b>Ruhezustand</b> ist, um Energie zu sparen\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -322,7 +329,9 @@ msgstr "Kamera ist bereits in Benutzung"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "Die Kamera kann nicht geöffnet werden, da sie derzeit als Dateisystem eingehängt ist. Wollen Sie sie jetzt aushängen?"
+msgstr ""
+"Die Kamera kann nicht geöffnet werden, da sie derzeit als Dateisystem "
+"eingehängt ist. Wollen Sie sie jetzt aushängen?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -354,11 +363,11 @@ msgstr "Einen Ordner auswählen"
 
 #: ../src/frontend/entangle-camera-manager.c:1565
 msgid "_Cancel"
-msgstr "Abbre_chen"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1567
 msgid "_Open"
-msgstr "Ö_ffnen"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:1746
 #: ../src/frontend/entangle-camera-manager.ui.h:7
@@ -375,7 +384,7 @@ msgstr "Vorschau"
 
 #: ../src/frontend/entangle-camera-manager.c:1958
 msgid "Set clock"
-msgstr "Uhr stellen"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:2001
 msgid "Autofocus failed"
@@ -430,11 +439,11 @@ msgstr "Kamera"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:6
 msgid "Connect"
-msgstr "Verbinden"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:10
 msgid "Synchronize clock"
-msgstr "Uhr synchronisieren"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.ui.h:11
 msgid "_View"
@@ -484,13 +493,17 @@ msgstr "Vollständige Liste der Kameraeinstellungen anzeigen"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Es wird versucht, den aktuell\nausgeführten Vorgang abzubrechen"
+msgstr ""
+"Es wird versucht, den aktuell\n"
+"ausgeführten Vorgang abzubrechen"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Die Bildanzeige um einen\nFaktor verkleinern"
+msgstr ""
+"Die Bildanzeige um einen\n"
+"Faktor verkleinern"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -500,7 +513,9 @@ msgstr "Verkleinern"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Die Bildanzeige um einen\nFaktor vergrößern"
+msgstr ""
+"Die Bildanzeige um einen\n"
+"Faktor vergrößern"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -510,7 +525,9 @@ msgstr "Vergrößern"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Das Bild automatisch anpassen, so\ndass es in das Fenster passt "
+msgstr ""
+"Das Bild automatisch anpassen, so\n"
+"dass es in das Fenster passt "
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -520,7 +537,9 @@ msgstr "Einpassen"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Das Bild in seiner natürlichen\nPixelgröße anzeigen"
+msgstr ""
+"Das Bild in seiner natürlichen\n"
+"Pixelgröße anzeigen"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -558,7 +577,7 @@ msgstr "Kamera wählen - Entangle"
 
 #: ../src/frontend/entangle-camera-picker.ui.h:2
 msgid "Select a camera to connect to:"
-msgstr "Wählen Sie eine zu verbindende Kamera:"
+msgstr "Wählen Sie eine zu verbindende Kamera"
 
 #: ../src/frontend/entangle-camera-picker.ui.h:3
 msgid ""
@@ -571,19 +590,29 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Es wurden keine Kameras erkannt.\nÜberprüfen Sie, ob\n\n  - die <b>Kabel</b> angeschlossen sind\n  - die Kamera <b>eingeschaltet</b> ist\n  - sich die Kamera im <b>richtigen Modus</b> befindet\n  - das Kameramodell <b>unterstützt</b> wird\n\nUSB-Kameras werden automatisch beim Anschließen\nerkannt, andere sind nach einer Aktualisierung verfügbar"
+msgstr ""
+"Es wurden keine Kameras erkannt.\n"
+"Überprüfen Sie, ob\n"
+"\n"
+"  - die <b>Kabel</b> angeschlossen sind\n"
+"  - die Kamera <b>eingeschaltet</b> ist\n"
+"  - sich die Kamera im <b>richtigen Modus</b> befindet\n"
+"  - das Kameramodell <b>unterstützt</b> wird\n"
+"\n"
+"USB-Kameras werden automatisch beim Anschließen\n"
+"erkannt, andere sind nach einer Aktualisierung verfügbar"
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
-msgstr "Aufnahme"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-support.c:233
 msgid "preview"
-msgstr "Vorschau"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-support.c:239
 msgid "settings"
-msgstr "Einstellungen"
+msgstr ""
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -643,7 +672,7 @@ msgstr "Info - Entangle"
 
 #: ../src/frontend/entangle-help-about.ui.h:2
 msgid "Copyright (C) 2009-2014 Daniel P. Berrangé"
-msgstr "Copyright (C) 2009-2014 Daniel P. Berrangé"
+msgstr ""
 
 #: ../src/frontend/entangle-help-about.ui.h:3 ../src/entangle.desktop.in.h:2
 msgid "Tethered Camera Control & Capture"
@@ -849,7 +878,7 @@ msgstr "Datei in der Kamera nach dem Herunterladen löschen"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:11
 msgid "Automatically synchronize camera clock"
-msgstr "Kamera-Uhr automatisch synchronisieren"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:13
 msgid "<b>Colour management</b>"
@@ -901,7 +930,7 @@ msgstr "Lineares Histogramm anzeigen"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:28
 msgid "<b>Image Viewer</b>"
-msgstr "<b>Bildbetrachter</b>"
+msgstr "<b>Image Bildbetrachter</b>"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:29
 msgid "Apply mask to alter aspect ratio"
@@ -937,16 +966,17 @@ msgstr "Ebenen überdecken:"
 
 #: ../src/frontend/entangle-preferences-display.ui.h:37
 msgid "Background:"
-msgstr "Hintergrund:"
+msgstr ""
 
 #: ../src/frontend/entangle-preferences-display.ui.h:38
 msgid "Highlight:"
-msgstr "Highlight:"
+msgstr ""
 
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
 msgid "Could not load user interface definition file: %s"
-msgstr "Definitionsdatei der Benutzeroberfläche konnte nicht geladen werden: %s"
+msgstr ""
+"Definitionsdatei der Benutzeroberfläche konnte nicht geladen werden: %s"
 
 #. * Local variables:
 #. *  c-indent-level: 4
@@ -956,13 +986,13 @@ msgstr "Definitionsdatei der Benutzeroberfläche konnte nicht geladen werden: %s
 #. * End:
 #: ../src/entangle.appdata.xml.in.h:1
 msgid "Tethered Camera Control &amp; Capture"
-msgstr "Eingebundene Kamerasteuerung und Aufnahme"
+msgstr ""
 
 #: ../src/entangle.appdata.xml.in.h:2
 msgid ""
 "Entangle is a program used to control digital cameras that are connected to "
 "the computer via USB."
-msgstr "Entangle ist ein Programm zum Steuern digitaler Kameras, die mit dem Rechner über USB verbunden sind."
+msgstr ""
 
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
@@ -971,11 +1001,11 @@ msgid ""
 " displayed prior to capture. Images will be downloaded and displayed as they"
 " are captured by the camera. Entangle also allows the settings of the camera"
 " to be changed from the computer."
-msgstr "Entangle kann den Verschluss der Kamera auslösen, um Bilder aufzunehmen. Wenn dies von der Kamera unterstützt wird, dann kann vor der Aufnahme die Vorschau fortlaufend aktualisiert werden. Bilder werden heruntergeladen und angezeigt, so wie sie von der Kamera aufgenommen wurden. Entangle ermöglicht es außerdem, die Einstellungen der Kamera vom Rechner aus zu ändern."
+msgstr ""
 
 #: ../src/entangle.appdata.xml.in.h:4
 msgid ""
 "Entangle is compatible with most DSLR cameras from Nikon and Canon, some of "
 "their compact camera models, and a variety of cameras from other "
 "manufacturers."
-msgstr "Entangle ist kompatibel mit den meisten DSLR-Kameras von Nikon und Canon, einigen derer Kompaktkamera-Modelle sowie einer Reihe von Kameras anderer Hersteller."
+msgstr ""

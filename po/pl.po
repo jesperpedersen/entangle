@@ -6,10 +6,10 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2012-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: Entangle\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 21:23+0000\n"
-"PO-Revision-Date: 2015-02-05 21:23+0000\n"
+"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/entangle/language/pl/)\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Zanata 3.5.1\n"
 
 #: ../src/backend/entangle-camera-list.c:266
 #: ../src/backend/entangle-camera.c:778
@@ -175,7 +176,7 @@ msgstr "Ustawienie stanu widoku wyszukiwania się nie powiodło: %s %d"
 #: ../src/backend/entangle-camera.c:2945
 #, c-format
 msgid "Autofocus control not available with this camera"
-msgstr "Automatyczna kontrola ostrości nie jest dostępna dla tego aparatu"
+msgstr "Kontrola automatycznej ostrości nie jest dostępna dla tego aparatu"
 
 #: ../src/backend/entangle-camera.c:2958
 #, c-format
@@ -190,12 +191,12 @@ msgstr "Ustawienie stanu automatycznej ostrości się nie powiodło: %s %d"
 #: ../src/backend/entangle-camera.c:3110
 #, c-format
 msgid "Manual focus control not available with this camera"
-msgstr "Ręczna kontrola ostrości nie jest dostępna dla tego aparatu"
+msgstr "Kontrola ręcznej ostrości nie jest dostępna dla tego aparatu"
 
 #: ../src/backend/entangle-camera.c:3124
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
-msgstr "Ręczna kontrola ostrości nie jest widżetem przełączania lub przyciskiem radiowym"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
 #: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
@@ -206,7 +207,7 @@ msgstr "Ustawienie stanu ręcznej ostrości się nie powiodło: %s %d"
 #: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
-msgstr "Odczytanie wyboru ręcznej ostrości %d się nie powiodło: %s %d"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3344
 #, c-format
@@ -226,17 +227,17 @@ msgstr "Ustawienie stanu czasu się nie powiodło: %s %d"
 #: ../src/backend/entangle-camera.c:3520
 #, c-format
 msgid "Capture target setting not available with this camera"
-msgstr "Ustawienie celu przechwytywania nie jest dostępne dla tego aparatu"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3533
 #, c-format
 msgid "Time setting was not a choice widget"
-msgstr "Ustawienie czasu nie było widżetem wyboru"
+msgstr ""
 
 #: ../src/backend/entangle-camera.c:3542
 #, c-format
 msgid "Failed to set capture target: %s %d"
-msgstr "Ustawienie celu przechwytywania się nie powiodło: %s %d"
+msgstr ""
 
 #: ../src/frontend/entangle-camera-manager.c:597
 #: ../src/frontend/entangle-camera-manager.ui.h:23
@@ -297,7 +298,12 @@ msgid ""
 " - opened by another photo <b>application</b>\n"
 " - mounted as a <b>filesystem</b> on the desktop\n"
 " - in <b>sleep mode</b> to save battery power\n"
-msgstr "Proszę sprawdzić, czy aparat nie jest:\n\n - otwarty przez inną <b>aplikację</b> do obsługi zdjęć\n - zamontowany jako <b>system plików</b> na pulpicie\n - w <b>trybie uśpienia</b>, aby oszczędzić zasilanie\n"
+msgstr ""
+"Proszę sprawdzić, czy aparat nie jest:\n"
+"\n"
+" - otwarty przez inną <b>aplikację</b> do obsługi zdjęć\n"
+" - zamontowany jako <b>system plików</b> na pulpicie\n"
+" - w <b>trybie uśpienia</b>, aby oszczędzić zasilanie\n"
 
 #: ../src/frontend/entangle-camera-manager.c:1141
 #: ../src/frontend/entangle-camera-manager.c:2520
@@ -318,7 +324,9 @@ msgstr "Aparat jest używany"
 msgid ""
 "The camera cannot be opened because it is currently mounted as a filesystem."
 " Do you wish to umount it now ?"
-msgstr "Nie można otworzyć aparatu, ponieważ jest obecnie zamontowany jako system plików. Odmontować go teraz?"
+msgstr ""
+"Nie można otworzyć aparatu, ponieważ jest obecnie zamontowany jako system "
+"plików. Odmontować go teraz?"
 
 #: ../src/frontend/entangle-camera-manager.c:1181
 #: ../src/frontend/entangle-camera-picker.c:130
@@ -480,13 +488,17 @@ msgstr "Wyświetla pełną listę ustawień aparatu"
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
-msgstr "Próba anulowania obecnie\nwykonywanego działania aparatu"
+msgstr ""
+"Próba anulowania obecnie\n"
+"wykonywanego działania aparatu"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:27
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
-msgstr "Zmniejsza wyświetlanie obrazu\no jedną wartość"
+msgstr ""
+"Zmniejsza wyświetlanie obrazu\n"
+"o jedną wartość"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:29
 msgid "Zoom Out"
@@ -496,7 +508,9 @@ msgstr "Oddal"
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
-msgstr "Zwiększa wyświetlanie obrazu\no jedną wartość"
+msgstr ""
+"Zwiększa wyświetlanie obrazu\n"
+"o jedną wartość"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:32
 msgid "Zoom In"
@@ -506,7 +520,9 @@ msgstr "Przybliż"
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
-msgstr "Automatycznie zmienia rozmiar obrazu,\naby pasował do okna"
+msgstr ""
+"Automatycznie zmienia rozmiar obrazu,\n"
+"aby pasował do okna"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:35
 msgid "Best Fit"
@@ -516,7 +532,9 @@ msgstr "Najlepsze dopasowanie"
 msgid ""
 "Display the image with its\n"
 "native pixel size"
-msgstr "Wyświetla obraz w jego\nnatywnym rozmiarze"
+msgstr ""
+"Wyświetla obraz w jego\n"
+"natywnym rozmiarze"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:38
 msgid "Normal"
@@ -567,7 +585,16 @@ msgid ""
 "\n"
 "USB cameras are automatically detected\n"
 "when plugged in, for others try a refresh"
-msgstr "Nie wykryto aparatów, proszę sprawdzić, czy\n\n  - <b>kable</b> są podłączone\n  - aparat jest <b>włączony</b>\n  - aparat jest we <b>właściwym trybie</b>\n  - aparat jest <b>obsługiwanym</b> modelem\n\nAparaty USB są automatycznie wykrywane po\npodłączeniu, inne mogą potrzebować odświeżenia"
+msgstr ""
+"Nie wykryto aparatów, proszę sprawdzić, czy\n"
+"\n"
+"  - <b>kable</b> są podłączone\n"
+"  - aparat jest <b>włączony</b>\n"
+"  - aparat jest we <b>właściwym trybie</b>\n"
+"  - aparat jest <b>obsługiwanym</b> modelem\n"
+"\n"
+"Aparaty USB są automatycznie wykrywane po\n"
+"podłączeniu, inne mogą potrzebować odświeżenia"
 
 #: ../src/frontend/entangle-camera-support.c:227
 msgid "capture"
@@ -958,7 +985,9 @@ msgstr "Kontrola i pobieranie zdjęć z podłączonego aparatu"
 msgid ""
 "Entangle is a program used to control digital cameras that are connected to "
 "the computer via USB."
-msgstr "Entangle jest programem używanym do kontrolowania aparatów cyfrowych połączonych do komputera przez USB."
+msgstr ""
+"Entangle jest programem używanym do kontrolowania aparatów cyfrowych "
+"połączonych do komputera przez USB."
 
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
@@ -967,11 +996,19 @@ msgid ""
 " displayed prior to capture. Images will be downloaded and displayed as they"
 " are captured by the camera. Entangle also allows the settings of the camera"
 " to be changed from the computer."
-msgstr "Program Entangle może automatycznie wykonywać zdjęcia. Jeśli jest to obsługiwane przez aparat, to podgląd sceny może być wyświetlany przez zrobieniem zdjęcia. Obrazy zostaną pobrane i wyświetlone po wykonaniu przez aparat. Program Entangle umożliwia także zmienianie ustawień aparatu z poziomu komputera."
+msgstr ""
+"Program Entangle może automatycznie wykonywać zdjęcia. Jeśli jest to "
+"obsługiwane przez aparat, to podgląd sceny może być wyświetlany przez "
+"zrobieniem zdjęcia. Obrazy zostaną pobrane i wyświetlone po wykonaniu przez "
+"aparat. Program Entangle umożliwia także zmienianie ustawień aparatu z "
+"poziomu komputera."
 
 #: ../src/entangle.appdata.xml.in.h:4
 msgid ""
 "Entangle is compatible with most DSLR cameras from Nikon and Canon, some of "
 "their compact camera models, and a variety of cameras from other "
 "manufacturers."
-msgstr "Program Entangle jest zgodny z większością lustrzanek cyfrowych film Nikon i Canon, niektórymi modelami kompaktowymi, a także różnymi innymi aparatami innych producentów."
+msgstr ""
+"Program Entangle jest zgodny z większością lustrzanek cyfrowych film Nikon i"
+" Canon, niektórymi modelami kompaktowymi, a także różnymi innymi aparatami "
+"innych producentów."
