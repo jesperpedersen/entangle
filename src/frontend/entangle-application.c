@@ -177,6 +177,8 @@ static void entangle_application_startup(GApplication *gapp)
 
     (*G_APPLICATION_CLASS(entangle_application_parent_class)->startup)(gapp);
 
+    gtk_window_set_default_icon_name("entangle");
+
     if (entangle_preferences_interface_get_auto_connect(priv->preferences))
         cameras = tmp = entangle_camera_list_get_cameras(priv->activeCameras);
 
