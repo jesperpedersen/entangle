@@ -136,6 +136,8 @@ GLIB_GSETTINGS
 
 GTK_DOC_CHECK([1.10],[--flavour no-tmpl])
 
+YELP_HELP_INIT
+
 PKG_CHECK_MODULES([GOBJECT_INTROSPECTION],
                   [gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQUIRED])
 AC_SUBST(GOBJECT_INTROSPECTION_CFLAGS)
@@ -191,6 +193,7 @@ AC_CONFIG_FILES(
   docs/man/Makefile
   docs/man/en/Makefile
   docs/reference/Makefile
+  help/Makefile
   )
 
 AC_OUTPUT

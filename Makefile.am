@@ -1,5 +1,5 @@
 
-SUBDIRS = src po docs
+SUBDIRS = src po docs help
 
 ACLOCAL_AMFLAGS = -I m4
 

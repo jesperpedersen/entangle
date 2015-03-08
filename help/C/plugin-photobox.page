@@ -1,0 +1,70 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="plugin-photobox">
+  <info>
+    <link type="guide" xref="index#plugins"/>
+
+    <desc>Captive user interface for self-service photo booth</desc>
+  </info>
+
+  <title>Photobox Plugin</title>
+
+  <p>
+    The <app>Photobox</app> plugin allows the <code>Entangle</code> user interface to
+    be locked down, to act as a self-service photo booth where the user only has the
+    ability to capture and view images.
+  </p>
+
+  <p>
+    When the plugin is initially activated, it adds a single new checkbox
+    option <gui>Photo Box</gui> under the <gui>Windows</gui> menu. Enabling
+    this checkbox makes a number of changes to the user interface
+  </p>
+
+  <list>
+    <item><p>The window is resized to fill the entire screen with no titlebar</p></item>
+    <item><p>The menu bar and tool bar are hidden</p></item>
+    <item><p>The camera settings panel on the lefthand side is hidden</p></item>
+    <item><p>A button to trigger the camera shutter is added to the bottom of the window</p></item>
+  </list>
+
+  <p>
+    As a result, the user is able to see the film strip of previously captured
+    images, view any image full size and trigger the shutter to capture new
+    images. Access to all other functionality is removed / blocked.
+  </p>
+
+  <p>
+    To leave the photobox mode the <key>Esc</key> should be used. To prevent
+    unauthorized users from leaving the photobox, it is possible to set an
+    unlock password. To do this bring up the main application preferences
+    from the <guiseq><gui>Edit</gui><gui>Preferences</gui></guiseq> menu
+    and select the <gui>Plugins</gui> page. Select the <gui>Photobox</gui>
+    plugin in the list and press the <gui>Preferences</gui> button. You
+    will now be prompted to enter a password, which can be arbitrarily
+    long and use any printable characters.
+  </p>
+
+  <p>
+    Since the user will not have any access to the camera settings, it is
+    sensible to configure the camera with suitable settings before enabling
+    photobox mode. An obvious choice would be to put the camera in fully
+    automatic exposure mode with autofocus enabled on the lens, but in
+    general any choice of settings is valid.
+  </p>
+
+  <note style="warning">
+    <p>
+      The <app>Photobox</app> plugin only attempts to restrict the <app>Entangle</app>
+      user interface. Be aware that, even though the application is running full
+      screen with no title bar, various desktop shell shortcuts will still be
+      available. These may allow users to escape from the photobox. For example
+      <keyseq><key>Alt</key><key>Tab</key></keyseq> may allow switching to a
+      completely different application. Future versions of the photobox may attempt
+      to block these kind of keyboard shortcuts. IOW, the photobox mode only provides
+      soft protection against <em>accidental</em> escape, <em>not</em> strong
+      protection against <em>hostile</em> users.
+    </p>
+  </note>
+</page>

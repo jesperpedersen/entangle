@@ -1,0 +1,45 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="camera-focusing">
+  <info>
+    <link type="guide" xref="index#main"/>
+
+    <desc>Controlling camera focus during image preview</desc>
+  </info>
+  <title>Camera focus</title>
+
+  <p>
+    As mentioned in the <link xref="image-preview"/> section, not
+    attempt is made to activate the autofocus mechanism when capturing
+    from preview mode, instead the user has full control over
+    focusing via number of keyboard shortcuts.
+  </p>
+
+  <p>
+    To trigger autofocus at any time press the <key>a</key>. If
+    the camera is unable to achieve focus, for example, due to
+    low lighting conditions or a subject that is too close to
+    the lens, an error may be displayed.
+  </p>
+
+  <p>
+    To manually focus, the lens can be moved in either direction
+    at two levels of granularity. Small shifts in focal point
+    can be made using the <key>,</key> and <key>.</key> keys.
+    Moderate shifts in focal point can be made using the
+    <key>&lt;</key> and <key>&gt;</key> keys. If the limit of
+    focusing is reached in either direction, an error may be
+    displayed.
+  </p>
+
+  <note style="important">
+    <p>
+      To control focusing from <app>Entangle</app>, the camera body
+      <em>and</em> lens <em>must</em> both have their respective
+      autofocus switches activated. If either are set to manual
+      focus, <app>Entangle</app> will be unable to perform autofocus
+      or manual focusing.
+    </p>
+  </note>
+</page>

@@ -1,0 +1,26 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="guide"
+      id="index">
+  <info>
+    <credit type="author copyright">
+      <name>Daniel P. Berrange</name>
+      <email its:translate="no">dan@berrange.com</email>
+      <years>2015</years>
+    </credit>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Entangle enables tethered capture and control of digital cameras</desc>
+  </info>
+  <title><media type="image" mime="image/png" src="figures/entangle.png" height="48" its:translate="no" xmlns:its="http://www.w3.org/2005/11/its" /> Entangle</title>
+
+  <section id="main">
+    <title>Main features</title>
+  </section>
+
+  <section id="plugins">
+    <title>Plugin extensions</title>
+  </section>
+</page>

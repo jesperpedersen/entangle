@@ -1,0 +1,32 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="image-capture">
+  <info>
+    <link type="guide" xref="index#main"/>
+
+    <desc>Triggering the camera shutter from the application to capture an image</desc>
+  </info>
+  <title>Image capture</title>
+
+  <p>
+    While the shutter can always be physically triggered on the camera, it
+    is also possible to electronically trigger it from <app>Entangle</app>.
+    Electronic triggering is available from the <guiseq><gui>Camera</gui><gui>Capture</gui></guiseq>
+    menu option, the <gui>Capture</gui> icon on the tool bar, or the <key>Spacebar</key> key.
+    After the shutter is triggered, any successfully captured images will be
+    automatically downloaded and displayed. They are saved to the local session
+    directory, as describing in the <link xref="image-storage"/> section. Some
+    cameras supported capturing in multiple formats at once, for example, both
+    raw and jpeg. If this feature is active, all image formats will be downloaded
+    after capture.
+  </p>
+
+  <p>
+    The camera's autofocus mechanism will be activated prior to capturing the
+    image, and if it is unable to achieve focus an error will be displayed. If the
+    camera is in live view mode, however, no autofocus will attempted. Consult the
+    <link xref="camera-focusing"/> section for details on how to control focusing
+    manually.
+  </p>
+</page>

@@ -181,6 +181,8 @@ void do_menu_quit(GtkMenuItem *src,
                   EntangleCameraManager *manager);
 void do_menu_help_about(GtkMenuItem *src,
                         EntangleCameraManager *manager);
+void do_menu_help_manual(GtkMenuItem *src,
+                         EntangleCameraManager *manager);
 void do_menu_connect(GtkMenuItem *src,
                      EntangleCameraManager *manager);
 void do_menu_disconnect(GtkMenuItem *src,
@@ -2472,6 +2474,18 @@ void do_menu_help_about(GtkMenuItem *src G_GNUC_UNUSED,
     }
 
     gtk_widget_show(GTK_WIDGET(priv->about));
+}
+
+
+void do_menu_help_manual(GtkMenuItem *src G_GNUC_UNUSED,
+                         EntangleCameraManager *manager)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+
+    gtk_show_uri(gtk_widget_get_screen(GTK_WIDGET(src)),
+                 "help:entangle",
+                 GDK_CURRENT_TIME,
+                 NULL);
 }
 
 

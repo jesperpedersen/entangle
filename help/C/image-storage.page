@@ -1,0 +1,37 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="image-storage">
+  <info>
+    <link type="guide" xref="index#main"/>
+
+    <desc>Downloading and saving captured images from the camera</desc>
+  </info>
+  <title>Image storage</title>
+
+  <p>
+    Whenever the <app>Entangle</app> application is connected to a camera it is
+    constantly watching for any new images that are captured. It does not matter
+    whether the camera is triggered by physically pressing the shutter button,
+    or by electronically pressing the shutter button in the user interface.
+    Whenever an image is captured, it will be immediately downloaded from the
+    camera and saved into the current session directory. The first time
+    <app>Entangle</app> is launched after initial installation, it will create
+    a new session directory called <file>Capture</file> below the XDG <file>Pictures</file>
+    directory. This is usually mapped to the path <file>$HOME/Pictures/Capture</file>.
+  </p>
+
+  <p>
+    At the left hand edge of the main toolbar there is a drop down directory chooser
+    which allows an alternative session directory to be selected or created. This
+    function is also available via the <guiseq><gui style="menu">File</gui><gui>Select Session</gui></guiseq> menu option or the <keyseq><key>Ctrl</key><key>O</key></keyseq> keyboard
+    shortcut.
+  </p>
+
+  <p>
+    <app>Entangle</app> will scan the session directory to identify which files are
+    images. It will then generate thumbnails for each image and display then in the
+    scrolling film strip along the bottom of the main window. New images which are
+    captured will be added to the film strip as they are downloaded.
+  </p>
+</page>

@@ -144,8 +144,10 @@ exclude_file_name_regexp--sc_prohibit_strcmp = ^*/*.[ch]
 # Due to enum rules - fixme
 exclude_file_name_regexp--sc_makefile_at_at_check = ^src/Makefile.am
 
-exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = ^(docs|src)/.*\.png
+exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = ^.*\.png
 
 exclude_file_name_regexp--sc_prohibit_test_minus_ao = git.mk
 
 exclude_file_name_regexp--sc_trailing_blank = (src|docs)/.*\.(ep|png|icc)
+
+exclude_file_name_regexp--sc_makefile_at_at_check = src/Makefile\.am|help/Makefile\.am

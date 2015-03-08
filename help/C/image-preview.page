@@ -1,0 +1,57 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="image-preview">
+  <info>
+    <link type="guide" xref="index#main"/>
+
+    <desc>Previewing the scene prior to capture using live view mode</desc>
+  </info>
+  <title>Image preview</title>
+
+  <p>
+    The image preview feature gives a live continuously updating view of
+    the scene in front of the camera. This requires that the camera supports
+    a so called "live view" mode, which is generally true of any DSLR that
+    is able to support video recording. This includes all Nikon and Canon
+    DSLR cameras manufactured from approximately 2009 onwards.
+  </p>
+
+  <p>
+    The image preview mode can be activated and deactivated using the
+    <guiseq><gui>Camera</gui><gui>Preview</gui></guiseq> menu option,
+    the <gui>Preview</gui> toolbar button or by pressing the <key>p</key>
+    key. Once activated, the preview mode will remain active until
+    it is either explicitly turned off, or until an image is captured.
+  </p>
+
+  <p>
+    It is possible to request that the preview mode is reactivated
+    after capturing by setting a preference. To this, use the
+    <guiseq><gui>Edit</gui><gui>Preferences</gui></guiseq> menu
+    to open the <gui>Preferences</gui> dialog. Switch to the
+    <gui>Capture</gui> page and select the <gui>Continue preview mode after capture</gui>
+    checkbox.
+  </p>
+
+  <p>
+    Preview mode allows for full control over the focus point, not
+    activating the autofocus system unless desired. Consult the
+    <link xref="camera-focusing"/> section for details on how to control
+    focusing manually in preview mode.
+  </p>
+
+  <p>
+    Normal behaviour when capturing an image in preview mode is to
+    trigger the camera's shutter mechanism, which results in a full
+    resolution image at the configured quality level. <app>Entangle</app>
+    also has support for a simulated electronic shutter though. To
+    activate this, use the <guiseq><gui>Edit</gui><gui>Preferences</gui></guiseq> menu
+    to open the <gui>Preferences</gui> dialog. Switch to the
+    <gui>Capture</gui> page and select the <gui>Use preview output as capture image</gui>
+    checkbox. When activated, the next frame of the live preview will be
+    saved as the capture image. The preview images are usually in the
+    JPEG image format, with a smaller resolution and lower quality compression
+    setting - precise details varying according to the camera model.
+  </p>
+</page>

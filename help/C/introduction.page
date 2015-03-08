@@ -1,0 +1,35 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="introduction">
+  <info>
+    <link type="guide" xref="index"/>
+
+    <desc>A high level overview of the <app>Entangle</app> application's core
+    goals and capabilities</desc>
+  </info>
+  <title>Introduction</title>
+
+  <p>
+    <app>Entangle</app> is an application that lets you remotely control digital cameras.
+    It allows you to perform tethered capture, where the shutter is remotely triggered
+    from the computer. Images that are captured, whether by remote trigger or physically
+    pressing the shutter button, will be downloaded for local storage and display. With
+    cameras supporting a live view mode, a continuous preview of the scene can be shown
+    prior to capturing. A wide range of the camera configuration settings can be seen
+    and altered.
+  </p>
+
+  <p>
+    When <app>Entangle</app> starts up it will look for any digital cameras that are
+    attached to the computer via USB, and if it finds any that are compatible will
+    connect to them, ready to capture images straight away.
+  </p>
+
+  <p>
+    <app>Entangle</app> works with all digital SLRs manufactured by Nikon and Canon, and
+    a selection of DSLR, bridge and compact cameras from other vendors. Linux users who
+    wish to control webcams should instead look at the <app>Cheese</app> application
+    provided by the GNOME project.
+  </p>
+</page>

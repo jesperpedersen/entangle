@@ -85,8 +85,16 @@ fi
 %{_datadir}/icons/hicolor/*/apps/entangle.png
 %{_datadir}/icons/hicolor/*/apps/entangle-*.png
 %{_datadir}/icons/hicolor/scalable/apps/entangle.svg
+
+%dir %{_datadir}/help/C/entangle/
+%{_datadir}/help/C/entangle/*.page
+%{_datadir}/help/C/entangle/*.xml
+%dir %{_datadir}/help/C/entangle/figures
+%{_datadir}/help/C/entangle/figures/*.png
+
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/plugins
+
 %dir %{_libdir}/%{name}/plugins/photobox
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/plugins
