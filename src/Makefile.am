@@ -1,7 +1,7 @@
 
 SUBDIRS = plugins
 
-noinst_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
+lib_LTLIBRARIES = libentangle_backend.la libentangle_frontend.la
 
 bin_PROGRAMS = entangle
 

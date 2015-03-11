@@ -52,6 +52,11 @@ make install DESTDIR=$RPM_BUILD_ROOT
 rm -rf %{buildroot}%{_datadir}/%{name}/website
 %find_lang %{name}
 
+rm -f %{buildroot}%{_libdir}/libentangle_backend.so
+rm -f %{buildroot}%{_libdir}/libentangle_backend.la
+rm -f %{buildroot}%{_libdir}/libentangle_frontend.so
+rm -f %{buildroot}%{_libdir}/libentangle_frontend.la
+
 %clean
 rm -fr %{buildroot}
 
@@ -76,6 +81,12 @@ fi
 %doc README COPYING AUTHORS NEWS ChangeLog
 %{_bindir}/entangle
 %{_mandir}/man1/entangle.1*
+
+%{_libdir}/libentangle_backend.so.0
+%{_libdir}/libentangle_backend.so.0.0.0
+%{_libdir}/libentangle_frontend.so.0
+%{_libdir}/libentangle_frontend.so.0.0.0
+
 %{_datadir}/%{name}/%{name}-camera-manager.ui
 %{_datadir}/%{name}/%{name}-camera-picker.ui
 %{_datadir}/%{name}/%{name}-camera-support.ui
