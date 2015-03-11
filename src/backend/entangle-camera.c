@@ -1503,6 +1503,7 @@ gboolean entangle_camera_download_file(EntangleCamera *cam,
                              GP_FILE_TYPE_NORMAL,
                              datafile,
                              priv->ctx);
+    g_usleep(1000*100);
     entangle_camera_end_job(cam);
 
     if (err != GP_OK) {
@@ -1651,6 +1652,7 @@ gboolean entangle_camera_delete_file(EntangleCamera *cam,
                                 entangle_camera_file_get_folder(file),
                                 entangle_camera_file_get_name(file),
                                 priv->ctx);
+    g_usleep(1000*100);
     entangle_camera_end_job(cam);
 
     if (err != GP_OK) {
