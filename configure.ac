@@ -18,11 +18,11 @@ dnl ****************************************************************************
 dnl Declare required library versions
 dnl *******************************************************************************
 
-GLIB_REQUIRED=2.26.0
+GLIB_REQUIRED=2.36.0
 AC_SUBST(GLIB_REQUIRED)
-GIO_REQUIRED=2.26.0
+GIO_REQUIRED=2.36.0
 AC_SUBST(GIO_REQUIRED)
-GTHREAD_REQUIRED=2.26.0
+GTHREAD_REQUIRED=2.36.0
 AC_SUBST(GTHREAD_REQUIRED)
 GDK_PIXBUF_REQUIRED=2.12.0
 AC_SUBST(GDK_PIXBUF_REQUIRED)
