@@ -87,12 +87,18 @@ fi
 %{_libdir}/libentangle_frontend.so.0
 %{_libdir}/libentangle_frontend.so.0.0.0
 
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/plugins
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/plugins
+
 %{_datadir}/%{name}/%{name}-camera-manager.ui
 %{_datadir}/%{name}/%{name}-camera-picker.ui
 %{_datadir}/%{name}/%{name}-camera-support.ui
 %{_datadir}/%{name}/%{name}-help-about.ui
 %{_datadir}/%{name}/%{name}-image-popup.ui
 %{_datadir}/%{name}/%{name}-preferences-display.ui
+
 %{_datadir}/icons/hicolor/*/apps/entangle.png
 %{_datadir}/icons/hicolor/*/apps/entangle-*.png
 %{_datadir}/icons/hicolor/scalable/apps/entangle.svg
@@ -103,18 +109,22 @@ fi
 %dir %{_datadir}/help/C/entangle/figures
 %{_datadir}/help/C/entangle/figures/*.png
 
-%dir %{_libdir}/%{name}
-%dir %{_libdir}/%{name}/plugins
-
 %dir %{_libdir}/%{name}/plugins/photobox
-%dir %{_datadir}/%{name}
-%dir %{_datadir}/%{name}/plugins
 %dir %{_datadir}/%{name}/plugins/photobox
 %dir %{_datadir}/%{name}/plugins/photobox/schemas
 %{_libdir}/%{name}/plugins/photobox/photobox.plugin
 %{_libdir}/%{name}/plugins/photobox/photobox.py*
 %{_datadir}/%{name}/plugins/photobox/schemas/gschemas.compiled
 %{_datadir}/%{name}/plugins/photobox/schemas/org.entangle-photo.plugins.photobox.gschema.xml
+
+%dir %{_libdir}/%{name}/plugins/shooter
+%dir %{_datadir}/%{name}/plugins/shooter
+%dir %{_datadir}/%{name}/plugins/shooter/schemas
+%{_libdir}/%{name}/plugins/shooter/shooter.plugin
+%{_libdir}/%{name}/plugins/shooter/shooter.py*
+%{_datadir}/%{name}/plugins/shooter/schemas/gschemas.compiled
+%{_datadir}/%{name}/plugins/shooter/schemas/org.entangle-photo.plugins.shooter.gschema.xml
+
 %{_datadir}/%{name}/sRGB.icc
 %{_datadir}/gtk-doc/html/Entangle
 %{_datadir}/applications/%{name}.desktop

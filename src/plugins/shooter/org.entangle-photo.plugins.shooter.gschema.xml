@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+
+  <schema path="/org/entangle-photo/plugins/shooter/" id="org.entangle-photo.plugins.shooter" gettext-domain="entangle-photo">
+    <key type="i" name="shot-count">
+      <default>10</default>
+      <summary>Shot count</summary>
+      <description>Number of shots to capture in session</description>
+    </key>
+    <key type="i" name="shot-interval">
+      <default>2</default>
+      <summary>Shot interval</summary>
+      <description>Interval between shots (seconds)</description>
+    </key>
+  </schema>
+
+</schemalist>

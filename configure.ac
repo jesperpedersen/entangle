@@ -188,6 +188,7 @@ AC_CONFIG_FILES(
   src/Makefile
   src/plugins/Makefile
   src/plugins/photobox/Makefile
+  src/plugins/shooter/Makefile
   po/Makefile.in
   docs/Makefile
   docs/man/Makefile

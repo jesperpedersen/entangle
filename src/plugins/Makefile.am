@@ -1,5 +1,5 @@
 
-SUBDIRS = photobox
+SUBDIRS = photobox shooter
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/entangle/plugins

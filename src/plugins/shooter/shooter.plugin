@@ -1,0 +1,9 @@
+[Plugin]
+Loader=python3
+Module=shooter
+IAge=1
+Name=Repeat Shooter
+Description=Repeated batch mode shooting
+Authors=Daniel Berrange <dan@berrange.com>
+Copyright=© 2014 Daniel P. Berrange
+Website=http://entangle-photo.org/
