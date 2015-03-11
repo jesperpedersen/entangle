@@ -158,7 +158,7 @@ libentangle_backend_la_LDFLAGS = \
 	$(LIBPEAS_LIBS) \
 	$(GEXIV2_LIBS) \
 	$(LIBRAW_LIBS) \
-	$(WARN_LDFLAGS)
+	$(NULL)
 
 libentangle_backend_la_CFLAGS = \
 	-I$(builddir)/backend \
@@ -218,7 +218,7 @@ libentangle_frontend_la_LDFLAGS = \
 	$(LIBPEAS_UI_LIBS) \
 	$(GEXIV2_LIBS) \
 	$(XEXT_LIBS) \
-	$(WARN_LDFLAGS)
+	$(NULL)
 
 libentangle_frontend_la_CFLAGS = \
 	-I$(srcdir)/backend \
@@ -250,7 +250,7 @@ entangle_LDFLAGS = \
 	$(GTK_LIBS) \
 	$(GOBJECT_INTROSPECTION_LIBS) \
 	$(LIBPEAS_LIBS) \
-	$(WARN_LDFLAGS)
+	$(NULL)
 
 entangle_CFLAGS = \
         -DLOCALE_DIR=\""$(datadir)/locale"\"            \
