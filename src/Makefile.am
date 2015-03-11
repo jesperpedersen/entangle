@@ -197,6 +197,8 @@ libentangle_frontend_la_SOURCES = \
 	frontend/entangle-image-statusbar.h frontend/entangle-image-statusbar.c \
 	frontend/entangle-preferences.h frontend/entangle-preferences.c \
 	frontend/entangle-preferences-display.h frontend/entangle-preferences-display.c \
+	frontend/entangle-script.h frontend/entangle-script.c \
+	frontend/entangle-script-config.h frontend/entangle-script-config.c \
 	frontend/entangle-session-browser.h frontend/entangle-session-browser.c \
 	frontend/entangle-overlay-box.h frontend/entangle-overlay-box.c \
 	frontend/entangle-auto-drawer.h frontend/entangle-auto-drawer.c \

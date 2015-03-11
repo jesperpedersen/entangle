@@ -25,6 +25,7 @@
 
 #include "entangle-camera.h"
 #include "entangle-application.h"
+#include "entangle-script.h"
 
 G_BEGIN_DECLS
 
@@ -58,6 +59,11 @@ struct _EntangleCameraManagerClass
 
 GType entangle_camera_manager_get_type(void) G_GNUC_CONST;
 EntangleCameraManager* entangle_camera_manager_new(void);
+
+void entangle_camera_manager_add_script(EntangleCameraManager *manager,
+                                        EntangleScript *script);
+void entangle_camera_manager_remove_script(EntangleCameraManager *manager,
+                                           EntangleScript *script);
 
 void entangle_camera_manager_capture(EntangleCameraManager *manager);
 void entangle_camera_manager_preview_begin(EntangleCameraManager *manager);

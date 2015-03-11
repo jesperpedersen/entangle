@@ -45,6 +45,7 @@
 #include "entangle-image-popup.h"
 #include "entangle-image-histogram.h"
 #include "entangle-help-about.h"
+#include "entangle-script-config.h"
 #include "entangle-session-browser.h"
 #include "entangle-control-panel.h"
 #include "entangle-colour-profile.h"
@@ -64,6 +65,7 @@ struct _EntangleCameraManagerPrivate {
     gboolean cameraReady;
     gboolean cameraChanged;
     EntangleSession *session;
+    EntangleScriptConfig *scriptConfig;
 
     EntangleCameraPicker *picker;
     EntangleHelpAbout *about;
@@ -84,6 +86,7 @@ struct _EntangleCameraManagerPrivate {
     EntangleControlPanel *controlPanel;
     EntanglePreferencesDisplay *prefsDisplay;
     EntangleImageHistogram *imageHistogram;
+    GtkWidget *scriptConfigExpander;
 
     EntangleImage *currentImage;
 
@@ -1429,6 +1432,8 @@ static void entangle_camera_manager_finalize(GObject *object)
 
     g_free(priv->deleteImageDup);
 
+    g_object_unref(priv->scriptConfig);
+
     g_object_unref(priv->monitorCancel);
     g_object_unref(priv->taskCancel);
     g_object_unref(priv->taskConfirm);
@@ -1753,6 +1758,29 @@ static void do_entangle_camera_manager_capture_finish(GObject *src,
 }
 
 
+static void do_entangle_camera_manager_script_finish(GObject *src,
+                                                     GAsyncResult *res,
+                                                     gpointer opaque)
+{
+    g_return_if_fail(ENTANGLE_IS_SCRIPT(src));
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(opaque));
+    EntangleScript *script = ENTANGLE_SCRIPT(src);
+    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(opaque);
+    GError *error = NULL;
+
+    if (!entangle_script_execute_finish(script,
+                                        res,
+                                        &error)) {
+        do_camera_task_error(manager, _("Script"), error);
+        if (error)
+            g_error_free(error);
+    }
+
+    do_camera_task_complete(manager);
+    g_object_unref(script);
+}
+
+
 void entangle_camera_manager_capture(EntangleCameraManager *manager)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
@@ -1771,16 +1799,25 @@ void entangle_camera_manager_capture(EntangleCameraManager *manager)
         else
             g_cancellable_cancel(priv->taskConfirm);
     } else {
+        EntangleScript *script;
         if (!do_camera_task_begin(manager))
             return;
 
         priv->taskCapture = TRUE;
         do_capture_widget_sensitivity(manager);
 
-        entangle_camera_automata_capture_async(priv->automata,
-                                               priv->taskCancel,
-                                               do_entangle_camera_manager_capture_finish,
-                                               manager);
+        script = entangle_script_config_get_selected(priv->scriptConfig);
+    if (script)
+            entangle_script_execute_async(script,
+                                          priv->automata,
+                                          priv->taskCancel,
+                                          do_entangle_camera_manager_script_finish,
+                                          manager);
+        else
+            entangle_camera_automata_capture_async(priv->automata,
+                                                   priv->taskCancel,
+                                                   do_entangle_camera_manager_capture_finish,
+                                                   manager);
     }
 }
 
@@ -2991,6 +3028,8 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     priv->controlPanel = entangle_control_panel_new(priv->cameraPrefs);
     priv->imageHistogram = entangle_image_histogram_new();
     gtk_widget_show(GTK_WIDGET(priv->imageHistogram));
+    priv->scriptConfig = entangle_script_config_new();
+    gtk_widget_show(GTK_WIDGET(priv->scriptConfig));
 
     g_object_set(priv->sessionBrowser, "thumbnail-loader", priv->thumbLoader, NULL);
 
@@ -3006,8 +3045,10 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
 
     settingsViewport = GTK_WIDGET(gtk_builder_get_object(priv->builder, "settings-viewport"));
     settingsBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
-    imageHistogramExpander = gtk_expander_new("Image histogram");
+    imageHistogramExpander = gtk_expander_new(_("Image histogram"));
     gtk_expander_set_expanded(GTK_EXPANDER(imageHistogramExpander), TRUE);
+    priv->scriptConfigExpander = gtk_expander_new(_("Automation"));
+    gtk_expander_set_expanded(GTK_EXPANDER(priv->scriptConfigExpander), TRUE);
     display = GTK_WIDGET(gtk_builder_get_object(priv->builder, "display-panel"));
 
     iconScroll = gtk_scrolled_window_new(NULL, NULL);
@@ -3051,9 +3092,21 @@ static void do_entangle_camera_manager_set_builder(EntangleWindow *window,
     gtk_container_add(GTK_CONTAINER(iconScroll), GTK_WIDGET(priv->sessionBrowser));
     gtk_container_add(GTK_CONTAINER(settingsViewport), settingsBox);
     gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(priv->controlPanel), FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(priv->scriptConfigExpander), FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(priv->scriptConfigExpander), GTK_WIDGET(priv->scriptConfig));
     gtk_box_pack_start(GTK_BOX(settingsBox), GTK_WIDGET(imageHistogramExpander), FALSE, TRUE, 0);
     gtk_container_add(GTK_CONTAINER(imageHistogramExpander), GTK_WIDGET(priv->imageHistogram));
-    gtk_widget_show_all(settingsViewport);
+    gtk_widget_show(settingsViewport);
+    gtk_widget_show(settingsBox);
+    gtk_widget_show(imageHistogramExpander);
+
+#if GTK_CHECK_VERSION(3, 12, 0)
+    gtk_widget_set_margin_end(priv->scriptConfigExpander, 6);
+    gtk_widget_set_margin_end(imageHistogramExpander, 6);
+#else
+    gtk_widget_set_margin_right(priv->scriptConfigExpander, 6);
+    gtk_widget_set_margin_right(imageHistogramExpander, 6);
+#endif
 
     priv->monitorCancel = g_cancellable_new();
     priv->taskCancel = g_cancellable_new();
@@ -3137,6 +3190,36 @@ EntangleCameraManager *entangle_camera_manager_new(void)
     return ENTANGLE_CAMERA_MANAGER(entangle_window_new(ENTANGLE_TYPE_CAMERA_MANAGER,
                                                        GTK_TYPE_WINDOW,
                                                        "camera-manager"));
+}
+
+
+void entangle_camera_manager_add_script(EntangleCameraManager *manager,
+                                        EntangleScript *script)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+    g_return_if_fail(ENTANGLE_IS_SCRIPT(script));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    entangle_script_config_add_script(priv->scriptConfig,
+                                      script);
+    gtk_widget_show(priv->scriptConfigExpander);
+}
+
+
+void entangle_camera_manager_remove_script(EntangleCameraManager *manager,
+                                           EntangleScript *script)
+{
+    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
+    g_return_if_fail(ENTANGLE_IS_SCRIPT(script));
+
+    EntangleCameraManagerPrivate *priv = manager->priv;
+
+    entangle_script_config_remove_script(priv->scriptConfig,
+                                         script);
+
+    if (!entangle_script_config_has_scripts(priv->scriptConfig))
+        gtk_widget_hide(priv->scriptConfigExpander);
 }
 
 

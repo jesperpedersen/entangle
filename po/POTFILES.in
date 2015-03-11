@@ -12,6 +12,8 @@ src/frontend/entangle-dpms.c
 [type: gettext/glade] src/frontend/entangle-image-popup.ui
 src/frontend/entangle-preferences-display.c
 [type: gettext/glade] src/frontend/entangle-preferences-display.ui
+src/frontend/entangle-script.c
+src/frontend/entangle-script-config.c
 src/frontend/entangle-window.c
 src/entangle.appdata.xml.in
 src/entangle.desktop.in
