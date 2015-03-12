@@ -139,8 +139,8 @@
                         <property name="label" translatable="yes">Capture</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="do_menu_capture" swapped="no"/>
-                        <accelerator key="s" signal="activate"/>
                         <accelerator key="space" signal="activate"/>
+                        <accelerator key="s" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -479,24 +479,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToolItem" id="toolbar-operation">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkProgressBar" id="toolbar-progress">
-                    <property name="width_request">200</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="ellipsize">end</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkToolButton" id="toolbar-cancel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -606,6 +588,22 @@ native pixel size</property>
                 <property name="use_underline">True</property>
                 <property name="icon_name">view-fullscreen-symbolic</property>
                 <signal name="toggled" handler="do_toolbar_fullscreen" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolItem" id="toolbutton1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkSpinner" id="toolbar-spinner">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>

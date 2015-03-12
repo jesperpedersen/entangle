@@ -112,7 +112,6 @@ struct _EntangleCameraManagerPrivate {
     gboolean taskPreview;
     gboolean taskActive;
     gboolean taskProcessEvents;
-    float taskTarget;
     char *deleteImageDup;
 
     GtkBuilder *builder;
@@ -951,7 +950,9 @@ static void do_camera_file_preview(EntangleCamera *cam G_GNUC_UNUSED, EntangleCa
 }
 
 
-static void do_entangle_camera_progress_start(EntangleProgress *iface, float target, const char *msg)
+static void do_entangle_camera_progress_start(EntangleProgress *iface,
+                                              float target G_GNUC_UNUSED,
+                                              const char *msg)
 {
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(iface));
 
@@ -962,29 +963,15 @@ static void do_entangle_camera_progress_start(EntangleProgress *iface, float tar
     if (priv->taskPreview && !g_cancellable_is_cancelled(priv->taskConfirm))
         return;
 
-    priv->taskTarget = target;
-    mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
-
+    mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-spinner"));
     gtk_widget_set_tooltip_text(mtr, msg);
-    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), msg);
-    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
+    gtk_spinner_start(GTK_SPINNER(mtr));
 }
 
 
-static void do_entangle_camera_progress_update(EntangleProgress *iface, float current)
+static void do_entangle_camera_progress_update(EntangleProgress *iface G_GNUC_UNUSED,
+                                               float current G_GNUC_UNUSED)
 {
-    g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(iface));
-
-    EntangleCameraManager *manager = ENTANGLE_CAMERA_MANAGER(iface);
-    EntangleCameraManagerPrivate *priv = manager->priv;
-    GtkWidget *mtr;
-
-    if (priv->taskPreview && !g_cancellable_is_cancelled(priv->taskConfirm))
-        return;
-
-    mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
-
-    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), current / priv->taskTarget);
 }
 
 
@@ -999,11 +986,9 @@ static void do_entangle_camera_progress_stop(EntangleProgress *iface)
     if (priv->taskPreview && !g_cancellable_is_cancelled(priv->taskConfirm))
         return;
 
-    mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
-
+    mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-spinner"));
     gtk_widget_set_tooltip_text(mtr, "");
-    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), "");
-    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
+    gtk_spinner_stop(GTK_SPINNER(mtr));
 }
 
 
