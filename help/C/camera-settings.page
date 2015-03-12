@@ -1,0 +1,45 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="camera-settings">
+  <info>
+    <link type="guide" xref="index#main"/>
+
+    <desc>Controlling the camera capture and image settings</desc>
+  </info>
+  <title>Controlling camera settings</title>
+
+  <p>
+    <app>Entangle</app> provides the ability control a large number of
+    camera capture and image settings. The exact list of supported
+    settings will depend on the model of camera that is connected.
+    In general Nikon DSLR cameras have the largest number of controllable
+    settings. The capture controls are displayed in the left hand panel
+    of the application window. If this is not visible, the <gui>settings</gui>
+    button on the main toolbar can be used to display it.
+  </p>
+
+  <p>
+    Displaying all possible controls at once is impractical, so
+    <app>Entangle</app> will initially only show a small subset.
+    These are currently <em>aperture</em>, <em>shutter speed</em>,
+    <em>ISO level</em>, <em>white balance</em>, <em>image format</em>
+    and <em>image size</em>. Below the list of controls, is a settings
+    button which pops up a menu giving the ability to show or hide
+    further controls. The menu also provides an option to reset the
+    displayed controls to the default list. The list currently visible
+    controls is remembered separately for each model of camera that
+    is connected.
+  </p>
+
+  <p>
+    The ability to change the value of certain controls may be restricted
+    depending on what mode the camera is in. For example, in fully
+    automatic exposure mode, it will not be possible to change the
+    aperture or shutter sped. While <app>Entangle</app> is connected to
+    a camera, it will typically be impossible to change the settings
+    directly on the camera itself, with the exception of physical
+    dials.
+  </p>
+
+</page>

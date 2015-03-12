@@ -20,6 +20,10 @@
     <title>Main features</title>
   </section>
 
+  <section id="advanced">
+    <title>Advanced features</title>
+  </section>
+
   <section id="plugins">
     <title>Plugin extensions</title>
   </section>

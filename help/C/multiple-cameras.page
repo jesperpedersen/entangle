@@ -1,0 +1,48 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="multiple-cameras">
+  <info>
+    <link type="guide" xref="index#advanced"/>
+
+    <desc>Controlling multiple cameras at once</desc>
+  </info>
+
+  <title>Multiple cameras</title>
+
+  <p>
+    Most users will only need to control a single camera at once, but
+    <app>Entangle</app> does not have any restrictions on concurrent
+    usage. When it starts up, it will scan for USB connected cameras
+    and open a new window for each camera it is able to connect to.
+    The settings for each camera can be controlled independantly
+    and images captured from each camera as required.
+  </p>
+
+  <p>
+    If an additional camera is connected while <app>Entangle</app>
+    is already running, further windows can be opened. This can
+    be done using the <guiseq><gui>Windows</gui><gui>New Window</gui></guiseq>
+    menu option or the <keyseq><key>Ctrl</key><key>N</key></keyseq>
+    keyboard shortcut. Once the additional window is open, the
+    <guiseq><gui>Camera</gui><gui>Connect</gui></guiseq> menu
+    option can be used to select which new camera to connect the
+    window to. This can be repeated as many times as required.
+  </p>
+
+  <p>
+    As an alternative to opening multiple windows, it is possible to
+    disconnect an existing window from the camera it is using. This
+    is accomplished using the <guiseq><gui>Camera</gui><gui>Disconnect</gui></guiseq>
+    menu option. Once disconnected, a new camera connection can be opened
+    using the same menu option mentioned in the previous paragraph.
+  </p>
+
+  <p>
+    In some circumstances it may be desirable to trigger capture on
+    multiple simultaneously. If the <guiseq><gui>Windows</gui><gui>Synchronize Capture</gui></guiseq>
+    menu checkbox is selected, then when capture is triggered in one window,
+    <app>Entangle</app> will repeat the action on all other windows at
+    the same time.
+  </p>
+</page>

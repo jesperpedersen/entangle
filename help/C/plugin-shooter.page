@@ -1,0 +1,38 @@
+<!-- -*- xml -*- -->
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="plugin-shooter">
+  <info>
+    <link type="guide" xref="index#plugins"/>
+
+    <desc>Automated capture of image sequences</desc>
+  </info>
+
+  <title>Shooter Plugin</title>
+
+  <p>
+    The Shooter plugin provides a simple camera automation script that allows the
+    shutter to be triggered repeatedly in a loop. This can be used to timelapse
+    photography, night sky astrophotography and more.
+  </p>
+
+  <p>
+    The left hand control panel which contains the primary camera settings and histogram
+    has an further <gui>Automation</gui> section which will appear if any scripts are
+    registered. The shooter plugin will register a script to this section. When the
+    script is selected, two configurable parameters will be shown. The first determines
+    the total number of shots to capture and the second sets the delay between each shot,
+    in seconds.
+  </p>
+
+  <p>
+    To start the script, the regular <gui>Capture</gui> button on the toolbar should be
+    used. <app>Entangle</app> will proceed to run the script, capturing shots repeatedly
+    until the limit is reached. It is possible to terminate the script early by pressing
+    the <gui>Cancel</gui> button on the toolbar. The captured images will be downloaded
+    from the camera immediately after each one is captured. Downloading the images may
+    take a measurable amount of time. The script does not attempt to compensate for this,
+    so the delay interval time is in addition to the download time.
+  </p>
+
+</page>
