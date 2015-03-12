@@ -1038,11 +1038,6 @@ static void do_remove_camera(EntangleCameraManager *manager)
         g_object_unref(priv->imagePresentation);
         priv->imagePresentation = NULL;
     }
-
-    mtr = GTK_WIDGET(gtk_builder_get_object(priv->builder, "toolbar-progress"));
-    gtk_widget_set_tooltip_text(mtr, "");
-    gtk_progress_bar_set_text(GTK_PROGRESS_BAR(mtr), "");
-    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(mtr), 0);
 }
 
 
