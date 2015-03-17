@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Zdenek Chmelar <chmelarz@gmail.com>, 2013
 # Zdenek Chmelar <chmelarz@gmail.com>, 2014
@@ -11,14 +11,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"POT-Creation-Date: 2015-03-17 20:39+0000\n"
 "PO-Revision-Date: 2015-02-26 06:57-0500\n"
 "Last-Translator: Zdenek <chmelarz@gmail.com>\n"
-"Language-Team: Czech (http://www.transifex.com/projects/p/entangle/language/cs/)\n"
+"Language-Team: Czech (http://www.transifex.com/projects/p/entangle/language/"
+"cs/)\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Zanata 3.5.1\n"
 
@@ -69,7 +70,7 @@ msgstr "Když fotoaparát není připojen, nelze zobrazit náhled"
 msgid "Unable to capture preview: %s"
 msgstr "Nezdařilo se pořídit náhled: %s"
 
-#: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1515
+#: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1516
 #, c-format
 msgid "Unable to get file data: %s"
 msgstr "Nezdařilo se získat informace o souboru: %s"
@@ -83,222 +84,222 @@ msgstr "Nezdařilo se získat název souboru: %s"
 msgid "Cannot download file while not connected"
 msgstr "Když fotoaparát není připojen, nelze z něho stahovat obrázky"
 
-#: ../src/backend/entangle-camera.c:1509
+#: ../src/backend/entangle-camera.c:1510
 #, c-format
 msgid "Unable to get camera file: %s"
 msgstr "Nezdařilo se získat soubor z fotoaparátu: %s"
 
-#: ../src/backend/entangle-camera.c:1640
+#: ../src/backend/entangle-camera.c:1641
 msgid "Cannot delete file while not connected"
 msgstr "Když fotoaparát není připojen, nelze z něho mazat obrázky"
 
-#: ../src/backend/entangle-camera.c:1657
+#: ../src/backend/entangle-camera.c:1659
 #, c-format
 msgid "Unable to delete file: %s"
 msgstr "Nezdařilo se smazat soubor: %s"
 
-#: ../src/backend/entangle-camera.c:1778
+#: ../src/backend/entangle-camera.c:1780
 msgid "Cannot wait for events while not connected"
 msgstr "Když fotoaparát není připojen, nelze sledovat vyčkávat na událost"
 
-#: ../src/backend/entangle-camera.c:1804
+#: ../src/backend/entangle-camera.c:1806
 #, c-format
 msgid "Unable to wait for events: %s"
 msgstr "Nezdařilo se vyčkávat na událost: %s"
 
-#: ../src/backend/entangle-camera.c:2005 ../src/backend/entangle-camera.c:2168
-#: ../src/backend/entangle-camera.c:2304 ../src/backend/entangle-camera.c:2767
-#: ../src/backend/entangle-camera.c:2952 ../src/backend/entangle-camera.c:3117
-#: ../src/backend/entangle-camera.c:3351 ../src/backend/entangle-camera.c:3527
+#: ../src/backend/entangle-camera.c:2007 ../src/backend/entangle-camera.c:2170
+#: ../src/backend/entangle-camera.c:2306 ../src/backend/entangle-camera.c:2769
+#: ../src/backend/entangle-camera.c:2954 ../src/backend/entangle-camera.c:3119
+#: ../src/backend/entangle-camera.c:3353 ../src/backend/entangle-camera.c:3529
 #, c-format
 msgid "Unable to fetch widget type"
 msgstr "Nezdařilo se získat typ prvku"
 
-#: ../src/backend/entangle-camera.c:2011 ../src/backend/entangle-camera.c:2174
-#: ../src/backend/entangle-camera.c:2310
+#: ../src/backend/entangle-camera.c:2013 ../src/backend/entangle-camera.c:2176
+#: ../src/backend/entangle-camera.c:2312
 #, c-format
 msgid "Unable to fetch widget name"
 msgstr "Nezdařilo se získat název prvku"
 
-#: ../src/backend/entangle-camera.c:2423
+#: ../src/backend/entangle-camera.c:2425
 #, c-format
 msgid "Unable to load controls, camera is not connected"
 msgstr "Nezdařilo se nahrát ovládací prvky – fotoaparát není připojen"
 
-#: ../src/backend/entangle-camera.c:2432
+#: ../src/backend/entangle-camera.c:2434
 #, c-format
 msgid "Unable to fetch camera control configuration"
 msgstr "Nezdařilo se získat současné nastavení ovládacích prvků fotoaparátu"
 
-#: ../src/backend/entangle-camera.c:2557
+#: ../src/backend/entangle-camera.c:2559
 #, c-format
 msgid "Unable to save controls, camera is not connected"
 msgstr ""
 "Nezdařilo se uložit nastavení ovládacích prvků do fotoaparátu, protože není "
 "připojen"
 
-#: ../src/backend/entangle-camera.c:2563
+#: ../src/backend/entangle-camera.c:2565
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
 msgstr ""
-"Nezdařilo se uložit nastavení ovládacích prvků do fotoaparátu, protože tento"
-" fotoaparát to neumožňuje"
+"Nezdařilo se uložit nastavení ovládacích prvků do fotoaparátu, protože tento "
+"fotoaparát to neumožňuje"
 
-#: ../src/backend/entangle-camera.c:2582 ../src/backend/entangle-camera.c:2803
-#: ../src/backend/entangle-camera.c:2982 ../src/backend/entangle-camera.c:3177
-#: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
+#: ../src/backend/entangle-camera.c:2584 ../src/backend/entangle-camera.c:2805
+#: ../src/backend/entangle-camera.c:2984 ../src/backend/entangle-camera.c:3179
+#: ../src/backend/entangle-camera.c:3375 ../src/backend/entangle-camera.c:3553
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
 msgstr "Nezdařilo se uložit nastavení ovládacích prvků: %s %d"
 
-#: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
-#: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
-#: ../src/backend/entangle-camera.c:3330 ../src/backend/entangle-camera.c:3506
+#: ../src/backend/entangle-camera.c:2691 ../src/backend/entangle-camera.c:2745
+#: ../src/backend/entangle-camera.c:2933 ../src/backend/entangle-camera.c:3098
+#: ../src/backend/entangle-camera.c:3332 ../src/backend/entangle-camera.c:3508
 #, c-format
 msgid "Controls not available when camera is disconnected"
 msgstr "Když je fotoaparát odpojený, ovládací prvky nemohou být dostupné"
 
-#: ../src/backend/entangle-camera.c:2695 ../src/backend/entangle-camera.c:2749
-#: ../src/backend/entangle-camera.c:2937 ../src/backend/entangle-camera.c:3102
-#: ../src/backend/entangle-camera.c:3336 ../src/backend/entangle-camera.c:3512
+#: ../src/backend/entangle-camera.c:2697 ../src/backend/entangle-camera.c:2751
+#: ../src/backend/entangle-camera.c:2939 ../src/backend/entangle-camera.c:3104
+#: ../src/backend/entangle-camera.c:3338 ../src/backend/entangle-camera.c:3514
 #, c-format
 msgid "Controls not available for this camera"
 msgstr "U tohoto fotoaparátu nejsou ovládací prvky dostupné"
 
-#: ../src/backend/entangle-camera.c:2760
+#: ../src/backend/entangle-camera.c:2762
 #, c-format
 msgid "Viewfinder control not available with this camera"
 msgstr "Hledáček tohoto fotoaparátu nelze ovládat."
 
-#: ../src/backend/entangle-camera.c:2773
+#: ../src/backend/entangle-camera.c:2775
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
 msgstr "Ovládání hledáčku nebylo přepínatelným prvkem."
 
-#: ../src/backend/entangle-camera.c:2787 ../src/backend/entangle-camera.c:2794
+#: ../src/backend/entangle-camera.c:2789 ../src/backend/entangle-camera.c:2796
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
 msgstr "Nastavení hledáčku se nezdařilo: %s %d"
 
-#: ../src/backend/entangle-camera.c:2945
+#: ../src/backend/entangle-camera.c:2947
 #, c-format
 msgid "Autofocus control not available with this camera"
 msgstr "Automatické ostření není pro tento fotoaparát dostupné"
 
-#: ../src/backend/entangle-camera.c:2958
+#: ../src/backend/entangle-camera.c:2960
 #, c-format
 msgid "Autofocus control was not a toggle widget"
 msgstr "Automatické ostření nebylo přepínatelným prvkem"
 
-#: ../src/backend/entangle-camera.c:2965 ../src/backend/entangle-camera.c:2973
+#: ../src/backend/entangle-camera.c:2967 ../src/backend/entangle-camera.c:2975
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
 msgstr "Nezdařilo se nastavit automatické ostření: %s %d"
 
-#: ../src/backend/entangle-camera.c:3110
+#: ../src/backend/entangle-camera.c:3112
 #, c-format
 msgid "Manual focus control not available with this camera"
 msgstr "Ruční ostření není u tohoto fotoaparátu dostupné"
 
-#: ../src/backend/entangle-camera.c:3124
+#: ../src/backend/entangle-camera.c:3126
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
 msgstr "Ruční ovládání zaostření nebylo prvkem rozsahu nebo přenosu"
 
-#: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
-#: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
+#: ../src/backend/entangle-camera.c:3145 ../src/backend/entangle-camera.c:3169
+#: ../src/backend/entangle-camera.c:3188 ../src/backend/entangle-camera.c:3204
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
 msgstr "Nastavení ručního ostření se nezdařilo: %s %d"
 
-#: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
+#: ../src/backend/entangle-camera.c:3162 ../src/backend/entangle-camera.c:3197
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
 msgstr "Selhalo načtení výběru ručního zaostření %d: %s %d"
 
-#: ../src/backend/entangle-camera.c:3344
+#: ../src/backend/entangle-camera.c:3346
 #, c-format
 msgid "Time setting not available with this camera"
 msgstr "Nastavení času není pro tento fotoaparát dostupné."
 
-#: ../src/backend/entangle-camera.c:3357
+#: ../src/backend/entangle-camera.c:3359
 #, c-format
 msgid "Time setting was not a date widget"
 msgstr "Nastavení času nebylo prvkem datumu."
 
-#: ../src/backend/entangle-camera.c:3364
+#: ../src/backend/entangle-camera.c:3366
 #, c-format
 msgid "Failed to set time state: %s %d"
 msgstr "Selhalo nastavení stavu času: %s %d"
 
-#: ../src/backend/entangle-camera.c:3520
+#: ../src/backend/entangle-camera.c:3522
 #, c-format
 msgid "Capture target setting not available with this camera"
 msgstr "Nastavení zachycení cíle není s tímto fotoaparátem k dispozici"
 
-#: ../src/backend/entangle-camera.c:3533
+#: ../src/backend/entangle-camera.c:3535
 #, c-format
 msgid "Time setting was not a choice widget"
 msgstr "Nastavení času nebylo prvkem výběru"
 
-#: ../src/backend/entangle-camera.c:3542
+#: ../src/backend/entangle-camera.c:3544
 #, c-format
 msgid "Failed to set capture target: %s %d"
 msgstr "Nepodařilo se nastavit zachycení cíle: %s %d"
 
-#: ../src/frontend/entangle-camera-manager.c:597
-#: ../src/frontend/entangle-camera-manager.ui.h:23
+#: ../src/frontend/entangle-camera-manager.c:601
+#: ../src/frontend/entangle-camera-manager.ui.h:24
 msgid "Capture an image"
 msgstr "Pořídit snímek"
 
-#: ../src/frontend/entangle-camera-manager.c:598
-#: ../src/frontend/entangle-camera-manager.ui.h:24
+#: ../src/frontend/entangle-camera-manager.c:602
+#: ../src/frontend/entangle-camera-manager.ui.h:25
 msgid "Continuous capture preview"
 msgstr "Průběžně obnovovat náhled"
 
-#: ../src/frontend/entangle-camera-manager.c:602
+#: ../src/frontend/entangle-camera-manager.c:606
 msgid "This camera does not support image capture"
 msgstr "Tento fotoaparát není možné ovládat z počítače"
 
-#: ../src/frontend/entangle-camera-manager.c:605
+#: ../src/frontend/entangle-camera-manager.c:609
 msgid "This camera does not support image preview"
 msgstr "U tohoto fotoaparátu není možné zobrazovat náhled"
 
-#: ../src/frontend/entangle-camera-manager.c:747
+#: ../src/frontend/entangle-camera-manager.c:751
 #, c-format
 msgid "Operation: %s"
 msgstr "Operace: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:749
+#: ../src/frontend/entangle-camera-manager.c:753
 msgid "Entangle: Operation failed"
 msgstr "Entangle: operace se nezdařila"
 
-#: ../src/frontend/entangle-camera-manager.c:781
-#: ../src/frontend/entangle-camera-manager.c:1080
+#: ../src/frontend/entangle-camera-manager.c:785
+#: ../src/frontend/entangle-camera-manager.c:1065
 msgid "Camera load controls failed"
 msgstr "Nahrání ovládacích prvků fotoaparátu se nezdařilo"
 
-#: ../src/frontend/entangle-camera-manager.c:783
-#: ../src/frontend/entangle-camera-manager.c:1082
+#: ../src/frontend/entangle-camera-manager.c:787
+#: ../src/frontend/entangle-camera-manager.c:1067
 msgid "Entangle: Camera load controls failed"
 msgstr "Entangle: nahrání ovládacích prvků fotoaparátu se nezdařilo"
 
-#: ../src/frontend/entangle-camera-manager.c:821
+#: ../src/frontend/entangle-camera-manager.c:825
 msgid "Monitor"
 msgstr "Obrazovka"
 
-#: ../src/frontend/entangle-camera-manager.c:1037
+#: ../src/frontend/entangle-camera-manager.c:1027
 msgid "Camera Manager - Entangle"
 msgstr "Správce fotoaparátů - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1131
-#: ../src/frontend/entangle-camera-manager.c:2509
+#: ../src/frontend/entangle-camera-manager.c:1116
+#: ../src/frontend/entangle-camera-manager.c:2540
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr "Nezdařilo se připojit fotoaparát: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:1136
-#: ../src/frontend/entangle-camera-manager.c:2515
+#: ../src/frontend/entangle-camera-manager.c:1121
+#: ../src/frontend/entangle-camera-manager.c:2546
 msgid ""
 "Check that the camera is not\n"
 "\n"
@@ -310,69 +311,70 @@ msgstr ""
 "\n"
 "- fotoaparát není používán jinou foto <b>aplikací</b>\n"
 "- <b>souborový systém</b> na jeho paměťové kartě není připojen do systému\n"
-"- se přístroj nenachází v <b>úsporném režimu</b> (šetření energií v akumulátoru)\n"
+"- se přístroj nenachází v <b>úsporném režimu</b> (šetření energií v "
+"akumulátoru)\n"
 
-#: ../src/frontend/entangle-camera-manager.c:1141
-#: ../src/frontend/entangle-camera-manager.c:2520
+#: ../src/frontend/entangle-camera-manager.c:1126
+#: ../src/frontend/entangle-camera-manager.c:2551
 #: ../src/frontend/entangle-camera-manager.ui.h:9
 msgid "Cancel"
 msgstr "Storno"
 
-#: ../src/frontend/entangle-camera-manager.c:1142
-#: ../src/frontend/entangle-camera-manager.c:2521
+#: ../src/frontend/entangle-camera-manager.c:1127
+#: ../src/frontend/entangle-camera-manager.c:2552
 msgid "Retry"
 msgstr "Zkusit znovu"
 
-#: ../src/frontend/entangle-camera-manager.c:1173
+#: ../src/frontend/entangle-camera-manager.c:1158
 msgid "Camera is in use"
 msgstr "Fotoaparát je používán jinou aplikací"
 
-#: ../src/frontend/entangle-camera-manager.c:1177
+#: ../src/frontend/entangle-camera-manager.c:1162
 msgid ""
-"The camera cannot be opened because it is currently mounted as a filesystem."
-" Do you wish to umount it now ?"
+"The camera cannot be opened because it is currently mounted as a filesystem. "
+"Do you wish to umount it now ?"
 msgstr ""
 "Fotoaparát není možné otevřít, protože souborový systém na jeho paměťové "
 "kartě je momentálně připojen do systému. Přejete si tento souborový systém "
 "odpojit?"
 
-#: ../src/frontend/entangle-camera-manager.c:1181
+#: ../src/frontend/entangle-camera-manager.c:1166
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "No"
 msgstr "Ne"
 
-#: ../src/frontend/entangle-camera-manager.c:1182
+#: ../src/frontend/entangle-camera-manager.c:1167
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "Yes"
 msgstr "Ano"
 
-#: ../src/frontend/entangle-camera-manager.c:1217
+#: ../src/frontend/entangle-camera-manager.c:1202
 msgid "Camera connect failed"
 msgstr "Navázání spojení s fotoaparátem se nezdařilo."
 
-#: ../src/frontend/entangle-camera-manager.c:1219
+#: ../src/frontend/entangle-camera-manager.c:1204
 msgid "Entangle: Camera connect failed"
 msgstr "Entangle: navázání spojení s fotoaparátem se nezdařilo"
 
-#: ../src/frontend/entangle-camera-manager.c:1254
+#: ../src/frontend/entangle-camera-manager.c:1239
 #, c-format
 msgid "%s Camera Manager - Entangle"
 msgstr "%s správce fotoaparátů - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1562
-#: ../src/frontend/entangle-camera-manager.ui.h:21
+#: ../src/frontend/entangle-camera-manager.c:1549
+#: ../src/frontend/entangle-camera-manager.ui.h:22
 msgid "Select a folder"
 msgstr "Zvolte složku"
 
-#: ../src/frontend/entangle-camera-manager.c:1565
+#: ../src/frontend/entangle-camera-manager.c:1552
 msgid "_Cancel"
 msgstr "_Zrušit"
 
-#: ../src/frontend/entangle-camera-manager.c:1567
+#: ../src/frontend/entangle-camera-manager.c:1554
 msgid "_Open"
 msgstr "_Otevřít"
 
-#: ../src/frontend/entangle-camera-manager.c:1746
+#: ../src/frontend/entangle-camera-manager.c:1733
 #: ../src/frontend/entangle-camera-manager.ui.h:7
 #: ../src/frontend/entangle-camera-picker.c:512
 #: ../src/frontend/entangle-preferences-display.c:989
@@ -380,45 +382,59 @@ msgstr "_Otevřít"
 msgid "Capture"
 msgstr "Pořizování snímků"
 
-#: ../src/frontend/entangle-camera-manager.c:1803
+#: ../src/frontend/entangle-camera-manager.c:1754
+msgid "Script"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:1822
 #: ../src/frontend/entangle-camera-manager.ui.h:8
 msgid "Preview"
 msgstr "Náhled"
 
-#: ../src/frontend/entangle-camera-manager.c:1958
+#: ../src/frontend/entangle-camera-manager.c:1977
 msgid "Set clock"
 msgstr "Nastavení hodin"
 
-#: ../src/frontend/entangle-camera-manager.c:2001
+#: ../src/frontend/entangle-camera-manager.c:2020
 msgid "Autofocus failed"
 msgstr "Automatické ostření se nezdařilo"
 
-#: ../src/frontend/entangle-camera-manager.c:2003
+#: ../src/frontend/entangle-camera-manager.c:2022
 msgid "Entangle: Camera autofocus failed"
 msgstr "Entangle: automatické ostření se nezdařilo"
 
-#: ../src/frontend/entangle-camera-manager.c:2033
+#: ../src/frontend/entangle-camera-manager.c:2052
 msgid "Manual focus failed"
 msgstr "Ruční ostření se nezdařilo"
 
-#: ../src/frontend/entangle-camera-manager.c:2035
+#: ../src/frontend/entangle-camera-manager.c:2054
 msgid "Entangle: Camera manual focus failed"
 msgstr "Entangle: ruční ostření se nezdařilo"
 
-#: ../src/frontend/entangle-camera-manager.c:2640
+#: ../src/frontend/entangle-camera-manager.c:2671
 msgid "Delete"
 msgstr "Smazat"
 
-#: ../src/frontend/entangle-camera-manager.c:2769
+#: ../src/frontend/entangle-camera-manager.c:2800
 msgid "Select application..."
 msgstr "Zvolte aplikaci…"
 
+#: ../src/frontend/entangle-camera-manager.c:3028
+msgid "Image histogram"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:3030
+msgid "Automation"
+msgstr ""
+
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-manager.ui.h:1
 #: ../src/entangle.desktop.in.h:1
 msgid "Entangle"
@@ -485,16 +501,20 @@ msgid "_Help"
 msgstr "_Nápověda"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:20
+msgid "Manual"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.ui.h:21
 msgid "Supported Cameras"
 msgstr "Podporované fotoaparáty"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:22
+#: ../src/frontend/entangle-camera-manager.ui.h:23
 msgid "View the full list of camera settings"
 msgstr ""
 "Zobrazit všechna nastavení\n"
 "dostupná pro tento fotoaparát"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:25
+#: ../src/frontend/entangle-camera-manager.ui.h:26
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
@@ -502,27 +522,27 @@ msgstr ""
 "Pokusit se ukončit akci právě\n"
 "probíhající na fotoaparátu"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:27
+#: ../src/frontend/entangle-camera-manager.ui.h:28
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
 msgstr "Zmenšit zobrazení na polovinu"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:29
+#: ../src/frontend/entangle-camera-manager.ui.h:30
 msgid "Zoom Out"
 msgstr "Oddálit"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:30
+#: ../src/frontend/entangle-camera-manager.ui.h:31
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
 msgstr "Zvětšit zobrazení na dvojnásobek"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:32
+#: ../src/frontend/entangle-camera-manager.ui.h:33
 msgid "Zoom In"
 msgstr "Přiblížit"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:33
+#: ../src/frontend/entangle-camera-manager.ui.h:34
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
@@ -530,11 +550,11 @@ msgstr ""
 "Automaticky přizpůsobovat\n"
 "velikost zobrazování oknu"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:35
+#: ../src/frontend/entangle-camera-manager.ui.h:36
 msgid "Best Fit"
 msgstr "Přizpůsobit velikosti okna"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:36
+#: ../src/frontend/entangle-camera-manager.ui.h:37
 msgid ""
 "Display the image with its\n"
 "native pixel size"
@@ -542,19 +562,19 @@ msgstr ""
 "Zobrazit v původní velikosti\n"
 "(co 1 pixel obrázku, to 1 pixel na obrazovce)"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:38
+#: ../src/frontend/entangle-camera-manager.ui.h:39
 msgid "Normal"
 msgstr "Původní"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:39
+#: ../src/frontend/entangle-camera-manager.ui.h:40
 msgid "Switch to fullscreen display mode"
 msgstr "Zobrazit přes celou obrazovku"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:40
+#: ../src/frontend/entangle-camera-manager.ui.h:41
 msgid "Full Screen"
 msgstr "Celá obrazovka"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:41
+#: ../src/frontend/entangle-camera-manager.ui.h:42
 msgid "Open with"
 msgstr "Otevřít s"
 
@@ -566,12 +586,14 @@ msgstr "Výrobce a typ"
 msgid "Port"
 msgstr "Rozhraní – port"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-picker.ui.h:1
 msgid "Select camera - Entangle"
 msgstr "Volba fotoaparátu - Entangle"
@@ -615,12 +637,14 @@ msgstr "náhled"
 msgid "settings"
 msgstr "nastavení"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-support.ui.h:1
 msgid "label"
 msgstr "označení"
@@ -662,21 +686,19 @@ msgid "Screen blanking is not implemented on this platform"
 msgstr ""
 "Pro tento tento operační systém není zatmívání obrazovky ještě dodělané."
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-help-about.ui.h:1
 msgid "About - Entangle"
 msgstr "O aplikaci - Entangle"
 
-#: ../src/frontend/entangle-help-about.ui.h:2
-msgid "Copyright (C) 2009-2014 Daniel P. Berrangé"
-msgstr "Autorská práva 2009-2014 Daniel P. Berrangé"
-
-#: ../src/frontend/entangle-help-about.ui.h:3 ../src/entangle.desktop.in.h:2
+#: ../src/frontend/entangle-help-about.ui.h:2 ../src/entangle.desktop.in.h:2
 msgid "Tethered Camera Control & Capture"
 msgstr "Ovládání a pořizování snímků z fotoaparátu přes počítač"
 
@@ -832,12 +854,14 @@ msgstr "Pravidlo pětin"
 msgid "Golden sections"
 msgstr "Zlaté řezy"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-preferences-display.ui.h:1
 msgid "Perceptual"
 msgstr "Perceptuální (vjemová)"
@@ -975,17 +999,35 @@ msgstr "Pozadí:"
 msgid "Highlight:"
 msgstr "Zdůraznení:"
 
+#: ../src/frontend/entangle-script.c:97
+msgid "Untitled script"
+msgstr ""
+
+#: ../src/frontend/entangle-script-config.c:80
+msgid "No script"
+msgstr ""
+
+#: ../src/frontend/entangle-script-config.c:162
+msgid "No config options"
+msgstr ""
+
+#: ../src/frontend/entangle-script-simple.c:64
+msgid "Missing 'execute' method implementation"
+msgstr ""
+
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
 msgid "Could not load user interface definition file: %s"
 msgstr "Nezdařilo se nahrát soubor s definicemi uživatelského rozhraní: %s"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/entangle.appdata.xml.in.h:1
 msgid "Tethered Camera Control &amp; Capture"
 msgstr "Ovládání fotoaparátu a pořizování snímků z počítače."
@@ -1001,13 +1043,13 @@ msgstr ""
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
 "Entangle can trigger the camera shutter to capture new images. When "
-"supported by the camera, a continuously updating preview of the scene can be"
-" displayed prior to capture. Images will be downloaded and displayed as they"
-" are captured by the camera. Entangle also allows the settings of the camera"
-" to be changed from the computer."
+"supported by the camera, a continuously updating preview of the scene can be "
+"displayed prior to capture. Images will be downloaded and displayed as they "
+"are captured by the camera. Entangle also allows the settings of the camera "
+"to be changed from the computer."
 msgstr ""
-"Entangle může spustit spoušť fotoaparátu k zachycení nových snímků. Pokud je"
-" podporován fotoaparátem, lze zobrazit průběžnou aktualizaci náhledu scény "
+"Entangle může spustit spoušť fotoaparátu k zachycení nových snímků. Pokud je "
+"podporován fotoaparátem, lze zobrazit průběžnou aktualizaci náhledu scény "
 "před vyfocením. Snímky budou staženy a zobrazeny tak, jak byly zachyceny "
 "fotoaparátem. Entangle také umožňuje nastavení kamery přímo z počítače."
 

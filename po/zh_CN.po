@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Tiansworld <tiansworld@fedoraproject.org>, 2012
 # Tommy He <lovenemesis@gmail.com>, 2013-2014
@@ -9,14 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"POT-Creation-Date: 2015-03-17 20:39+0000\n"
 "PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
-"Language-Team: Chinese (China) (http://www.transifex.com/projects/p/entangle/language/zh_CN/)\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/projects/p/entangle/"
+"language/zh_CN/)\n"
+"Language: zh-CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh-CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Zanata 3.5.1\n"
 
@@ -67,7 +68,7 @@ msgstr "不能在未联接时预览图像"
 msgid "Unable to capture preview: %s"
 msgstr "无法拍摄预览: %s"
 
-#: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1515
+#: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1516
 #, c-format
 msgid "Unable to get file data: %s"
 msgstr "无法获得文件数据: %s"
@@ -81,218 +82,218 @@ msgstr "无法获得文件名: %s"
 msgid "Cannot download file while not connected"
 msgstr "不能在未联接时下载文件"
 
-#: ../src/backend/entangle-camera.c:1509
+#: ../src/backend/entangle-camera.c:1510
 #, c-format
 msgid "Unable to get camera file: %s"
 msgstr "无法获取相机文件: %s"
 
-#: ../src/backend/entangle-camera.c:1640
+#: ../src/backend/entangle-camera.c:1641
 msgid "Cannot delete file while not connected"
 msgstr "不能在未联接时删除文件"
 
-#: ../src/backend/entangle-camera.c:1657
+#: ../src/backend/entangle-camera.c:1659
 #, c-format
 msgid "Unable to delete file: %s"
 msgstr "无法删除文件: %s"
 
-#: ../src/backend/entangle-camera.c:1778
+#: ../src/backend/entangle-camera.c:1780
 msgid "Cannot wait for events while not connected"
 msgstr "不能在未联接时等待事件"
 
-#: ../src/backend/entangle-camera.c:1804
+#: ../src/backend/entangle-camera.c:1806
 #, c-format
 msgid "Unable to wait for events: %s"
 msgstr "无法等待事件: %s"
 
-#: ../src/backend/entangle-camera.c:2005 ../src/backend/entangle-camera.c:2168
-#: ../src/backend/entangle-camera.c:2304 ../src/backend/entangle-camera.c:2767
-#: ../src/backend/entangle-camera.c:2952 ../src/backend/entangle-camera.c:3117
-#: ../src/backend/entangle-camera.c:3351 ../src/backend/entangle-camera.c:3527
+#: ../src/backend/entangle-camera.c:2007 ../src/backend/entangle-camera.c:2170
+#: ../src/backend/entangle-camera.c:2306 ../src/backend/entangle-camera.c:2769
+#: ../src/backend/entangle-camera.c:2954 ../src/backend/entangle-camera.c:3119
+#: ../src/backend/entangle-camera.c:3353 ../src/backend/entangle-camera.c:3529
 #, c-format
 msgid "Unable to fetch widget type"
 msgstr "无法获取控件类型"
 
-#: ../src/backend/entangle-camera.c:2011 ../src/backend/entangle-camera.c:2174
-#: ../src/backend/entangle-camera.c:2310
+#: ../src/backend/entangle-camera.c:2013 ../src/backend/entangle-camera.c:2176
+#: ../src/backend/entangle-camera.c:2312
 #, c-format
 msgid "Unable to fetch widget name"
 msgstr "无法获取控件名称"
 
-#: ../src/backend/entangle-camera.c:2423
+#: ../src/backend/entangle-camera.c:2425
 #, c-format
 msgid "Unable to load controls, camera is not connected"
 msgstr "无法载入控制器，相机未联接"
 
-#: ../src/backend/entangle-camera.c:2432
+#: ../src/backend/entangle-camera.c:2434
 #, c-format
 msgid "Unable to fetch camera control configuration"
 msgstr "无法获取相机控制器配置"
 
-#: ../src/backend/entangle-camera.c:2557
+#: ../src/backend/entangle-camera.c:2559
 #, c-format
 msgid "Unable to save controls, camera is not connected"
 msgstr "无法保存控制器，相机未联接"
 
-#: ../src/backend/entangle-camera.c:2563
+#: ../src/backend/entangle-camera.c:2565
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
 msgstr "无法保存控制器，相机不可配置"
 
-#: ../src/backend/entangle-camera.c:2582 ../src/backend/entangle-camera.c:2803
-#: ../src/backend/entangle-camera.c:2982 ../src/backend/entangle-camera.c:3177
-#: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
+#: ../src/backend/entangle-camera.c:2584 ../src/backend/entangle-camera.c:2805
+#: ../src/backend/entangle-camera.c:2984 ../src/backend/entangle-camera.c:3179
+#: ../src/backend/entangle-camera.c:3375 ../src/backend/entangle-camera.c:3553
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
 msgstr "无法保存相机控制器配置: %s %d"
 
-#: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
-#: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
-#: ../src/backend/entangle-camera.c:3330 ../src/backend/entangle-camera.c:3506
+#: ../src/backend/entangle-camera.c:2691 ../src/backend/entangle-camera.c:2745
+#: ../src/backend/entangle-camera.c:2933 ../src/backend/entangle-camera.c:3098
+#: ../src/backend/entangle-camera.c:3332 ../src/backend/entangle-camera.c:3508
 #, c-format
 msgid "Controls not available when camera is disconnected"
 msgstr "断开相机联接时控制器不可用"
 
-#: ../src/backend/entangle-camera.c:2695 ../src/backend/entangle-camera.c:2749
-#: ../src/backend/entangle-camera.c:2937 ../src/backend/entangle-camera.c:3102
-#: ../src/backend/entangle-camera.c:3336 ../src/backend/entangle-camera.c:3512
+#: ../src/backend/entangle-camera.c:2697 ../src/backend/entangle-camera.c:2751
+#: ../src/backend/entangle-camera.c:2939 ../src/backend/entangle-camera.c:3104
+#: ../src/backend/entangle-camera.c:3338 ../src/backend/entangle-camera.c:3514
 #, c-format
 msgid "Controls not available for this camera"
 msgstr "控制器不适用于此相机"
 
-#: ../src/backend/entangle-camera.c:2760
+#: ../src/backend/entangle-camera.c:2762
 #, c-format
 msgid "Viewfinder control not available with this camera"
 msgstr "该相机不可以使用取景器控制器"
 
-#: ../src/backend/entangle-camera.c:2773
+#: ../src/backend/entangle-camera.c:2775
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
 msgstr "取景器控制不是可切换控件"
 
-#: ../src/backend/entangle-camera.c:2787 ../src/backend/entangle-camera.c:2794
+#: ../src/backend/entangle-camera.c:2789 ../src/backend/entangle-camera.c:2796
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
 msgstr "设定取景器状态失败: %s %d"
 
-#: ../src/backend/entangle-camera.c:2945
+#: ../src/backend/entangle-camera.c:2947
 #, c-format
 msgid "Autofocus control not available with this camera"
 msgstr "该相机不可以使用自动对焦控制器"
 
-#: ../src/backend/entangle-camera.c:2958
+#: ../src/backend/entangle-camera.c:2960
 #, c-format
 msgid "Autofocus control was not a toggle widget"
 msgstr "自动对焦控制器不是可切换控件"
 
-#: ../src/backend/entangle-camera.c:2965 ../src/backend/entangle-camera.c:2973
+#: ../src/backend/entangle-camera.c:2967 ../src/backend/entangle-camera.c:2975
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
 msgstr "设定自动对焦状态失败: %s %d"
 
-#: ../src/backend/entangle-camera.c:3110
+#: ../src/backend/entangle-camera.c:3112
 #, c-format
 msgid "Manual focus control not available with this camera"
 msgstr "该相机不可以使用手动对焦控制器"
 
-#: ../src/backend/entangle-camera.c:3124
+#: ../src/backend/entangle-camera.c:3126
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
-#: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
+#: ../src/backend/entangle-camera.c:3145 ../src/backend/entangle-camera.c:3169
+#: ../src/backend/entangle-camera.c:3188 ../src/backend/entangle-camera.c:3204
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
 msgstr "设定手动对焦状态失败: %s %d"
 
-#: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
+#: ../src/backend/entangle-camera.c:3162 ../src/backend/entangle-camera.c:3197
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3344
+#: ../src/backend/entangle-camera.c:3346
 #, c-format
 msgid "Time setting not available with this camera"
 msgstr "该相机不可以使用时间设定"
 
-#: ../src/backend/entangle-camera.c:3357
+#: ../src/backend/entangle-camera.c:3359
 #, c-format
 msgid "Time setting was not a date widget"
 msgstr "时间设定不是日期控件"
 
-#: ../src/backend/entangle-camera.c:3364
+#: ../src/backend/entangle-camera.c:3366
 #, c-format
 msgid "Failed to set time state: %s %d"
 msgstr "设定时间状态失败： %s %d"
 
-#: ../src/backend/entangle-camera.c:3520
+#: ../src/backend/entangle-camera.c:3522
 #, c-format
 msgid "Capture target setting not available with this camera"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3533
+#: ../src/backend/entangle-camera.c:3535
 #, c-format
 msgid "Time setting was not a choice widget"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3542
+#: ../src/backend/entangle-camera.c:3544
 #, c-format
 msgid "Failed to set capture target: %s %d"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:597
-#: ../src/frontend/entangle-camera-manager.ui.h:23
+#: ../src/frontend/entangle-camera-manager.c:601
+#: ../src/frontend/entangle-camera-manager.ui.h:24
 msgid "Capture an image"
 msgstr "拍摄图像"
 
-#: ../src/frontend/entangle-camera-manager.c:598
-#: ../src/frontend/entangle-camera-manager.ui.h:24
+#: ../src/frontend/entangle-camera-manager.c:602
+#: ../src/frontend/entangle-camera-manager.ui.h:25
 msgid "Continuous capture preview"
 msgstr "连续拍摄预览"
 
-#: ../src/frontend/entangle-camera-manager.c:602
+#: ../src/frontend/entangle-camera-manager.c:606
 msgid "This camera does not support image capture"
 msgstr "此相机不支持图像拍摄"
 
-#: ../src/frontend/entangle-camera-manager.c:605
+#: ../src/frontend/entangle-camera-manager.c:609
 msgid "This camera does not support image preview"
 msgstr "此相机不支持图像预览"
 
-#: ../src/frontend/entangle-camera-manager.c:747
+#: ../src/frontend/entangle-camera-manager.c:751
 #, c-format
 msgid "Operation: %s"
 msgstr "操作: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:749
+#: ../src/frontend/entangle-camera-manager.c:753
 msgid "Entangle: Operation failed"
 msgstr "Entangle: 操作失败"
 
-#: ../src/frontend/entangle-camera-manager.c:781
-#: ../src/frontend/entangle-camera-manager.c:1080
+#: ../src/frontend/entangle-camera-manager.c:785
+#: ../src/frontend/entangle-camera-manager.c:1065
 msgid "Camera load controls failed"
 msgstr "相机载入控制器失败"
 
-#: ../src/frontend/entangle-camera-manager.c:783
-#: ../src/frontend/entangle-camera-manager.c:1082
+#: ../src/frontend/entangle-camera-manager.c:787
+#: ../src/frontend/entangle-camera-manager.c:1067
 msgid "Entangle: Camera load controls failed"
 msgstr "Entangle: 相机载入控制器失败"
 
-#: ../src/frontend/entangle-camera-manager.c:821
+#: ../src/frontend/entangle-camera-manager.c:825
 msgid "Monitor"
 msgstr "监视器"
 
-#: ../src/frontend/entangle-camera-manager.c:1037
+#: ../src/frontend/entangle-camera-manager.c:1027
 msgid "Camera Manager - Entangle"
 msgstr "相机管理器 - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1131
-#: ../src/frontend/entangle-camera-manager.c:2509
+#: ../src/frontend/entangle-camera-manager.c:1116
+#: ../src/frontend/entangle-camera-manager.c:2540
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr "无法连接至相机: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:1136
-#: ../src/frontend/entangle-camera-manager.c:2515
+#: ../src/frontend/entangle-camera-manager.c:1121
+#: ../src/frontend/entangle-camera-manager.c:2546
 msgid ""
 "Check that the camera is not\n"
 "\n"
@@ -306,64 +307,64 @@ msgstr ""
 " - 被桌面环境以<b>文件系统</b>方式挂载\n"
 " - 处于降低耗电量的<b>睡眠模式</b>\n"
 
-#: ../src/frontend/entangle-camera-manager.c:1141
-#: ../src/frontend/entangle-camera-manager.c:2520
+#: ../src/frontend/entangle-camera-manager.c:1126
+#: ../src/frontend/entangle-camera-manager.c:2551
 #: ../src/frontend/entangle-camera-manager.ui.h:9
 msgid "Cancel"
 msgstr "取消"
 
-#: ../src/frontend/entangle-camera-manager.c:1142
-#: ../src/frontend/entangle-camera-manager.c:2521
+#: ../src/frontend/entangle-camera-manager.c:1127
+#: ../src/frontend/entangle-camera-manager.c:2552
 msgid "Retry"
 msgstr "重试"
 
-#: ../src/frontend/entangle-camera-manager.c:1173
+#: ../src/frontend/entangle-camera-manager.c:1158
 msgid "Camera is in use"
 msgstr "相机正在使用"
 
-#: ../src/frontend/entangle-camera-manager.c:1177
+#: ../src/frontend/entangle-camera-manager.c:1162
 msgid ""
-"The camera cannot be opened because it is currently mounted as a filesystem."
-" Do you wish to umount it now ?"
+"The camera cannot be opened because it is currently mounted as a filesystem. "
+"Do you wish to umount it now ?"
 msgstr "相机由于已被当作文件系统挂载而无法打开。您想要现在卸载它吗？"
 
-#: ../src/frontend/entangle-camera-manager.c:1181
+#: ../src/frontend/entangle-camera-manager.c:1166
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "No"
 msgstr "否"
 
-#: ../src/frontend/entangle-camera-manager.c:1182
+#: ../src/frontend/entangle-camera-manager.c:1167
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "Yes"
 msgstr "是"
 
-#: ../src/frontend/entangle-camera-manager.c:1217
+#: ../src/frontend/entangle-camera-manager.c:1202
 msgid "Camera connect failed"
 msgstr "相机连接失败"
 
-#: ../src/frontend/entangle-camera-manager.c:1219
+#: ../src/frontend/entangle-camera-manager.c:1204
 msgid "Entangle: Camera connect failed"
 msgstr "Entangle: 相机连接失败"
 
-#: ../src/frontend/entangle-camera-manager.c:1254
+#: ../src/frontend/entangle-camera-manager.c:1239
 #, c-format
 msgid "%s Camera Manager - Entangle"
 msgstr "%s 相机管理器 - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1562
-#: ../src/frontend/entangle-camera-manager.ui.h:21
+#: ../src/frontend/entangle-camera-manager.c:1549
+#: ../src/frontend/entangle-camera-manager.ui.h:22
 msgid "Select a folder"
 msgstr "选择一个文件夹"
 
-#: ../src/frontend/entangle-camera-manager.c:1565
+#: ../src/frontend/entangle-camera-manager.c:1552
 msgid "_Cancel"
 msgstr "取消(_C)"
 
-#: ../src/frontend/entangle-camera-manager.c:1567
+#: ../src/frontend/entangle-camera-manager.c:1554
 msgid "_Open"
 msgstr "打开(_O)"
 
-#: ../src/frontend/entangle-camera-manager.c:1746
+#: ../src/frontend/entangle-camera-manager.c:1733
 #: ../src/frontend/entangle-camera-manager.ui.h:7
 #: ../src/frontend/entangle-camera-picker.c:512
 #: ../src/frontend/entangle-preferences-display.c:989
@@ -371,45 +372,59 @@ msgstr "打开(_O)"
 msgid "Capture"
 msgstr "拍摄"
 
-#: ../src/frontend/entangle-camera-manager.c:1803
+#: ../src/frontend/entangle-camera-manager.c:1754
+msgid "Script"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:1822
 #: ../src/frontend/entangle-camera-manager.ui.h:8
 msgid "Preview"
 msgstr "预览"
 
-#: ../src/frontend/entangle-camera-manager.c:1958
+#: ../src/frontend/entangle-camera-manager.c:1977
 msgid "Set clock"
 msgstr "设定时钟"
 
-#: ../src/frontend/entangle-camera-manager.c:2001
+#: ../src/frontend/entangle-camera-manager.c:2020
 msgid "Autofocus failed"
 msgstr "自动对焦失败"
 
-#: ../src/frontend/entangle-camera-manager.c:2003
+#: ../src/frontend/entangle-camera-manager.c:2022
 msgid "Entangle: Camera autofocus failed"
 msgstr "Entangle: 相机自动对焦失败"
 
-#: ../src/frontend/entangle-camera-manager.c:2033
+#: ../src/frontend/entangle-camera-manager.c:2052
 msgid "Manual focus failed"
 msgstr "手动对焦失败"
 
-#: ../src/frontend/entangle-camera-manager.c:2035
+#: ../src/frontend/entangle-camera-manager.c:2054
 msgid "Entangle: Camera manual focus failed"
 msgstr "Entangle: 相机手动对焦失败"
 
-#: ../src/frontend/entangle-camera-manager.c:2640
+#: ../src/frontend/entangle-camera-manager.c:2671
 msgid "Delete"
 msgstr "删除"
 
-#: ../src/frontend/entangle-camera-manager.c:2769
+#: ../src/frontend/entangle-camera-manager.c:2800
 msgid "Select application..."
 msgstr "选择应用程序..."
 
+#: ../src/frontend/entangle-camera-manager.c:3028
+msgid "Image histogram"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:3030
+msgid "Automation"
+msgstr ""
+
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-manager.ui.h:1
 #: ../src/entangle.desktop.in.h:1
 msgid "Entangle"
@@ -476,14 +491,18 @@ msgid "_Help"
 msgstr "帮助(_H)"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:20
+msgid "Manual"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.ui.h:21
 msgid "Supported Cameras"
 msgstr "支持的相机"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:22
+#: ../src/frontend/entangle-camera-manager.ui.h:23
 msgid "View the full list of camera settings"
 msgstr "查看相机全部设置列表"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:25
+#: ../src/frontend/entangle-camera-manager.ui.h:26
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
@@ -491,7 +510,7 @@ msgstr ""
 "尝试取消当前\n"
 "相机正在执行的操作"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:27
+#: ../src/frontend/entangle-camera-manager.ui.h:28
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
@@ -499,11 +518,11 @@ msgstr ""
 "按一定比例缩小\n"
 "图像显示"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:29
+#: ../src/frontend/entangle-camera-manager.ui.h:30
 msgid "Zoom Out"
 msgstr "缩小"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:30
+#: ../src/frontend/entangle-camera-manager.ui.h:31
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
@@ -511,11 +530,11 @@ msgstr ""
 "按一定比例放大\n"
 "图像显示"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:32
+#: ../src/frontend/entangle-camera-manager.ui.h:33
 msgid "Zoom In"
 msgstr "放大"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:33
+#: ../src/frontend/entangle-camera-manager.ui.h:34
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
@@ -523,11 +542,11 @@ msgstr ""
 "自动缩放图像以适应\n"
 "实际窗口区域"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:35
+#: ../src/frontend/entangle-camera-manager.ui.h:36
 msgid "Best Fit"
 msgstr "最佳匹配"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:36
+#: ../src/frontend/entangle-camera-manager.ui.h:37
 msgid ""
 "Display the image with its\n"
 "native pixel size"
@@ -535,19 +554,19 @@ msgstr ""
 "以图像原生\n"
 "像素尺寸显示"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:38
+#: ../src/frontend/entangle-camera-manager.ui.h:39
 msgid "Normal"
 msgstr "常规"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:39
+#: ../src/frontend/entangle-camera-manager.ui.h:40
 msgid "Switch to fullscreen display mode"
 msgstr "切换至全屏显示模式"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:40
+#: ../src/frontend/entangle-camera-manager.ui.h:41
 msgid "Full Screen"
 msgstr "全屏"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:41
+#: ../src/frontend/entangle-camera-manager.ui.h:42
 msgid "Open with"
 msgstr "打开以"
 
@@ -559,12 +578,14 @@ msgstr "型号"
 msgid "Port"
 msgstr "端口"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-picker.ui.h:1
 msgid "Select camera - Entangle"
 msgstr "选择相机 - Entangle 相机控"
@@ -607,12 +628,14 @@ msgstr "预览"
 msgid "settings"
 msgstr "设置"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-support.ui.h:1
 msgid "label"
 msgstr "标签"
@@ -653,21 +676,19 @@ msgstr "该显示不支持屏幕空白"
 msgid "Screen blanking is not implemented on this platform"
 msgstr "该平台尚未实现屏幕空白"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-help-about.ui.h:1
 msgid "About - Entangle"
 msgstr "关于 - Entangle 相机控"
 
-#: ../src/frontend/entangle-help-about.ui.h:2
-msgid "Copyright (C) 2009-2014 Daniel P. Berrangé"
-msgstr "版权所有 (C) 2009-2014 Daniel P. Berrangé"
-
-#: ../src/frontend/entangle-help-about.ui.h:3 ../src/entangle.desktop.in.h:2
+#: ../src/frontend/entangle-help-about.ui.h:2 ../src/entangle.desktop.in.h:2
 msgid "Tethered Camera Control & Capture"
 msgstr "连接相机控制与拍摄"
 
@@ -823,12 +844,14 @@ msgstr "五分法"
 msgid "Golden sections"
 msgstr "黄金分割"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-preferences-display.ui.h:1
 msgid "Perceptual"
 msgstr "感知"
@@ -965,17 +988,35 @@ msgstr "背景："
 msgid "Highlight:"
 msgstr "高亮："
 
+#: ../src/frontend/entangle-script.c:97
+msgid "Untitled script"
+msgstr ""
+
+#: ../src/frontend/entangle-script-config.c:80
+msgid "No script"
+msgstr ""
+
+#: ../src/frontend/entangle-script-config.c:162
+msgid "No config options"
+msgstr ""
+
+#: ../src/frontend/entangle-script-simple.c:64
+msgid "Missing 'execute' method implementation"
+msgstr ""
+
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
 msgid "Could not load user interface definition file: %s"
 msgstr "无法载入用户界面定义文件: %s"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/entangle.appdata.xml.in.h:1
 msgid "Tethered Camera Control &amp; Capture"
 msgstr "控制连接的相机并拍摄"
@@ -989,17 +1030,20 @@ msgstr "Eentangle 是一个在电脑控制通过 USB 线链接的数码相机的
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
 "Entangle can trigger the camera shutter to capture new images. When "
-"supported by the camera, a continuously updating preview of the scene can be"
-" displayed prior to capture. Images will be downloaded and displayed as they"
-" are captured by the camera. Entangle also allows the settings of the camera"
-" to be changed from the computer."
+"supported by the camera, a continuously updating preview of the scene can be "
+"displayed prior to capture. Images will be downloaded and displayed as they "
+"are captured by the camera. Entangle also allows the settings of the camera "
+"to be changed from the computer."
 msgstr ""
-"Entangle 可以激活相机快门来拍摄新图像。当相机支持时，可以在拍摄前持续更新取景以便预览。与相机拍摄类似，图片可以下载下来。Entangle "
-"同样允许在电脑调整相机的设定。"
+"Entangle 可以激活相机快门来拍摄新图像。当相机支持时，可以在拍摄前持续更新取景"
+"以便预览。与相机拍摄类似，图片可以下载下来。Entangle 同样允许在电脑调整相机的"
+"设定。"
 
 #: ../src/entangle.appdata.xml.in.h:4
 msgid ""
 "Entangle is compatible with most DSLR cameras from Nikon and Canon, some of "
 "their compact camera models, and a variety of cameras from other "
 "manufacturers."
-msgstr "Entangle 兼容大多数尼康和佳能出品的数码单反相机和部分型号的紧凑型相机，以及另外一部分其他厂商的相机。"
+msgstr ""
+"Entangle 兼容大多数尼康和佳能出品的数码单反相机和部分型号的紧凑型相机，以及另"
+"外一部分其他厂商的相机。"

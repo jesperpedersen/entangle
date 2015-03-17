@@ -1,21 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Zoltan Hoppár <zoltanh721@fedoraproject.org>, 2012-2013
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-06 20:33+0000\n"
+"POT-Creation-Date: 2015-03-17 20:39+0000\n"
 "PO-Revision-Date: 2014-05-01 06:05-0400\n"
 "Last-Translator: Daniel Berrange <dan-transifex@berrange.com>\n"
-"Language-Team: Hungarian (http://www.transifex.com/projects/p/entangle/language/hu/)\n"
+"Language-Team: Hungarian (http://www.transifex.com/projects/p/entangle/"
+"language/hu/)\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Zanata 3.5.1\n"
 
@@ -66,7 +67,7 @@ msgstr "Kép előnézete sikertelen, míg nincs csatlakoztatva"
 msgid "Unable to capture preview: %s"
 msgstr "Előnézeti kép rögzítése sikertelen: %s"
 
-#: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1515
+#: ../src/backend/entangle-camera.c:1349 ../src/backend/entangle-camera.c:1516
 #, c-format
 msgid "Unable to get file data: %s"
 msgstr "Fájl adatainak letöltése sikertelen: %s"
@@ -80,218 +81,218 @@ msgstr "Fájlnév elérhetetlen: %s"
 msgid "Cannot download file while not connected"
 msgstr "Fájl nem letölthető amíg nincs csatlakoztatva"
 
-#: ../src/backend/entangle-camera.c:1509
+#: ../src/backend/entangle-camera.c:1510
 #, c-format
 msgid "Unable to get camera file: %s"
 msgstr "A kamera fájl elérhetetlen: %s"
 
-#: ../src/backend/entangle-camera.c:1640
+#: ../src/backend/entangle-camera.c:1641
 msgid "Cannot delete file while not connected"
 msgstr "Nem törölhető amíg nincs csatlakoztatva"
 
-#: ../src/backend/entangle-camera.c:1657
+#: ../src/backend/entangle-camera.c:1659
 #, c-format
 msgid "Unable to delete file: %s"
 msgstr "Fájl törlése sikertelen: %s"
 
-#: ../src/backend/entangle-camera.c:1778
+#: ../src/backend/entangle-camera.c:1780
 msgid "Cannot wait for events while not connected"
 msgstr "Műveletre várakozás nem lehetséges, amíg nincs csatlakoztatva"
 
-#: ../src/backend/entangle-camera.c:1804
+#: ../src/backend/entangle-camera.c:1806
 #, c-format
 msgid "Unable to wait for events: %s"
 msgstr "Műveletre várakozás nem lehetséges: %s"
 
-#: ../src/backend/entangle-camera.c:2005 ../src/backend/entangle-camera.c:2168
-#: ../src/backend/entangle-camera.c:2304 ../src/backend/entangle-camera.c:2767
-#: ../src/backend/entangle-camera.c:2952 ../src/backend/entangle-camera.c:3117
-#: ../src/backend/entangle-camera.c:3351 ../src/backend/entangle-camera.c:3527
+#: ../src/backend/entangle-camera.c:2007 ../src/backend/entangle-camera.c:2170
+#: ../src/backend/entangle-camera.c:2306 ../src/backend/entangle-camera.c:2769
+#: ../src/backend/entangle-camera.c:2954 ../src/backend/entangle-camera.c:3119
+#: ../src/backend/entangle-camera.c:3353 ../src/backend/entangle-camera.c:3529
 #, c-format
 msgid "Unable to fetch widget type"
 msgstr "Widget típus letöltése sikertelen"
 
-#: ../src/backend/entangle-camera.c:2011 ../src/backend/entangle-camera.c:2174
-#: ../src/backend/entangle-camera.c:2310
+#: ../src/backend/entangle-camera.c:2013 ../src/backend/entangle-camera.c:2176
+#: ../src/backend/entangle-camera.c:2312
 #, c-format
 msgid "Unable to fetch widget name"
 msgstr "Widget nevének letöltése sikertelen"
 
-#: ../src/backend/entangle-camera.c:2423
+#: ../src/backend/entangle-camera.c:2425
 #, c-format
 msgid "Unable to load controls, camera is not connected"
 msgstr "Vezérlés nem betölthető, kamera nincs csatlakoztatva"
 
-#: ../src/backend/entangle-camera.c:2432
+#: ../src/backend/entangle-camera.c:2434
 #, c-format
 msgid "Unable to fetch camera control configuration"
 msgstr "Kamera vezérlési beállításainak letöltése sikertelen"
 
-#: ../src/backend/entangle-camera.c:2557
+#: ../src/backend/entangle-camera.c:2559
 #, c-format
 msgid "Unable to save controls, camera is not connected"
 msgstr "Vezérlés mentése nem lehetséges, kamera nincs csatlakoztatva"
 
-#: ../src/backend/entangle-camera.c:2563
+#: ../src/backend/entangle-camera.c:2565
 #, c-format
 msgid "Unable to save controls, camera is not configurable"
 msgstr "Vezérlés mentése nem lehetséges, kamera nem szabályozható"
 
-#: ../src/backend/entangle-camera.c:2582 ../src/backend/entangle-camera.c:2803
-#: ../src/backend/entangle-camera.c:2982 ../src/backend/entangle-camera.c:3177
-#: ../src/backend/entangle-camera.c:3373 ../src/backend/entangle-camera.c:3551
+#: ../src/backend/entangle-camera.c:2584 ../src/backend/entangle-camera.c:2805
+#: ../src/backend/entangle-camera.c:2984 ../src/backend/entangle-camera.c:3179
+#: ../src/backend/entangle-camera.c:3375 ../src/backend/entangle-camera.c:3553
 #, c-format
 msgid "Unable to save camera control configuration: %s %d"
 msgstr "Kamera vezérlési összeállítása nem lehetséges: %s %d"
 
-#: ../src/backend/entangle-camera.c:2689 ../src/backend/entangle-camera.c:2743
-#: ../src/backend/entangle-camera.c:2931 ../src/backend/entangle-camera.c:3096
-#: ../src/backend/entangle-camera.c:3330 ../src/backend/entangle-camera.c:3506
+#: ../src/backend/entangle-camera.c:2691 ../src/backend/entangle-camera.c:2745
+#: ../src/backend/entangle-camera.c:2933 ../src/backend/entangle-camera.c:3098
+#: ../src/backend/entangle-camera.c:3332 ../src/backend/entangle-camera.c:3508
 #, c-format
 msgid "Controls not available when camera is disconnected"
 msgstr "Vezérlés nem elérhető amíg a kamera nincs csatlakoztatva"
 
-#: ../src/backend/entangle-camera.c:2695 ../src/backend/entangle-camera.c:2749
-#: ../src/backend/entangle-camera.c:2937 ../src/backend/entangle-camera.c:3102
-#: ../src/backend/entangle-camera.c:3336 ../src/backend/entangle-camera.c:3512
+#: ../src/backend/entangle-camera.c:2697 ../src/backend/entangle-camera.c:2751
+#: ../src/backend/entangle-camera.c:2939 ../src/backend/entangle-camera.c:3104
+#: ../src/backend/entangle-camera.c:3338 ../src/backend/entangle-camera.c:3514
 #, c-format
 msgid "Controls not available for this camera"
 msgstr "Vezérlés nem elérhető ehhez a kamerához"
 
-#: ../src/backend/entangle-camera.c:2760
+#: ../src/backend/entangle-camera.c:2762
 #, c-format
 msgid "Viewfinder control not available with this camera"
 msgstr "Kereső vezérlés nem elérhető ezzel a kamerával"
 
-#: ../src/backend/entangle-camera.c:2773
+#: ../src/backend/entangle-camera.c:2775
 #, c-format
 msgid "Viewfinder control was not a toggle widget"
 msgstr "Kereső vezérlés nem volt kapcsoló widget"
 
-#: ../src/backend/entangle-camera.c:2787 ../src/backend/entangle-camera.c:2794
+#: ../src/backend/entangle-camera.c:2789 ../src/backend/entangle-camera.c:2796
 #, c-format
 msgid "Failed to set viewfinder state: %s %d"
 msgstr "Sikertelen a kereső állapotának beállítása: %s %d"
 
-#: ../src/backend/entangle-camera.c:2945
+#: ../src/backend/entangle-camera.c:2947
 #, c-format
 msgid "Autofocus control not available with this camera"
 msgstr "Autofókusz vezérlés nem elérhető ehhez a kamerához"
 
-#: ../src/backend/entangle-camera.c:2958
+#: ../src/backend/entangle-camera.c:2960
 #, c-format
 msgid "Autofocus control was not a toggle widget"
 msgstr "Autofókusz vezérlés nem kapcsoló widget"
 
-#: ../src/backend/entangle-camera.c:2965 ../src/backend/entangle-camera.c:2973
+#: ../src/backend/entangle-camera.c:2967 ../src/backend/entangle-camera.c:2975
 #, c-format
 msgid "Failed to set autofocus state: %s %d"
 msgstr "Sikertelen az autofókusz kereső állapotának beállítása: %s %d"
 
-#: ../src/backend/entangle-camera.c:3110
+#: ../src/backend/entangle-camera.c:3112
 #, c-format
 msgid "Manual focus control not available with this camera"
 msgstr "Kézi fókuszvezérlés nem elérhető ezzel a kamerával"
 
-#: ../src/backend/entangle-camera.c:3124
+#: ../src/backend/entangle-camera.c:3126
 #, c-format
 msgid "Manual focus control was not a range or radio widget"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3143 ../src/backend/entangle-camera.c:3167
-#: ../src/backend/entangle-camera.c:3186 ../src/backend/entangle-camera.c:3202
+#: ../src/backend/entangle-camera.c:3145 ../src/backend/entangle-camera.c:3169
+#: ../src/backend/entangle-camera.c:3188 ../src/backend/entangle-camera.c:3204
 #, c-format
 msgid "Failed to set manual focus state: %s %d"
 msgstr "Manuális fókusz állapotának beállítása sikertelen: %s %d"
 
-#: ../src/backend/entangle-camera.c:3160 ../src/backend/entangle-camera.c:3195
+#: ../src/backend/entangle-camera.c:3162 ../src/backend/entangle-camera.c:3197
 #, c-format
 msgid "Failed to read manual focus choice %d: %s %d"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3344
+#: ../src/backend/entangle-camera.c:3346
 #, c-format
 msgid "Time setting not available with this camera"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3357
+#: ../src/backend/entangle-camera.c:3359
 #, c-format
 msgid "Time setting was not a date widget"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3364
+#: ../src/backend/entangle-camera.c:3366
 #, c-format
 msgid "Failed to set time state: %s %d"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3520
+#: ../src/backend/entangle-camera.c:3522
 #, c-format
 msgid "Capture target setting not available with this camera"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3533
+#: ../src/backend/entangle-camera.c:3535
 #, c-format
 msgid "Time setting was not a choice widget"
 msgstr ""
 
-#: ../src/backend/entangle-camera.c:3542
+#: ../src/backend/entangle-camera.c:3544
 #, c-format
 msgid "Failed to set capture target: %s %d"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:597
-#: ../src/frontend/entangle-camera-manager.ui.h:23
+#: ../src/frontend/entangle-camera-manager.c:601
+#: ../src/frontend/entangle-camera-manager.ui.h:24
 msgid "Capture an image"
 msgstr "Egy kép rögzítése"
 
-#: ../src/frontend/entangle-camera-manager.c:598
-#: ../src/frontend/entangle-camera-manager.ui.h:24
+#: ../src/frontend/entangle-camera-manager.c:602
+#: ../src/frontend/entangle-camera-manager.ui.h:25
 msgid "Continuous capture preview"
 msgstr "Sorozatkép előnézet"
 
-#: ../src/frontend/entangle-camera-manager.c:602
+#: ../src/frontend/entangle-camera-manager.c:606
 msgid "This camera does not support image capture"
 msgstr "Ez a kamera nem támogatja a képrögzítést"
 
-#: ../src/frontend/entangle-camera-manager.c:605
+#: ../src/frontend/entangle-camera-manager.c:609
 msgid "This camera does not support image preview"
 msgstr "Ez a kamera nem támogatja az előnézeti kép megjelenítését"
 
-#: ../src/frontend/entangle-camera-manager.c:747
+#: ../src/frontend/entangle-camera-manager.c:751
 #, c-format
 msgid "Operation: %s"
 msgstr "Művelet: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:749
+#: ../src/frontend/entangle-camera-manager.c:753
 msgid "Entangle: Operation failed"
 msgstr "Entangle: Művelet sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:781
-#: ../src/frontend/entangle-camera-manager.c:1080
+#: ../src/frontend/entangle-camera-manager.c:785
+#: ../src/frontend/entangle-camera-manager.c:1065
 msgid "Camera load controls failed"
 msgstr "Kamera vezérlési betöltése sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:783
-#: ../src/frontend/entangle-camera-manager.c:1082
+#: ../src/frontend/entangle-camera-manager.c:787
+#: ../src/frontend/entangle-camera-manager.c:1067
 msgid "Entangle: Camera load controls failed"
 msgstr "Entangle: Kamera vezérlési betöltése sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:821
+#: ../src/frontend/entangle-camera-manager.c:825
 msgid "Monitor"
 msgstr "Monitor"
 
-#: ../src/frontend/entangle-camera-manager.c:1037
+#: ../src/frontend/entangle-camera-manager.c:1027
 msgid "Camera Manager - Entangle"
 msgstr "Kamera kezelő - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1131
-#: ../src/frontend/entangle-camera-manager.c:2509
+#: ../src/frontend/entangle-camera-manager.c:1116
+#: ../src/frontend/entangle-camera-manager.c:2540
 #, c-format
 msgid "Unable to connect to camera: %s"
 msgstr "Csatlakozás a kamerához sikertelen: %s"
 
-#: ../src/frontend/entangle-camera-manager.c:1136
-#: ../src/frontend/entangle-camera-manager.c:2515
+#: ../src/frontend/entangle-camera-manager.c:1121
+#: ../src/frontend/entangle-camera-manager.c:2546
 msgid ""
 "Check that the camera is not\n"
 "\n"
@@ -305,66 +306,66 @@ msgstr ""
 "- nincs csatlakoztatva <b>a fájlrendszere</b> az asztalon\n"
 "- nincs <b>alvó módban</b> hogy az elemeket kímélje\n"
 
-#: ../src/frontend/entangle-camera-manager.c:1141
-#: ../src/frontend/entangle-camera-manager.c:2520
+#: ../src/frontend/entangle-camera-manager.c:1126
+#: ../src/frontend/entangle-camera-manager.c:2551
 #: ../src/frontend/entangle-camera-manager.ui.h:9
 msgid "Cancel"
 msgstr "Mégsem"
 
-#: ../src/frontend/entangle-camera-manager.c:1142
-#: ../src/frontend/entangle-camera-manager.c:2521
+#: ../src/frontend/entangle-camera-manager.c:1127
+#: ../src/frontend/entangle-camera-manager.c:2552
 msgid "Retry"
 msgstr "Újra"
 
-#: ../src/frontend/entangle-camera-manager.c:1173
+#: ../src/frontend/entangle-camera-manager.c:1158
 msgid "Camera is in use"
 msgstr "Kamera használatban"
 
-#: ../src/frontend/entangle-camera-manager.c:1177
+#: ../src/frontend/entangle-camera-manager.c:1162
 msgid ""
-"The camera cannot be opened because it is currently mounted as a filesystem."
-" Do you wish to umount it now ?"
+"The camera cannot be opened because it is currently mounted as a filesystem. "
+"Do you wish to umount it now ?"
 msgstr ""
 "A kamera nem megnyitható, mivel a fájlrendszerben csatlakoztatva van. "
 "Kívánja, hogy leválasszuk most?"
 
-#: ../src/frontend/entangle-camera-manager.c:1181
+#: ../src/frontend/entangle-camera-manager.c:1166
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "No"
 msgstr "Nem"
 
-#: ../src/frontend/entangle-camera-manager.c:1182
+#: ../src/frontend/entangle-camera-manager.c:1167
 #: ../src/frontend/entangle-camera-picker.c:130
 msgid "Yes"
 msgstr "Igen"
 
-#: ../src/frontend/entangle-camera-manager.c:1217
+#: ../src/frontend/entangle-camera-manager.c:1202
 msgid "Camera connect failed"
 msgstr "Kamera csatlakozása sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:1219
+#: ../src/frontend/entangle-camera-manager.c:1204
 msgid "Entangle: Camera connect failed"
 msgstr "Entangle: Kamera csatlakozása sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:1254
+#: ../src/frontend/entangle-camera-manager.c:1239
 #, c-format
 msgid "%s Camera Manager - Entangle"
 msgstr "%s Kamera kezelő - Entangle"
 
-#: ../src/frontend/entangle-camera-manager.c:1562
-#: ../src/frontend/entangle-camera-manager.ui.h:21
+#: ../src/frontend/entangle-camera-manager.c:1549
+#: ../src/frontend/entangle-camera-manager.ui.h:22
 msgid "Select a folder"
 msgstr "Válasszon mappát"
 
-#: ../src/frontend/entangle-camera-manager.c:1565
+#: ../src/frontend/entangle-camera-manager.c:1552
 msgid "_Cancel"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:1567
+#: ../src/frontend/entangle-camera-manager.c:1554
 msgid "_Open"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:1746
+#: ../src/frontend/entangle-camera-manager.c:1733
 #: ../src/frontend/entangle-camera-manager.ui.h:7
 #: ../src/frontend/entangle-camera-picker.c:512
 #: ../src/frontend/entangle-preferences-display.c:989
@@ -372,45 +373,59 @@ msgstr ""
 msgid "Capture"
 msgstr "Képrögzítés"
 
-#: ../src/frontend/entangle-camera-manager.c:1803
+#: ../src/frontend/entangle-camera-manager.c:1754
+msgid "Script"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:1822
 #: ../src/frontend/entangle-camera-manager.ui.h:8
 msgid "Preview"
 msgstr "Előnézet"
 
-#: ../src/frontend/entangle-camera-manager.c:1958
+#: ../src/frontend/entangle-camera-manager.c:1977
 msgid "Set clock"
 msgstr ""
 
-#: ../src/frontend/entangle-camera-manager.c:2001
+#: ../src/frontend/entangle-camera-manager.c:2020
 msgid "Autofocus failed"
 msgstr "Autofókuszálás sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:2003
+#: ../src/frontend/entangle-camera-manager.c:2022
 msgid "Entangle: Camera autofocus failed"
 msgstr "Entangle: Kamera autofókuszálás sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:2033
+#: ../src/frontend/entangle-camera-manager.c:2052
 msgid "Manual focus failed"
 msgstr "Manuális fókuszálás sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:2035
+#: ../src/frontend/entangle-camera-manager.c:2054
 msgid "Entangle: Camera manual focus failed"
 msgstr "Entangle: Kamera manuális fókuszálás sikertelen"
 
-#: ../src/frontend/entangle-camera-manager.c:2640
+#: ../src/frontend/entangle-camera-manager.c:2671
 msgid "Delete"
 msgstr "Törlés"
 
-#: ../src/frontend/entangle-camera-manager.c:2769
+#: ../src/frontend/entangle-camera-manager.c:2800
 msgid "Select application..."
 msgstr "Válasszon alkalmazást..."
 
+#: ../src/frontend/entangle-camera-manager.c:3028
+msgid "Image histogram"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.c:3030
+msgid "Automation"
+msgstr ""
+
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-manager.ui.h:1
 #: ../src/entangle.desktop.in.h:1
 msgid "Entangle"
@@ -477,14 +492,18 @@ msgid "_Help"
 msgstr "Súgó"
 
 #: ../src/frontend/entangle-camera-manager.ui.h:20
+msgid "Manual"
+msgstr ""
+
+#: ../src/frontend/entangle-camera-manager.ui.h:21
 msgid "Supported Cameras"
 msgstr "Támogatott kamerák"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:22
+#: ../src/frontend/entangle-camera-manager.ui.h:23
 msgid "View the full list of camera settings"
 msgstr "Kamera beállítások teljes listájának megtekintése"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:25
+#: ../src/frontend/entangle-camera-manager.ui.h:26
 msgid ""
 "Attempt to cancel the currently\n"
 "executing camera operation"
@@ -492,7 +511,7 @@ msgstr ""
 "Kísérlet a jelenleg végrehajtott\n"
 "kamera művelet megszakítására."
 
-#: ../src/frontend/entangle-camera-manager.ui.h:27
+#: ../src/frontend/entangle-camera-manager.ui.h:28
 msgid ""
 "Shrink the display of the image\n"
 "by one factor"
@@ -500,11 +519,11 @@ msgstr ""
 "Csökkentse a kép megjelenített területét\n"
 "egy nagyságrenddel"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:29
+#: ../src/frontend/entangle-camera-manager.ui.h:30
 msgid "Zoom Out"
 msgstr "Távolítás"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:30
+#: ../src/frontend/entangle-camera-manager.ui.h:31
 msgid ""
 "Enlarge the display of the image\n"
 "by one factor"
@@ -512,11 +531,11 @@ msgstr ""
 "Nagyítsa meg a kép megjelenítő területét\n"
 "egy nagyságrenddel"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:32
+#: ../src/frontend/entangle-camera-manager.ui.h:33
 msgid "Zoom In"
 msgstr "Közelítés"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:33
+#: ../src/frontend/entangle-camera-manager.ui.h:34
 msgid ""
 "Resize the image to automatically\n"
 "fit the available window real estate"
@@ -524,11 +543,11 @@ msgstr ""
 "Méretezze át a képet automatikusan\n"
 "hogy beférjen az ablak valódi keretei közé"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:35
+#: ../src/frontend/entangle-camera-manager.ui.h:36
 msgid "Best Fit"
 msgstr "Legjobb illesztés"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:36
+#: ../src/frontend/entangle-camera-manager.ui.h:37
 msgid ""
 "Display the image with its\n"
 "native pixel size"
@@ -536,19 +555,19 @@ msgstr ""
 "Jelenítse meg a képet\n"
 "natív pixel méreteivel"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:38
+#: ../src/frontend/entangle-camera-manager.ui.h:39
 msgid "Normal"
 msgstr "Normál"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:39
+#: ../src/frontend/entangle-camera-manager.ui.h:40
 msgid "Switch to fullscreen display mode"
 msgstr "Átváltás teljesképernyős megjelenítési módba"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:40
+#: ../src/frontend/entangle-camera-manager.ui.h:41
 msgid "Full Screen"
 msgstr "Teljes képernyő"
 
-#: ../src/frontend/entangle-camera-manager.ui.h:41
+#: ../src/frontend/entangle-camera-manager.ui.h:42
 msgid "Open with"
 msgstr "Megnyitás ezzel:"
 
@@ -560,12 +579,14 @@ msgstr "Modell"
 msgid "Port"
 msgstr "Port"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-picker.ui.h:1
 msgid "Select camera - Entangle"
 msgstr "Válasszon kamerát - Entangle"
@@ -608,12 +629,14 @@ msgstr ""
 msgid "settings"
 msgstr ""
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-camera-support.ui.h:1
 msgid "label"
 msgstr "címke"
@@ -654,21 +677,19 @@ msgstr "Képernyő törlése nem lehetséges ezen a kijelzőn"
 msgid "Screen blanking is not implemented on this platform"
 msgstr "Képernyőtörlés nincs implementálva ezen a platformon"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-help-about.ui.h:1
 msgid "About - Entangle"
 msgstr "Az alkalmazásról - Entangle"
 
-#: ../src/frontend/entangle-help-about.ui.h:2
-msgid "Copyright (C) 2009-2014 Daniel P. Berrangé"
-msgstr ""
-
-#: ../src/frontend/entangle-help-about.ui.h:3 ../src/entangle.desktop.in.h:2
+#: ../src/frontend/entangle-help-about.ui.h:2 ../src/entangle.desktop.in.h:2
 msgid "Tethered Camera Control & Capture"
 msgstr "Összekapcsolt kameravezérlés & képrögzítő"
 
@@ -824,12 +845,14 @@ msgstr "5 osztású szabály"
 msgid "Golden sections"
 msgstr "Arany szekciók"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/frontend/entangle-preferences-display.ui.h:1
 msgid "Perceptual"
 msgstr "Észlelési"
@@ -966,17 +989,35 @@ msgstr ""
 msgid "Highlight:"
 msgstr ""
 
+#: ../src/frontend/entangle-script.c:97
+msgid "Untitled script"
+msgstr ""
+
+#: ../src/frontend/entangle-script-config.c:80
+msgid "No script"
+msgstr ""
+
+#: ../src/frontend/entangle-script-config.c:162
+msgid "No config options"
+msgstr ""
+
+#: ../src/frontend/entangle-script-simple.c:64
+msgid "Missing 'execute' method implementation"
+msgstr ""
+
 #: ../src/frontend/entangle-window.c:60 ../src/frontend/entangle-window.c:78
 #, c-format
 msgid "Could not load user interface definition file: %s"
 msgstr "Fehasználói kezelőfelület leíró fájl nem betölthető: %s"
 
+#.
 #. * Local variables:
 #. *  c-indent-level: 4
 #. *  c-basic-offset: 4
 #. *  indent-tabs-mode: nil
 #. *  tab-width: 8
 #. * End:
+#.
 #: ../src/entangle.appdata.xml.in.h:1
 msgid "Tethered Camera Control &amp; Capture"
 msgstr ""
@@ -990,10 +1031,10 @@ msgstr ""
 #: ../src/entangle.appdata.xml.in.h:3
 msgid ""
 "Entangle can trigger the camera shutter to capture new images. When "
-"supported by the camera, a continuously updating preview of the scene can be"
-" displayed prior to capture. Images will be downloaded and displayed as they"
-" are captured by the camera. Entangle also allows the settings of the camera"
-" to be changed from the computer."
+"supported by the camera, a continuously updating preview of the scene can be "
+"displayed prior to capture. Images will be downloaded and displayed as they "
+"are captured by the camera. Entangle also allows the settings of the camera "
+"to be changed from the computer."
 msgstr ""
 
 #: ../src/entangle.appdata.xml.in.h:4
