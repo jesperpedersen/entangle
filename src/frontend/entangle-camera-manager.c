@@ -1019,7 +1019,6 @@ static void do_remove_camera(EntangleCameraManager *manager)
     g_return_if_fail(ENTANGLE_IS_CAMERA_MANAGER(manager));
 
     EntangleCameraManagerPrivate *priv = manager->priv;
-    GtkWidget *mtr;
 
     g_cancellable_cancel(priv->monitorCancel);
     g_cancellable_cancel(priv->taskCancel);
