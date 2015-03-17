@@ -1,6 +1,22 @@
       Entangle News
       =============
 
+Release 0.7.0 - "Charm" - 2015-03-17
+------------------------------------
+
+ * Require GLib >= 2.36
+ * Import new logo design
+ * Switch to using zanata.org for translations
+ * Set default window icon
+ * Introduce an initial help manual via yelp
+ * Use shared library for core engine to ensure all symbols
+   are exported to plugins
+ * Add framework for scripting capture operations
+ * Workaround camera busy problems with Nikon cameras
+ * Add a plugin for repeated capture sequences
+ * Replace progress bar with spinner icon
+
+
 Release 0.6.1 - "Strange" - 2015-02-05
 --------------------------------------
 
