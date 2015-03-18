@@ -245,7 +245,7 @@ libentangle_frontend_la_CFLAGS = \
 
 entangle_SOURCES = entangle-main.c
 
-entangle_LDADD = libentangle_frontend.la
+entangle_LDADD = libentangle_backend.la libentangle_frontend.la
 
 entangle_LDFLAGS = \
 	$(GTHREAD_LIBS) \
