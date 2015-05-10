@@ -17,14 +17,14 @@
   <title><media type="image" mime="image/png" src="figures/entangle.png" height="48" its:translate="no" xmlns:its="http://www.w3.org/2005/11/its" /> Entangle</title>
 
   <section id="main">
-    <title>Main features</title>
+    <title>Main Features</title>
   </section>
 
   <section id="advanced">
-    <title>Advanced features</title>
+    <title>Advanced Features</title>
   </section>
 
   <section id="plugins">
-    <title>Plugin extensions</title>
+    <title>Plugin Extensions</title>
   </section>
 </page>

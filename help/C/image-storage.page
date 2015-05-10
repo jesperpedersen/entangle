@@ -7,7 +7,7 @@
 
     <desc>Downloading and saving captured images from the camera</desc>
   </info>
-  <title>Image storage</title>
+  <title>Image Storage</title>
 
   <p>
     Whenever the <app>Entangle</app> application is connected to a camera it is

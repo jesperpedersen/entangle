@@ -7,7 +7,7 @@
 
     <desc>Triggering the camera shutter from the application to capture an image</desc>
   </info>
-  <title>Image capture</title>
+  <title>Image Capture</title>
 
   <p>
     While the shutter can always be physically triggered on the camera, it
@@ -16,8 +16,8 @@
     menu option, the <gui>Capture</gui> icon on the tool bar, or the <key>Spacebar</key> key.
     After the shutter is triggered, any successfully captured images will be
     automatically downloaded and displayed. They are saved to the local session
-    directory, as describing in the <link xref="image-storage"/> section. Some
-    cameras supported capturing in multiple formats at once, for example, both
+    directory, as described in the <link xref="image-storage"/> section. Some
+    cameras support capturing in multiple formats at once, for example, both
     raw and jpeg. If this feature is active, all image formats will be downloaded
     after capture.
   </p>

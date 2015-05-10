@@ -14,7 +14,7 @@
     The <app>Entangle</app> application is intended to have a relatively simple core
     interface, providing the top 90% of features that 90% of users will wish to have.
     Features which serve a more specialized use case are to be provided via the
-    plugin system. While the core of the application is written in the lowlevel C
+    plugin system. While the core of the application is written in the low level C
     programming language, the plugin system uses the higher level Python 3 language.
     The intent is to facilitate the creation of plugins by a broader group of
     users. For further information on writing and distributing plugins, consult the
@@ -33,7 +33,7 @@
 
   <p>
     When <app>Entangle</app> starts up it will scan both the system and user private
-    plugin directories and attempt to load any that it finds, however, new plugins
+    plugin directories and attempt to load any plugin it finds, however, new plugins
     will not be activated by default. To see what plugins are available, bring up the
     preferences dialog from the <guiseq><gui>Edit</gui><gui>Preferences</gui></guiseq>
     menu, then select the <gui>Plugins</gui> tab of the dialog.

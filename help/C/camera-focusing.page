@@ -7,10 +7,10 @@
 
     <desc>Controlling camera focus during image preview</desc>
   </info>
-  <title>Camera focus</title>
+  <title>Camera Focus</title>
 
   <p>
-    As mentioned in the <link xref="image-preview"/> section, not
+    As mentioned in the <link xref="image-preview"/> section, no
     attempt is made to activate the autofocus mechanism when capturing
     from preview mode, instead the user has full control over
     focusing via number of keyboard shortcuts.
